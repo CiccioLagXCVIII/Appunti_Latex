@@ -1,0 +1,595 @@
+﻿\documentclass[11pt, a4paper]{article}
+
+%---------------------------------------------------------
+% Lingua E Codifica
+%---------------------------------------------------------
+\usepackage[italian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+%---------------------------------------------------------
+% Layout Di Pagina E Tipografia
+%---------------------------------------------------------
+\usepackage[margin=2cm, top=1.5cm, bottom=1.5cm]{geometry}
+\usepackage{parskip}
+\usepackage{microtype}
+\usepackage{soul}
+\sethlcolor{lime!25}
+
+%---------------------------------------------------------
+% Gestione Dei Colori
+%---------------------------------------------------------
+\usepackage[table]{xcolor}
+\definecolor{darkgreen}{RGB}{0,100,0}
+
+%---------------------------------------------------------
+% Matematica E Simboli
+%---------------------------------------------------------
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{mathtools}
+\usepackage{siunitx}
+
+% BB OTTIMIZZAZIONE MATRICI LUNGHE PER LA STAMPA
+\setlength{\arraycolsep}{10pt}
+\usepackage{bm}
+\usepackage{arydshln}
+
+
+%---------------------------------------------------------
+% Grafica, Immagini E Tabelle
+%---------------------------------------------------------
+\usepackage{graphicx}
+\graphicspath{{./Images/Image Feature/}}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, patterns, angles, quotes, calc}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+
+%---------------------------------------------------------
+% Link, Riferimenti Ed Elenchi
+%---------------------------------------------------------
+\usepackage[unicode]{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+    citecolor=blue,
+    pdftitle={Capitolo 3 - Image Feature},
+    pdfauthor={Francesco Lo Verde},
+    pdfpagemode=FullScreen,
+}
+\usepackage{bookmark}
+\usepackage{enumitem}
+\setlist{noitemsep}
+
+%---------------------------------------------------------
+% Personalizzazione Titoli E Altri Pacchetti
+%---------------------------------------------------------
+\usepackage{titlesec}
+\titleformat{\section}{\normalfont\LARGE\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\Large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalfont\large\bfseries}{\thesubsubsection}{1em}{}
+
+\usepackage{comment}
+\newtheorem{theorem}{Definizione}
+
+%---------------------------------------------------------
+% Pacchetto Per Gli Algoritmi
+%---------------------------------------------------------
+\usepackage[ruled,vlined,linesnumbered,italiano]{algorithm2e}
+
+\SetKwData{Dati}{Input}
+\SetKwData{Risultato}{Output}
+\SetKw{Inizializza}{Inizializza}
+\SetKwFor{For}{for}{do}{endfor}
+\SetKwComment{Commento}{// }{}
+
+\author{Francesco Lo Verde}
+\begin{document}
+\section{Introduzione Al Rilevamento E Alla Corrispondenza Di Caratteristiche}
+
+Nel campo della percezione robotica e della computer vision, il problema di identificare e accoppiare punti di interesse tra immagini diverse rappresenta uno dei pilastri fondamentali. Questo processo, noto come \textbf{rilevamento e corrispondenza di caratteristiche} (\emph{feature detection and matching}), consente di stabilire relazioni spaziali e semantiche tra diverse viste di una stessa scena.
+
+% [IMMAGINE RIF INTERVALLO 1-26] Rilevamento di feature (quadrati verdi) su un'immagine di graffiti — Slide 1 / Pagina 1 del PDF
+
+Per uno studio approfondito e complementare di questi argomenti, si rimanda alla lettura del capitolo 4.1 del testo di riferimento:
+\begin{center}
+    \emph{Szeliski: Computer Vision: Algorithms and Applications, Sezione 4.1}
+\end{center}
+
+L'estrazione delle caratteristiche si concentra su elementi geometrici specifici dell'immagine, riconducibili principalmente a due grandi categorie:
+\begin{itemize}[noitemsep]
+    \item \textbf{Angoli} (\emph{corners}): punti di giunzione in cui si intersecano direzioni di gradiente distinte.
+    \item \textbf{Blob} (\emph{blobs}): regioni di pixel con caratteristiche di intensità o colore omogenee rispetto all'intorno, che si sviluppano su scale spaziali differenti.
+\end{itemize}
+
+% [IMMAGINE RIF INTERVALLO 1-26] Confronto tra l'estrazione di angoli in un corridoio (evidenziati con piccoli quadrati bianchi) ed estrazione di blob di diverse scale su un'immagine di girasoli (evidenziati con cerchi gialli) — Slide 5 / Pagina 5 del PDF
+
+\subsection{Esercitazione Pratica E Configurazione Dell'Ambiente}
+
+Per comprendere appieno il funzionamento degli algoritmi di estrazione delle caratteristiche, è prevista un'attività pratica di programmazione in Python. Di seguito vengono riportati i passaggi necessari per la configurazione preliminare del sistema e dell'ambiente virtuale di sviluppo.
+
+Per gli utenti che utilizzano il sistema operativo \textbf{Windows}, il flusso di lavoro iniziale prevede l'installazione di una macchina virtuale:
+\begin{enumerate}[noitemsep]
+    \item Installare il software di virtualizzazione \textbf{VirtualBox}.
+    \item Scaricare l'immagine ISO del sistema operativo \textbf{Ubuntu 20.04}.
+    \item Creare una nuova macchina virtuale all'interno di VirtualBox, avviarla e selezionare l'ISO scaricata per completare l'installazione di Ubuntu.
+\end{enumerate}
+
+Gli utenti che dispongono già di un sistema nativo \textbf{Ubuntu} possono procedere direttamente all'apertura del terminale per l'installazione dei pacchetti di sistema e delle librerie Python richieste tramite i seguenti comandi:
+
+\begin{verbatim}
+# Installazione dei pacchetti di sistema necessari per Python e gli ambienti virtuali
+sudo apt-get install python3-pip python3-dev python-virtualenv
+
+# Creazione dell'ambiente virtuale configurato con i pacchetti di sistema
+virtualenv --system-site-packages -p python3 cvExercise
+
+# Attivazione dell'ambiente virtuale creato
+source cvExercise/bin/activate
+
+# Installazione dei pacchetti Python scientifici e per la visione artificiale
+pip3 install numpy
+pip3 install scipy
+pip3 install scikit-image
+pip3 install opencv-python
+
+# Installazione del supporto grafico Tkinter per le visualizzazioni
+sudo apt-get install python3-tk
+\end{verbatim}
+
+\newpage
+
+\section{Motivazioni Per L'Estrazione Di Caratteristiche}
+
+L'estrazione di caratteristiche locali non è fine a se stessa, ma costituisce lo step abilitante per risolvere compiti complessi di interpretazione geometrica e semantica. I punti di interesse estratti (\emph{feature points}) vengono infatti impiegati in una vasta gamma di applicazioni, tra cui:
+\begin{itemize}[noitemsep]
+    \item \textbf{Allineamento di immagini} (ad esempio per la creazione di mosaici o panorami).
+    \item \textbf{Ricostruzione 3D} della scena.
+    \item \textbf{Tracciamento del movimento} (\emph{motion tracking}).
+    \item \textbf{Riconoscimento di oggetti}.
+    \item \textbf{Indicizzazione e recupero di immagini} all'interno di database (\emph{image retrieval}).
+    \item \textbf{Navigazione robotica} e localizzazione.
+\end{itemize}
+
+Di seguito vengono analizzati nel dettaglio i flussi di lavoro logici di alcune di queste applicazioni chiave.
+
+\subsection{Allineamento Di Immagini E Creazione Di Panorami}
+
+La creazione automatica di panorami (\emph{panorama stitching}) consiste nel combinare più immagini parzialmente sovrapposte per ottenerne una a campo largo.
+
+% [IMMAGINE RIF INTERVALLO 1-26] Sequenza di singole fotografie di montagne che vengono cucite insieme in un unico panorama continuo — Slide 6 / Pagina 6 del PDF
+
+Il problema fondamentale risiede nel capire come combinare le singole viste. Il processo si articola in tre fasi sequenziali:
+
+% [IMMAGINE RIF INTERVALLO 1-26] Due viste adiacenti di una montagna innevata prima dell'allineamento — Slide 8 / Pagina 8 del PDF
+
+\begin{enumerate}
+    \item \textbf{Estrazione delle caratteristiche} (\emph{Step 1: extract features}): si individuano i punti chiave significativi in ciascuna delle due immagini in modo indipendente.
+    \item \textbf{Corrispondenza delle caratteristiche} (\emph{Step 2: match features}): si stabiliscono le associazioni corrette tra i punti della prima immagine e quelli della seconda.
+
+    % [IMMAGINE RIF INTERVALLO 1-26] Corrispondenze stabilite tramite frecce rosse tra i punti chiave identificati sulle due immagini delle montagne — Slide 9 / Pagina 9 del PDF
+
+    \item \textbf{Allineamento delle immagini} (\emph{Step 3: align images}): si calcola la trasformazione geometrica che mappa la seconda immagine sulla prima basandosi sulle corrispondenze trovate, e si fondono le immagini.
+
+    % [IMMAGINE RIF INTERVALLO 1-26] Risultato finale dell'allineamento e della sovrapposizione geometrica delle due immagini — Slide 10 / Pagina 10 del PDF
+\end{enumerate}
+
+\subsection{Stima Della Posa Della Camera E Odometria Visiva}
+
+Un'altra applicazione cruciale nella robotica mobile è la \textbf{stima della posa della camera} (\emph{Camera Pose estimation}). Date due o più immagini, l'obiettivo è calcolare la trasformazione spaziale intercorsa tra i diversi punti di ripresa, implementando quella che viene definita \textbf{odometria visiva} (\emph{visual odometry}) o struttura dal movimento (\emph{Structure from Motion}).
+
+Il flusso logico per questa applicazione si struttura come segue:
+\begin{enumerate}[noitemsep]
+    \item \textbf{Estrazione delle caratteristiche} nelle immagini disponibili.
+    \item \textbf{Determinazione delle corrispondenze} tra i punti chiave.
+    \item \textbf{Calcolo della trasformazione geometrica} tra i punti di ripresa partendo dall'insieme dei match validati.
+\end{enumerate}
+
+% [IMMAGINE RIF INTERVALLO 1-26] Ricostruzione 3D a nuvola di punti del Colosseo a partire da una collezione di immagini fotografiche sparse, con indicazione delle pose delle camere — Slide 11 / Pagina 11 del PDF
+
+\subsection{Recupero Di Immagini Da Database}
+
+Nel contesto del recupero di immagini (\emph{Image Retrieval}), data un'immagine di query, si desidera trovare le immagini più simili all'interno di un database di grandi dimensioni. In questo scenario, le caratteristiche locali estratte vengono aggregate per produrre una rappresentazione globale dell'immagine:
+\begin{enumerate}[noitemsep]
+    \item \textbf{Estrazione delle caratteristiche} locali dell'immagine di query.
+    \item \textbf{Calcolo del vettore Bag-of-Words (BoW)}: le caratteristiche locali vengono quantizzate e accumulate in un istogramma di frequenze visive che funge da descrittore globale dell'immagine.
+    \item \textbf{Confronto dei vettori BoW}: si confronta il vettore della query con quelli precalcolati delle immagini del database per identificare gli elementi con la massima similarità semantica o strutturale.
+\end{enumerate}
+
+% [IMMAGINE RIF INTERVALLO 1-26] Esempio di image retrieval: query con immagine di una tigre e visualizzazione dei risultati corrispondenti estratti dal database — Slide 12 / Pagina 12 del PDF
+
+\subsection{Riconoscimento Di Istanze E Categorie Di Oggetti}
+
+L'estrazione delle caratteristiche costituisce la base anche per compiti di classificazione e localizzazione semantica, in cui l'obiettivo è riconoscere la categoria di appartenenza di un oggetto presente nell'immagine:
+\begin{enumerate}[noitemsep]
+    \item \textbf{Estrazione delle caratteristiche} significative dall'immagine di input.
+    \item \textbf{Classificazione delle caratteristiche}: le informazioni estratte vengono fornite in input a un classificatore per predire la classe o la categoria dell'oggetto rilevato.
+\end{enumerate}
+
+% [IMMAGINE RIF INTERVALLO 1-26] Rilevamento simultaneo di oggetti (cane, bicicletta, auto) con bounding box colorate tramite l'architettura YOLO — Slide 13 / Pagina 13 del PDF
+
+\newpage
+
+\section{La Sfida Della Corrispondenza Di Immagini}
+
+La ricerca di corrispondenze tra immagini diverse è un problema complesso a causa delle variazioni a cui è soggetta l'acquisizione visiva nel mondo reale. I fattori di disturbo includono variazioni del punto di vista, cambiamenti di illuminazione e differenze di scala.
+
+% [IMMAGINE RIF INTERVALLO 1-26] Confronto tra due foto della Fontana di Trevi scattate da angolazioni e distanze leggermente differenti — Slide 14 / Pagina 14 del PDF
+
+Il problema si complica ulteriormente quando cambiano in modo significativo le condizioni fotometriche della scena, la stagione o l'esposizione, rendendo l'aspetto locale dei pixel estremamente mutevole.
+
+% [IMMAGINE RIF INTERVALLO 1-26] Caso più complesso di corrispondenza per la Fontana di Trevi con forti differenze di contrasto, esposizione e bilanciamento dei colori tra le due foto — Slide 15 / Pagina 15 del PDF
+
+In casi estremi, come nelle immagini telerilevate o acquisite da rover planetari su terreni desertici o rocciosi, la texture uniforme e la mancanza di strutture geometriche artificiali evidenti rendono il problema della corrispondenza straordinariamente ostico.
+
+% [IMMAGINE RIF INTERVALLO 1-26] Immagini adiacenti del suolo marziano acquisite da un Mars Rover della NASA, caratterizzate da texture rocciose omogenee e ombre complesse — Slide 16 / Pagina 16 del PDF
+
+Tuttavia, algoritmi avanzati basati su caratteristiche locali robuste, come lo strumento \textbf{SIFT} (\emph{Scale-Invariant Feature Transform}), riescono a trovare corrispondenze affidabili anche in queste condizioni estreme, agganciando dettagli microscopici del terreno.
+
+% [IMMAGINE RIF INTERVALLO 1-26] Le stesse immagini del suolo marziano con quadrati colorati che indicano le corrispondenze corrette identificate tramite feature SIFT — Slide 17 / Pagina 17 del PDF
+
+\subsection{Analisi Del Processo Di Matching}
+
+Per comprendere cosa renda possibile l'allineamento, si consideri l'esempio del tracciamento di un logo su una copertina di un libro all'interno di una scena disordinata.
+
+% [IMMAGINE RIF INTERVALLO 1-26] A sinistra la copertina del libro "Multiple View Geometry" con un logo geometrico evidenziato; a destra una scena reale in cui il libro è appoggiato su un tavolo tra vari oggetti — Slide 18 / Pagina 18 del PDF
+
+Se analizziamo il processo a livello microscopico, l'allineamento si basa sul confronto delle finestre di pixel locali che circondano il punto chiave. Nonostante le variazioni di orientamento e di campionamento spaziale, la struttura geometrica sottostante della texture locale deve rimanere riconoscibile per consentire all'algoritmo di calcolare una metrica di affinità robusta.
+
+% [IMMAGINE RIF INTERVALLO 1-26] Ingrandimento a livello di singoli pixel delle finestre locali estratte attorno al medesimo angolo del logo in entrambe le immagini, mostrando la griglia di discretizzazione — Slide 19 / Pagina 19 del PDF
+
+\newpage
+
+\section{Caratteristiche Locali Invarianti}
+
+Per far sì che l'accoppiamento dei punti chiave abbia successo nelle applicazioni reali, è fondamentale definire e calcolare caratteristiche che siano \textbf{invarianti} rispetto alle trasformazioni fisiche e geometriche subite dall'immagine durante l'acquisizione. Queste invarianze si suddividono in due macro-categorie:
+\begin{itemize}[noitemsep]
+    \item \textbf{Invarianza geometrica}: robustezza rispetto a trasformazioni spaziali quali traslazione, rotazione e cambiamenti di scala.
+    \item \textbf{Invarianza fotometrica}: robustezza rispetto a variazioni di luminosità, contrasto ed esposizione della sorgente luminosa.
+\end{itemize}
+
+% [IMMAGINE RIF INTERVALLO 1-26] Rappresentazione del calcolo dei descrittori di feature (finestre di patch locali normalizzate) estratti da un camion giocattolo in due immagini con orientamento e sfondo differenti — Slide 20 / Pagina 20 del PDF
+
+\subsection{Proprietà Di Una Caratteristica Ideale}
+
+L'efficacia di un algoritmo di estrazione e descrizione di caratteristiche si misura sulla base di requisiti formali ben definiti. Una "buona" caratteristica locale deve possedere le seguenti proprietà:
+
+\begin{itemize}
+    \item \textbf{Ripetitività} (\emph{Repetitive}): l'algoritmo deve essere in grado di rilevare esattamente gli stessi punti fisici della scena in modo indipendente in ciascuna immagine, nonostante le variazioni del punto di vista.
+    \item \textbf{Invarianza} alle trasformazioni geometriche elementari, in particolare alla traslazione, alla rotazione e al cambiamento di scala.
+    \item \textbf{Invarianza alle trasformazioni affini}: robustezza rispetto a deformazioni prospettiche che alterano gli angoli e i rapporti di lunghezza delle strutture locali.
+    \item \textbf{Invarianza alle anomalie dell'immagine}: tolleranza al rumore del sensore, alla sfocatura (\emph{blur}) dovuta al movimento o fuori fuoco, e ad altri disturbi di digitalizzazione.
+    \item \textbf{Località} (\emph{Locality}): le caratteristiche devono basarsi su un intorno spaziale limitato del punto chiave, rendendo il metodo robusto a occlusioni parziali, presenza di elementi di sfondo estranei (\emph{clutter}) e variazioni locali dell'illuminazione.
+    \item \textbf{Distintività} (\emph{Distinctiveness}): la patch descritta deve contenere una struttura informativa "interessante" e univoca, tale da consentire la corretta differenziazione e associazione anche all'interno di un database di oggetti estremamente vasto.
+    \item \textbf{Quantità}: l'algoritmo deve essere in grado di estrarre un numero sufficiente di punti di interesse per garantire una densità informativa adeguata a rappresentare l'intera immagine.
+    \item \textbf{Efficienza temporale} (\emph{Time efficient}): il calcolo dei punti chiave e dei relativi descrittori deve avvenire in tempi compatibili con le applicazioni real-time tipiche della robotica.
+\end{itemize}
+
+\newpage
+
+\section{Punti Chiave E Descrittori}
+
+Una caratteristica visiva locale viene descritta e formalizzata attraverso due componenti distinte ma strettamente interconnesse:
+
+\begin{enumerate}
+    \item \textbf{Punto Chiave} (\emph{Keypoint} o \emph{interest point}): definisce la posizione spaziale bidimensionale (espressa a livello di pixel o sub-pixel) all'interno dell'immagine in cui è stata rilevata la caratteristica. Viene denominato "punto chiave" in quanto deve idealmente soddisfare i requisiti di robustezza e ripetitività precedentemente analizzati.
+    \item \textbf{Descrittore} (\emph{Descriptor}): il solo punto chiave codifica esclusivamente la coordinata spaziale dell'estrazione, informazione palesemente insufficiente per effettuare un matching robusto con altre viste. Per stabilire una corrispondenza, è necessario descrivere l'intorno visivo di tale coordinata. Il descrittore calcola quindi un vettore di caratteristiche che agisce come una vera e propria firma identificativa (\emph{ID card}) del punto chiave, codificando le proprietà fotometriche e geometriche locali dell'intorno.
+\end{enumerate}
+
+\subsection{Necessità Del Descrittore}
+
+Sebbene il punto chiave rappresenti di per sé la feature individuata, il calcolo e l'associazione del relativo descrittore diventano indispensabili in due scenari operativi:
+\begin{itemize}[noitemsep]
+    \item \textbf{Matching tra immagini differenti}: per stabilire le corrispondenze corrette, è necessaria una rappresentazione vettoriale distintiva che permetta di riconoscere univocamente lo stesso punto geometrico in contesti diversi.
+    \item \textbf{Estensione delle invarianze}: l'invarianza a trasformazioni complesse (come i cambiamenti di scala o le rotazioni) non può essere codificata dalla sola coordinata puntuale, ma richiede una descrizione matematica strutturata delle informazioni locali nell'intorno del punto chiave.
+\end{itemize}
+
+Nel panorama degli algoritmi di computer vision si osservano approcci differenti:
+\begin{itemize}[noitemsep]
+    \item Molti algoritmi estraggono congiuntamente sia il punto chiave che il corrispondente descrittore locale (è il caso di framework celebri come \textbf{SIFT} o \textbf{SURF}).
+    \item Alcuni algoritmi si focalizzano esclusivamente sulla fase di rilevamento spaziale del punto chiave (come il rivelatore di angoli di \textbf{Harris}).
+\end{itemize}
+
+\begin{center}
+    \hl{\textbf{Nota di terminologia:} Spesso in letteratura il termine ``feature'' viene utilizzato in modo indistinto per indicare il punto chiave, il descrittore o l'insieme di entrambi.}
+\end{center}
+
+\newpage
+
+\section{Unicità E Misure Locali Di Unicità}
+
+Per consentire associazioni prive di ambiguità tra immagini diverse, l'estrazione deve concentrarsi su regioni dell'immagine che presentano un carattere di \textbf{unicità}. L'obiettivo è individuare porzioni visive insolite o altamente caratterizzate.
+
+La domanda fondamentale a cui rispondere è: \emph{come possiamo definire matematicamente e localmente il concetto di ``insolito'' o ``unico''?}
+
+Si consideri l'analisi di una piccola finestra locale di pixel (\emph{patch}) che scorre sull'immagine. A seconda della struttura visiva contenuta all'interno della finestra, possiamo classificare la bontà del candidato come descritto di seguito:
+
+% [IMMAGINE RIF INTERVALLO 1-26] Tre scenari per la selezione di una feature locale tramite una finestra quadrata: regione piatta (sinistra), bordo rettilineo (centro), angolo (destra) — Slide 26 / Pagina 26 del PDF
+
+\begin{itemize}
+    \item \textbf{Regione piatta} (\emph{Flat region}): se la finestra racchiude un'area con intensità di grigio o colore omogenea (come nel primo riquadro a sinistra), non vi è alcuna variazione di gradiente in nessuna direzione. Qualsiasi spostamento della finestra produce un segnale identico, rendendo impossibile una localizzazione univoca. È un pessimo candidato.
+
+    \item \textbf{Bordo rettilineo} (\emph{Edge}): se la finestra si trova sopra una linea retta o un bordo (come nel riquadro centrale), si osserva una variazione significativa del gradiente esclusivamente in direzione perpendicolare al bordo stesso. Tuttavia, muovendosi lungo la direzione del bordo, l'aspetto visivo non cambia. Questo fenomeno introduce un'ambiguità di corrispondenza lungo la linea (noto storicamente come \emph{aperture problem}), rendendo il bordo un candidato debole o instabile per il matching puntuale.
+
+    \item \textbf{Angolo} (\emph{Corner} o \emph{Vertex}): se la finestra è posizionata in corrispondenza di un angolo o di un vertice (come nel terzo riquadro a destra), si registrano variazioni significative del gradiente in molteplici direzioni ortogonali. Qualsiasi spostamento della finestra, anche minimo e in qualunque direzione, produce un cambiamento rilevante del contenuto visivo. Questo comportamento rende l'angolo un punto di interesse eccellente, localizzabile spazialmente in modo univoco e non ambiguo.
+\end{itemize}
+\section{La Misura Locale Dell'Unicità Delle Caratteristiche}
+
+Nel contesto della percezione robotica, l'identificazione di punti chiave stabili e univoci è di fondamentale importanza per compiti di tracciamento o ricostruzione tridimensionale. Per stabilire se un'area locale dell'immagine rappresenti una caratteristica valida, è necessario chiedersi: \emph{come cambia il contenuto visivo racchiuso all'interno di una finestra di analisi quando quest'ultima viene spostata?}
+
+% [IMMAGINE RIF INTERVALLO 27-51] Tre esempi di finestre locali per identificare regioni piatte, bordi o angoli — Slide 1 / Pagina 1 del PDF
+
+Un punto di interesse si rivela stetico e robusto se la traslazione della finestra in qualsiasi direzione spaziale produce una variazione significativa nei pixel. Questa osservazione intuitiva conduce alla classificazione di tre diversi scenari visivi locali:
+\begin{itemize}[noitemsep]
+    \item \textbf{Regione Piatta} (\emph{``flat'' region}): lo spostamento della finestra in qualunque direzione non produce alcun cambiamento significativo nell'intensità dei pixel.
+    \item \textbf{Bordo} (\emph{``edge''}): non si registra alcuna variazione quando la finestra si sposta lungo la direzione parallela al bordo stesso, generando un'ambiguità locale (nota anche come problema dell'apertura).
+    \item \textbf{Angolo} (\emph{``corner''}): si osserva un cambiamento significativo e ben definito nell'intensità dei pixel per qualsiasi direzione di spostamento della finestra.
+\end{itemize}
+
+\newpage
+
+\section{Formulazione Matematica Del Rilevatore Di Harris}
+
+Per formalizzare matematicamente questa intuizione geometrica, analizziamo quantitativamente la variazione delle intensità dei pixel indotta da uno spostamento della finestra. Consideriamo una finestra di analisi $W$ centrata su un punto generico $x_0$ e supponiamo di applicare ad essa una traslazione descritta dal piccolo vettore di movimento $h = [u, v]^T$.
+
+% [IMMAGINE RIF INTERVALLO 27-51] Schema del movimento di una finestra W indotto da una traslazione (u,v) su un angolo — Slide 2 / Pagina 2 del PDF
+
+Sia $I$ un'immagine a toni di grigio definita sul piano immagine con coordinate orizzontale $u$ e verticale $v$. Se l'intorno contiene una variazione d'intensità significativa (come nel caso di un bordo o di un angolo), l'intensità locale cambierà repentinamente.
+
+Per modellare analiticamente tale variazione, possiamo approssimare l'intensità dell'immagine traslata $I(x_0 + h)$ ricorrendo allo \textbf{sviluppo di Taylor del primo ordine} attorno al punto $x_0$:
+\begin{equation}
+    I(x_0 + h) \approx I(x_0) + (\nabla I(x_0))^T h
+\end{equation}
+In questa espressione, $x_0$ indica un punto generico nel dominio dell'immagine, $h = [u, v]^T$ rappresenta il vettore di spostamento infinitesimo e il termine $\nabla I(x_0)$ rappresenta il vettore \textbf{gradiente spaziale dell'immagine} valutato in $x_0$, definito come:
+\begin{equation}
+    \nabla I(x_0) = \begin{bmatrix} \frac{\partial I}{\partial u}(x_0) \\ \frac{\partial I}{\partial v}(x_0) \end{bmatrix}
+\end{equation}
+
+\subsection{Approssimazione Nel Dominio Discreto}
+
+Per comodità di notazione, indichiamo le derivate parziali spaziali rispettivamente con:
+\begin{equation}
+    I_u(x_0) = \frac{\partial I}{\partial u}(x_0) \quad \text{e} \quad I_v(x_0) = \frac{\partial I}{\partial v}(x_0)
+\end{equation}
+Poiché l'immagine digitale è definita su un dominio discreto di pixel, le derivate spaziali parziali possono essere approssimate numericamente tramite differenze finite prime tra pixel adiacenti:
+\begin{align*}
+    I_u(x_0) &= I_u(u, v) = I(u+1, v) - I(u, v) \\
+    I_v(u, v) &= I(u, v+1) - I(u, v)
+\end{align*}
+Di conseguenza, la differenza locale di intensità luminosa indotta dallo spostamento $h$ nell'intorno del punto $x_0$ può essere espressa come:
+\begin{equation}
+    I(x_0 + h) - I(x_0) \approx (\nabla I(x_0))^T h
+\end{equation}
+
+\subsection{Formulazione Della Funzione Di Errore Quadratico}
+
+Al fine di quantificare la variazione complessiva senza che i segni delle differenze si cancellino a vicenda, non consideriamo la semplice variazione d'intensità bensì il quadrato di tale quantità. Per un singolo punto generico $x$, l'approssimazione quadratica assume la forma:
+\begin{equation}
+    (I(x + h) - I(x))^2 \approx \left( (\nabla I(x))^T h \right)^2 = h^T \nabla I(x) (\nabla I(x))^T h
+\end{equation}
+Per rendere la misura robusta rispetto al rumore ad alta frequenza del sensore, integriamo questa variazione quadratica pesandola su una finestra locale $\Omega_{x_0}$ centrata sul punto di interesse $x_0$. Definiamo così la funzione di errore $E(x_0)$:
+\begin{equation}
+    E(x_0) \approx \sum_{x \in \Omega_{x_0}} w(x - x_0) (I(x + h) - I(x))^2
+\end{equation}
+In questo contesto, $w(x - x_0)$ rappresenta una opportuna \textbf{funzione di peso} o di mascheramento, per la quale si adotta solitamente una distribuzione spaziale gaussiana bi-dimensionale.
+
+Sostituendo l'approssimazione di Taylor all'interno della sommatoria, otteniamo:
+\begin{equation}
+    E(x_0) \approx \sum_{x \in \Omega_{x_0}} w(x - x_0) \left( h^T \nabla I(x) (\nabla I(x))^T h \right)
+\end{equation}
+Poiché il vettore di movimento $h$ è costante rispetto alla variabile di integrazione spaziale $x$ che scorre all'interno della finestra di sommatoria, possiamo estrarlo a sinistra e a destra dell'operatore di somma. Questo consente di riscrivere la funzione di errore nella forma quadratica compatta:
+\begin{equation}
+    E(x_0) = h^T \left( \sum_{x \in \Omega_{x_0}} w(x - x_0) \nabla I(x) (\nabla I(x))^T \right) h = \boxed{h^T C h}
+\end{equation}
+La matrice $C$, nota in letteratura come \textbf{matrice dei secondi momenti} (o sensore di struttura), raccoglie ed esprime la distribuzione locale dei gradienti d'intensità:
+\begin{equation}
+    C = \sum_{x \in \Omega_{x_0}} w(x - x_0) \nabla I(x) (\nabla I(x))^T = \sum_{x \in \Omega_{x_0}} w(x - x_0) \begin{bmatrix} I_u^2(x) & I_u(x) I_v(x) \\ I_u(x) I_v(x) & I_v^2(x) \end{bmatrix}
+\end{equation}
+
+\newpage
+
+\section{Analisi Spettrale Della Matrice Dei Secondi Momenti}
+
+La matrice $C$ è per costruzione una matrice simmetrica e semidefinita positiva. Di conseguenza, le sue proprietà geometriche possono essere analizzate in modo approfondito applicando la \textbf{decomposizione spettrale} o SVD (\emph{Singular Value Decomposition}):
+\begin{equation}
+    C = U S U^T = U \begin{bmatrix} \sigma_1 & 0 \\ 0 & \sigma_2 \end{bmatrix} U^T
+\end{equation}
+dove $U = \begin{bmatrix} u_1 & | & u_2 \end{bmatrix}$ rappresenta la matrice ortogonale i cui vettori colonna $u_1$ e $u_2$ sono gli autovettori di $C$, mentre $\sigma_1$ e $\sigma_2$ sono i corrispondenti autovalori non negativi.
+
+Possiamo ora esprimere il generico vettore di spostamento $h$ proiettandolo sulla base ortonormale definita dagli autovettori contenuti in $U$, ponendo $h = U a$, ovvero:
+\begin{equation}
+    h = u_1 a_1 + u_2 a_2
+\end{equation}
+Poiché $U$ è una matrice unitaria, la trasformazione lineare operata da $U$ preserva la norma del vettore ($\|a\|^2 = \|h\|^2$), traducendosi in una pura rotazione del sistema di coordinate spaziali. Sostituendo questa relazione nella forma quadratica dell'errore si ottiene:
+\begin{align*}
+    E(x_0) &= h^T C h \\
+    &= (U a)^T (U S U^T) (U a) \\
+    &= a^T \underbrace{(U^T U)}_{\bm{I}} S \underbrace{(U^T U)}_{\bm{I}} a \\
+    &= a^T S a \\
+    &= \boxed{\sigma_1 a_1^2 + \sigma_2 a_2^2}
+\end{align*}
+Questo sviluppo dimostra che gli autovalori $\sigma_1$ e $\sigma_2$ scalano direttamente l'errore quadratico lungo le direzioni principali individuate dagli autovettori associati.
+
+\subsection{Analisi Delle Strutture Canoniche}
+
+Per comprendere geometricamente l'andamento della superficie d'errore $E(u,v)$, essa può essere approssimata localmente mediante la seguente forma quadratica:
+\begin{equation}
+    E(u,v) \approx A u^2 + 2 B u v + H v^2 = \begin{bmatrix} u & v \end{bmatrix} \begin{bmatrix} A & B \\ B & H \end{bmatrix} \begin{bmatrix} u \\ v \end{bmatrix}
+\end{equation}
+dove i coefficienti sono definiti dalle somme dei prodotti dei gradienti sulla finestra $W$:
+\begin{equation}
+    A = \sum_{(u,v) \in W} I_u^2, \quad B = \sum_{(u,v) \in W} I_u I_v, \quad H = \sum_{(u,v) \in W} I_v^2
+\end{equation}
+
+% [IMMAGINE RIF INTERVALLO 27-51] Rappresentazione tridimensionale della superficie di errore E(u,v) modellata come forma quadratica — Slide 10 / Pagina 10 del PDF
+
+Esaminiamo i casi particolari relativi a strutture geometriche elementari:
+
+\subsubsection{Caso Del Bordo Orizzontale}
+Se la finestra analizza un bordo perfettamente orizzontale, non si registra alcuna variazione d'intensità lungo l'asse orizzontale $u$. Pertanto, la derivata parziale $I_u$ è nulla in tutta la finestra ($I_u = 0$), il che implica $A = 0$ e $B = 0$. La matrice dei secondi momenti e la forma quadratica assumono la forma:
+\begin{equation}
+    C = \begin{bmatrix} 0 & 0 \\ 0 & H \end{bmatrix} \implies E(u,v) \approx H v^2
+\end{equation}
+
+% [IMMAGINE RIF INTERVALLO 27-51] Superficie di errore E(u,v) per un bordo orizzontale, che mostra un andamento a sella/valle — Slide 11 / Pagina 11 del PDF
+
+La superficie $E(u,v)$ in questo caso assume la forma di una sella o di una valle allineata lungo la direzione $u$: l'errore rimane pari a zero muovendosi nella direzione del bordo, mentre cresce quadraticamente muovendosi lungo la direzione ortogonale $v$.
+
+\subsubsection{Caso Del Bordo Verticale}
+Simmetricamente, se il bordo è verticale si ha $I_v = 0$, implicando che i parametri $H$ e $B$ si annullino. La formulazione si riduce a:
+\begin{equation}
+    C = \begin{bmatrix} A & 0 \\ 0 & 0 \end{bmatrix} \implies E(u,v) \approx A u^2
+\end{equation}
+
+% [IMMAGINE RIF INTERVALLO 27-51] Superficie di errore E(u,v) per un bordo verticale, che mostra un andamento a sella/valle — Slide 12 / Pagina 12 del PDF
+
+In questo scenario, la depressione d'errore si sviluppa lungo la direzione verticale $v$.
+
+\subsection{Visualizzazione Geometrica Nel Caso Generale}
+
+Nel caso generale, la forma quadratica descrive un paraboloide ellittico. Possiamo visualizzare l'andamento spaziale della matrice dei secondi momenti $C$ considerando le sue curve di livello (ellissi d'errore):
+\begin{equation}
+    \begin{bmatrix} u & v \end{bmatrix} C \begin{bmatrix} u \\ v \end{bmatrix} = \text{costante}
+\end{equation}
+
+% [IMMAGINE RIF INTERVALLO 27-51] Visualizzazione ellittica della matrice dei secondi momenti C con assi e direzioni di variazione minima e massima — Slide 13 / Pagina 13 del PDF
+
+L'orientamento dell'ellisse è dettato dagli autovettori di $C$, mentre le lunghezze dei semiassi sono inversamente proporzionali alla radice quadrata degli autovalori:
+\begin{itemize}[noitemsep]
+    \item La direzione di massima variazione (\emph{fastest change}) avviene lungo l'autovettore associato all'autovalore massimo $\sigma_{\max}$, con lunghezza del semiasse pari a $(\sigma_{\max})^{-1/2}$.
+    \item La direzione di minima variazione (\emph{slowest change}) avviene lungo l'autovettore associato all'autovalore minimo $\sigma_{\min}$, con lunghezza del semiasse pari a $(\sigma_{\min})^{-1/2}$.
+\end{itemize}
+
+% [IMMAGINE RIF INTERVALLO 27-51] Illustrazione geometrica degli autovettori xmax e xmin applicati su una finestra d'angolo — Slide 14 / Pagina 14 del PDF
+
+Siano $x_{\max}$ e $x_{\min}$ gli autovettori normalizzati di $C$:
+\begin{align*}
+    C x_{\max} &= \sigma_{\max} x_{\max} \\
+    C x_{\min} &= \sigma_{\min} x_{\min}
+\end{align*}
+Questi definiscono le direzioni spaziali lungo le quali l'errore $E$ mostra, rispettivamente, l'incremento più rapido e l'incremento più lento per spostamenti di ampiezza unitaria.
+
+\newpage
+
+\section{Classificazione Dei Punti E Funzione Di Punteggio}
+
+Alla luce delle considerazioni geometriche e spettrali effettuate, sorge spontanea la seguente domanda applicativa: \emph{in che modo i parametri $\sigma_{\max}$, $x_{\max}$, $\sigma_{\min}$ e $x_{\min}$ possono essere impiegati concretamente per implementare un algoritmo di rilevamento di caratteristiche?}
+
+Per individuare un angolo robusto, desideriamo che la funzione d'errore $E(u,v)$ risulti elevata per qualsiasi spostamento d'analisi, anche minimo. Ciò equivale a richiedere che il \textbf{minimo incremento dell'errore} su tutti i possibili vettori di spostamento unitari $[u, v]^T$ sia grande:
+\begin{equation}
+    \min_{\|h\|=1} E(u, v) = \sigma_{\min}
+    \label{eq:min_eigenvalue}
+\end{equation}
+La condizione necessaria e sufficiente affinché si verifichi un incremento significativo dell'errore in ogni direzione è che il più piccolo autovalore $\sigma_{\min}$ della matrice $C$ sia strettamente maggiore di una determinata soglia di confidenza.
+
+% [IMMAGINE RIF INTERVALLO 27-51] Immagine di scacchiera I confrontata con le relative mappe di risposta sigma_max e sigma_min — Slide 16 / Pagina 16 del PDF
+
+Ad esempio, analizzando un'immagine sintetica a scacchiera $I$:
+\begin{itemize}[noitemsep]
+    \item La mappa dell'autovalore massimo $\sigma_{\max}$ risponde fortemente sia in corrispondenza dei bordi (linee della scacchiera) che dei vertici.
+    \item La mappa dell'autovalore minimo $\sigma_{\min}$ assume valori significativi esclusivamente in corrispondenza delle intersezioni d'angolo isolate, azzerandosi lungo i bordi rettilinei.
+\end{itemize}
+
+Questo comportamento consente di classificare univocamente la natura di ogni pixel dell'immagine analizzando la coppia di autovalori $(\sigma_1, \sigma_2)$ di $C$:
+
+% [IMMAGINE RIF INTERVALLO 27-51] Diagramma di classificazione dei punti dell'immagine nello spazio degli autovalori sigma_1 e sigma_2 — Slide 17 / Pagina 17 del PDF
+
+\begin{enumerate}
+    \item \textbf{Regione Piatta}: entrambi gli autovalori sono piccoli ($\sigma_1 \approx 0$ e $\sigma_2 \approx 0$). L'errore $E$ rimane pressoché costante in ogni direzione.
+    \item \textbf{Bordo}: uno degli autovalori è grande mentre l'altro è trascurabile ($\sigma_1 \gg \sigma_2$ oppure $\sigma_2 \gg \sigma_1$). Si ha una forte variazione d'intensità unicamente in direzione ortogonale al bordo.
+    \item \textbf{Angolo}: entrambi gli autovalori presentano valori elevati e dello stesso ordine di grandezza ($\sigma_1 \gg 0$, $\sigma_2 \gg 0$ e $\sigma_1 \sim \sigma_2$). L'errore aumenta marcatamente per qualsiasi spostamento.
+\end{enumerate}
+
+\subsection{L'Approssimazione Di Harris E Stephens}
+
+Sebbene l'equazione \eqref{eq:min_eigenvalue} sia teoricamente ottimale, il calcolo esplicito degli autovalori tramite decomposizione spettrale per ogni singolo pixel dell'immagine è un'operazione computazionalmente onerosa.
+
+Per ovviare a questo problema, Harris e Stephens (1988) proposero una formulazione alternativa ed estremamente efficiente che non richiede il calcolo diretto delle radici del polinomio caratteristico, sfruttando due note proprietà degli autovalori di una matrice:
+\begin{align*}
+    \text{trace}(C) &= \sigma_1 + \sigma_2 \\
+    \det(C) &= \sigma_1 \sigma_2
+\end{align*}
+Sulla base di queste relazioni, venne introdotta la \textbf{funzione di punteggio della caratteristica} (\emph{feature scoring function}) $R(x_0)$:
+\begin{equation}
+    \boxed{R(x_0) = \det(C(x_0)) - k \cdot \text{trace}^2(C(x_0))}
+\end{equation}
+dove $k$ è un parametro empirico di sintonizzazione costante (solitamente scelto nell'intervallo $[0.04, 0.15]$). L'analisi del segno e dell'ampiezza di $R$ permette di mappare direttamente la classificazione precedente:
+\begin{itemize}[noitemsep]
+    \item Se $R > 0$, ci troviamo in presenza di un angolo ($\sigma_1$ e $\sigma_2$ sono entrambi grandi).
+    \item Se $R < 0$, il punto appartiene a un bordo (un autovalore domina nettamente l'altro, rendendo il termine della traccia al quadrato superiore al determinante).
+    \item Se $R \approx 0$, la regione è piatta (entrambi gli autovalori sono vicini a zero).
+\end{itemize}
+
+Una variante alternativa di questa metrica, formulata per eliminare la dipendenza dal parametro empirico $k$, è stata introdotta da Noble:
+\begin{equation}
+    \boxed{N(x_0) = \frac{\det(C(x_0))}{\text{trace}^2(C(x_0))}}
+\end{equation}
+
+\newpage
+
+\section{Algoritmo Riassuntivo Di Rilevamento E Operatore Di Harris}
+
+Il flusso operativo per l'estrazione sistematica delle caratteristiche di Harris da un'immagine di input si riassume nelle seguenti fasi sequenziali:
+
+\begin{algorithm}[H]
+    \caption{Algoritmo di Rilevamento Angoli di Harris}
+    \Dati{Immagine di input $I$, parametro di soglia $T$}
+    \Risultato{Insieme dei punti chiave d'angolo rilevati}
+    \Inizializza\;
+    Compute the gradient at each point in the image (sobel operator)\;
+    Create the $C$ matrix from the entries in the gradient\;
+    Compute the eigenvalues (or approximate via Harris/Noble operator)\;
+    Find points with large response ($\sigma_{\min} > \text{threshold}$)\;
+    Choose those points where $\sigma_{\min}$ is a local maximum as features\;
+\end{algorithm}
+
+% [IMMAGINE RIF INTERVALLO 27-51] Sequenza riassuntiva di estrazione: immagine originale, mappa di sigma_max e mappa di sigma_min — Slide 18 / Pagina 18 del PDF
+
+L'ultimo passaggio dell'algoritmo (noto come \textbf{soppressione dei non-massimi}) è fondamentale per garantire che ogni angolo sia rappresentato da un unico punto chiave nitido, evitando il rilevamento di cluster ridondanti di pixel adiacenti aventi tutti punteggi elevati.
+
+% [IMMAGINE RIF INTERVALLO 27-51] Ingrandimento della mappa sigma_min che evidenzia la ricerca del massimo locale — Slide 19 / Pagina 19 del PDF
+
+\subsection{Confronto Tra Operatore Di Harris E \texorpdfstring{$\sigma_{\min}$}{sigma\_min}}
+
+Il calcolo della risposta tramite l'operatore di Harris classico produce un profilo spaziale dei picchi differente rispetto alla valutazione diretta dell'autovalore minimo $\sigma_{\min}$.
+
+% [IMMAGINE RIF INTERVALLO 27-51] Confronto del profilo del picco tra l'operatore di Harris e la mappa sigma_min — Slide 20 / Pagina 20 del PDF
+
+Come si può osservare dal confronto visivo, l'operatore di Harris tende a generare risposte spazialmente più ampie e con transizioni più morbide attorno al vertice dell'angolo rispetto alla mappa ricavata da $\sigma_{\min}$, la quale presenta risposte estremamente localizzate e selettive.
+
+\newpage
+
+\section{Analisi Pratica Ed Esempio Di Rilevamento}
+
+Consideriamo un esempio reale per visualizzare gli output intermedi generati da ciascuno step dell'algoritmo di Harris. L'immagine di test raffigura un giocattolo a forma di mucca pezzata caratterizzato da molteplici texture (le chiazze nere sul corpo bianco) e geometrie articolate (le zampe realizzate in corda ritorta).
+
+% [IMMAGINE RIF INTERVALLO 27-51] Immagini di input raffiguranti un giocattolo a forma di mucca pezzata in due posizioni diverse — Slide 21 / Pagina 21 del PDF
+
+\subsection{Calcolo Del Punteggio R}
+Il primo passaggio consiste nel calcolo della mappa di risposta dell'operatore $R$ per ciascun pixel dell'immagine, in cui i valori elevati (colorati in rosso nella scala cromatica) indicano un'alta probabilità di presenza di angoli, mentre i valori bassi (rappresentati in blu) corrispondono a zone piatte o a bordi lineari.
+
+% [IMMAGINE RIF INTERVALLO 27-51] Mappa termica del valore di risposta R calcolato sul giocattolo (rosso per i valori alti, blu per i bassi) — Slide 22 / Pagina 22 del PDF
+
+\subsection{Applicazione Della Soglia}
+Successivamente, la mappa continua di $R$ viene binarizzata applicando un'operazione di sogliatura ($R > \text{valore}$). Questa operazione preserva unicamente le regioni candidate (evidenziate in bianco su sfondo nero), scartando le risposte di fondo deboli o spurie.
+
+% [IMMAGINE RIF INTERVALLO 27-51] Immagine binaria ottenuta applicando una soglia alla risposta R (R > valore) — Slide 23 / Pagina 23 del PDF
+
+\subsection{Estrazione Dei Massimi Locali}
+Sulle regioni binarizzate superstiti viene applicato l'algoritmo di ricerca dei massimi locali di $R$, isolando i singoli pixel di picco e sopprimendo le risposte adiacenti non dominanti.
+
+% [IMMAGINE RIF INTERVALLO 27-51] Individuazione dei singoli pixel corrispondenti ai massimi locali di R — Slide 24 / Pagina 24 del PDF
+
+\subsection{Risultato Finale}
+I punti chiave così isolati vengono infine sovrapposti all'immagine originale sotto forma di marcatori rossi, identificando con precisione i vertici geometrici delle pezzature, la curvatura degli zoccoli, delle corna e dei dettagli della corda.
+
+% [IMMAGINE RIF INTERVALLO 27-51] Risultato finale con le feature di Harris evidenziate in rosso sull'immagine originale — Slide 25 / Pagina 25 del PDF
+\end{document}

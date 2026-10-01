@@ -1,0 +1,161 @@
+﻿\documentclass[11pt, a4paper]{article}
+
+%---------------------------------------------------------
+% Lingua E Codifica
+%---------------------------------------------------------
+\usepackage[italian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+%---------------------------------------------------------
+% Layout Di Pagina E Tipografia
+%---------------------------------------------------------
+\usepackage[margin=2cm, top=1.5cm, bottom=1.5cm]{geometry}
+\usepackage{parskip}
+\usepackage{microtype}
+
+%---------------------------------------------------------
+% Gestione Dei Colori
+%---------------------------------------------------------
+\usepackage[table]{xcolor}
+\definecolor{darkgreen}{RGB}{0,100,0}
+
+%---------------------------------------------------------
+% Matematica E Simboli
+%---------------------------------------------------------
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{mathtools}
+\usepackage{siunitx}
+
+% BB OTTIMIZZAZIONE MATRICI LUNGHE PER LA STAMPA
+\setlength{\arraycolsep}{10pt}
+\usepackage{bm}
+\usepackage{arydshln}
+
+
+%---------------------------------------------------------
+% Grafica, Immagini E Tabelle
+%---------------------------------------------------------
+\usepackage{graphicx}
+\graphicspath{{./Images/Early Stopping Batch Epoch/}}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, patterns, angles, quotes, calc}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+
+%---------------------------------------------------------
+% Link, Riferimenti Ed Elenchi
+%---------------------------------------------------------
+\usepackage[unicode]{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+    citecolor=blue,
+    pdftitle={Capitolo 10 - Early Stopping Batch Epoch},
+    pdfauthor={Francesco Lo Verde},
+    pdfpagemode=FullScreen,
+}
+\usepackage{bookmark}
+\usepackage{enumitem}
+\setlist{noitemsep}
+
+%---------------------------------------------------------
+% Personalizzazione Titoli E Altri Pacchetti
+%---------------------------------------------------------
+\usepackage{titlesec}
+\titleformat{\section}{\normalfont\LARGE\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\Large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalfont\large\bfseries}{\thesubsubsection}{1em}{}
+
+\usepackage{comment}
+\newtheorem{theorem}{Definizione}
+
+% Pacchetto per gli algoritmi
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+
+\SetKwData{Dati}{Input}
+\SetKwData{Risultato}{Output}
+\SetKw{Inizializza}{Inizializza}
+\SetKwFor{For}{for}{do}{endfor}
+\SetKwComment{Commento}{// }{}
+
+\author{Francesco Lo Verde}
+\begin{document}
+
+\section{Regolarizzazione Delle Reti Neurali: Early Stopping}
+
+Nel contesto dell'addestramento dei modelli di apprendimento profondo, la regolarizzazione gioca un ruolo cruciale per garantire la capacità di generalizzazione del modello su dati non precedentemente osservati. Tra le varie metodologie disponibili, l'\textbf{early stopping} (arresto anticipato) rappresenta una delle tecniche di regolarizzazione più semplici ed efficaci.
+
+Per una vasta classe di algoritmi di ottimizzazione, la funzione di perdita (\emph{loss}) valutata sul set di addestramento (\emph{training set}) si comporta come una funzione non crescente rispetto all'indice delle iterazioni (o numero di epoche). In altri termini, all'avanzare del processo di ottimizzazione, l'errore sui dati di addestramento tende a ridursi in modo continuo.
+
+Al contrario, la perdita calcolata sul set di test o di validazione (\emph{test/validation set}) segue un andamento differente:
+\begin{enumerate}[noitemsep]
+    \item Nelle prime fasi dell'addestramento, essa decresce in modo analogo alla perdita di addestramento.
+    \item Successivamente, raggiunge un punto di minimo oltre il quale comincia ad aumentare in modo sensibile. Questo incremento della perdita di validazione è il segnale che il modello sta iniziando a sovraddestrare, ovvero sta subendo il fenomeno dell'\textbf{overfitting}.
+\end{enumerate}
+
+L'idea fondamentale che muove la tecnica dell'early stopping consiste nell'interrompere il processo di ottimizzazione esattamente nel punto in cui la perdita misurata sul set di validazione raggiunge il suo valore minimo, prevenendo così il degradamento delle prestazioni di generalizzazione [1].
+
+% [IMMAGINE RIF FILE NOMIMATO "TUTTO"] Grafico cartesiano che mostra l'andamento della training loss (curva blu, non crescente) e della validation loss (curva rossa, a forma di U) in funzione del numero di epoche, con una linea verticale tratteggiata che indica il punto di minimo della validation loss contrassegnato con l'indicazione "Stop training at this point" — Slide 1 / Pagina 1 del PDF
+
+\newpage
+
+\section{Configurazione Di Batch E Epoca Nelle Reti Neurali}
+
+Durante la fase di addestramento di una rete neurale, vi sono due iperparametri fondamentali che regolano il flusso dei dati all'interno del modello e la frequenza degli aggiornamenti dei parametri: la dimensione del batch e il numero di epoche.
+
+\subsection{La Dimensione Del Batch (Batch Size)}
+
+La \textbf{dimensione del batch} (\emph{batch size}) è un iperparametro che definisce il numero di campioni del dataset che vengono processati durante un singolo passaggio in avanti e all'indietro (\emph{forward/backward pass}) prima di procedere all'aggiornamento dei parametri interni della rete (pesi e bias).
+
+In linea generale, un dataset di addestramento (\emph{training dataset}) può essere suddiviso in uno o più batch. A seconda della scelta quantitativa di questo iperparametro, l'algoritmo di apprendimento si configura in tre modalità distinte:
+
+La prima configurazione prende il nome di \textbf{Batch Gradient Descent}. Questa si realizza quando tutti i campioni disponibili nel dataset di addestramento vengono inclusi in un unico grande batch. Di conseguenza, l'aggiornamento dei parametri avviene soltanto dopo aver analizzato l'intero dataset:
+\[ \boxed{\text{Batch Size} = \text{Dimensione del Training Set}} \]
+
+La seconda configurazione è nota come \textbf{Stochastic Gradient Descent (SGD)}. In questo caso limite, la dimensione del batch è impostata su un valore unitario. L'aggiornamento dei parametri del modello viene eseguito dopo la presentazione di ogni singolo campione di addestramento:
+\[ \boxed{\text{Batch Size} = 1} \]
+
+La terza configurazione, che rappresenta una soluzione intermedia, è il \textbf{Mini-Batch Gradient Descent}. In questa modalità, la dimensione del batch è impostata su un valore strettamente superiore all'unità e strettamente inferiore alla dimensione totale del dataset di addestramento:
+\[ \boxed{1 < \text{Batch Size} < \text{Dimensione del Training Set}} \]
+
+Nel contesto pratico dell'addestramento tramite \emph{mini-batch gradient descent}, le dimensioni tipiche del batch assumono valori standardizzati, solitamente espressi come potenze di due per ragioni di efficienza computazionale nell'architettura hardware, tra cui in particolare \num{32}, \num{64} e \num{128} campioni.
+
+\newpage
+
+\subsection{Il Numero Di Epoche (Epochs)}
+
+Il \textbf{numero di epoche} è un iperparametro che definisce quante volte l'algoritmo di apprendimento itererà interamente attraverso l'intero dataset di addestramento.
+
+Il completamento di un'epoca significa che ogni singolo campione appartenente al dataset ha avuto l'opportunità di aggiornare i parametri interni del modello. Poiché la dimensione del batch può essere inferiore alla dimensione totale del dataset, un'epoca risulta strutturalmente composta dall'elaborazione successiva di uno o più batch.
+
+Al termine di ciascuna epoca, il dataset viene tipicamente mescolato (\emph{shuffled}). Questo accorgimento permette all'algoritmo di apprendimento di analizzare i campioni in un ordine differente a ogni iterazione completa, evitando che il modello memorizzi sequenze specifiche e migliorando le proprietà di generalizzazione.
+
+Dal punto di vista dell'implementazione software, l'addestramento di una rete neurale viene solitamente strutturato mediante un ciclo esterno (\emph{for-loop}) che scandisce il numero di epoche. All'interno di questo ciclo principale è presente un secondo ciclo annidato che itera sui singoli batch di campioni, ciascuno avente la cardinalità definita dal parametro \emph{batch size}.
+
+\begin{algorithm}[H]
+\caption{Algoritmo di Iterazione per l'Addestramento di una Rete Neurale}
+\Dati: Dataset di addestramento $\mathcal{D}$, Numero di epoche $E$, Dimensione del batch $B$\;
+\Inizializza{Parametri del modello}\;
+\For{ogni epoca da $1$ a $E$}{
+    Mescola il dataset $\mathcal{D}$ (\emph{shuffling})\;
+    Suddividi il dataset $\mathcal{D}$ in batch di dimensione $B$\;
+    \For{ogni batch estratto da $\mathcal{D}$}{
+        Esegui il passaggio in avanti (\emph{forward pass})\;
+        Calcola la perdita $\mathcal{L}$\;
+        Esegui il passaggio all'indietro (\emph{backward pass})\;
+        Aggiorna i parametri del modello\;
+    }
+}
+\end{algorithm}
+
+Nella pratica, il numero totale di epoche viene configurato in base alla complessità del problema ed è comunemente impostato su valori come \num{10}, \num{100}, \num{500} o \num{1000}.
+\end{document}

@@ -1,0 +1,1101 @@
+﻿%!TEX program = xelatex
+\documentclass[11pt, a4paper]{article}
+
+% AA LINGUA E GESTIONE FONT (Specifica per XeLaTeX)
+\usepackage{fontspec}
+\setmainfont{Latin Modern Roman}
+\usepackage[italian]{babel}
+
+% AA LAYOUT DI PAGINA E TIPOGRAFIA (Ottimizzato per Rilegatura)
+\usepackage[left=2.4cm, right=1.6cm, top=2cm, bottom=2cm]{geometry}
+
+% AA Spaziatura tra paragrafi controllata (compatta ed evita salti enormi)
+\usepackage[skip=3pt plus 1pt minus 1pt]{parskip}
+\setlength{\parindent}{0pt}
+
+% AA Microtype per XeLaTeX
+\usepackage[protrusion=true]{microtype}
+\raggedbottom
+
+% AA GESTIONE DEI COLORI
+\usepackage{xcolor}
+
+% AA MATEMATICA E SIMBOLI
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{silence}
+\usepackage[warnings-off={mathtools-overbracket,mathtools-colon}]{unicode-math}
+\setmathfont{Latin Modern Math}
+
+% BB OTTIMIZZAZIONE MATRICI LUNGHE PER LA STAMPA
+\setlength{\arraycolsep}{10pt}
+
+% AA Spaziature verticali attorno alle formule matematiche
+\setlength{\abovedisplayskip}{3pt plus 1pt minus 1pt}
+\setlength{\belowdisplayskip}{3pt plus 1pt minus 1pt}
+\setlength{\abovedisplayshortskip}{0pt plus 1pt}
+\setlength{\belowdisplayshortskip}{2pt plus 1pt minus 1pt}
+
+% AA GRAFICA ED IMMAGINI
+\usepackage{graphicx}
+\graphicspath{{./E4_Images/}}
+
+% AA PERSONALIZZAZIONE TITOLI
+\usepackage{titlesec}
+\titleformat{\section}{\normalfont\Large\bfseries\color{blue!80!black}}{\thesection}{1em}{}
+\titleformat{name=\section,numberless}{\normalfont\Large\bfseries\color{blue!80!black}}{}{0pt}{}
+
+\titleformat{\subsection}{\normalfont\large\bfseries}{\thesubsection}{1em}{}
+\titleformat{name=\subsection,numberless}{\normalfont\large\bfseries}{}{0pt}{}
+
+\titleformat{\subsubsection}{\normalfont\normalsize\bfseries}{\thesubsubsection}{1em}{}
+\titleformat{name=\subsubsection,numberless}{\normalfont\normalsize\bfseries}{}{0pt}{}
+
+\titlespacing*{\section}{0pt}{1.2ex plus 0.4ex minus 0.2ex}{0.6ex plus 0.2ex}
+\titlespacing*{\subsection}{0pt}{1ex plus 0.3ex minus 0.2ex}{0.5ex plus 0.2ex}
+\titlespacing*{\subsubsection}{0pt}{0.8ex plus 0.2ex minus 0.1ex}{0.4ex plus 0.1ex}
+
+\titleformat{\paragraph}[block]{\normalfont\normalsize\bfseries\color{black!80!black}\raggedright}{}{0pt}{}
+\titlespacing*{\paragraph}{0pt}{1.2ex plus 0.3ex minus 0.2ex}{0.4ex}
+
+% AA INTEGRAZIONE CODICE MATLAB
+\usepackage{matlab}
+
+% BB Riconfigurazione Automatica Titoli Esportati da MATLAB
+\renewcommand{\matlabheading}[1]{\section*{#1}}
+\renewcommand{\matlabheadingtwo}[1]{\subsection*{#1}}
+\renewcommand{\matlabheadingthree}[1]{\subsubsection*{#1}}
+
+% BB Formule E Matrici Simboliche
+\renewenvironment{matlabsymbolicoutput}{%
+  \par\vspace{2pt}%
+  \begingroup
+  \centering
+}{%
+  \par\vspace{2pt}%
+  \endgroup
+}
+
+% BB Output Testuale Console
+\renewenvironment{matlaboutput}{%
+  \par\vspace{1pt}%
+  \Verbatim[xleftmargin=10pt, formatcom=\color{black!75}, fontsize=\footnotesize]%
+}{%
+  \endVerbatim
+  \vspace{1pt}%
+}
+
+% BB Box Codice (Stile Moderno con Barra Laterale Colorata)
+\lstset{
+  backgroundcolor={},
+  aboveskip=0pt,
+  belowskip=0pt,
+  basicstyle=\ttfamily\footnotesize,
+  xleftmargin=0pt
+}
+
+\mdfdefinestyle{matlabcode}{%
+  topline=false,
+  bottomline=false,
+  rightline=false,
+  leftline=true,
+  linewidth=2.5pt,
+  linecolor=blue!75!black,
+  backgroundcolor=black!3,
+  innertopmargin=4pt,
+  innerbottommargin=4pt,
+  innerleftmargin=9pt,
+  innerrightmargin=6pt,
+  skipabove=3pt,
+  skipbelow=3pt
+}
+
+\allowdisplaybreaks
+
+% AA LINK, METADATI ED ELENCHI
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!80!black,
+    urlcolor=blue!80!black,
+    citecolor=blue!80!black,
+    pdftitle={Cinematica Inversa Spazi Operativi Manipolatore RRR},
+    pdfauthor={Francesco Lo Verde},
+}
+\usepackage{bookmark}
+
+% BB Spaziatura Elenchi (Arieggiata per la Stampa)
+\usepackage{enumitem}
+\setlist{itemsep=3.5pt plus 1pt minus 1pt, topsep=4pt plus 1pt minus 1pt, partopsep=0pt, parsep=1pt}
+
+
+\author{Francesco Lo Verde}
+\begin{document}
+\matlabtitle{Cinematica Inversa Manipolatore RRR}
+
+\begin{par}
+\begin{center}
+\includegraphics[width=0.85\linewidth]{image_0}
+\end{center}
+\end{par}
+
+\begin{par}
+\begin{flushleft}
+Un \textbf{manipolatore RRR} planare è un braccio robotico composto da tre giunti rotoidali i cui assi di rotazione sono tutti paralleli. Questo tipo di robot opera su un piano e possiede \textit{3 Gradi di Libertà} (\textbf{DoF}).
+\end{flushleft}
+\end{par}
+
+\begin{par}
+\begin{flushleft}
+Lo \textbf{spazio operativo} descrive la posa dell'organo terminale (\textit{end-effector}). Per un manipolatore RRR planare, la posa è definita da due coordinate cartesiane $(P_x ,P_y )$ e un orientamento $\phi$ rispetto a un asse fisso. Lo spazio operativo ha quindi dimensione $m=3$ ed è descritto dal vettore:
+\end{flushleft}
+\end{par}
+\[
+    \mathbf{r} =
+    \begin{pmatrix}
+        P_x \\
+        P_y \\
+        \phi
+    \end{pmatrix}
+\]
+\begin{par}
+\begin{flushleft}
+Poiché il numero di gradi di libertà ($n=3$) è uguale alla dimensione dello spazio operativo ($m=3$), il manipolatore è in grado di controllare in modo indipendente sia la posizione che l'orientamento del suo end-effector. Questo gli permette di raggiungere (quasi) ogni posa desiderata all'interno del suo spazio di lavoro.
+\end{flushleft}
+\end{par}
+
+\newpage
+\begin{par}
+\begin{flushleft}
+\matlabheading{\textbf{Cinematica Diretta}}
+\end{flushleft}
+\end{par}
+
+\begin{par}
+\begin{flushleft}
+Per risolvere il problema analiticamente, utilizziamo il \textit{Symbolic Math Toolbox}. Si definiscono prima di tutto le variabili simboliche che rappresentano le costanti del sistema (l\textbf{e lunghezze dei bracci}) e le variabili (\textbf{gli angoli dei giunti} e la \textbf{posa desiderata}).
+\end{flushleft}
+\end{par}
+
+\begin{matlabcode}
+% l1, l2, l3 sono le lunghezze dei tre bracci del manipolatore.
+syms l1 l2 l3 real;
+
+% q1, q2, q3 sono gli angoli dei tre giunti rotoidali.
+syms q1 q2 q3_calc real;
+
+% px, py, phi rappresentano la posizione (x, y) e l'orientamento desiderati.
+syms Px Py phi real;
+
+% P_wx, P_wy rappresentano la posizione del polso
+syms P_wx P_wy real;
+\end{matlabcode}
+
+\begin{par}
+\begin{flushleft}
+La cinematica diretta calcola la posizione $(x,y)$ e l'orientamento \textbackslash{}phi dell'end-effector a partire dagli angoli di giunto $(q_1 ,q_2 ,q_3 )$ noti.
+\end{flushleft}
+\end{par}
+
+\begin{matlabcode}
+% Posizione Primo Giunto (Origine)
+x0 = 0;
+y0 = 0;
+% Posizione Secondo Giunto (Z1)
+x1 = x0 + l1 * cos(q1);
+y1 = y0 + l1 * sin(q1);
+% Posizione Terzo Giunto (Z2)
+x2 = x1 + l2 * cos(q1 + q2);
+y2 = y1 + l2 * sin(q1 + q2);
+% Posizione End Effector (Z3)
+px_calc = x2 + l3 * cos(q1 + q2 + q3_calc);
+py_calc = y2 + l3 * sin(q1 + q2 + q3_calc);
+
+fprintf('Equazioni Cinematica Diretta (Posizione):\n');
+fprintf('Px = %s\n', px_calc);
+fprintf('Py = %s\n', py_calc);
+\end{matlabcode}
+\begin{matlaboutput}
+Equazioni Cinematica Diretta (Posizione):
+\end{matlaboutput}
+\begin{matlaboutput}
+Px = l2*cos(q1 + q2) + l1*cos(q1) + l3*cos(q1 + q2 + q3_calc)
+\end{matlaboutput}
+\begin{matlaboutput}
+Py = l2*sin(q1 + q2) + l1*sin(q1) + l3*sin(q1 + q2 + q3_calc)
+\end{matlaboutput}
+
+\begin{par}
+\begin{flushleft}
+ L'orientamento dell'end-effector $\phi$ è dato dalla somma degli angoli dei giunti
+\end{flushleft}
+\end{par}
+
+\begin{matlabcode}
+% phi_calc per non confonderlo con phi
+phi_calc = q1 + q2 + q3_calc;
+fprintf('Phi = %s\n', phi_calc);
+\end{matlabcode}
+\begin{matlaboutput}
+Phi = q1 + q2 + q3_calc
+\end{matlaboutput}
+\newpage
+\matlabheading{Cinematica Inversa}
+
+\begin{par}
+\begin{flushleft}
+La \textbf{cinematica inversa }si occupa di determinare il vettore degli angoli dei giunti $\mathbf{q}={\bigl\lbrack q_1 \;\;q_2 \;\;q_3 \bigr\rbrack }^T$ che permette all'end-effector di raggiungere una \textbf{posa desiderata}, data dal vettore $\mathbf{r}={\bigl\lbrack P_x \;\;P_y \;\;\phi \bigr\rbrack }^T$.
+\end{flushleft}
+\end{par}
+
+\begin{par}
+\begin{flushleft}
+In altre parole, data una specifica posizione ($P_x ,P_y$) e un orientamento $\phi$ nello spazio operativo, l'obiettivo è trovare la configurazione dei giunti che realizzi quella posa.
+\end{flushleft}
+\end{par}
+
+\begin{par}
+\begin{flushleft}
+A differenza della cinematica diretta, che ammette sempre una soluzione unica, il problema inverso è più complesso e può avere:
+\end{flushleft}
+\end{par}
+
+\begin{par}
+\begin{flushleft}
+\textbf{Nessuna Soluzione: }Se la posa è fuori dallo spazio di lavoro del robot
+\end{flushleft}
+\end{par}
+
+\begin{par}
+\begin{flushleft}
+\textbf{Una O Più Soluzioni: }Diverse configurazioni dei giunti portano alla stessa posa dell'end-effector
+\end{flushleft}
+\end{par}
+
+\begin{par}
+\begin{flushleft}
+La posizione finale desiderata dell'end-effector $(P_x ,P_y )$, è una funzione complessa e accoppiata di tutti e tre gli angoli $(q_1 ,q_2 ,q_3 )$. Tentare di risolvere direttamente il sistema sarebbe estremamente difficile. L'informazione cruciale che permette di sbloccare il problema è l'\textbf{orientamento finale}, cioè $\phi =q_1 +q_2 +q_3$ La conoscenza della \textbf{posizione} dell'\textbf{end-effector} $(x,y)$, del suo \textbf{orientamento }$\phi$ e della \textbf{lunghezza} dell'ultimo \textbf{braccio} $l_3$, permette di calcolare \textit{univocamente} la posizione del giunto precedente (il "polso"), che chiameremo $(P_{wx} ,P_{wy} )$.
+\end{flushleft}
+\end{par}
+
+\begin{par}
+\begin{flushleft}
+La posizione dell'end-effector $(P_x ,P_y )$ può essere vista come la somma vettoriale della posizione del polso, che chiameremo $P_w =(P_{wx} ,P_{wy} )$, e del vettore corrispondente al terzo braccio:
+\end{flushleft}
+\end{par}
+\[
+    \begin{pmatrix}
+        P_x \\
+        P_y
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+        P_{wx} \\
+        P_{wy}
+    \end{pmatrix}
+    + \mathbf{R}(\phi )
+    \begin{pmatrix}
+        l_{3}\\
+        0
+    \end{pmatrix}
+\]
+\begin{par}
+\begin{flushleft}
+Dove
+\end{flushleft}
+\end{par}
+
+\begin{par}
+\begin{flushleft}
+Il vettore $\left(\begin{array}{c}
+l_3 \\
+0
+\end{array}\right)$ rappresenta il vettore del link $3$ descritto nel suo sistema di riferimento locale, in cui l'asse $x$ è allineato con la direzione del link stesso
+\end{flushleft}
+\end{par}
+
+\begin{par}
+\begin{flushleft}
+La matrice $\mathbf{R}(\phi )$ è le matrice di rotazione associata all'orientamento finale $\phi$. Isolando la posizione del polso $P_w$, si ottiene:
+\end{flushleft}
+\end{par}
+\[
+    \begin{pmatrix}
+        P_{wx} \\
+        P_{wy}
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+        P_x \\
+        P_y
+    \end{pmatrix}
+    - \mathbf{R}(\phi )
+    \begin{pmatrix}
+        l_{3}\\
+        0
+    \end{pmatrix}
+    \qquad\longrightarrow\qquad
+    \begin{pmatrix}
+        P_{wx} \\
+        P_{wy}
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+        P_x \\
+        P_y
+    \end{pmatrix}
+    -
+    \begin{pmatrix}
+        \cos(\phi) & -\sin{\phi} & 0\\
+        \sin(\phi) & \cos{\phi} & 0\\
+        0 & 0 & 1
+    \end{pmatrix}
+    \begin{pmatrix}
+        l_{3}\\
+        0
+    \end{pmatrix}
+\]
+\[
+    \begin{pmatrix}
+        P_{wx} \\
+        P_{wy}
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+        P_x \\
+        P_y
+    \end{pmatrix}
+    -
+    \begin{pmatrix}
+        l_{3}\cos(\phi)\\
+        l_{3}\sin(\phi)
+    \end{pmatrix}
+\]
+\begin{matlabcode}
+% Matrice R(phi)
+R = [cos(q1 + q2 + q3_calc) -sin(q1 + q2 + q3_calc); sin(q1 + q2 + q3_calc) cos(q1 + q2 + q3_calc)];
+
+fprintf('Matrice R:\n');
+disp(R);
+\end{matlabcode}
+\begin{matlaboutput}
+Matrice R:
+\end{matlaboutput}
+
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \left(\begin{array}{cc}
+\cos \left(q_1 +q_2 +q_{3,\textrm{calc}} \right) & -\sin \left(q_1 +q_2 +q_{3,\textrm{calc}} \right)\\
+\sin \left(q_1 +q_2 +q_{3,\textrm{calc}} \right) & \cos \left(q_1 +q_2 +q_{3,\textrm{calc}} \right)
+\end{array}\right)$
+\end{matlabsymbolicoutput}
+\newpage
+\begin{matlabcode}
+% Vettore Link 3
+l3_vec = [l3; 0];
+
+% Vettore Posizione End Effector
+Pe_calc = [px_calc; py_calc];
+fprintf('Posizione End Effector:\n');
+disp(Pe_calc);
+\end{matlabcode}
+\begin{matlaboutput}
+Posizione End Effector:
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \left(\begin{array}{c}
+l_2 \,\cos \left(q_1 +q_2 \right)+l_1 \,\cos \left(q_1 \right)+l_3 \,\cos \left(q_1 +q_2 +q_{3,\textrm{calc}} \right)\\
+l_2 \,\sin \left(q_1 +q_2 \right)+l_1 \,\sin \left(q_1 \right)+l_3 \,\sin \left(q_1 +q_2 +q_{3,\textrm{calc}} \right)
+\end{array}\right)$
+\end{matlabsymbolicoutput}
+\begin{matlabcode}
+
+% Posizione Polso
+Pe = [Px; Py];
+fprintf('Posizione Polso:\n');
+
+\end{matlabcode}
+\begin{matlaboutput}
+Posizione Polso:
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \left(\begin{array}{c}
+\textrm{Px}-l_3 \,\cos \left(q_1 +q_2 +q_{3,\textrm{calc}} \right)\\
+\textrm{Py}-l_3 \,\sin \left(q_1 +q_2 +q_{3,\textrm{calc}} \right)
+\end{array}\right)$
+\end{matlabsymbolicoutput}
+
+\begin{par}
+\begin{flushleft}
+A questo punto, è fondamentale verificare la \textbf{raggiungibilità} del polso. La posizione $P_w$ deve trovarsi all'interno dello spazio di lavoro del "\textit{sotto-manipolatore}" RR formato dai primi due bracci. La sua distanza dall'origine, $\sqrt{P_{wx}^2 +P_{wy}^2 }$, deve essere compresa tra l'estensione minima e massima dei bracci $l_1$ e $l_2$:
+\end{flushleft}
+\end{par}
+
+\matlabheadingthree{$|l_1 -l_2 |\le \sqrt{P_{wx}^2 +P_{wy}^2 }\le l_1 +l_2$}
+
+\begin{par}
+\begin{flushleft}
+Se questa \textbf{condizione} è \textbf{soddisfatta}, il punto $\biggl(\sqrt{P_{wx}^2 +P_{wy}^2 }\biggr)$ è all'interno dello spazio di lavoro del manipolatore RR. Questo garantisce che esista una soluzione reale per gli angoli $q_1$ e $q_2$. Matematicamente, questo assicura che il valore $\cos (q_2 )$ sarà compreso nell'intervallo $[-1,1]$
+\end{flushleft}
+\end{par}
+
+\begin{par}
+\begin{flushleft}
+Se questa \textbf{condizione non} è \textbf{soddisfatta}, la posa desiderata è irraggiungibile. Cioè, non esiste alcuna configurazione reale degli angoli $q_1$ e $q_2$ che possa posizionare il polso in quel punto. Il valore di $\cos (q_2 )$, avrebbe modulo maggiore di $1$, rendendo impossibile trovare un angolo reale $q_2$
+\end{flushleft}
+\end{par}
+
+\begin{par}
+\begin{flushleft}
+Si devono, quindi trovare $q_1$ e $q_2$ tali che il tali che il manipolatore RR posizioni il suo estremo in $P_w$
+\end{flushleft}
+\end{par}
+
+\matlabheadingtwo{Calcolo Valore $q_2$}
+
+\begin{par}
+\begin{flushleft}
+Le equazioni di cinematica diretta per il polso sono:
+\end{flushleft}
+\end{par}
+
+\matlabheadingthree{$\begin{array}{l}
+P_{wx} =l_1 \cos (q_1 )+l_2 \cos (q_1 +q_2 )\\
+P_{wy} =l_1 \sin (q_1 )+l_2 \sin (q_1 +q_2 )
+\end{array}$}
+
+\begin{par}
+\begin{flushleft}
+Per trovare $q_2$, si elevano al quadrato e si sommano le due equazioni.
+\end{flushleft}
+\end{par}
+
+\begin{matlabcode}
+Pw = Pe_calc - (R * l3_vec);
+fprintf('P_{wx}^2 + P_{wy}^2 = \n');
+quadSum = Pw(1)^2 + Pw(2)^2;
+quadSum = simplify(quadSum);
+disp(quadSum);
+\end{matlabcode}
+\begin{matlaboutput}
+P_{wx}^2 + P_{wy}^2 =
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle {l_1 }^2 +2\,\cos \left(q_2 \right)\,l_1 \,l_2 +{l_2 }^2 $
+\end{matlabsymbolicoutput}
+\newpage
+\begin{matlabcode}
+
+eq = P_wx^2 + P_wy^2 == quadSum;
+cos_q2 = isolate(eq, cos(q2));
+fprintf('Equazione Simbolica cos(q2):\n');
+disp(cos_q2);
+\end{matlabcode}
+\begin{matlaboutput}
+Equazione Simbolica cos(q2):
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \cos \left(q_2 \right)=\frac{{P_{\textrm{wx}} }^2 +{P_{\textrm{wy}} }^2 -{l_1 }^2 -{l_2 }^2 }{2\,l_1 \,l_2 }$
+\end{matlabsymbolicoutput}
+\begin{matlabcode}
+
+% Avendo i valori numerici
+% Pw_calc = Pe_calc - (R * l3_vec);
+% eq_calc = Pw_calc(1)^2 + Pw_calc(2)^2 == quadSum;
+% sol_cos_q2_calc = isolate(eq_calc, cos(q2));
+% disp(sol_cos_q2_calc);
+\end{matlabcode}
+
+\begin{par}
+\begin{flushleft}
+Poiché $\sin^2 (q_2 )+\cos^2 (q_2 )=1$, si hanno due possibili soluzioni per $\sin (q_2 )$:
+\end{flushleft}
+\end{par}
+
+\matlabheadingthree{$\sin (q_2 )=\pm \sqrt{1-\cos (q_2 )^2 \;\;}$}
+
+\begin{par}
+\begin{flushleft}
+Queste due soluzioni corrispondono a due diverse configurazioni del braccio:
+\end{flushleft}
+\end{par}
+
+\begin{itemize}
+\setlength{\itemsep}{-1ex}
+   \item{\begin{flushleft} \textbf{Gomito Alto} (Soluzione Positiva): Il gomito è sopra la linea che collega la base all'end-effector \end{flushleft}}
+   \item{\begin{flushleft} \textbf{Gomito Basso} (Soluzione Negativa): Il gomito è sotto la linea che collega la base all'end-effector \end{flushleft}}
+\end{itemize}
+
+\begin{par}
+\begin{flushleft}
+L'angolo $q_2$ si trova quindi con:
+\end{flushleft}
+\end{par}
+
+\matlabheadingthree{$q_2 =\textrm{atan2}(\sin (q_2 ),\cos (q_2 ))$}
+
+
+\begin{matlabcode}
+cos_q2_val = rhs(cos_q2);
+sin_q2_pos = sqrt(1 - cos_q2_val^2);
+sin_q2_neg = -sqrt(1 - cos_q2_val^2);
+q2_neg = atan2(sin_q2_neg, cos(q2));
+q2_pos = atan2(sin_q2_pos, cos(q2));
+fprintf('Valore q2 Per Valore Seno Negativo:\n');
+disp(q2_neg);
+\end{matlabcode}
+\begin{matlaboutput}
+Valore q2 Per Valore Seno Negativo:
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \textrm{atan2}\left(-\sqrt{1-\frac{{{\left({P_{\textrm{wx}} }^2 +{P_{\textrm{wy}} }^2 -{l_1 }^2 -{l_2 }^2 \right)}}^2 }{4\,{l_1 }^2 \,{l_2 }^2 }},\cos \left(q_2 \right)\right)$
+\end{matlabsymbolicoutput}
+\begin{matlabcode}
+fprintf('Valore q2 Per Valore Seno Positivo:\n');
+disp(q2_pos);
+\end{matlabcode}
+\begin{matlaboutput}
+Valore q2 Per Valore Seno Positivo:
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \textrm{atan2}\left(\sqrt{1-\frac{{{\left({P_{\textrm{wx}} }^2 +{P_{\textrm{wy}} }^2 -{l_1 }^2 -{l_2 }^2 \right)}}^2 }{4\,{l_1 }^2 \,{l_2 }^2 }},\cos \left(q_2 \right)\right)$
+\end{matlabsymbolicoutput}
+
+\newpage
+\matlabheadingtwo{Calcolo Valore $q_1$}
+
+\begin{par}
+\begin{flushleft}
+Una volta noto $q_2$, si può risolvere per $q_1$. Il sistema di equazioni per la posizione del polso può essere riscritto come un sistema lineare nelle incognite $\cos (q_1 )$ e $\sin (q_1 )$
+\end{flushleft}
+\end{par}
+
+\begin{matlabcode}
+eq_Pwx = P_wx == Pw(1);
+eq_Pwy = P_wy == Pw(2);
+
+fprintf('Equazione P_wx:\n');
+disp(eq_Pwx);
+\end{matlabcode}
+\begin{matlaboutput}
+Equazione P_wx:
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle P_{\textrm{wx}} =l_2 \,\cos \left(q_1 +q_2 \right)+l_1 \,\cos \left(q_1 \right)$
+\end{matlabsymbolicoutput}
+\begin{matlabcode}
+fprintf('Equazione P_wy:\n');
+disp(eq_Pwy);
+\end{matlabcode}
+\begin{matlaboutput}
+Equazione P_wy:
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle P_{\textrm{wy}} =l_2 \,\sin \left(q_1 +q_2 \right)+l_1 \,\sin \left(q_1 \right)$
+\end{matlabsymbolicoutput}
+
+\begin{par}
+\begin{flushleft}
+Ricordando che:
+\end{flushleft}
+\end{par}
+
+\matlabheadingthree{$\begin{array}{l}
+\cos (\theta +\phi )=\cos (\theta )\cos (\phi )-\sin (\theta )\sin (\phi )\\
+\sin (\theta +\phi )=\sin (\theta )\cos (\phi )+\cos (\theta )\sin (\phi )
+\end{array}$}
+
+\begin{par}
+\begin{flushleft}
+Si può isolare $\cos (q_1 )$ nell'equazione precedente:
+\end{flushleft}
+\end{par}
+
+\begin{matlabcode}
+syms c1 s1 c2 s2 real;
+% Expand serve per applicare le formule trigonometriche
+eq_Pwx = expand(eq_Pwx);
+eq_Pwy = expand(eq_Pwy);
+
+% Si sostituiscono sin e cos con valori simbolici
+eq_Pwx = subs(eq_Pwx, [cos(q1), sin(q1), cos(q2), sin(q2)], [c1, s1, c2, s2]);
+eq_Pwy = subs(eq_Pwy, [cos(q1), sin(q1), cos(q2), sin(q2)], [c1, s1, c2, s2]);
+
+% Si raccoglie sin e cos
+eq_Pwx = collect(eq_Pwx, [c1,s1]);
+eq_Pwy = collect(eq_Pwy, [c1,s1]);
+
+% Si sostituiscono valori simbolici con sin e cos
+eq_Pwx = subs(eq_Pwx, [c1, s1, c2, s2], [cos(q1), sin(q1), cos(q2), sin(q2)]);
+eq_Pwy = subs(eq_Pwy, [c1, s1, c2, s2], [cos(q1), sin(q1), cos(q2), sin(q2)]);
+
+fprintf('Sistema Lineare Per [cos(q1), sin(q1)]:\n');
+disp(lhs(eq_Pwx) == rhs(eq_Pwx));
+disp(lhs(eq_Pwy) == rhs(eq_Pwy));
+\end{matlabcode}
+\begin{matlabsymbolicoutput}
+\begin{matlaboutput}
+Sistema Lineare Per [cos(q1), sin(q1)]:
+\end{matlaboutput}
+\hskip1em $\displaystyle P_{\textrm{wx}} =\cos \left(q_1 \right)\,{\left(l_1 +l_2 \,\cos \left(q_2 \right)\right)}-l_2 \,\sin \left(q_1 \right)\,\sin \left(q_2 \right)$
+\end{matlabsymbolicoutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle P_{\textrm{wy}} =\sin \left(q_1 \right)\,{\left(l_1 +l_2 \,\cos \left(q_2 \right)\right)}+l_2 \,\cos \left(q_1 \right)\,\sin \left(q_2 \right)$
+\end{matlabsymbolicoutput}
+\newpage
+\begin{par}
+\begin{flushleft}
+Il sistema precendete può essere scritto in forma matriciale
+\end{flushleft}
+\end{par}
+
+\matlabheadingthree{$\left(\begin{array}{c}
+P_{wx} \\
+P_{wy}
+\end{array}\right)=\left(\begin{array}{cc}
+l_1 +l_2 cos(q_2 ) & -l_2 \sin (q_2 )\\
+l_2 \sin (q_2 ) & l_1 +l_2 cos(q_2 )
+\end{array}\right)\left(\begin{array}{c}
+\cos q_1 \\
+\sin q_1
+\end{array}\right)$}
+
+\begin{matlabcode}
+% Matrice Dei Coefficienti
+A = [ l1 + l2*cos(q2),  -l2*sin(q2);
+    l2*sin(q2),       l1 + l2*cos(q2) ];
+
+% Vettore Dei Termini Noti
+b = [P_wx; P_wy];
+
+% 3. Definire il vettore delle incognite (per riferimento)
+vars = [c1; s1];
+
+fprintf('Matrice Coefficienti A:\n');
+disp(A);
+\end{matlabcode}
+\begin{matlaboutput}
+Matrice Coefficienti A:
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \left(\begin{array}{cc}
+l_1 +l_2 \,\cos \left(q_2 \right) & -l_2 \,\sin \left(q_2 \right)\\
+l_2 \,\sin \left(q_2 \right) & l_1 +l_2 \,\cos \left(q_2 \right)
+\end{array}\right)$
+\end{matlabsymbolicoutput}
+\begin{matlabcode}
+fprintf('Vettore Termini Noti b:\n');
+disp(b);
+\end{matlabcode}
+\begin{matlaboutput}
+Vettore Termini Noti b:
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \left(\begin{array}{c}
+P_{\textrm{wx}} \\
+P_{\textrm{wy}}
+\end{array}\right)$
+\end{matlabsymbolicoutput}
+\begin{matlabcode}
+fprintf('Determinante Matrice Coefficienti:\n');
+det_A = simplify(det(A));
+disp(det_A);
+\end{matlabcode}
+\begin{matlaboutput}
+Determinante Matrice Coefficienti:
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle {l_1 }^2 +2\,\cos \left(q_2 \right)\,l_1 \,l_2 +{l_2 }^2 $
+\end{matlabsymbolicoutput}
+
+\begin{par}
+\begin{flushleft}
+Si nota che il determinante è esattamente uguale a $P_{wx}^2 +P_{wy}^2 =l_1^2 +l_2^2 +2l_1 l_2 \cos (q_2 )$ ovvero il quadrato della distanza del polso dall'origine. Nel caso in cui $P_{wx}^2 +P_{wy}^2 =0$, il che implica che il polso si trovi esattamente nell'origine $(0,0)$, si ha una singolarità cinematica e non è possibile determinare univocamente $q_1$ in quanto la matrice $A$ non è invertibile.
+\end{flushleft}
+\end{par}
+
+\begin{par}
+\begin{flushleft}
+Una configurazione singolare rappresenta una condizione in cui il manipolatore perde uno o più gradi di libertà nel suo spazio operativo. Anche se possiede 3 giunti, in una singolarità non può muovere istantaneamente il suo end-effector in 3 direzioni indipendenti. Il manipolatore RRR planare, ha due tipi di singolarità:
+\end{flushleft}
+\end{par}
+
+\begin{itemize}
+   \item{\begin{flushleft} \textbf{Singolarità Di Confine:} Si verifica quando quando i primi due bracci sono completamente estesi ($q_2 =0$) o completamente ripiegati ($q_2 =\pi$). In questa configurazione i due link sono allineati. Qualsiasi movimento dei giunti $q_1$ e $q_2$ può produrre uno spostamento del polso solo in direzione tangenziale, ma non in quella radiale. Il manipolatore perde la capacità di "allungarsi" o "accorciarsi". \end{flushleft}}
+   \item{\begin{flushleft} \textbf{Singolarità Interne:} Si verificano quando la base, il secondo e il terzo giunto sono allineati. Questo accade proprio quando $q_2 =0$ o $q_2 =\pi$. In queste configurazioni, i movimenti di $q_1$ e $q_2$ generano spostamenti dell'end-effector che non sono più linearmente indipendenti, portando a una perdita di manovrabilità. \end{flushleft}}
+\end{itemize}
+\newpage
+\begin{par}
+\begin{flushleft}
+Operare in prossimità di una singolarità è problematico, infatti richiede velocità di giunto molto elevate per produrre un movimento dell'end-effecto, con rischi per la struttura e gli attuatori. Pertanto, la pianificazione delle traiettorie deve sempre tenere conto di queste configurazioni e, se possibile, evitarle.
+\end{flushleft}
+\end{par}
+
+\begin{par}
+\begin{flushleft}
+Nel caso in cui $\det \bigl\lbrack A(q_2 )\bigr\rbrack =0$ si ha una singolarità cinematica e non è possibile determinare $q_1$ in quanto $A(q_2 )$ non è invertibile. Nel caso in cui $det\bigl\lbrack \pi (q_2 )\bigr\rbrack \not= 0$ si ha che
+\end{flushleft}
+\end{par}
+
+\matlabheadingthree{${\left(\begin{array}{cc}
+l_1 +l_2 cos(q_2 ) & -l_2 \sin (q_2 )\\
+l_2 \sin (q_2 ) & l_1 +l_2 cos(q_2 )
+\end{array}\right)}^{-1} ~~\left(\begin{array}{c}
+P_{wx} \\
+P_{wy}
+\end{array}\right)=\left(\begin{array}{c}
+\cos q_1 \\
+\sin q_1
+\end{array}\right)$}
+
+
+\vspace{1em}
+\begin{matlabcode}
+sol_vec = A \ b;
+sol_vec = simplify(sol_vec);
+
+sol_cosq1 = sol_vec(1);
+sol_sinq1 = sol_vec(2);
+
+fprintf('Soluzione Di cos(q1):\n');
+disp(sol_cosq1);
+\end{matlabcode}
+\begin{matlaboutput}
+Soluzione Di cos(q1):
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \frac{P_{\textrm{wx}} \,l_1 +P_{\textrm{wy}} \,l_2 \,\sin \left(q_2 \right)+P_{\textrm{wx}} \,l_2 \,\cos \left(q_2 \right)}{{l_1 }^2 +2\,\cos \left(q_2 \right)\,l_1 \,l_2 +{l_2 }^2 }$
+\end{matlabsymbolicoutput}
+\begin{matlabcode}
+fprintf('Soluzione Di sin(q1):\n');
+disp(sol_sinq1);
+\end{matlabcode}
+\begin{matlaboutput}
+Soluzione Di sin(q1):
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \frac{P_{\textrm{wy}} \,l_1 -P_{\textrm{wx}} \,l_2 \,\sin \left(q_2 \right)+P_{\textrm{wy}} \,l_2 \,\cos \left(q_2 \right)}{{l_1 }^2 +2\,\cos \left(q_2 \right)\,l_1 \,l_2 +{l_2 }^2 }$
+\end{matlabsymbolicoutput}
+
+\begin{par}
+\begin{flushleft}
+Ricordando che $P_{wx}^2 +P_{wy}^2 =l_1^2 +l_2^2 +2l_1 l_2 \cos (q_2 )$, andando a sostituire si avà che
+\end{flushleft}
+\end{par}
+
+\begin{matlabcode}
+% GOMITO ALTO
+cosq1_final = subs(sol_cosq1, l1^2 + 2*cos(q2)*l1*l2 + l2^2, P_wx^2 + P_wy^2);
+fprintf('Valore Finale Di cos(q1):\n');
+disp(cosq1_final);
+\end{matlabcode}
+\begin{matlaboutput}
+Valore Finale Di cos(q1):
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \frac{P_{\textrm{wx}} \,l_1 +P_{\textrm{wy}} \,l_2 \,\sin \left(q_2 \right)+P_{\textrm{wx}} \,l_2 \,\cos \left(q_2 \right)}{{P_{\textrm{wx}} }^2 +{P_{\textrm{wy}} }^2 }$
+\end{matlabsymbolicoutput}
+\begin{matlabcode}
+
+sinq1_final = subs(sol_sinq1, l1^2 + 2*cos(q2)*l1*l2 + l2^2, P_wx^2 + P_wy^2);
+fprintf('Valore Finale Di sin(q1):\n');
+disp(sinq1_final);
+\end{matlabcode}
+\begin{matlaboutput}
+Valore Finale Di sin(q1):
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \frac{P_{\textrm{wy}} \,l_1 -P_{\textrm{wx}} \,l_2 \,\sin \left(q_2 \right)+P_{\textrm{wy}} \,l_2 \,\cos \left(q_2 \right)}{{P_{\textrm{wx}} }^2 +{P_{\textrm{wy}} }^2 }$
+\end{matlabsymbolicoutput}
+\newpage
+\begin{par}
+\begin{flushleft}
+L'angolo $q_1$ si trova quindi con:
+\end{flushleft}
+\end{par}
+
+\matlabheadingthree{$q_1 =\textrm{atan2}(\sin (q_1 ),\cos (q_1 ))$}
+
+
+
+\begin{matlabcode}
+q1_neg = atan2(sinq1_final, cosq1_final);
+
+fprintf('Valore q1 Calcolato:\n');
+disp(q1_neg);
+\end{matlabcode}
+\begin{matlaboutput}
+Valore q1 Calcolato:
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \textrm{atan2}\left(\frac{P_{\textrm{wy}} \,l_1 -P_{\textrm{wx}} \,l_2 \,\sin \left(q_2 \right)+P_{\textrm{wy}} \,l_2 \,\cos \left(q_2 \right)}{{P_{\textrm{wx}} }^2 +{P_{\textrm{wy}} }^2 },\frac{P_{\textrm{wx}} \,l_1 +P_{\textrm{wy}} \,l_2 \,\sin \left(q_2 \right)+P_{\textrm{wx}} \,l_2 \,\cos \left(q_2 \right)}{{P_{\textrm{wx}} }^2 +{P_{\textrm{wy}} }^2 }\right)$
+\end{matlabsymbolicoutput}
+
+\matlabheadingtwo{Calcolo Valore $q_3$}
+
+\begin{par}
+\begin{flushleft}
+A questo punto, avendo ricavato $q_1$ e $q_2$ l'angolo $q_3$ è ricavabile da
+\end{flushleft}
+\end{par}
+
+\matlabheadingthree{$\phi =q_1 +q_2 +q_3 \longrightarrow q_3 =\phi -q_1 -q_2$}
+\begin{matlabcode}
+% Si calcola q3 con valore di q2 calcolato con valore positivo di sin(q2)
+q3_calc_1 = phi - atan2(sinq1_final, cosq1_final) - atan2(sin_q2\_pos, cos(q2));
+
+
+% Si calcola q3 con valore di q2 calcolato con valore negativo di sin(q2)
+q3_calc_2 = phi - atan2(sinq1_final, cosq1_final) - atan2(sin_q2\_neg, cos(q2));
+\end{matlabcode}
+
+\begin{par}
+\begin{flushleft}
+Se la posa desiderata $(P_x ,P_y ,\phi )$ è all'interno dello spazio di lavoro del manipolatore, il problema di cinematica inversa per un robot RRR planare \textbf{ammette} generalmente \textbf{due soluzioni distinte}. Queste due soluzioni corrispondono alle configurazioni di "\textit{Gomito Alto}" e "\textit{Gomito Basso}" e possono essere calcolate analiticamente seguendo la procedura di disaccoppiamento. La scelta tra le due soluzioni dipende da criteri aggiuntivi, come evitare ostacoli, minimizzare il movimento dei giunti o rimanere lontani dalle singolarità.
+\end{flushleft}
+\end{par}
+
+\matlabheadingthree{1. Soluzione Gomito Alto}
+
+\begin{itemize}
+   \item Si sceglie il valore positivo per il seno di $q_2$.
+   \item Si calcola $q_{2,\text{Alto}}$ tramite l'arcotangente a quattro quadranti.
+   \item Si utilizzano $\cos(q_{2,\text{Alto}})$ e $\sin(q_{2,\text{Alto}})$ per calcolare i valori $\cos(q_1)$ e $\sin(q_1)$.
+   \item Si calcola $q_{1,\text{Alto}}$ tramite l'arcotangente a quattro quadranti.
+   \item Infine, si calcola $q_{3,\text{Alto}}$ come $\phi - q_{1,\text{Alto}} - q_{2,\text{Alto}}$.
+   \item \textbf{La prima terna di soluzioni è}:
+   \[
+     \mathbf{q}_{\text{Alto}} = \begin{pmatrix} q_{1,\text{Alto}} & q_{2,\text{Alto}} & q_{3,\text{Alto}} \end{pmatrix}^T
+   \]
+\end{itemize}
+
+\matlabheadingthree{2. Soluzione Gomito Basso}
+
+\begin{itemize}
+   \item Si sceglie il valore negativo per il seno di $q_2$.
+   \item Si calcola $q_{2,\text{Basso}}$ tramite l'arcotangente a quattro quadranti.
+   \item Si utilizzano $\cos(q_{2,\text{Basso}})$ e $\sin(q_{2,\text{Basso}})$ per calcolare i valori $\cos(q_1)$ e $\sin(q_1)$.
+   \item Si calcola $q_{1,\text{Basso}}$ tramite l'arcotangente a quattro quadranti.
+   \item Infine, si calcola $q_{3,\text{Basso}}$ come $\phi - q_{1,\text{Basso}} - q_{2,\text{Basso}}$.
+   \item \textbf{La seconda terna di soluzioni è}:
+   \[
+     \mathbf{q}_{\text{Basso}} = \begin{pmatrix} q_{1,\text{Basso}} & q_{2,\text{Basso}} & q_{3,\text{Basso}} \end{pmatrix}^T
+   \]
+\end{itemize}
+
+\newpage
+\matlabheading{Spazio Operativo}
+
+\begin{par}
+\begin{flushleft}
+Lo studio dello spazio operativo di un manipolatore è fondamentale per comprenderne le capacità e i limiti. Questo spazio viene suddiviso in due categorie principali: il Workspace Primario, che definisce l'area raggiungibile, e il Workspace Secondario, che caratterizza la destrezza del manipolatore.
+\end{flushleft}
+\end{par}
+
+\begin{par}
+\begin{flushleft}
+Il \textbf{Workspace Primario} (o \textit{\textbf{Spazio Operativo Primario}}) $WS_1$ (Spazio Raggiungibile) è l'insieme di tutti i punti che l'organo terminale (end-effector) del manipolatore può raggiungere con almeno un orientamento possibile. In altre parole, se un punto target si trova all'interno di questo spazio, $P\in WS_1$, esiste almeno una configurazione di giunti che permette al manipolatore di raggiungerlo. Al contrario, se un punto si trova al di fuori di $WS_1$, il suo raggiungimento è impossibile e il problema cinematico non ammette soluzioni.
+\end{flushleft}
+\end{par}
+
+\begin{par}
+\begin{flushleft}
+Il \textbf{Workspace Secondario} (o \textit{\textbf{Spazio Operativo Secondario}}) $WS_2$ (Spazio di Destrezza) è un sottoinsieme del workspace primario. Esso rappresenta l'insieme dei punti che l'end-effector può raggiungere con un numero molteplice di orientamenti, idealmente con qualsiasi orientamento possibile. Se un punto appartiene allo spazio secondario, $P\in WS_2$, significa che per quel punto esistono molteplici soluzioni cinematiche, garantendo una maggiore flessibilità nel completamento del task.
+\end{flushleft}
+\end{par}
+
+\matlabheadingtwo{Caso 1: Manipolatore con "Buco" Centrale}
+
+\begin{par}
+\begin{flushleft}
+Si analizza il caso in cui la geometria del manipolatore non consente di raggiungere l'origine degli assi. Questa situazione si verifica quando il terzo braccio ($l_3$) è troppo corto per raggiungere l'origine dal punto più vicino a cui il polso (il giunto tra il secondo e il terzo braccio) può posizionarsi. Di conseguenza, lo spazio di lavoro presenterà un'area vuota al suo centro.
+\end{flushleft}
+\end{par}
+
+\begin{par}
+\begin{flushleft}
+Lo \textit{\textbf{Spazio Operativo Primario}} è definito dalla regione compresa tra due circonferenze concentriche. Il raggio massimo di questa regione, $R_{max}$, corrisponde alla massima estensione del manipolatore, ottenuta quando tutti e tre i bracci sono allineati e puntano verso l'esterno. La distanza minima, $R_{min}$, si ha invece quando il polso si trova alla sua minima distanza dall'origine ($|l_1 -l_2 |$) e il terzo braccio è orientato in direzione opposta, verso l'origine.
+\end{flushleft}
+\end{par}
+
+\begin{par}
+\begin{flushleft}
+Analiticamente, un punto $P$ appartiene allo spazio primario se la sua distanza dall'origine $d=\sqrt{x^2 +y^2 }$, soddisfa la seguente relazione:
+\end{flushleft}
+\end{par}
+
+\matlabheadingthree{$||l_1 -l_2 |-l_3 |\le d\le l_1 +l_2 +l_3$}
+
+
+\begin{matlabcode}
+% Lunghezze dei bracci del manipolatore RRR.
+l1 = 10;
+l2 = 4;
+l3 = 2;
+
+% Calcolo Raggio Esterno: Massima Estensione
+R_max = l1 + l2 + l3;
+
+% Calcolo Raggio Interno: Minima Distanza Raggiungibile
+R_min = abs(l1 - l2) - l3;
+
+fprintf('Spazio Primario - Raggio Interno (R_min): %.2f\n', R_min);
+fprintf('Spazio Primario - Raggio Esterno (R_max): %.2f\n', R_max);
+\end{matlabcode}
+\begin{matlaboutput}
+Spazio Primario - Raggio Interno (R_min): 4.00
+Spazio Primario - Raggio Esterno (R_max): 16.00
+\end{matlaboutput}
+\newpage
+\begin{matlabcode}
+theta = linspace(0, 2*pi, 200);
+% Calcolo Coordinate Cerchio Esterno
+x_ext = R_max * cos(theta);
+y_ext = R_max * sin(theta);
+% Calcolo Coordinate Cerchio Interno
+x_in = R_min * cos(theta);
+y_in = R_min * sin(theta);
+
+figure;
+hold on;
+axis equal;
+grid on;
+% Spazio Primario (Raggiungibile)
+fill([x_ext, fliplr(x_in)], [y_ext, fliplr(y_in)], [0.9 0.9 0.9], 'EdgeColor', 'none', 'DisplayName', 'Spazio Raggiungibile ($WS_1$)');
+% Bordi Tratteggiati (Limiti)
+plot(x_ext, y_ext, 'k--', 'LineWidth', 1.5, 'HandleVisibility', 'off');
+plot(x_in, y_in, 'k--', 'LineWidth', 1.5, 'HandleVisibility', 'off');
+% Origine Assi
+plot(0, 0, 'k+', 'MarkerSize', 10, 'LineWidth', 2, 'HandleVisibility', 'off');
+hold off;
+ax = gca;
+ax.Color = 'w';
+ax.GridColor = [0.8, 0.8, 0.8];
+ax.GridAlpha = 0.7;
+% Etichette
+title('Spazio Operativo Primario ($WS_1$) del Manipolatore RRR', 'Color', 'k', 'Interpreter', 'latex');
+xlabel('Asse X', 'Color', 'k');
+ylabel('Asse Y', 'Color', 'k');
+ax.XColor = 'k';
+ax.YColor = 'k';
+lgd = legend('show', 'Interpreter', 'latex', 'Location', 'northeastoutside');
+lgd.Box = 'on';
+lgd.EdgeColor = [0.8 0.8 0.8];
+xlim([-R_max * 1.1, R_max * 1.1]);
+ylim([-R_max * 1.1, R_max * 1.1]);
+\end{matlabcode}
+\begin{center}
+\includegraphics[width=0.85\linewidth]{figure_0.png}
+\end{center}
+\newpage
+\begin{par}
+\begin{flushleft}
+Lo \textit{\textbf{Spazio Operativo Secondario}}, è quel sottoinsieme dello spazio primario dove l'end-effector può non solo raggiungere un punto, ma può farlo assumendo qualsiasi orientamento. La capacità di orientarsi liberamente è cruciale in molte applicazioni robotiche.
+\end{flushleft}
+\end{par}
+
+\begin{par}
+\begin{flushleft}
+La condizione affinché un punto $P$ appartenga a questo spazio privilegiato è che il cerchio di raggio $l_3$ centrato in $P$ sia interamente contenuto nello spazio di lavoro del polso. Questo garantisce che, per qualsiasi rotazione del terzo braccio, il polso rimanga sempre in una posizione raggiungibile. Analiticamente, la distanza $d$ di un punto $P$ dall'origine deve soddisfare la seguente disuguaglianza:
+\end{flushleft}
+\end{par}
+
+\matlabheadingthree{$|l_1 -l_2 |+l_3 \le d\le l_1 +l_2 -l_3$}
+
+\begin{par}
+\begin{flushleft}
+Questa condizione ha senso solo se il raggio minimo è minore o uguale al raggio massimo, ovvero se $|l_1 -l_2 |+l_3 \le l_1 +l2-l_3$, che si semplifica in $l_3 \le l_2$ (assumendo $l_1 \ge l_2$). Se questa condizione non è rispettata, lo spazio di destrezza è vuoto.
+\end{flushleft}
+\end{par}
+
+\begin{par}
+\begin{flushleft}
+Nel caso specifico $l_1 =10,l_2 =4,l_3 =2$, dato che la condizione $l_3 \le l_2$ ($2\le 4$) è soddisfatta, lo spazio di destrezza esiste. I suoi limiti sono:
+\end{flushleft}
+\end{par}
+
+\begin{itemize}
+\setlength{\itemsep}{-1ex}
+   \item{\begin{flushleft} Raggio Minimo di $WS_2 :\;|10-4|+2=8$ \end{flushleft}}
+   \item{\begin{flushleft} Raggio Massimo di $WS_2 :\;10+4-2=12$ \end{flushleft}}
+\end{itemize}
+
+\begin{par}
+\begin{flushleft}
+Lo Spazio Operativo Secondario è quindi l'anello definito dalla condizione $8\le d\le 12$. Solo all'interno di questa corona circolare il manipolatore gode della massima destrezza, potendo orientare il suo organo terminale in qualsiasi direzione. Nelle restanti aree dello spazio primario, gli orientamenti possibili sono limitati.
+\end{flushleft}
+\end{par}
+
+\begin{matlabcode}
+% Lo spazio di destrezza esiste solo se il suo raggio massimo è
+% maggiore o uguale al suo raggio minimo.
+R_min_ws2 = 0;
+R_max_ws2 = 0;
+if (l1 + l2 - l3) >= (abs(l1-l2) + l3)
+    R_min_ws2 = abs(l1 - l2) + l3;
+    R_max_ws2 = (l1 + l2) - l3;
+end
+
+fprintf('Spazio Secondario - Raggio Interno (R_min_ws2): %.2f\n', R_min_ws2);
+fprintf('Spazio Secondario - Raggio Esterno (R_max_ws2): %.2f\n', R_max_ws2);
+\end{matlabcode}
+\begin{matlaboutput}
+Spazio Secondario - Raggio Interno (R_min_ws2): 8.00
+\end{matlaboutput}
+\begin{matlaboutput}
+Spazio Secondario - Raggio Esterno (R_max_ws2): 12.00
+\end{matlaboutput}
+\begin{matlabcode}
+
+% --- Disegno Grafico Combinato ---
+figure;
+hold on;
+grid on;
+axis equal;
+
+% Si crea un vettore di angoli da 0 a 2*pi per disegnare un cerchio completo.
+theta = linspace(0, 2*pi, 200);
+
+% Coordinate dei cerchi per WS1 (Spazio Primario)
+x_ext_ws1 = R_max * cos(theta);
+y_ext_ws1 = R_max * sin(theta);
+x_int_ws1 = R_min * cos(theta);
+y_int_ws1 = R_min * sin(theta);
+
+% Coordinate dei cerchi per WS2 (Spazio Secondario)
+x_ext_ws2 = R_max_ws2 * cos(theta);
+y_ext_ws2 = R_max_ws2 * sin(theta);
+x_int_ws2 = R_min_ws2 * cos(theta);
+y_int_ws2 = R_min_ws2 * sin(theta);
+\end{matlabcode}
+\newpage
+\begin{matlabcode}
+% Spazio Primario (Raggiungibile)
+fill([x_ext_ws1, fliplr(x_int_ws1)], [y_ext_ws1, fliplr(y_int_ws1)], [0.9 0.9 0.9], 'EdgeColor', 'none', 'DisplayName', 'Spazio Raggiungibile ($WS_1$)');
+
+% Spazio Secondario (Destrezza)
+fill([x_ext_ws2, fliplr(x_int_ws2)], [y_ext_ws2, fliplr(y_int_ws2)], [0.68 0.85 0.9], 'EdgeColor', 'none', 'DisplayName', 'Spazio di Destrezza ($WS_2$)');
+
+% Bordi Esterni
+plot(x_ext_ws1, y_ext_ws1, 'k--', 'LineWidth', 1.5, 'HandleVisibility', 'off');
+plot(x_int_ws1, y_int_ws1, 'k--', 'LineWidth', 1.5, 'HandleVisibility', 'off');
+
+% Centro
+plot(0, 0, 'k+', 'MarkerSize', 10, 'LineWidth', 2, 'HandleVisibility', 'off');
+
+% Impostazione di titolo, etichette e legenda.
+title('Spazio Operativo Primario ($WS_1$) e Secondario ($WS_2$)', 'Interpreter', 'latex');
+xlabel('Asse X');
+ylabel('Asse Y');
+lgd = legend('show', 'Interpreter', 'latex', 'Location', 'northeastoutside');
+
+% Adattamento Limiti Assi
+lim = R_max * 1.1;
+xlim([-lim, lim]);
+ylim([-lim, lim]);
+hold off;
+\end{matlabcode}
+\begin{center}
+\includegraphics[width=0.9\linewidth]{figure_1.png}
+\end{center}
+
+\end{document}

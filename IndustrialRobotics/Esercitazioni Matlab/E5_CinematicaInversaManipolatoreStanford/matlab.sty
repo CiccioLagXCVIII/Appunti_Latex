@@ -1,0 +1,125 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{matlab}
+
+\RequirePackage{verbatim}
+\RequirePackage{fancyvrb}
+\RequirePackage{alltt}
+\RequirePackage{upquote}
+\RequirePackage[framemethod=tikz]{mdframed}
+\RequirePackage{hyperref}
+\RequirePackage{xcolor} % Usare xcolor per una migliore gestione dei colori
+\RequirePackage{listings} % Pacchetto per la syntax highlighting
+
+% Definizione dei colori MATLAB
+\definecolor{MatlabKeyword}{rgb}{0.00,0.00,1.00} % Blu per le parole chiave
+\definecolor{MatlabComment}{rgb}{0.00,0.50,0.00} % Verde per i commenti
+\definecolor{MatlabString}{rgb}{0.63,0.00,0.63}  % Viola per le stringhe
+\definecolor{output}{gray}{0.4}
+\definecolor{background}{gray}{0.95} % Sfondo leggermente grigio
+
+\newcommand{\maxwidth}[1]{\ifdim\linewidth>#1 #1\else\linewidth\fi}
+\newcommand{\mlcell}[1]{{\color{output}\verbatim@font#1}}
+
+% Paragraph indentation
+\setlength{\parindent}{0pt}
+
+% Hyperlink style
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue
+}
+
+% Configurazione di listings per MATLAB
+\lstdefinestyle{MatlabStyle}{
+    language=Matlab,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{MatlabKeyword},
+    commentstyle=\color{MatlabComment},
+    stringstyle=\color{MatlabString},
+    showstringspaces=false,
+    breaklines=true,
+    frame=none, % Il frame verrà gestito da mdframed
+    backgroundcolor=\color{background},
+    numberstyle=\tiny\color{gray},
+    numbersep=5pt,
+    tabsize=4,
+    captionpos=b,
+    morekeywords={matlab, end, function, if, else, for, while, switch, case, otherwise, try, catch, return, break, continue, global, persistent}
+}
+
+% environment styles for MATLAB code and output
+\mdfdefinestyle{matlabcode}{%
+  outerlinewidth=.5pt,
+  linecolor=gray!20!white,
+  roundcorner=2pt,
+  innertopmargin=0pt, % Rimosso per allineare con lstlisting
+  innerbottommargin=0pt, % Rimosso per allineare con lstlisting
+  innerleftmargin=1em,
+  backgroundcolor=gray!10!white
+}
+
+% Ridefinizione dell'ambiente matlabcode usando lstlisting
+\lstnewenvironment{matlabcode}{
+    \lstset{style=MatlabStyle}
+}{}
+\surroundwithmdframed[style=matlabcode]{matlabcode}
+
+
+\newenvironment{matlaboutput}{%
+  \Verbatim[xleftmargin=1.25em, formatcom=\color{output}]%
+}{\endVerbatim}
+
+\newenvironment{matlabsymbolicoutput}{%
+  \list{}{\leftmargin=1.25em\relax}%
+  \item\relax%
+  \color{output}\verbatim@font%
+}{\endlist}
+
+\newenvironment{matlabtableoutput}[1]{%
+  {\color{output}%
+  \hspace*{1.25em}#1}%
+}{}
+
+
+% Table of Contents style
+\newcounter{multititle}
+\newcommand{\matlabmultipletitles}{\setcounter{multititle}{1}}
+
+\newcounter{hastoc}
+\newcommand{\matlabhastoc}{\setcounter{hastoc}{1}}
+
+\newcommand{\matlabtitle}[1]{
+\ifnum\value{multititle}>0
+  \ifnum\value{hastoc}>0
+    \addcontentsline{toc}{section}{#1}
+  \fi
+\fi
+\section*{#1}
+}
+
+\newcommand{\matlabheading}[1]{
+\ifnum\value{hastoc}>0
+  \addcontentsline{toc}{subsection}{#1}
+\fi
+\subsection*{#1}
+}
+
+\newcommand{\matlabheadingtwo}[1]{
+\ifnum\value{hastoc}>0
+  \addcontentsline{toc}{subsubsection}{#1}
+\fi
+\subsubsection*{#1}
+}
+
+\newcommand{\matlabheadingthree}[1]{
+\ifnum\value{hastoc}>0
+  \addcontentsline{toc}{paragraph}{#1}
+\fi
+\paragraph*{#1}
+}
+
+\newcommand{\matlabtableofcontents}[1]{
+\renewcommand{\contentsname}{#1}
+\tableofcontents
+}

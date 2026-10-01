@@ -1,0 +1,417 @@
+﻿%!TEX program = xelatex
+\documentclass[11pt, a4paper]{article}
+
+% AA LINGUA E GESTIONE FONT (Specifica per XeLaTeX)
+\usepackage{fontspec}
+\setmainfont{Latin Modern Roman}
+\usepackage[italian]{babel}
+
+% AA LAYOUT DI PAGINA E TIPOGRAFIA (Ottimizzato per Rilegatura)
+\usepackage[left=2.4cm, right=1.6cm, top=2cm, bottom=2cm]{geometry}
+
+% AA Spaziatura tra paragrafi controllata (compatta ed evita salti enormi)
+\usepackage[skip=3pt plus 1pt minus 1pt]{parskip}
+\setlength{\parindent}{0pt}
+
+% AA Microtype per XeLaTeX
+\usepackage[protrusion=true]{microtype}
+\raggedbottom
+
+% AA GESTIONE DEI COLORI
+\usepackage{xcolor}
+
+% AA MATEMATICA E SIMBOLI
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{silence}
+\usepackage[warnings-off={mathtools-overbracket,mathtools-colon}]{unicode-math}
+\setmathfont{Latin Modern Math}
+
+% BB OTTIMIZZAZIONE MATRICI LUNGHE PER LA STAMPA
+\setlength{\arraycolsep}{10pt}
+
+% AA Spaziature verticali attorno alle formule matematiche
+\setlength{\abovedisplayskip}{3pt plus 1pt minus 1pt}
+\setlength{\belowdisplayskip}{3pt plus 1pt minus 1pt}
+\setlength{\abovedisplayshortskip}{0pt plus 1pt}
+\setlength{\belowdisplayskip}{2pt plus 1pt minus 1pt}
+
+% AA GRAFICA ED IMMAGINI
+\usepackage{graphicx}
+\graphicspath{{./E3_5_Images/}}
+
+% AA PERSONALIZZAZIONE TITOLI
+\usepackage{titlesec}
+\titleformat{\section}{\normalfont\Large\bfseries\color{blue!80!black}}{\thesection}{1em}{}
+\titleformat{name=\section,numberless}{\normalfont\Large\bfseries\color{blue!80!black}}{}{0pt}{}
+
+\titleformat{\subsection}{\normalfont\large\bfseries}{\thesubsection}{1em}{}
+\titleformat{name=\subsection,numberless}{\normalfont\large\bfseries}{}{0pt}{}
+
+\titleformat{\subsubsection}{\normalfont\normalsize\bfseries}{\thesubsubsection}{1em}{}
+\titleformat{name=\subsubsection,numberless}{\normalfont\normalsize\bfseries}{}{0pt}{}
+
+\titlespacing*{\section}{0pt}{1.2ex plus 0.4ex minus 0.2ex}{0.6ex plus 0.2ex}
+\titlespacing*{\subsection}{0pt}{1ex plus 0.3ex minus 0.2ex}{0.5ex plus 0.2ex}
+\titlespacing*{\subsubsection}{0pt}{0.8ex plus 0.2ex minus 0.1ex}{0.4ex plus 0.1ex}
+
+\titleformat{\paragraph}[block]{\normalfont\normalsize\bfseries\color{black!80!black}\raggedright}{}{0pt}{}
+\titlespacing*{\paragraph}{0pt}{1.2ex plus 0.3ex minus 0.2ex}{0.4ex}
+
+% AA INTEGRAZIONE CODICE MATLAB
+\usepackage{matlab}
+
+% BB Riconfigurazione Automatica Titoli Esportati da MATLAB
+\renewcommand{\matlabheading}[1]{\section*{#1}}
+\renewcommand{\matlabheadingtwo}[1]{\subsection*{#1}}
+\renewcommand{\matlabheadingthree}[1]{\subsubsection*{#1}}
+
+% BB Formule E Matrici Simboliche
+\renewenvironment{matlabsymbolicoutput}{%
+  \par\vspace{2pt}%
+  \begingroup
+  \centering
+}{%
+  \par\vspace{2pt}%
+  \endgroup
+}
+
+% BB Output Testuale Console
+\renewenvironment{matlaboutput}{%
+  \par\vspace{1pt}%
+  \Verbatim[xleftmargin=10pt, formatcom=\color{black!75}, fontsize=\footnotesize]%
+}{%
+  \endVerbatim
+  \vspace{1pt}%
+}
+
+% BB Box Codice (Stile Moderno con Barra Laterale Colorata)
+\lstset{
+  backgroundcolor={},
+  aboveskip=0pt,
+  belowskip=0pt,
+  basicstyle=\ttfamily\footnotesize,
+  xleftmargin=0pt
+}
+
+\mdfdefinestyle{matlabcode}{%
+  topline=false,
+  bottomline=false,
+  rightline=false,
+  leftline=true,
+  linewidth=2.5pt,
+  linecolor=blue!75!black,
+  backgroundcolor=black!3,
+  innertopmargin=4pt,
+  innerbottommargin=4pt,
+  innerleftmargin=9pt,
+  innerrightmargin=6pt,
+  skipabove=3pt,
+  skipbelow=3pt
+}
+
+\allowdisplaybreaks
+
+% AA LINK, METADATI ED ELENCHI
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!80!black,
+    urlcolor=blue!80!black,
+    citecolor=blue!80!black,
+    pdftitle={Cinematica Diretta Manipolatore Polso Sferico},
+    pdfauthor={Francesco Lo Verde},
+}
+\usepackage{bookmark}
+
+% BB Spaziatura Elenchi (Arieggiata per la Stampa)
+\usepackage{enumitem}
+\setlist{itemsep=3.5pt plus 1pt minus 1pt, topsep=4pt plus 1pt minus 1pt, partopsep=0pt, parsep=1pt}
+
+
+\author{Francesco Lo Verde}
+\begin{document}
+
+\matlabtitle{Calcolo Cinematica Diretta Con Parametri Di Denavit-Hartenberg}
+
+\begin{par}
+\begin{flushleft}
+L'obiettivo della cinematica diretta è determinare la posizione e l'orientamento dell'organo terminale (end-effector) a partire dai valori delle variabili di giunto. Si utilizza la convenzione di Denavit-Hartenberg (DH) per modellare la geometria del robot. La convenzione di Denavit-Hartenberg è un metodo standard per assegnare sistemi di riferimento ai bracci di un robot. Per ogni braccio, si definiscono quattro parametri che descrivono la trasformazione geometrica rispetto al braccio precedente.
+\end{flushleft}
+\end{par}
+
+\begin{par}
+\begin{flushleft}
+Si inizia definendo le variabili simboliche necessarie per i parametri DH. Questo permette di eseguire i calcoli in forma generale, senza dover specificare subito valori numerici. Successivamente, si assemblano questi parametri in una tabella dove ogni riga corrisponde a un giunto del robot e le colonne rappresentano i parametri $\left(\begin{array}{c}
+\theta ,d,\alpha ,a
+\end{array}\right)$.
+\end{flushleft}
+\end{par}
+
+\begin{matlabcode}
+clc;
+clear;
+close all;
+
+% Definizione Variabili Simboliche
+syms q1 q2 q3 d1 d2 d3 alpha1 alpha2 alpha3 a1 a2 a3 real;
+
+% Tabella Parametri Denavit-Hartenberg (DH)
+DH_table = [q1, 0, -pi/2, 0;
+            q2, 0, pi/2, 0;
+            q3, d3, 0, 0];
+
+
+% Numero Giunti Manipolatore
+n = size(DH_table, 1);
+\end{matlabcode}
+
+\begin{par}
+\begin{flushleft}
+A partire dalla tabella DH, si può calcolare la matrice di trasformazione omogenea $A_i$ per ciascun giunto $i$. Questa matrice, di dimensioni $4\times 4$ e rappresenta la trasformazione (rotazione e traslazione) dal sistema di riferimento del giunto $i$ a quello del giunto $i-1$. Si utilizza la funzione \texttt{Compute\_DH\_Transformations }per generare le matrici simboliche per ogni riga della tabella DH.
+\end{flushleft}
+\end{par}
+
+\begin{matlabcode}
+[T_matrices, R_matrices] = Compute_DH_Transformations(DH_table);
+
+j = 3;
+for i = 1:n
+    fprintf('Matrice Di Trasformazione Omogenea ^(%d)T_(%d):\n', j, j+1);
+    disp(T_matrices(:,:,i));
+
+    j = j+1;
+end
+\end{matlabcode}
+\begin{matlaboutput}
+Matrice Di Trasformazione Omogenea ^(3)T_(4):
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \left(\begin{array}{cccc}
+\cos\left(q_1 \right) & 0 & -\sin\left(q_1 \right) & 0\\
+\sin\left(q_1 \right) & 0 & \cos\left(q_1 \right) & 0\\
+0 & -1 & 0 & 0\\
+0 & 0 & 0 & 1
+\end{array}\right)$
+\end{matlabsymbolicoutput}
+\begin{matlaboutput}
+Matrice Di Trasformazione Omogenea ^(4)T_(5):
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \left(\begin{array}{cccc}
+\cos\left(q_2 \right) & 0 & \sin\left(q_2 \right) & 0\\
+\sin\left(q_2 \right) & 0 & -\cos\left(q_2 \right) & 0\\
+0 & 1 & 0 & 0\\
+0 & 0 & 0 & 1
+\end{array}\right)$
+\end{matlabsymbolicoutput}
+\newpage
+\begin{matlaboutput}
+Matrice Di Trasformazione Omogenea ^(5)T_(6):
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \left(\begin{array}{cccc}
+\cos\left(q_3 \right) & -\sin\left(q_3 \right) & 0 & 0\\
+\sin\left(q_3 \right) & \cos\left(q_3 \right) & 0 & 0\\
+0 & 0 & 1 & d_3 \\
+0 & 0 & 0 & 1
+\end{array}\right)$
+\end{matlabsymbolicoutput}
+\begin{matlabcode}
+
+T36 = T_matrices(:,:,1) * T_matrices(:,:,2) * T_matrices(:,:,3);
+T36 = simplify(T36);
+
+fprintf('Matrice Di Trasformazione Omogenea ^{3}T_(6):\n');
+disp(T36);
+\end{matlabcode}
+\begin{matlaboutput}
+Matrice Di Trasformazione Omogenea ^{3}T_(6):
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\resizebox{\linewidth}{!}{%
+$
+\begin{pmatrix}
+    c\left(q_1 \right)\,c\left(q_2 \right)\,c\left(q_3 \right)-s\left(q_1 \right)\,s\left(q_3 \right) & -c\left(q_3 \right)\,s\left(q_1 \right)-c\left(q_1 \right)\,c\left(q_2 \right)\,s\left(q_3 \right) & c\left(q_1 \right)\,s\left(q_2 \right) & d_3 \,c\left(q_1 \right)\,s\left(q_2 \right)\\
+    c\left(q_1 \right)\,s\left(q_3 \right)+c\left(q_2 \right)\,c\left(q_3 \right)\,s\left(q_1 \right) & c\left(q_1 \right)\,c\left(q_3 \right)-c\left(q_2 \right)\,s\left(q_1 \right)\,s\left(q_3 \right) & s\left(q_1 \right)\,s\left(q_2 \right) & d_3 \,s\left(q_1 \right)\,s\left(q_2 \right)\\
+    -c\left(q_3 \right)\,s\left(q_2 \right) & s\left(q_2 \right)\,s\left(q_3 \right) & c\left(q_2 \right) & d_3 \,c\left(q_2 \right)\\
+    0 & 0 & 0 & 1
+\end{pmatrix}
+$}
+\end{matlabsymbolicoutput}
+
+\begin{par}
+\begin{flushleft}
+La matrice di trasformazione omogenea totale $^1 T_4$ contiene tutte le informazioni sulla posa dell'organo terminale. Da essa possiamo estrarre due elementi chiave:
+\end{flushleft}
+\end{par}
+
+\begin{itemize}
+\setlength{\itemsep}{-1ex}
+   \item{\begin{flushleft} La \textbf{matrice di rotazione R}, che definisce l'orientamento dell'organo terminale rispetto alla base. Corrisponde alla sottomatrice 3x3 in alto a sinistra. \end{flushleft}}
+   \item{\begin{flushleft} Il \textbf{vettore di posizione p}, che indica la posizione dell'origine del sistema di riferimento dell'organo terminale. Corrisponde alle prime tre righe della quarta colonna. \end{flushleft}}
+\end{itemize}
+
+\begin{matlabcode}
+% Estrazione Vettore Posizione
+p36 = T36(1:3, 4);
+p36 = simplify(p36);
+fprintf('Vettore Posizione p36:\n');
+disp(p36);
+\end{matlabcode}
+\begin{matlaboutput}
+Vettore Posizione p36:
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \left(\begin{array}{c}
+d_3 \,c\left(q_1 \right)\,s\left(q_2 \right)\\
+d_3 \,s\left(q_1 \right)\,s\left(q_2 \right)\\
+d_3 \,c\left(q_2 \right)
+\end{array}\right)$
+\end{matlabsymbolicoutput}
+\begin{matlabcode}
+
+% Estrazione Matrice Rotazione
+R36 = T36(1:3, 1:3);
+R36 = simplify(R36);
+fprintf('Matrice Rotazione R36:\n');
+disp(R36);
+\end{matlabcode}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \left(\begin{array}{ccc}
+c\left(q_1 \right)\,c\left(q_2 \right)\,c\left(q_3 \right)-s\left(q_1 \right)\,s\left(q_3 \right) & -c\left(q_3 \right)\,s\left(q_1 \right)-c\left(q_1 \right)\,c\left(q_2 \right)\,s\left(q_3 \right) & c\left(q_1 \right)\,s\left(q_2 \right)\\
+c\left(q_1 \right)\,s\left(q_3 \right)+c\left(q_2 \right)\,c\left(q_3 \right)\,s\left(q_1 \right) & c\left(q_1 \right)\,c\left(q_3 \right)-c\left(q_2 \right)\,s\left(q_1 \right)\,s\left(q_3 \right) & s\left(q_1 \right)\,s\left(q_2 \right)\\
+-c\left(q_3 \right)\,s\left(q_2 \right) & s\left(q_2 \right)\,s\left(q_3 \right) & c\left(q_2 \right)
+\end{array}\right)$
+\end{matlabsymbolicoutput}
+
+\begin{par}
+\begin{flushleft}
+Per visualizzare una configurazione specifica del robot sono necessari dei valori numerici. Si sostituiscono ora le variabili simboliche (angoli di giunto e parametri geometrici) con valori numerici.
+\end{flushleft}
+\end{par}
+
+\begin{matlabcode}
+% Lista Variabili Simboliche
+symsList = symvar(T_matrices);
+disp('Variabili Simboliche:');
+disp(symsList);
+\end{matlabcode}
+\begin{matlaboutput}
+Variabili Simboliche:
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \left(\begin{array}{cccc}
+d_3  & q_1  & q_2  & q_3
+\end{array}\right)$
+\end{matlabsymbolicoutput}
+\begin{matlabcode}
+
+% Valori Numerici Da Sostituire
+value = [0.5, pi/4, pi/2, pi/3];
+
+% La sostituzione su un array 3D simbolico può essere problematica.
+% È più sicuro sostituire i valori matrice per matrice.
+T_Num = zeros(4,4,n);
+for i = 1:n
+    T_Num(:,:,i) = subs(T_matrices(:,:,i), symsList, value);
+end
+
+% Stampa Matrici Numeriche
+for i = 1:n
+    fprintf('Matrice ^(%d)T_(%d) numerica:\n', i-1, i);
+    disp(T_Num(:,:,i));
+end
+\end{matlabcode}
+\begin{matlaboutput}
+Matrice ^(0)T_(1) numerica:
+    0.7071         0   -0.7071         0
+    0.7071         0    0.7071         0
+         0   -1.0000         0         0
+         0         0         0    1.0000
+Matrice ^(1)T_(2) numerica:
+     0     0     1     0
+     1     0     0     0
+     0     1     0     0
+     0     0     0     1
+Matrice ^(2)T_(3) numerica:
+    0.5000   -0.8660         0         0
+    0.8660    0.5000         0         0
+         0         0    1.0000    0.5000
+         0         0         0    1.0000
+\end{matlaboutput}
+
+\matlabheadingtwo{\textbf{Visualizzazione Grafica}}
+
+\begin{matlabcode}
+figure;
+hold on;
+grid on;
+xlabel('X');
+ylabel('Y');
+zlabel('Z');
+axis equal;
+
+% Definizione Colori Assi X, Y, Z (standard RGB)
+colors = {'r', 'g', 'b'};
+% Scala Per Le Frecce Degli Assi
+arrow_scale = 0.1;
+
+labels = {'Giunto 3', 'Giunto 4', 'Giunto 5', 'End-Effector'};
+
+% T_cumulative Tiene Traccia Della Trasformazione Dalla Base Al Frame
+% Corrente
+T_cumulative = eye(4);
+% Memorizza Posizioni Origini Frame
+positions = T_cumulative(1:3, 4)';
+
+% Frame Base (RF0)
+for j = 1:3
+    quiver3(0, 0, 0, T_cumulative(1,j)*arrow_scale, T_cumulative(2,j)*arrow_scale, T_cumulative(3,j)*arrow_scale, ...
+        'Color', colors{j}, 'LineWidth', 2, 'MaxHeadSize', 0.4);
+end
+\end{matlabcode}
+\newpage
+\begin{matlabcode}
+text(0, 0, 0.01, [' ' labels{1}], 'FontSize', 10);
+
+% Vettori Per Leggenda
+h_axes = zeros(1, 3);
+
+% Iterazione Giunti Per Ottenere Posa (da RF1 a RF3)
+for i = 1:n
+    % Aggiorna Matrice Trasformazione Cumulativa
+    T_cumulative = T_cumulative * double(T_Num(:,:,i));
+
+    % Estrazione Posizione E Orientamento
+    pos = T_cumulative(1:3, 4);
+    R = T_cumulative(1:3, 1:3);
+
+    % Assi Frame Corrente
+    for j = 1:3
+        h_axes(j) = quiver3(pos(1), pos(2), pos(3), R(1,j)*arrow_scale, R(2,j)*arrow_scale, R(3,j)*arrow_scale, ...
+                             'Color', colors{j}, 'LineWidth', 2, 'MaxHeadSize', 0.4);
+    end
+
+    % Memorizza Posizione Corrente Per Disegnare Bracci
+    positions = [positions; pos'];
+
+    % Etichette
+    text(pos(1), pos(2), pos(3) + 0.01, [' ' labels{i+1}], 'FontSize', 10);
+end
+
+% Disegna I Bracci collegando le origini dei frame memorizzate
+h_line = plot3(positions(:,1), positions(:,2), positions(:,3), 'k-o', 'LineWidth', 1.5, 'MarkerSize', 5, 'MarkerFaceColor', 'k');
+
+legend([h_axes, h_line], {'Asse X', 'Asse Y', 'Asse Z', 'Bracci'}, 'Location', 'bestoutside');
+title('Configurazione Polso Sferico');
+view(150, 20);
+
+axis tight;
+hold off;
+\end{matlabcode}
+\begin{center}
+\includegraphics[width=0.85\linewidth]{figure_0.jpeg}
+\end{center}
+
+\end{document}

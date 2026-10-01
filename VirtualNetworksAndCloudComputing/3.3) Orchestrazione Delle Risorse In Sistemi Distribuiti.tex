@@ -1,0 +1,1489 @@
+﻿% AA Classe Del Documento
+\documentclass[11pt, a4paper]{article}
+
+% AA Tipografia E Lingua
+% BB Lingua E Codifica Font
+\usepackage[italian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+% BB Geometria Pagina E Microtipografia
+\usepackage[margin=2cm, top=1.5cm, bottom=1.5cm]{geometry}
+\usepackage{parskip}
+\usepackage{microtype}
+
+% AA Gestione Dei Colori
+% BB Pacchetto Colori
+\usepackage[table]{xcolor}
+
+% BB Palette Colori Personalizzata
+\definecolor{darkgreen}{RGB}{0,100,0}
+\definecolor{theoryblue}{RGB}{0,84,147}
+\definecolor{backcolour}{RGB}{245,245,245}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+
+\definecolor{codebg}{HTML}{F8F9FA}
+\definecolor{codeframe}{HTML}{E2E8F0}
+\definecolor{codekeywords}{HTML}{7C3AED}
+\definecolor{codedocker}{HTML}{0284C7}
+\definecolor{codecomments}{HTML}{64748B}
+\definecolor{codestrings}{HTML}{0D9488}
+\definecolor{codenumbers}{HTML}{94A3B8}
+\definecolor{codetext}{HTML}{1E293B}
+
+% AA Matematica E Notazione Scientifica
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{mathtools}
+\usepackage{siunitx}
+
+% BB OTTIMIZZAZIONE MATRICI LUNGHE PER LA STAMPA
+\setlength{\arraycolsep}{10pt}
+\usepackage{bm}
+
+% AA Tabelle Ed Allineamenti
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{arydshln}
+
+% AA Grafica E Disegno Vettoriale
+% BB Gestione Figure E Posizionamento
+\usepackage{graphicx}
+\graphicspath{{./Images/Orchestrazione/}}
+\usepackage{subcaption}
+\usepackage{float}
+
+% BB TikZ E Pgfplots
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, patterns, angles, quotes, calc}
+\usetikzlibrary{positioning}
+\usetikzlibrary{shapes.geometric}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+% AA Listati Di Codice (Listings)
+% BB Configurazione Generale
+\usepackage{listings}
+\usepackage{upquote}
+
+% BB Configurazione Generale
+\lstset{
+    basicstyle=\ttfamily\footnotesize\color{codetext},
+    backgroundcolor=\color{codebg},
+    frame=single,
+    rulecolor=\color{codeframe},
+    framesep=6pt,
+    xleftmargin=8pt,
+    xrightmargin=8pt,
+    breaklines=true,
+    breakatwhitespace=true,
+    showstringspaces=false,
+    keepspaces=true,
+    columns=flexible,
+    upquote=true,
+    tabsize=2,
+    captionpos=b,
+    % Stili e Colori Predefiniti Globali
+    keywordstyle=\bfseries\color{codekeywords},
+    commentstyle=\itshape\color{codecomments},
+    stringstyle=\color{codestrings}
+}
+
+% BB Definizione Dei Linguaggi
+
+% CC YAML
+\lstdefinelanguage{yaml}{
+    keywords={true,false,null,yes,no,on,off},
+    keywordstyle=\bfseries\color{codekeywords},
+    comment=[l]{\#},
+    commentstyle=\itshape\color{codecomments},
+    stringstyle=\color{codestrings},
+    morestring=[b]',
+    morestring=[b]",
+    sensitive=false
+}
+
+% CC Dockerfile
+\lstdefinelanguage{dockerfile}{
+    keywords={FROM, RUN, CMD, LABEL, EXPOSE, ENV, ADD, COPY, ENTRYPOINT,
+              VOLUME, USER, WORKDIR, ARG, ONBUILD, STOPSIGNAL, HEALTHCHECK,
+              SHELL, AS},
+    keywordstyle=\bfseries\color{codedocker},
+    comment=[l]{\#},
+    commentstyle=\itshape\color{codecomments},
+    stringstyle=\color{codestrings},
+    morestring=[b]",
+    morestring=[b]',
+    sensitive=true
+}
+
+% CC INI
+\lstdefinelanguage{ini}{
+    comment=[l]{\#},
+    morecomment=[l]{;},
+    commentstyle=\itshape\color{codecomments},
+    stringstyle=\color{codestrings},
+    morestring=[b]",
+    morestring=[b]',
+    keywordstyle=\bfseries\color{codekeywords},
+    sensitive=false
+}
+
+% CC JSON
+\lstdefinelanguage{json}{
+    keywords={true,false,null},
+    keywordstyle=\bfseries\color{codekeywords},
+    comment=[l]{//},
+    morecomment=[s]{/*}{*/},
+    commentstyle=\itshape\color{codecomments},
+    stringstyle=\color{codestrings},
+    morestring=[b]",
+    sensitive=true
+}
+
+% CC PYTHON (Dialetto nativo pulito)
+\lstset{defaultdialect=[3]Python}
+\lstdefinelanguage{python}[]{Python}{
+    morekeywords={as, async, await, True, False, None},
+    sensitive=true
+}
+
+% CC BASH / SHELL
+\lstdefinelanguage{bash}[]{sh}{
+    morekeywords={docker, cd, run, build, stop, rm, rmi, push, pull, network, compose, openstack, rq, worker, keystone-manage, time, sleep, echo, exit, sudo, export, systemctl},
+    sensitive=true
+}
+
+% CC HTML (Autonomo, previene il loop infinito del parser XML/HTML)
+\lstdefinelanguage{html}{
+    keywords={img, src, alt, class, id, div, span, table, tr, td, th, href, a, p, h1, h2, h3, form, input, button},
+    keywordstyle=\bfseries\color{codekeywords},
+    comment=[s]{<!--}{-->},
+    commentstyle=\itshape\color{codecomments},
+    stringstyle=\color{codestrings},
+    morestring=[b]",
+    morestring=[b]',
+    sensitive=false
+}
+
+% CC SQL / CYPHER (Autonomo con supporto per // di Cypher)
+\lstdefinelanguage{sql}{
+    keywords={MATCH, RETURN, DETACH, DELETE, WHERE, CREATE, SET, WITH, ORDER, BY, ASC, DESC, LIMIT, SELECT, INSERT, INTO, VALUES, FROM, UPDATE, DROP, TABLE, JOIN, ON, AND, OR, NOT},
+    keywordstyle=\bfseries\color{codekeywords},
+    comment=[l]{//},
+    morecomment=[l]{--},
+    commentstyle=\itshape\color{codecomments},
+    stringstyle=\color{codestrings},
+    morestring=[b]',
+    morestring=[b]",
+    sensitive=false
+}
+
+% AA Algoritmi E Pseudocodice
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+\SetKwData{Dati}{Input}
+\SetKwData{Risultato}{Output}
+\SetKw{Inizializza}{Inizializza}
+\SetKwFor{Per}{per}{fare}{fine per}
+\SetKwComment{Commento}{// }{}
+
+% AA Struttura, Titoli Ed Ambienti
+% BB Personalizzazione Titoli Sezioni
+\usepackage{titlesec}
+\titleformat{\section}{\normalfont\LARGE\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\Large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalfont\large\bfseries}{\thesubsubsection}{1em}{}
+
+% BB Teoremi Ed Ambienti Ausiliari
+\usepackage{comment}
+\newtheorem{theorem}{Definizione}
+
+% BB Liste Ed Elenchi Puntati
+\usepackage{enumitem}
+\setlist{noitemsep}
+\usepackage{pifont}
+
+% AA Riferimenti, Link Ipertestuali E Segnalibri
+\usepackage[unicode]{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+    citecolor=blue,
+    pdftitle={3.3) Orchestrazione Delle Risorse In Sistemi Distribuiti},
+    pdfauthor={Francesco Lo Verde},
+    pdfpagemode=FullScreen,
+}
+\usepackage{bookmark}
+
+% AA Metadati Del Documento
+\title{3.3) Orchestrazione Delle Risorse In Sistemi Distribuiti}
+
+\date{\today}
+
+\author{Francesco Lo Verde}
+\begin{document}
+\maketitle
+
+% AA Orchestrazione_3 [1-23] ------------------------------
+
+\section{Dall'Hardware Al Serverless: Evoluzione Dei Paradigmi Di Deployment}
+
+Lo sviluppo, la distribuzione e l'esecuzione del software aziendale hanno attraversato una profonda transizione architetturale negli ultimi decenni. Tale percorso evolutivo è stato guidato dalla necessità costante di minimizzare i costi di capitale (\emph{Capital Expenditure}, CapEx) e i costi operativi (\emph{Operational Expenditure}, OpEx), riducendo al contempo il cosiddetto \emph{time-to-market} e l'onere sistemistico a carico dei team di sviluppo.
+
+\subsection{Evoluzione Delle Astrazioni Di Calcolo: Da Bare-Metal Ai Container}
+
+Per comprendere l'origine e la necessità ingegneristica dell'approccio serverless, è opportuno formalizzare le quattro fasi sequenziali che compongono tradizionalmente il ciclo di rilascio del software applicativo:
+\begin{enumerate}[noitemsep]
+    \item \textbf{Deploy hardware}: acquisizione, montaggio a rack, cablaggio di rete e alimentazione dei server fisici all'interno di un centro di elaborazione dati (\emph{datacenter}).
+    \item \textbf{Install the operating system}: installazione, partizionamento, configurazione del kernel, dei driver di periferica, delle patch di sicurezza e dei servizi di base sul nodo host.
+    \item \textbf{Deploy the application package}: configurazione del runtime di esecuzione, risoluzione e installazione delle librerie dipendenti, gestione delle variabili d'ambiente e caricamento del binario compilato o dello script interpretato.
+    \item \textbf{Run the code}: allocazione dei processi, schedulazione sui core di calcolo della CPU, binding sulle porte di rete ed elaborazione effettiva della logica di business.
+\end{enumerate}
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Serverless Computing and OpenFaas.pdf"] Diagramma a blocchi sull'evoluzione dello sviluppo software (Traditional, Early cloud, Virtualization, Containerization) — Slide 2 / Pagina 2 del PDF
+
+\subsubsection{Sviluppo Software Tradizionale (Bare-Metal)}
+Nel paradigma tradizionale precedente l'avvento del cloud computing, l'intera catena di deployment gravava internamente sull'organizzazione. L'azienda doveva stimare preventivamente la capacità di picco delle risorse computazionali necessarie: un dimensionamento errato comportava il rischio di saturazione del carico (sotto-dimensionamento) oppure un massiccio spreco economico per server sottoutilizzati e consumi energetici passivi (sovra-dimensionamento). La totale rigidità dell'hardware fisico rendeva i tempi di provisioning dell'ordine di settimane o mesi.
+
+\subsubsection{Early Cloud Computing (Outsourcing Del Datacenter)}
+Con l'introduzione delle prime piattaforme cloud (tipicamente fornite secondo il modello dell'infrastruttura come servizio, \emph{Infrastructure as a Service} - IaaS), le aziende hanno iniziato a demandare a terzi la gestione fisica del datacenter. Questo passaggio ha eliminato per l'utente il passaggio \textbf{Deploy hardware}. L'infrastruttura sottostante diviene accessibile tramite API su base scalabile e condivisa (\emph{multi-tenant}), trasformando i costi fissi d'acquisto in costi operativi elastici a consumo.
+
+\subsubsection{Virtualizzazione Basata Su Hypervisor (Macchine Virtuali)}
+La maturazione delle tecnologie di virtualizzazione hardware (hypervisor di Tipo 1 \emph{bare-metal} come VMware ESXi o KVM, e Tipo 2 \emph{hosted}) ha consentito l'astrazione e la suddivisione delle risorse fisiche di un singolo elaboratore bare-metal in molteplici \textbf{Virtual Machines} (VM) logicamente isolate. Ogni VM dispone di una copia completa del proprio sistema operativo \emph{guest}, di uno stack di driver virtualizzati e di risorse di memoria ed elaborazione rigidamente allocate. In questa fase, la manutenzione dell'hardware e la gestione dello strato di virtualizzazione di base ricadono interamente sul cloud provider, liberando lo sviluppatore dal secondo step sistemistico. Ciononostante, ogni VM richiede l'installazione e la manutenzione continuativa del proprio sistema operativo guest (gestione di package manager, aggiornamenti del kernel, hardening di sicurezza), inducendo un significativo overhead in termini di impronta di memoria e tempi di boot (nell'ordine dei minuti).
+
+\subsubsection{Containerizzazione Di Sistema E Applicativa}
+\label{subsubsec:containerization_review}
+Per superare la ridondanza sistemistica delle VM, la tecnologia di \textbf{containerizzazione} (standardizzata industrialmente da Docker e dai motori basati su standard di settore) ha introdotto un'astrazione a livello di sistema operativo. Anziché emulare una scheda madre e un hardware completo per far girare un intero kernel guest:
+\begin{itemize}[noitemsep]
+    \item I container condividono lo stesso kernel del sistema operativo host.
+    \item L'isolamento delle risorse e dello spazio di visibilità viene garantito nativamente dal kernel Linux mediante due primitive fondamentali: i \textbf{namespaces} (che virtualizzano le risorse di sistema come PID, mount point, stack di rete di livello 3 e 4, IPC e utenti) e i \textbf{control groups} (\textbf{cgroups}, che governano e limitano quantitativamente l'utilizzo di CPU, memoria RAM, I/O su disco e throughput di rete).
+\end{itemize}
+Con i container, il packaging del software si standardizza: l'applicazione include unicamente i propri binari, le librerie dipendenti e le configurazioni minime necessarie, impacchettate all'interno di una \emph{container image}. Più istanze containerizzate possono coesistere ed essere eseguite in parallelo sullo stesso OS host in millisecondi. Tale standardizzazione ha favorito l'affermarsi delle architetture a \textbf{microservizi}, in cui sistemi complessi e monolitici vengono disaggregati in servizi compatti, autonomi e componibili, interconnessi tramite protocolli applicativi leggeri (come REST via HTTP o gRPC).
+
+Tuttavia, pur eliminando l'overhead di virtualizzazione dell'hardware, la containerizzazione sposta la complessità operativa sulla gestione del cluster di orchestrazione (ad esempio Kubernetes), richiedendo la configurazione manuale di controllori di replica, ingress controller, politiche di autoscaling orizzontale e allocazione statica di quote di risorse.
+
+---
+
+\subsection{Il Paradigma Serverless: Definizione E Motivazioni Ingegneristiche}
+
+Il termine \textbf{Serverless} non indica l'assenza fisica o logica di server, bensì l'\textbf{esternalizzazione radicale della gestione delle operazioni di sistema} (\emph{server operations}) a un'entità terza (la piattaforma o il fornitore cloud). Quando un sistema opera in modalità serverless, l'utente finale non si preoccupa dell'approvvigionamento dell'hardware, dell'installazione del sistema operativo, dell'aggiornamento dei runtime o della scalabilità dei cluster di nodi. L'intero onere sistemistico è astratto, permettendo al progettista software di concentrarsi esclusivamente sulla \textbf{logica di business applicativa}.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Serverless Computing and OpenFaas.pdf"] Schema del deployment in ambiente Serverless con evidenza della semplificazione del packaging e focalizzazione su Run the Code — Slide 4 / Pagina 4 del PDF
+
+Come schematizzato nella catena di rilascio serverless:
+\begin{itemize}[noitemsep]
+    \item Il passaggio \textbf{Deploy hardware} è interamente delegato.
+    \item Il passaggio \textbf{Install the operating system} è interamente delegato.
+    \item Il passaggio \textbf{Deploy the application package} rimane presente ma risulta fortemente \textbf{semplificato} e compattato. Lo sviluppatore definisce unicamente:
+    \begin{itemize}[noitemsep]
+        \item Il codice sorgente della funzione (\emph{Code}).
+        \item Le librerie e dipendenze minime strettamente necessarie (\emph{Dependencies}).
+        \item I parametri di configurazione a runtime (variabili d'ambiente, puntatori agli handler, parametri di timeout).
+        \item Una specifica dichiarativa su come la logica deve essere invocata ed eseguita.
+    \end{itemize}
+    \item L'attenzione operativa del processo di ingegneria del software converge totalmente sulla fase finale: \textbf{Run the code}.
+\end{itemize}
+
+L'aspetto cardine dell'architettura serverless risiede nella sua \textbf{scalabilità ad hoc} (\emph{ad hoc scalability}). A differenza delle architetture convenzionali in cui le istanze computazionali rimangono costantemente allocate in attesa di richieste (generando costi orari fissi e consumo persistente di memoria e cicli di clock), un'applicazione serverless:
+\begin{enumerate}[noitemsep]
+    \item \textbf{Scala orizzontalmente in modo del tutto automatico ed elastico}: all'aumentare delle richieste concorrenti in ingresso, la piattaforma istanzia istantaneamente nuovi esecutori isolati per gestire il picco.
+    \item \textbf{Implementa la scalabilità a zero (\emph{scale-to-zero})}: qualora non vi siano eventi o richieste HTTP in arrivo, la piattaforma dealloca integralmente le risorse di calcolo associate, riducendo a zero il carico su CPU, rete e archiviazione volatile. Conseguentemente, per l'utente i costi operativi associati all'elaborazione si annullano del tutto durante i periodi di inattività.
+\end{enumerate}
+
+\newpage
+
+% ==============================================================================
+% SEZIONE 2: SERVERLESS COMPUTE MANIFESTO
+% ==============================================================================
+
+\section{I Principi Fondamentali: Il Serverless Compute Manifesto}
+
+I concetti teorici ed operativi che caratterizzano il cloud serverless moderno sono stati formalizzati organicamente all'interno del \textbf{Serverless Compute Manifesto} (presentato nel contesto dell'AWS Developer Conference). Il manifesto sancisce sette requisiti progettuali indispensabili per definire una piattaforma computazionale come autenticamente serverless.
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.95\textwidth}
+\begin{theorem}
+Un'architettura serverless pura aderisce a un modello computazionale reattivo governato dai seguenti sette principi architetturali:
+\begin{enumerate}[label=\textbf{\arabic*.}]
+    \item \textbf{Functions as the building blocks} (Le funzioni come blocchi costitutivi elementari).
+    \item \textbf{No servers, VMs, or containers} (Nessuna assunzione di gestione di server, macchine virtuali o container).
+    \item \textbf{No storage} (Assenza di memoria di massa locale persistente ed epimeralità dei processi).
+    \item \textbf{Implicitly fault-tolerant functions} (Tolleranza intrinseca e implicita ai guasti).
+    \item \textbf{Scalability with the request} (Scalabilità strettamente proporzionale alla frequenza delle richieste).
+    \item \textbf{No cost for idle time} (Totale azzeramento dei costi durante i periodi di inattività).
+    \item \textbf{Bring Your Own Code - BYOC} (Supporto a qualsiasi linguaggio e portabilità del codice utente).
+\end{enumerate}
+\end{theorem}
+\end{minipage}
+\end{figure}
+
+\subsection{Analisi Dettagliata Dei Sette Postulati}
+
+\subsubsection{1. Functions As The Building Blocks}
+All'interno di un'architettura serverless, l'unità atomica di sviluppo, impacchettamento, deployment e scalabilità non è più l'intero server né un microservizio multi-funzionale, bensì la **singola funzione software**. Ciascuna funzione assolve a un compito applicativo univoco, delimitato e ben definito. L'esecuzione e la scalabilità di ogni funzione avvengono in modo totalmente isolato e disaccoppiato rispetto alle altre funzioni che compongono il sistema globale.
+
+\subsubsection{2. No Servers, VMs, Or Containers}
+Dal punto di vista dell'utilizzatore del sistema, i concetti di server fisico, virtual machine, sistema operativo guest o configurazione del motore di container non devono emergere. Tutte le astrazioni di calcolo necessarie per ospitare, isolare ed eseguire le funzioni sono completamente gestite e operate dall'infrastruttura sottostante. L'utente non deve possedere alcuna consapevolezza o controllo sulla topologia dei nodi fisici o virtuali che erogano la potenza di calcolo.
+
+\subsubsection{3. No Storage (Ephemeral Workloads)}
+I carichi di lavoro serverless devono essere progettati come elaborazioni puramente **effimere** (\emph{ephemeral}). Ciascuna invocazione della funzione viene eseguita all'interno di un ambiente di esecuzione vergine e transitorio, privo di stato residuo derivante dalle elaborazioni precedenti. Qualsiasi file system locale temporaneo accessibile dalla funzione (ad esempio il mount in-memory `/tmp`) viene distrutto e riciclato alla chiusura del ciclo di vita dell'istanza. Qualora la logica di business richieda la conservazione, la persistenza o la condivisione di dati tra chiamate successive, l'applicazione deve interagire esplicitamente con servizi di archiviazione esterni disaccoppiati, tipicamente erogati secondo il modello \textbf{Database as a Service} (DBaaS) o \emph{Object Storage}.
+
+\subsubsection{4. Implicitly Fault-Tolerant Functions}
+Sia l'infrastruttura di gestione del framework serverless, sia le funzioni applicative distribuite devono essere nativamente **tolleranti ai guasti** (\emph{fault-tolerant}). Qualora un container esecutore o il nodo host sottostante subiscano un crash hardware o un'interruzione di connettività, la piattaforma deve rilevare l'anomalia in modo trasparente, riavviando l'esecuzione della funzione su un nodo integro o re-instradando la richiesta senza richiedere l'intervento dell'operatore o degradare l'affidabilità globale del servizio.
+
+\subsubsection{5. Scalability With The Request}
+L'infrastruttura di calcolo e le risorse di instradamento di rete devono garantire un accoppiamento dinamico e immediato tra la frequenza delle richieste in arrivo e le capacità computazionali allocate. Non è tollerabile che una piattaforma serverless fallisca la gestione del carico o rifiuti connessioni a causa dell'incremento repentino del volume di traffico (\emph{traffic spike}); il provisioning orizzontale di nuovi esecutori deve avvenire in modo elastico e reattivo.
+
+\subsubsection{6. No Cost For Idle Time}
+Il modello economico che governa il cloud serverless vincola i costi monetari al solo tempo effettivo di elaborazione della CPU e al consumo istantaneo di memoria RAM durante l'esecuzione del codice. Se un'applicazione distribuita su piattaforma serverless non riceve traffico (nessuna richiesta HTTP, nessun messaggio in coda o nessun evento programmato), il fornitore infrastrutturale non addebita alcun costo economico. Lo stato di quiescenza è a costo zero.
+
+\subsubsection{7. Bring Your Own Code (BYOC)}
+Il framework serverless non deve imporre vincoli restrittivi o linguaggi di programmazione proprietari. Gli sviluppatori devono poter scrivere ed eseguire codice arbitrario, compilato o interpretato (ad esempio Node.js, Go, Python, Java, C++ o Rust), impacchettandolo secondo standard industriali aperti. La piattaforma riceve il codice o l'immagine del contenitore e si occupa automaticamente di creare il runtime di esecuzione compatibile.
+
+\newpage
+
+% ==============================================================================
+% SEZIONE 3: CASI D'USO E CONFRONTO ARCHITETTURALE
+% ==============================================================================
+
+\section{Casi D'Uso Tipici E Analisi Architetturale Comparativa}
+
+Le proprietà di elasticità istantanea, costo proporzionale all'uso e natura \emph{stateless} rendono il serverless la scelta d'elezione per una specifica classe di carichi di lavoro computazionali.
+
+\subsection{Tassonomia Dei Casi D'Uso Serverless}
+
+\begin{itemize}
+    \item \textbf{Data Processing (Elaborazione massiva dei dati)}: Nelle applicazioni orientate ai Big Data, le operazioni di parsing, validazione, trasformazione (\emph{cleansing}) e formattazione di dataset non strutturati sono discontinue e parallele. Un tipico esempio consiste nel processamento di immagini: quando un utente carica un lotto di fotografie, una funzione serverless può essere invocata in parallelo per ciascun file per ridimensionarlo, applicare filtri di riconoscimento visivo o contare elementi grafici (es. rilevamento di volti), scalando a zero non appena il lotto è terminato, senza la necessità di mantenere attivi costosi server dedicati.
+
+    \item \textbf{Webhooks (Gestione di notifiche e callback HTTP)}: Un webhook è un meccanismo di comunicazione inter-applicazione asincrono, attivato da un evento specifico (ad esempio un commit Git su una piattaforma remota o l'avvenuto pagamento su un gateway finanziario), che recapita un payload JSON/HTTP verso una URL predefinita. Anziché mantenere istanze server sempre in ascolto sulle porte TCP, una funzione serverless funge da endpoint leggero: si attiva alla ricezione del callback HTTP, convalida il messaggio, attiva la logica richiesta e si spegne immediatamente.
+
+    \item \textbf{Check-out E Moduli Di Pagamento}: Nei sistemi di commercio elettronico, la fase di finalizzazione del carrello e autorizzazione del pagamento bancario rappresenta una transazione critica, ma circoscritta nel tempo. Ciascuna sotto-funzionalità (validazione del credito, addebito, emissione della ricevuta e notifica logistica) può essere ingegnerizzata come un modulo FaaS indipendente, garantendo isolamento da guasti nel caso di picchi improvvisi di vendita (es. promozioni stagionali).
+
+    \item \textbf{Applicazioni Di Chat In Tempo Reale}: I backend per bot di messaggistica integrati in piattaforme come Slack, Telegram o Facebook Messenger operano tipicamente a fronte di eventi discreti (il messaggio inviato da un utente). Una funzione effimera può decodificare il messaggio, eseguire l'inferenza o interrogare un database per reperire la risposta, e scalare a centinaia di esecuzioni concorrenti qualora molti utenti chattino simultaneamente, azzerando le risorse nei periodi di inattività notturna.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\colorbox{yellow!25}{
+\parbox{0.92\textwidth}{
+\centering\vspace{3pt}
+\textbf{Sintesi Applicativa:} L'architettura serverless è ottimale per sistemi \textbf{tolleranti a una modesta latenza iniziale}, composti da carichi di lavoro \textbf{a breve ciclo di vita} (\emph{short lived}), e orientati ad \textbf{evitare il vendor lock-in} e le dipendenze rigide dagli ecosistemi infrastrutturali proprietari.\vspace{3pt}
+}
+}
+\end{figure}
+
+---
+
+\subsection{Confronto Su Caso Studio: E-Commerce Monolitico, Microservizi E Serverless}
+
+Consideriamo la progettazione del backend di una piattaforma e-commerce, scomposta logicamente in quattro componenti: **Frontend**, **Backend applicativo**, **Database** e modulo di **Autenticazione/Sicurezza**.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Serverless Computing and OpenFaas.pdf"] Architettura di un sistema e-commerce basato su approccio a microservizi classici orchestrati su Kubernetes — Slide 9 / Pagina 9 del PDF
+
+\subsubsection{Approccio A Microservizi Convenzionali (Legacy Orchestration)}
+Nell'approccio a microservizi classico:
+\begin{itemize}[noitemsep]
+    \item I componenti funzionali (frontend, autenticazione, logica di carrello, catalogo) sono isolati e confezionati come container Docker separati.
+    \item L'infrastruttura è governata da un orchestratore come **Kubernetes**, che gestisce il ciclo di vita dei Pod su un pool di nodi computazionali (VM o server bare-metal).
+    \item Benché i componenti possano scalare indipendentemente aumentando il numero di repliche dei Pod, i server sottostanti devono rimanere costantemente accesi e presidiati dai team di Operations (\emph{DevOps/SRE}), comportando un costo infrastrutturale fisso anche a traffico nullo.
+\end{itemize}
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Serverless Computing and OpenFaas.pdf"] Architettura serverless dello stesso e-commerce con disaccoppiamento tra FaaS, servizi di storage statico e database gestiti — Slide 10 / Pagina 10 del PDF
+
+\subsubsection{Approccio Serverless Nativo}
+Nella riprogettazione interamente serverless:
+\begin{itemize}[noitemsep]
+    \item La logica di backend dinamica viene polverizzata in singole funzioni scritte per piattaforme FaaS (come AWS Lambda, Google Cloud Functions o cluster OpenFaaS on-premises).
+    \item La componente Frontend statica (HTML, file JavaScript compilati, bundle CSS, asset grafici) non risiede su un web server Nginx o Apache permanentemente allocato, ma viene servita a basso costo tramite servizi di **Object Storage** (quali AWS S3 o Google Cloud Storage), integrati eventualmente con una rete CDN (\emph{Content Delivery Network}).
+    \item Il modulo Database viene affidato a istanze scalabili e gestite dal fornitore (\emph{managed DB}).
+    \item Con questo disaccoppiamento, l'intera applicazione garantisce robustezza, alta disponibilità e autogestione elastica senza richiedere l'allocazione statica di server host.
+\end{itemize}
+
+---
+
+\subsection{Matrice Comparativa: Microservizi Vs Funzioni (FaaS)}
+
+Sebbene sia i microservizi che le funzioni serverless possano sfruttare container Docker come tecnologia sottostante di isolamento (come vedremo nell'architettura di OpenFaaS), i due paradigmi divergono profondamente nella granularità logica, nel modello temporale e nelle assunzioni sullo stato.
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{p{3.2cm} X X}
+\toprule
+\textbf{Caratteristica / Feature} & \textbf{Microservizi (Container Classici)} & \textbf{Funzioni (Serverless / FaaS)} \\
+\midrule
+\textbf{Unità di Esecuzione} & Servizi autonomi, estesi e completi (es. API REST intere, stack DB, broker). & Funzioni leggere, specializzate e monoscopo che assolvono un singolo compito. \\
+\textbf{Persistenza dello Stato} & Stateful o Stateless: il servizio può gestire sessioni locali, cache e connessioni persistenti. & Totalmente \emph{stateless}: nessuna memoria o cache condivisa persistente tra invocazioni. \\
+\textbf{Gestione Infrastruttura} & Esplicita: allocazione e tuning di risorse, CPU/RAM, mapping di porte gestiti dal team DevOps. & Completamente automatica: gestita in modo trasparente dal control plane serverless. \\
+\textbf{Modello di Scalabilità} & Spesso manuale o basata su metriche medie di carico (CPU/RAM); gestita da orchestratori. & Automatica, elastica e reattiva: scala istantaneamente proporzionata al numero di invocazioni. \\
+\textbf{Durata di Esecuzione} & A lungo termine (\emph{long-running}): processi continui attivi per giorni, mesi o anni. & Effimera e transitoria: il processo si avvia, elabora l'evento e termina immediatamente. \\
+\textbf{Indipendenza Logica} & Completamente indipendente, autosufficiente e contenuta nel proprio perimetro logico. & Indipendente come unità atomica, ma tipicamente orchestrata all'interno di un flusso più ampio. \\
+\bottomrule
+\end{tabularx}
+\caption{Confronto analitico tra paradigma a microservizi convenzionale e modello a funzioni serverless.}
+\label{tab:microservizi_vs_faas}
+\end{table}
+
+\newpage
+
+% ==============================================================================
+% SEZIONE 4: FAAS: TASSONOMIA E MODELLO OPERATIVO
+% ==============================================================================
+
+\section{Function As A Service (FaaS): Tassonomia Cloud E Modello Operativo}
+
+La tecnologia **Function as a Service (FaaS)** rappresenta l'implementazione computazionale più diffusa, pragmatica e rilevante all'interno del più ampio ecosistema serverless.
+
+\subsection{Definizione E Modello Di Addebito}
+
+In una piattaforma FaaS, l'unità architetturale di rilascio, esecuzione e scalabilità coincide rigorosamente con la **funzione software**. Tali funzioni non si differenziano strutturalmente dalle funzioni canoniche definite nei linguaggi di programmazione standard: esse accettano argomenti formali in ingresso (spesso incapsulati in contesti di eventi o richieste HTTP) e restituiscono valori strutturati in uscita.
+
+La discontinuità rispetto al cloud convenzionale risiede nel **modello di allocazione ed economico**:
+\begin{itemize}[noitemsep]
+    \item Nel cloud computing tradizionale (IaaS/PaaS standard), l'utente provvede al noleggio di capacità (CPU, memoria, storage) su base oraria o mensile continua, a prescindere dal fatto che il software stia effettivamente elaborando traffico o sia inattivo.
+    \item Nel modello FaaS, il cliente viene addebitato **esclusivamente per la frazione temporale in cui la logica del codice è effettivamente in esecuzione** (spesso contabilizzata a scatti di centinaia o decine di millisecondi). All'arrivo dell'evento, la piattaforma istanzia la funzione, ne computa il risultato e spegne o congela l'ambiente esecutivo.
+\end{itemize}
+
+\paragraph{Cenni storici:} La prima piattaforma FaaS disponibile al pubblico fu introdotta nel 2014 da \texttt{hook.io}, un progetto open-source concepito per ospitare webhooks e microservizi reattivi. Successivamente, i maggiori Cloud Service Provider hanno rilasciato le proprie soluzioni commerciali: Amazon Web Services con \textbf{AWS Lambda} (fine 2014), seguita da Google (\textbf{Google Cloud Functions}), Microsoft (\textbf{Azure Functions}), IBM (\textbf{IBM Cloud Functions}, basata su Apache OpenWhisk) e Oracle.
+
+---
+
+\subsection{Tassonomia Delle Responsabilità Nel Cloud: IaaS, PaaS, SaaS E FaaS}
+
+Per posizionare con chiarezza il FaaS all'interno della gerarchia delle tecnologie cloud, è utile riassumere la ripartizione dei compiti tra fornitore (\emph{Cloud Provider}) e cliente (\emph{Customer}):
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{p{2cm} X X}
+\toprule
+\textbf{Modello Cloud} & \textbf{Cosa Fornisce Il Provider} & \textbf{Cosa Gestisce Il Cliente} \\
+\midrule
+\textbf{IaaS} & Risorse hardware virtualizzate, calcolo (VM o server bare-metal), storage grezzo e rete. & Installazione e patching del sistema operativo, configurazione runtime, deploy e gestione app. \\
+\textbf{PaaS} & Piattaforma di sviluppo gestita, sistema operativo, interpreti di runtime e framework applicativi. & Scrittura, rilascio e manutenzione del codice sorgente applicativo. \\
+\textbf{SaaS} & Applicazione software completa, accessibile chiavi in mano da web o API (es. Google Workspace, Gmail). & Configurazione delle utenze finali e utilizzo del servizio applicativo. \\
+\textbf{FaaS} & Infrastruttura globale, orchestrazione dei container elastici, trigger e runtime di esecuzione isolati. & Caricamento delle singole funzioni logiche; l'invocazione e il ciclo di vita sono gestiti dal provider. \\
+\bottomrule
+\end{tabularx}
+\caption{Matrice delle responsabilità e dei livelli di astrazione nel Cloud Computing.}
+\label{tab:cloud_models}
+\end{table}
+
+---
+
+\subsection{Le Quattro Proprietà Distintive Di Una Piattaforma FaaS}
+
+Ogni sistema FaaS deve implementare nativamente quattro proprietà architetturali:
+\begin{enumerate}
+    \item \textbf{Statelessness (Assenza di stato)}: Le funzioni devono essere operazioni effimere e prive di stato. Nessun file critico deve essere memorizzato sul disco locale dell'esecutore e nessuna cache di sessione deve essere presunta persistente tra invocazioni distinte. Ogni singola invocazione deve poter essere servita da un ambiente vergine senza alcuna assunzione di continuità.
+
+    \item \textbf{Event-Triggered (Attivazione reattiva guidata dagli eventi)}: Le funzioni non rimangono in ascolto continuativo bloccando risorse di rete; vengono invece attivate direttamente da specifici eventi generati dall'infrastruttura. Tali eventi includono:
+    \begin{itemize}[noitemsep]
+        \item Espressioni temporali schedulate (es. espressioni basate su sintassi \texttt{cron}).
+        \item Richieste HTTP sincrone (chiamate API di tipo REST).
+        \item Messaggi pubblicati su code asincrone o bus pub/sub (es. RabbitMQ, Apache Kafka, NATS).
+        \item Modifiche e mutazioni all'interno di database (ad esempio l'inserimento di un nuovo record utente attiva una funzione \texttt{syncUsers}).
+    \end{itemize}
+
+    \item \textbf{Scalable (Scalabilità orizzontale trasparente)}: L'infrastruttura FaaS è progettata per eseguire in parallelo tante istanze concorrenti della funzione quante sono le richieste o gli eventi rilevati, gestendo automaticamente code e contese di risorse.
+
+    \item \textbf{Managed (Amministrazione infrastrutturale integrata)}: L'utente FaaS non gestisce macchine, cluster o bilanciatori di carico. Il provisioning e la configurazione dei server sono presi in carico direttamente dal software di controllo della piattaforma.
+\end{enumerate}
+
+Le suddette proprietà accomunano sia i servizi gestiti proprietari dei cloud provider pubblici (AWS Lambda, Azure Functions, GCP Functions), sia i framework open-source e on-premises distribuibili internamente nei propri datacenter, tra cui spiccano **OpenFaaS**, **Apache OpenWhisk** e **Kubeless**.
+
+---
+
+\subsection{La Convergenza Tra Kubernetes E Serverless}
+
+Nati nello stesso periodo storico (attorno al 2014), **Kubernetes** e il paradigma **Serverless** hanno inizialmente seguito percorsi paralleli. Con il tempo, Kubernetes si è affermato come il sistema di orchestrazione e gestione dei container di fatto standard nell'industria per carichi sia stateless (frontend, API server) che stateful (database, broker di messaggistica).
+
+Lungi dall'essere in contrapposizione, le due tecnologie presentano una profonda sinergia architetturale:
+\begin{itemize}
+    \item \textbf{Assenza di Vendor Lock-in}: Implementare un framework serverless al di sopra di un cluster Kubernetes garantisce la massima portabilità. L'organizzazione non si vincola ai contratti commerciali o alle API proprietarie di un singolo cloud vendor, potendo migrare le proprie funzioni trasversalmente tra cloud pubblici diversi (AWS, Google Cloud, Azure) o su infrastrutture private on-premises.
+    \item \textbf{Riuso e Coesistenza Di Servizi}: Kubernetes consente di eseguire funzioni serverless \emph{side-by-side} (fianco a fianco) con i microservizi convenzionali, i database di cluster e le applicazioni legacy all'interno della medesima rete virtualizzata (\emph{overlay network}).
+    \item \textbf{Accessibilità alla Containerizzazione}: Il serverless semplifica l'esperienza d'uso di Kubernetes: anziché costringere ogni sviluppatore a scrivere complessi manifest YAML (Deployment, Service, Ingress, HPA), la piattaforma FaaS astrae questi oggetti, generando automaticamente i costrutti Kubernetes necessari.
+\end{itemize}
+
+\newpage
+
+% ==============================================================================
+% SEZIONE 5: OPENFAAS: ARCHITETTURA E COMPONENTI
+% ==============================================================================
+
+\section{OpenFaaS: Architettura, Standard OCI E Componenti Fondamentali}
+
+\textbf{OpenFaaS} (\emph{Functions as a Service}) è un framework open-source (con estensioni enterprise) scritto in linguaggio **Go**, progettato per costruire, distribuire ed eseguire funzioni serverless basate sull'impiego di container standard.
+
+Inizialmente concepito nel 2016 per integrarsi strettamente con **Docker Swarm** (lo strumento nativo di clustering e orchestrazione di Docker), l'ecosistema di OpenFaaS è stato successivamente riprogettato per supportare ed eleggere **Kubernetes** come proprio motore di orchestrazione di riferimento. OpenFaaS include un'interfaccia web nativa denominata **OpenFaaS Portal** (per monitorare, testare e invocare le funzioni da browser) e una potente interfaccia da riga di comando denominata \textbf{\texttt{faas-cli}}.
+
+---
+
+\subsection{Il Ruolo Degli Standard OCI (Open Container Initiative)}
+
+Un punto di forza architetturale di OpenFaaS risiede nella sua aderenza agli standard promossi dall'\textbf{Open Container Initiative (OCI)}, fondata nel giugno 2015 sotto l'egida della Linux Foundation da aziende leader del settore (tra cui Docker, Red Hat e Google).
+
+L'OCI definisce tre specifiche cardine per garantire l'interoperabilità tra motori e registri container:
+\begin{enumerate}[noitemsep]
+    \item \textbf{Runtime Specification (\texttt{runtime-spec})}: Specifica come eseguire un pacchetto di file decompresso su disco (\emph{filesystem bundle}). A basso livello, l'implementazione del runtime di riferimento (come \texttt{runc}) riceve il bundle, configura i namespace del kernel, i cgroups e le policy di sicurezza (seccomp, AppArmor), e avvia il processo isolato.
+    \item \textbf{Image Specification (\texttt{image-spec})}: Specifica il formato standard dell'immagine del container, definendo la struttura dei layer di file sovrapposti (formato \emph{tar}), i digest crittografici SHA-256 e i metadati di configurazione JSON (variabili d'ambiente, entrypoint, volumi).
+    \item \textbf{Distribution Specification (\texttt{distribution-spec})}: Standardizza il protocollo di rete HTTP/API per il push, il pull e l'indicizzazione delle immagini tra i registri remoti (\emph{container registries}) e i nodi di calcolo.
+\end{enumerate}
+
+Grazie a questo ecosistema, in OpenFaaS **qualsiasi linguaggio di programmazione** può essere impiegato per definire una funzione: è sufficiente che il codice sia incapsulabile in un'immagine conforme agli standard OCI.
+
+---
+
+\subsection{Edizioni E Modelli Di Distribuzione Di OpenFaaS}
+
+OpenFaaS è distribuito secondo diverse varianti licenziative e operative:
+\begin{itemize}
+    \item \textbf{OpenFaaS Pro}: Versione commerciale ottimizzata per contesti di produzione enterprise. Si declina in:
+    \begin{itemize}[noitemsep]
+        \item \emph{OpenFaaS Standard}: Progettata per team singoli in ambienti cluster \emph{single-tenant}.
+        \item \emph{OpenFaaS for Enterprises}: Dedicata a grandi organizzazioni o fornitori SaaS che richiedono funzionalità avanzate (multi-tenancy, supporto ad Active Directory/SSO, rate limiting distribuito, scalabilità avanzata).
+    \end{itemize}
+    \item \textbf{Community Edition (CE)}: Versione gratuita orientata a scopi didattici e sviluppo personale su Kubernetes, soggetta a un limite di prova di 60 giorni per utilizzi di tipo commerciale.
+    \item \textbf{\texttt{faasd}}: Variante leggera, completamente open-source, pensata per operare su una singola istanza virtuale o bare-metal (anche con risorse hardware limitate come un Raspberry Pi), **senza l'onere o la complessità di dover gestire un cluster Kubernetes o Docker Swarm**. Utilizza direttamente \texttt{containerd} e CNI (\emph{Container Network Interface}) per l'esecuzione dei container.
+\end{itemize}
+
+---
+
+\subsection{Anatomia Dei Componenti Principali Di OpenFaaS}
+
+L'architettura interna di OpenFaaS si articola su tre componenti fondamentali cooperanti:
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Serverless Computing and OpenFaas.pdf"] Diagramma a blocchi dei componenti core di OpenFaaS: API Gateway, Function Watchdog, Prometheus, Swarm/Kubernetes e Docker — Slide 19 / Pagina 19 del PDF
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    scale=0.85,
+    transform shape,
+    box/.style={
+        rectangle,
+        draw=black!70,
+        fill=theoryblue!10,
+        rounded corners=4pt,
+        minimum height=1.15cm,
+        text width=3.2cm,
+        align=center,
+        font=\small
+    },
+    core/.style={
+        rectangle,
+        draw=darkgreen!85,
+        fill=darkgreen!12,
+        rounded corners=4pt,
+        minimum height=1.25cm,
+        text width=3.8cm,
+        align=center,
+        font=\small
+    },
+    infra/.style={
+        rectangle,
+        draw=black!55,
+        fill=codegray!15,
+        rounded corners=4pt,
+        minimum height=1.15cm,
+        text width=4.2cm,
+        align=center,
+        font=\footnotesize
+    },
+    arr/.style={
+        -{Stealth[length=2.5mm]},
+        thick,
+        darkgreen!90
+    },
+    lbl/.style={
+        font=\scriptsize,
+        align=center,
+        fill=white,
+        inner sep=1.5pt,
+        rounded corners=1pt
+    }
+]
+    % ========================================================
+    % LIVELLO SUPERIORE / CORE (Allineati a y = 3.5)
+    % ========================================================
+    % Prometheus a sinistra
+    \node[box] (prom) at (-5.2, 3.5) {
+        \textbf{Prometheus}\\[2pt]
+        {\footnotesize (Scraping \& Alerting)}
+    };
+
+    % API Gateway al centro
+    \node[core] (gw) at (0, 3.5) {
+        \textbf{OpenFaaS API Gateway}\\[2pt]
+        {\scriptsize (Routing, Auth, Metrics, Scaling)}
+    };
+
+    % ========================================================
+    % FUNCTION CONTAINER INSTANCE (Racchiude SOLO Watchdog e Processo)
+    % ========================================================
+    % Il container ha altezza calibrata (y da 0.7 a 4.7) per non toccare K8s
+    \node[rectangle, draw=theoryblue!80, fill=theoryblue!4, rounded corners=6pt,
+          dashed, thick, minimum width=6.8cm, minimum height=4.0cm] (cont) at (6.0, 2.7) {};
+
+    % Titolo interno con badge protetto
+    \node[theoryblue!90, font=\footnotesize\bfseries, fill=theoryblue!10, rounded corners=2pt, inner sep=2.5pt]
+          at (cont.north) [yshift=-3.5mm] {
+        Function Container Instance
+    };
+
+    % Watchdog (in ascolto HTTP)
+    \node[box, fill=theoryblue!22, text width=4.1cm] (watchdog) at (6.0, 3.5) {
+        \textbf{Function Watchdog}\\[2pt]
+        {\scriptsize (Micro-server Go: HTTP $\leftrightarrow$ stdio)}
+    };
+
+    % User Function Process (larghezza sufficiente, nessuna sillabazione rotta)
+    \node[box, fill=white, draw=black!60, text width=4.3cm] (proc) at (6.0, 1.5) {
+        \textbf{User Function Process}\\[2pt]
+        {\scriptsize (\texttt{fprocess}: Node, Python, ecc.)}
+    };
+
+    % ========================================================
+    % LIVELLO INFERIORE / INFRASTRUTTURA (Posizionato fuori a y = -0.7)
+    % ========================================================
+    \node[infra] (provider) at (0, -0.7) {
+        \textbf{FaaS Provider / API}\\[2pt]
+        {\scriptsize (\texttt{faas-netes}, K8s Controller)}
+    };
+
+    % Kubernetes Cluster: ben staccato e chiaramente all'esterno del container
+    \node[infra] (k8s) at (6.0, -0.7) {
+        \textbf{Kubernetes Cluster / CRI}\\[2pt]
+        {\scriptsize (Pod Lifecycle, \\Services, Networking)}
+    };
+
+    % ========================================================
+    % FRECCE E RELAZIONI
+    % ========================================================
+    % Prometheus -> Gateway
+    \draw[arr] (prom) -- node[lbl, above=1pt] {Metrics\\Scraping} (gw);
+
+    % Gateway -> Watchdog (entra nel container verso il watchdog)
+    \draw[arr] (gw) -- node[lbl, above=1pt] {Invocazione\\HTTP} (watchdog);
+
+    % Canali I/O interni al container (binari paralleli ben spaziati)
+    % 1. Standard Output (da proc a watchdog)
+    \draw[arr] ([xshift=-1.25cm]proc.north) --
+        node[left, font=\scriptsize, align=right] {Standard Output\\[-1pt](\texttt{stdout})}
+        ([xshift=-1.25cm]watchdog.south);
+
+    % 2. Standard Input (da watchdog a proc)
+    \draw[arr] ([xshift=1.25cm]watchdog.south) --
+        node[right, font=\scriptsize, align=left] {Standard Input\\[-1pt](\texttt{stdin})}
+        ([xshift=1.25cm]proc.north);
+
+    % Gateway -> FaaS Provider (comando di scaling verso il controller)
+    \draw[arr] (gw) -- node[lbl, right=2pt] {Scale Up /\\Scale Down} (provider);
+
+    % FaaS Provider -> Kubernetes (gestione fisica dei pod nel cluster)
+    \draw[arr] (provider) -- node[lbl, above=1pt] {Pod \\Management} (k8s);
+
+\end{tikzpicture}
+\caption{Flusso architetturale e interazione logica tra i componenti interni di OpenFaaS.}
+\label{fig:openfaas_components}
+\end{figure}
+
+\subsubsection{1. OpenFaaS API Gateway}
+L'**API Gateway** rappresenta la porta d'ingresso esclusiva di tutto il framework OpenFaaS verso il mondo esterno. Le sue mansioni ingegneristiche includono:
+\begin{itemize}[noitemsep]
+    \item Esposizione delle rotte HTTP/REST per consentire l'interazione con l'utente (tramite web portal, chiamate REST o comandi CLI).
+    \item Gestione del ciclo di vita CRUD delle funzioni: creazione, aggiornamento, rimozione delle definizioni.
+    \item Smistamento e reverse-proxy delle invocazioni in ingresso verso le istanze corrette dei container delle funzioni.
+    \item Raccolta e aggregazione in tempo reale delle metriche di funzionamento: conteggio complessivo delle invocazioni, latenza e durata temporale di esecuzione, e conteggio delle repliche attive.
+    \item Gestione dell'autoscaling: all'aumentare della frequenza delle richieste, il Gateway dialoga con il provider sottostante per incrementare o decrementare il numero di container associati alla funzione.
+\end{itemize}
+
+\subsubsection{2. Prometheus Integrato}
+Il sistema open-source di monitoraggio basato su serie temporali **Prometheus** è pre-integrato e rilasciato all'interno dei manifest o del chart Helm di OpenFaaS. Il server Prometheus effettua lo \emph{scraping} periodico delle metriche esposte dall'API Gateway in formato standard. Tali metriche non assolvono solo a scopi di osservabilità visuale per l'utente, ma costituiscono la base analitica su cui l'autoscaler prende decisioni di scaling orizzontale o di \emph{scale-to-zero}.
+
+\subsubsection{3. Function Watchdog (Il Micro-Server Di Adattamento)}
+Il **Function Watchdog** è una delle invenzioni architetturali più distintive di OpenFaaS. Si tratta di un server web estremamente compatto e performante, compilato staticamente in **Golang**, incorporato all'interno di ciascuna immagine container di funzione, posizionato logicamente tra l'API Gateway e la logica scritta dallo sviluppatore.
+
+Il suo principio di funzionamento si basa sull'astrazione degli stream di I/O dello standard POSIX:
+\begin{itemize}[noitemsep]
+    \item Il Watchdog apre una porta TCP ed attende le richieste HTTP in ingresso inoltrate dal Gateway.
+    \item Alla ricezione della richiesta, il Watchdog effettua il \emph{marshalling} del payload HTTP e lo inoltra al processo applicativo dell'utente attraverso il canale di **standard input (\texttt{stdin})**.
+    \item Il processo utente elabora i dati ricevuti da standard input e scrive il risultato finale sul canale di **standard output (\texttt{stdout})**.
+    \item Il Watchdog intercetta i dati emessi su \texttt{stdout}, serializza la risposta in formato HTTP conforme (aggiungendo opportuni header e codici di stato HTTP) e la trasmette al Gateway, che la recapita infine al client chiamante.
+\end{itemize}
+Questo modello consente di rendere serverless qualsiasi binario, eseguibile o script bash senza dover incorporare server HTTP complessi all'interno del codice utente. Nelle versioni avanzate (come il modello \emph{Classic Watchdog} e il moderno \emph{of-watchdog}), il Watchdog supporta anche l'invocazione mediante socket HTTP locali in-memory, eliminando l'overhead di fork del processo ad ogni chiamata.
+
+\newpage
+
+\section{Ciclo Di Vita E Workflow Operativo Di Una Funzione}
+
+La comprensione dell'architettura logica di OpenFaaS richiede la formalizzazione dei flussi di interazione tra lo sviluppatore, i componenti di controllo e l'infrastruttura di esecuzione.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Serverless Computing and OpenFaas.pdf"] Diagramma del Basic Workflow logico di OpenFaaS: interazione tra utente, Gateway, FaaS Provider, Container Registry e funzioni fn1/fn2 — Slide 20 / Pagina 20 del PDF
+
+\subsection{Il Ruolo Del FaaS Provider E I Metadati Di Funzione}
+
+Come esposto nello schema architetturale:
+\begin{itemize}
+    \item L'\textbf{OpenFaaS Gateway} non esegue direttamente i container applicativi: esso agisce come un router intelligente e gestore di API.
+    \item L'interfaccia con l'infrastruttura reale è delegata al componente **FaaS Provider** (ad esempio `faas-netes` nel caso di Kubernetes). Il FaaS Provider costituisce il ponte di traduzione: riceve istruzioni ad alto livello dal Gateway ed effettua le corrispondenti chiamate alle API dell'orchestratore per creare i Pod, istanziare i Service interni, gestire i controllori di replica e monitorarne lo stato vitale.
+\end{itemize}
+
+Ogni funzione registrata all'interno della piattaforma è rigorosamente definita da una terna fondamentale di metadati:
+\begin{enumerate}[noitemsep]
+    \item \textbf{\texttt{name}}: Identificativo univoco della funzione all'interno del cluster (ad esempio `startConversation` o `resizeImage`).
+    \item \textbf{\texttt{image}}: Il tag identificativo dell'immagine OCI/Docker (inclusivo di repository e versione, ad es. `registry.local:5000/myfunc:0.1`) reperibile all'interno di un registro container.
+    \item \textbf{\texttt{fprocess}}: Il comando specifico o binario eseguibile che deve essere lanciato all'interno del container dal Function Watchdog (ad esempio `node index.js`, `python3 handler.py` o `./mybinary`).
+\end{enumerate}
+
+---
+
+\subsection{La Toolchain Di Sviluppo: Il Ciclo Di Vita Con \texttt{faas-cli}}
+
+Il ciclo di sviluppo operativo che porta una funzione dal codice sorgente locale all'esecuzione distribuita sul cluster segue una sequenza definita governata dal comando \texttt{faas-cli}:
+
+\begin{lstlisting}[language=bash, caption={Fasi operative della toolchain di sviluppo e deployment con \texttt{faas-cli}.}]
+# 1. Creazione del template e scrittura del sorgente
+faas-cli new --lang python3 my-function
+
+# 2. Compilazione del container applicativo locale (creazione dell'immagine OCI)
+faas-cli build -f my-function.yml
+
+# 3. Pubblicazione dell'immagine sul Container Registry condiviso
+faas-cli push -f my-function.yml
+
+# 4. Registrazione e deployment della funzione sull'OpenFaaS Gateway
+faas-cli deploy -f my-function.yml
+
+# 5. Invocazione della funzione (tramite CLI o chiamata HTTP diretta)
+curl -X POST http://gateway.openfaas.local:8080/function/my-function -d "Hello OpenFaaS"
+\end{lstlisting}
+
+\subsubsection{Dinamica Interna Del Processo Di Esecuzione}
+\begin{enumerate}
+    \item Lo sviluppatore scrive la logica della funzione e le eventuali librerie dipendenti (ad esempio `requirements.txt` per Python o `package.json` per Node.js).
+    \item Con `faas-cli build`, il motore Docker/OCI locale compila l'immagine incorporando il runtime specificato, il Function Watchdog e il codice della funzione, impostando la variabile d'ambiente dell'handler `fprocess`.
+    \item Con `faas-cli push`, l'immagine binaria viene caricata su un **Container Registry** accessibile a tutti i nodi di calcolo dell'infrastruttura.
+    \item Tramite `faas-cli deploy`, una richiesta di configurazione viene inviata all'endpoint `/system/functions` dell'API Gateway.
+    \item Il Gateway trasmette la direttiva al **FaaS Provider**, il quale ordina al cluster Kubernetes di predisporre la definizione del deployment, effettuando il \emph{pull} dell'immagine dal registry.
+    \item All'arrivo di una successiva richiesta HTTP destinata alla funzione, il Gateway intercetta l'evento, provvede (se la funzione è scalata a zero) ad avviare tempestivamente il container tramite il provider, e vi instrada il traffico.
+\end{enumerate}
+
+\paragraph{Estendibilità Del Backend:} È possibile implementare FaaS Provider personalizzati per qualsiasi sistema proprietario o ambiente di calcolo eterogeneo (bare-metal, hypervisor proprietari o sistemi embedded). OpenFaaS mette a disposizione un apposito **Golang SDK** che, integrato all'interno del proprio progetto software, permette di esporre un provider compatibile al 100\% con l'API Gateway standard.
+
+\newpage
+
+% ==============================================================================
+% SEZIONE 7: STACK ARCHITETTURALE E MODI DI INVOCAZIONE
+% ==============================================================================
+
+\section{Stack Architetturale Concettuale E Modalità Di Invocazione}
+
+Un ecosistema FaaS in produzione non opera in modo isolato, ma si inserisce all'interno di una moderna architettura software cloud-native distribuita su livelli funzionali disaccoppiati.
+
+\subsection{La Pila Architetturale A Tre Livelli}
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Serverless Computing and OpenFaas.pdf"] Schema a strati concettuali dello stack OpenFaaS: CI/GitOps Layer, Application Layer e Infrastructure Layer — Slide 22 / Pagina 22 del PDF
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.9, transform shape,
+    layer/.style={rectangle, draw=black!60, rounded corners, minimum height=1.5cm, minimum width=\textwidth, align=left, inner sep=10pt, font=\small},
+    comp/.style={rectangle, draw=black!70, fill=white, rounded corners, minimum height=0.9cm, minimum width=2.6cm, align=center, font=\footnotesize}
+]
+    % CI/GitOps Layer
+    \node[layer, fill=theoryblue!15] (gitops) at (0, 4) {\textbf{CI / GitOps Layer}\\[1.5em]};
+    \node[comp] at (-3.5, 3.7) {GitHub Actions};
+    \node[comp] at (0, 3.7) {Argo CD};
+    \node[comp] at (3.5, 3.7) {GitLab Self-hosted};
+
+    % Application Layer
+    \node[layer, fill=darkgreen!15] (app) at (0, 1.8) {\textbf{Application Layer}\\[1.5em]};
+    \node[comp] at (-3.5, 1.5) {OpenFaaS Gateway};
+    \node[comp] at (0, 1.5) {Prometheus};
+    \node[comp] at (3.5, 1.5) {NATS JetStream};
+
+    % Infrastructure Layer
+    \node[layer, fill=codegray!20] (infra) at (0, -0.4) {\textbf{Infrastructure Layer}\\[1.5em]};
+    \node[comp] at (-3.5, -0.7) {Kubernetes};
+    \node[comp] at (0, -0.7) {OCI Image Spec};
+    \node[comp] at (3.5, -0.7) {Container Registry};
+
+    % Frecce di dipendenza
+    \draw[-{Stealth[length=2.5mm]}, thick, dashed] (0, 3.1) -- (0, 2.7);
+    \draw[-{Stealth[length=2.5mm]}, thick, dashed] (0, 0.9) -- (0, 0.5);
+\end{tikzpicture}
+\caption{Rappresentazione dei tre livelli dello stack concettuale di OpenFaaS.}
+\label{fig:openfaas_stack}
+\end{figure}
+
+Come sintetizzato nel diagramma:
+\begin{enumerate}
+    \item \textbf{CI / GitOps Layer (Integrazione e Consegna Continua)}:
+    \begin{itemize}[noitemsep]
+        \item \textbf{GitHub Actions}: Piattaforma per l'automazione dei workflow del codice, utilizzata per la compilazione, il testing statico, la validazione unitaria e la build automatizzata delle immagini dei container al momento di una push o di una \emph{pull request}.
+        \item \textbf{Argo CD}: Strumento di deployment dichiarativo conforme al paradigma GitOps per Kubernetes. Argo CD sincronizza in modo automatico lo stato reale del cluster con lo stato desiderato descritto dai manifest all'interno di un repository Git, tracciando modifiche a rami o tag.
+        \item \textbf{GitLab Self-hosted}: Soluzione integrata e privata per la gestione del ciclo di vita del codice, testing di sicurezza e registro integrato di immagini.
+    \end{itemize}
+
+    \item \textbf{Application Layer (Piattaforma Operativa FaaS)}:
+    \begin{itemize}[noitemsep]
+        \item \textbf{OpenFaaS Gateway}: Punto di accesso unificato per il routing e la governance delle funzioni.
+        \item \textbf{Prometheus}: Sistema di monitoraggio metriche installato contestualmente a OpenFaaS tramite Helm Chart.
+        \item \textbf{NATS / NATS JetStream}: Message broker ad altissime prestazioni per la gestione del disaccoppiamento asincrono.
+    \end{itemize}
+
+    \item \textbf{Infrastructure Layer (Infrastruttura Di Base)}:
+    \begin{itemize}[noitemsep]
+        \item \textbf{Kubernetes}: Motore di orchestrazione di riferimento per la gestione fisica dei Pod e della connettività inter-nodo.
+        \item \textbf{OCI Image / Runtime}: Specifiche standard aperte per la composizione e l'esecuzione dei bundle container.
+        \item \textbf{Container Registry}: Deposito crittograficamente autenticato per la distribuzione dei binari applicativi (es. Harbor, Docker Hub, Quay).
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{I Due Utilizzi Fondamentali Di Prometheus In OpenFaaS}
+La presenza del server Prometheus integrato assolve a due precisi scopi operativi:
+\begin{enumerate}[noitemsep]
+    \item \textbf{Alimentazione dei meccanismi di autoscaling e Scale-to-Zero}: I tassi di invocazione HTTP al secondo ($req/s$) e le metriche di inattività raccolte da Prometheus sono interrogati costantemente dal motore di scaling e dall'\textbf{Horizontal Pod Autoscaler (HPA)} di Kubernetes per calcolare il numero ottimale di repliche Pod da mantenere, azzerando le istanze qualora non si registrino chiamate per un intervallo temporale configurabile.
+    \item \textbf{Osservabilità E Visualizzazione Tramite Dashboard Grafana}: Prometheus esporta le metriche verso dashboard interattive **Grafana** (offerte ai clienti OpenFaaS Standard/Enterprise), garantendo al personale operativo la visibilità real-time su errori 4xx/5xx, saturazione di memoria e tempi di risposta al 95-esimo e 99-esimo percentile.
+\end{enumerate}
+
+---
+
+\subsection{Modelli Di Invocazione: Sincrono Vs Asincrono Con NATS JetStream}
+
+Le funzioni distribuite su OpenFaaS supportano due modelli di invocazione distinti in base al vincolo temporale della transazione.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    scale=0.80,
+    transform shape,
+    box/.style={rectangle, draw=black!70, rounded corners=4pt, minimum height=1.1cm, minimum width=2.3cm, align=center, font=\small},
+    arr/.style={-{Stealth[length=2.2mm]}, thick}
+]
+    % Nodi orizzontali ben spaziati (passo ~3.8cm)
+    \node[box, fill=white] (client) at (0, 0) {\textbf{Client}};
+    \node[box, fill=theoryblue!15] (gw) at (3.8, 0) {\textbf{Gateway}\\{\footnotesize (Producer)}};
+    \node[box, fill=darkgreen!15, draw=darkgreen!80] (nats) at (7.8, 0) {\textbf{NATS}\\{\footnotesize JetStream}};
+    \node[box, fill=yellow!15] (worker) at (11.8, 0) {\textbf{Queue-Worker}\\{\footnotesize (Subscriber)}};
+    \node[box, fill=darkgreen!10] (fn) at (15.8, 0) {\textbf{Function}\\{\footnotesize Instance}};
+
+    % Connessioni con testi disposti su più righe
+    \draw[arr, darkgreen] (client.east) -- node[above, font=\scriptsize, align=center] {1. POST\\{\tiny /async-fn}} (gw.west);
+    \draw[arr, darkgreen] (gw.east) -- node[above, font=\scriptsize, align=center] {3. Push\\{\tiny su coda}} (nats.west);
+    \draw[arr, darkgreen] (nats.east) -- node[above, font=\scriptsize, align=center] {4. Pull\\{\tiny evento}} (worker.west);
+    \draw[arr, darkgreen] (worker.east) -- node[above, font=\scriptsize, align=center] {5. Invoke\\{\tiny diretta}} (fn.west);
+
+    % Arco di ritorno 202 Accepted sotto il Gateway
+    \draw[arr, theoryblue] (gw.south) -- ++(0,-0.55) -| node[pos=0.25, below, font=\scriptsize\bfseries] {2. HTTP 202 Accepted (Immediato)} (client.south);
+\end{tikzpicture}
+\caption{Flusso di un'invocazione asincrona in OpenFaaS con NATS JetStream e Queue-Worker.}
+\label{fig:async_invocation}
+\end{figure}
+
+\subsubsection{Invocazione Sincrona (\emph{Synchronous Invocation})}
+Nell'invocazione sincrona convenzionale:
+\begin{itemize}[noitemsep]
+    \item Il client chiama l'endpoint `/function/<nome-funzione>` dell'API Gateway mantenendo aperta la connessione TCP.
+    \item Il Gateway trasmette direttamente la chiamata all'istanza della funzione tramite il Watchdog.
+    \item Il client rimane bloccato in attesa (\emph{blocking I/O}) finché il codice della funzione non ha completato l'elaborazione e il risultato non viene retrocesso lungo lo stack HTTP.
+    \item Questo modello è adatto unicamente per operazioni a latenza ridotta (inferiori a pochi secondi), ma soffre di gravi limitazioni in presenza di job lunghi a causa di timeout di rete HTTP e saturazione del pool di thread del client chiamante.
+\end{itemize}
+
+\subsubsection{Invocazione Asincrona Mediante Accodamento (\emph{Queued Asynchronous Invocation})}
+Per superare i limiti delle elaborazioni prolungate, l'esecuzione di batch o la gestione di carichi di traffico impulsivi, OpenFaaS integra nativamente un'infrastruttura di accodamento basata sul broker di messaggistica **NATS JetStream** (\emph{JetStream for OpenFaaS}):
+\begin{enumerate}
+    \item **Inoltro della richiesta asincrona**: Il client indirizza la chiamata HTTP verso il percorso `/async-function/<nome-funzione>`.
+    \item **Ricezione e conferma istantanea**: L'API Gateway agisce come un **Producer**: intercetta la richiesta HTTP, ne serializza l'intero payload (inclusi header, query param e body) all'interno di un messaggio inoltrato su un topic dedicato di NATS JetStream, e risponde immediatamente al client con un codice di stato **HTTP 202 Accepted**.
+    \item **Disaccoppiamento della transazione**: Il client non rimane bloccato in attesa: la transazione HTTP tra client e funzione viene formalmente disaccoppiata nel tempo e nello spazio. Il chiamante può liberare le proprie risorse ed eventualmente sottoscrivere canali di notifica \emph{out-of-band} (es. webhook di ritorno) per recepire l'esito finale.
+    \item **Consumo controllato tramite Queue-Worker**: Un componente dedicato, denominato **Queue-Worker**, opera come **Subscriber** nei confronti di NATS JetStream. Il Queue-Worker estrae i messaggi dalla coda in base alla capacità computazionale residua del cluster, deserializza la richiesta HTTP originale e invoca direttamente la funzione associata.
+\end{enumerate}
+
+Questo meccanismo di accodamento protegge l'infrastruttura di calcolo sottostante da condizioni di saturazione improvvisa (\emph{traffic spikes}), garantendo che le richieste vengano memorizzate in modo duraturo all'interno del broker e smaltite ordinatamente al ritmo massimo consentito dai limiti di scalabilità del cluster.
+
+% AA Orchestrazione_3 [24-46] ------------------------------
+
+\section{Architettura E Flusso Concettuale Di OpenFaaS Su Kubernetes}
+
+Il paradigma \emph{Serverless}, e nello specifico il modello \textbf{Function-as-a-Service} (FaaS), astrae completamente la gestione dell'infrastruttura sottostante, consentendo allo sviluppatore di concentrarsi esclusivamente sulla logica di business incapsulata in funzioni discrete ed eseguite su richiesta (\emph{on-demand}). Nell'ambito dei sistemi distribuiti moderni, \textbf{OpenFaaS} si colloca come un \emph{framework} serverless \emph{cloud-agnostic} progettato per essere eseguito su piattaforme di orchestrazione di container, primariamente \textbf{Kubernetes}.
+
+Per comprendere appieno come OpenFaaS interagisca con Kubernetes, è opportuno richiamare brevemente la gerarchia delle astrazioni fornite da quest'ultimo:
+\begin{itemize}
+    \item Un \textbf{Pod} rappresenta la minima unità computazionale schedulabile in Kubernetes e incapsula uno o più container che condividono lo stesso spazio di indirizzamento di rete (\emph{network namespace}) e gli stessi volumi di archiviazione.
+    \item Un \textbf{Deployment} è un controllore di livello superiore preposto alla gestione dichiarativa del ciclo di vita dei Pod, assicurando che il numero specificato di repliche desiderate (\emph{desired state}) sia costantemente allineato allo stato effettivo del cluster (\emph{current state}), gestendo operazioni di aggiornamento progressivo (\emph{rolling update}) e ripristino automatico in caso di guasto (\emph{self-healing}).
+    \item Un \textbf{Service} fornisce un punto di terminazione di rete stabile e invariante (dotato di un indirizzo IP virtuale interno denominato \textbf{ClusterIP} e di una risoluzione DNS associata nel cluster) che funge da bilanciatore di carico verso i singoli Pod effimeri selezionati tramite etichette (\emph{labels}).
+\end{itemize}
+
+All'interno di questo ecosistema, il componente di raccordo fondamentale è \textbf{faas-netes}, ovvero il \emph{provider} ufficiale di OpenFaaS per Kubernetes. Il compito di \texttt{faas-netes} è tradurre le definizioni ad alto livello di una funzione serverless nei corrispondenti oggetti nativi del \emph{Control Plane} di Kubernetes. In altri termini, la distribuzione (\emph{deployment}) di una funzione OpenFaaS corrisponde all'effettiva creazione di una coppia \textbf{Deployment} e \textbf{Service} all'interno del cluster.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "OpenFaaS_Lecture.pdf"] Architettura concettuale e workflow di OpenFaaS su Kubernetes (Gateway, faas-netes, Prometheus, Alertmanager, NATS, Registry) — Slide 19 / Pagina 1 del PDF
+
+\subsection{Componenti Chiave E Workflow Operativo End-To-End}
+
+L'architettura complessiva orchestra l'elaborazione delle richieste, il deployment, il monitoraggio delle prestazioni e la scalabilità orizzontale attraverso la stretta integrazione dei seguenti moduli:
+
+\begin{enumerate}
+    \item \textbf{OpenFaaS Gateway}: costituisce il punto di ingresso univoco (\emph{single point of contact}) per tutte le interazioni verso la piattaforma. Espone una serie di \textbf{REST API}, una console grafica (\textbf{UI}) e l'interfaccia a riga di comando (\textbf{faas-cli}). Il Gateway assolve funzioni critiche di autenticazione e autorizzazione delle chiamate, instradamento (\emph{routing}) verso i container di esecuzione, e adozione di decisioni operative preliminari relative alla tipologia di invocazione.
+    \item \textbf{faas-netes}: riceve dal Gateway le richieste di gestione del ciclo di vita delle funzioni (creazione, aggiornamento, rimozione, scalabilità) e dialoga direttamente con il server \textbf{kube-apiserver} di Kubernetes tramite API crittografate su canale TLS per istanziare o riconfigurare le risorse native del cluster.
+    \item \textbf{Docker Registry}: è il registro dei container (pubblico, come Docker Hub, o privato) che ospita i binari e le immagini già compilate delle funzioni, pronte per essere scaricate (\emph{image pull}) dai nodi di lavoro (\emph{Worker Nodes}) durante la fase di scheduling.
+    \item \textbf{NATS Streaming}: un \emph{message broker} orientato alla persistenza dei messaggi, impiegato per gestire le code di elaborazione nelle invocazioni asincrone, disaccoppiando temporalmente e funzionalmente il chiamante dall'esecutore.
+    \item \textbf{Prometheus, Alertmanager E Autoscaler}: lo stack di telemetria e scalabilità automatica. Prometheus effettua il campionamento (\emph{scraping}) periodico delle metriche operative esposte dal Gateway, dai pod delle funzioni e da \texttt{faas-netes}. Sulla base di tali metriche, Alertmanager invia notifiche in caso di anomalie e sollecita l'\textbf{Autoscaler}, il quale ordina a \texttt{faas-netes} di rimodulare il conteggio delle repliche su Kubernetes.
+\end{enumerate}
+
+La dinamica di un'interazione completa si articola rigorosamente in nove fasi sequenziali:
+
+\begin{enumerate}
+    \item \textbf{Invio Della Richiesta}: il client trasmette una richiesta HTTP/HTTPS indirizzata al Gateway OpenFaaS.
+    \item \textbf{Instradamento Del Gateway}: il Gateway valida la richiesta e ne determina la natura:
+    \begin{itemize}
+        \item Se la richiesta è \textbf{sincrona}, il Gateway inoltra immediatamente il flusso dati verso l'endpoint esposto dal Service Kubernetes associato alla funzione.
+        \item Se la richiesta è \textbf{asincrona}, il Gateway accetta il carico, pubblica l'evento sul corrispondente \emph{topic} del message broker \textbf{NATS Streaming} e restituisce un codice di stato \texttt{202 Accepted} al client.
+    \end{itemize}
+    \item \textbf{Interazione Con Le API Di Kubernetes}: qualora la chiamata sia finalizzata al deployment o alla riconfigurazione di scala, \texttt{faas-netes} invoca le API di Kubernetes per allocare o riconfigurare i Deployment associati.
+    \item \textbf{Pulling E Scheduling}: l'agente locale di nodo (\textbf{Kubelet}) ordina al container runtime di scaricare l'immagine della funzione dal Docker Registry designato e provvede alla schedulazione dei Pod sui nodi computazionali.
+    \item \textbf{Raccolta Delle Metriche}: l'istanza di \textbf{Prometheus} effettua lo scraping continuo delle metriche operative. Per ciascuna risorsa monitorata, il campionamento segue la metodologia \textbf{R.E.D.}:
+    \begin{itemize}
+        \item \textbf{Rate}: la frequenza di arrivo delle richieste misurata in richieste al secondo ($rps$).
+        \item \textbf{Errors}: il tasso di richieste che esitano in codici di errore (fallimenti interni o risposte HTTP $5xx$).
+        \item \textbf{Duration}: la latenza o tempo di risposta complessivo registrato per servire la richiesta.
+    \end{itemize}
+    \item \textbf{Innesco Degli Allarmi}: al superamento di soglie prefissate (es. carico elevato, tassi di errore persistenti o saturazione di CPU/memoria), \textbf{Alertmanager} emette allarmi dedicati verso canali esterni (Slack, posta elettronica, webhook).
+    \item \textbf{Attuazione Della Scalabilità}: l'\textbf{Autoscaler} valuta le metriche R.E.D. e invoca \texttt{faas-netes} per adeguare il numero di repliche nel Deployment della funzione.
+    \item \textbf{Esecuzione Della Funzione}: il container esegue la logica applicativa richiesta, producendo la risposta per la pipeline sincrona o completando il consumo del messaggio dalla coda asincrona.
+    \item \textbf{Chiusura Del Ciclo}: il client riceve la risposta applicativa finale (nel flusso sincrono) oppure ha già ricevuto l'identificativo di tracciamento (\emph{acknowledgment}) nel flusso asincrono.
+\end{enumerate}
+
+\newpage
+
+% ==============================================================================
+% SEZIONE 2: MODALITÀ DI INVOCAZIONE DELLE FUNZIONI
+% ==============================================================================
+
+\section{Modalità Di Invocazione Delle Funzioni}
+
+La piattaforma OpenFaaS implementa due modalità disgiunte di esecuzione: l'invocazione \textbf{sincrona} e l'invocazione \textbf{asincrona}. Tali modalità divergono profondamente nella gestione della sessione di rete del client, nella gestione dello stato e nei vincoli di latenza ammessi.
+
+\subsection{Invocazione Sincrona}
+
+Nell'invocazione sincrona, la connessione a livello di trasporto tra il client e l'architettura serverless rimane costantemente aperta e attiva fino alla conclusione dell'elaborazione o all'eventuale intercettazione di un \emph{timeout}. Il Gateway funge da intermediario obbligato (\emph{reverse proxy}), esponendo la rotta standard:
+\begin{center}
+    \texttt{http://<gateway-url>/function/<function\_name>}
+\end{center}
+
+Il client invia una richiesta HTTP di tipo \texttt{GET} o \texttt{POST} specificando il nome della funzione nel percorso URI. Il Gateway verifica la disponibilità del servizio e instrada i byte del corpo applicativo verso il container. Il container elabora l'input, produce il risultato e lo trasmette al Gateway, il quale a sua volta lo rimanda al client.
+
+Le caratteristiche distintive includono:
+\begin{itemize}
+    \item \textbf{Comportamento Bloccante}: il thread chiamante del client si arresta in attesa della ricezione del pacchetto di risposta.
+    \item \textbf{Feedback Istantaneo}: il risultato finale o l'esito diagnostico viene recapitato all'interno dello stesso ciclo di richiesta-risposta HTTP.
+    \item \textbf{Sensibilità Ai Timeout}: qualora il tempo di esecuzione ecceda i parametri di configurazione del socket o dei proxy intermedi, la connessione viene terminata con un errore di rete (\emph{gateway timeout}).
+\end{itemize}
+
+Questo modello è ideale per casi d'uso ad elaborazione in tempo reale (\emph{real-time processing}), validazione sincrona di dati, calcoli immediati e applicazioni interattive (come API per front-end web o mobile), caratterizzate da tempi di risposta brevi e prevedibili. Tra i vantaggi si annoverano la semplicità di sviluppo, tracciamento e debug; di contro, la modalità sincrona non è adatta a carichi di lavoro computazionalmente onerosi, ad alta latenza o che richiedono tempi di elaborazione lunghi, pena l'esaurimento dei pool di connessione o il verificarsi di timeout frequenti.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "OpenFaaS_Lecture.pdf"] Architettura di invocazione sincrona in Kubernetes tramite Ingress, OpenFaaS Gateway e Service ClusterIP — Slide 21 / Pagina 6 del PDF
+
+\subsubsection{Realizzazione Operativa Su Kubernetes E Mitigazione Del Cold-Start}
+
+Sotto il profilo infrastrutturale, ciascuna funzione distribuita tramite OpenFaaS si concretizza in un \textbf{Deployment} e in un \textbf{Service} Kubernetes associato, quest'ultimo esposto internamente via \textbf{ClusterIP} sulla porta \texttt{80}. Il traffico esterno transita attraverso un controllore di ingresso (\textbf{Ingress Controller}) verso il Gateway OpenFaaS, che a sua volta instrada il traffico verso il Service della funzione, sfruttando il bilanciamento di carico interno fornito dal meccanismo di proxying di Kubernetes (\texttt{kube-proxy}).
+
+A titolo di esempio, il comando da interfaccia CLI per istanziare una funzione da repository pubblico è il seguente:
+\begin{lstlisting}[language=bash]
+faas-cli store deploy cows
+\end{lstlisting}
+
+È possibile ispezionare gli oggetti Kubernetes generati nello specifico \emph{namespace} dedicato alle funzioni (\texttt{openfaas-fn}) mediante i comandi di introspezione nativi:
+\begin{lstlisting}[language=bash]
+kubectl get -n openfaas-fn service/cows -o yaml
+kubectl get -n openfaas-fn deploy/cows -o yaml
+\end{lstlisting}
+
+Un aspetto teorico fondamentale nella progettazione di architetture FaaS riguarda il fenomeno del \textbf{cold-start}. Nei modelli serverless puri (\emph{scale-to-zero}), quando una funzione non riceve traffico, il conteggio delle repliche scende a zero. All'arrivo di una richiesta, l'orchestratore deve schedulare un nuovo Pod, allocare le risorse computazionali, istanziare il container ed eseguire l'ambiente di runtime prima di poter processare la richiesta. Tale sequenza introduce una latenza iniziale non trascurabile.
+
+Per default, OpenFaaS elude questa problematica configurando, tramite etichette di autoscaling (\emph{auto-scaling labels}), un limite inferiore vincolante pari ad \textbf{almeno una replica attiva} per ogni funzione (\(\text{min\_replicas} = 1\)). In tal modo, un container rimane costantemente attivo e in ascolto, garantendo un'elaborazione istantanea senza i ritardi tipici dell'avvio a freddo.
+
+\subsection{Invocazione Asincrona E Architettura Del Queue-Worker}
+
+Quando le funzioni eseguono operazioni su larga scala (elaborazione batch, rendering di file multimediali, inferenza su modelli di Machine Learning) o gestiscono picchi di traffico massivi (ingestione da sensori IoT), il modello sincrono si rivela inadeguato. In tali circostanze si adotta l'invocazione \textbf{asincrona}, che attua il disaccoppiamento temporale e spaziale tra produttore della richiesta e consumatore del servizio.
+
+L'endpoint esposto dal Gateway per le chiamate asincrone assume la forma:
+\begin{center}
+    \texttt{http://<gateway-url>/async-function/<function\_name>}
+\end{center}
+
+Il client invia una richiesta HTTP \texttt{POST}; il Gateway non attende l'esito della computazione, ma accoda immediatamente il carico utile su una coda di messaggistica gestita tramite \textbf{NATS Streaming} (o alternativamente Apache Kafka). Contestualmente, il Gateway restituisce al client una risposta istantanea contenente l'intestazione standard di accettazione (\texttt{202 Accepted}) e un identificatore univoco di tracciamento denominato \textbf{call-id}.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "OpenFaaS_Lecture.pdf"] Flusso di interazione asincrona in OpenFaaS con NATS/Kafka e queue-worker — Slide 23 / Pagina 10 del PDF
+
+La logica di consumo e instradamento differito è delegata a un componente specializzato: il \textbf{queue-worker}.
+\begin{itemize}
+    \item Il \texttt{queue-worker} è un Deployment Kubernetes indipendente che viene eseguito all'interno del namespace di controllo della piattaforma (tipicamente \texttt{openfaas}). Esso appartiene dunque al piano di controllo/dati del sistema OpenFaaS e non allo spazio applicativo utente.
+    \item Il \texttt{queue-worker} agisce come sottoscrittore (\emph{subscriber}) della coda messaggi. Non appena le risorse del cluster lo consentono, estrae (\emph{dequeue}) il messaggio in attesa.
+    \item Successivamente, il \texttt{queue-worker} esegue una chiamata HTTP \textbf{sincrona} verso l'indirizzo interno del Kubernetes Service associato alla funzione.
+    \item La funzione riceve la richiesta esattamente come se fosse stata invocata in modo sincrono, la elabora e restituisce il risultato al \texttt{queue-worker}.
+    \item Se la richiesta si conclude con successo, il worker invia un messaggio di riscontro (\emph{acknowledgment}) al message broker, rimuovendo il messaggio dalla coda; in caso di errore, può gestire politiche di retry o instradare l'evento verso una coda di messaggi scartati (\textbf{Dead Letter Queue}, DLQ).
+    \item Se il client necessita di ricevere il risultato finale, non potendo rimanere in attesa su un socket aperto, può registrare un \textbf{webhook}. Al termine dell'esecuzione, il \texttt{queue-worker} si fa carico di recapitare il payload risultante all'indirizzo callback specificato dal client.
+\end{itemize}
+
+Questo approccio garantisce elevata resilienza: il message broker funge da polmone assorbente per picchi improvvisi di richieste, prevenendo la saturazione delle funzioni applicative ed evitando il drop dei pacchetti.
+
+\newpage
+
+% ==============================================================================
+% SEZIONE 3: IL SISTEMA DI TEMPLATE DI OPENFAAS
+% ==============================================================================
+
+\section{Il Sistema Di Template Di OpenFaaS}
+
+A differenza delle piattaforme FaaS proprietarie erogate dai principali \emph{Hyperscaler} (come AWS Lambda o Google Cloud Functions), le quali impongono vincoli rigorosi sui linguaggi e sulle versioni dei runtime ammessi, OpenFaaS adotta un paradigma agnostico: \textbf{qualsiasi binario eseguibile su ambienti Linux o Windows} può essere confezionato all'interno di un container OCI (\emph{Open Container Initiative}) e gestito come funzione serverless.
+
+Tuttavia, costruire manualmente un'immagine container per ciascuna funzione comporterebbe la scrittura reiterata di un \texttt{Dockerfile}, la configurazione di un server web interno e la gestione manuale delle dipendenze. Per ovviare a questo problema e astrarre tali complessità, OpenFaaS fornisce un'architettura basata su un \textbf{Template Store}.
+
+I template fungono da scheletro (\emph{boilerplate}) preconfigurato che include sia il codice ponte necessario per esporre la logica tramite protocollo HTTP, sia le istruzioni di build per Docker. Lo sviluppatore deve unicamente concentrarsi sulla scrittura della funzione di elaborazione, lasciando alla CLI il compito di assemblare l'immagine finale.
+
+Il comando utilizzato per scaricare i template ufficiali forniti dal repository di OpenFaaS è:
+\begin{lstlisting}[language=bash]
+faas-cli template pull
+\end{lstlisting}
+
+I template vengono archiviati nella directory locale \texttt{./template} del progetto, consentendo la generazione di nuove funzioni nel linguaggio desiderato (Python, Go, Node.js, Java, ecc.).
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "OpenFaaS_Lecture.pdf"] Struttura ad albero dei file nel template python3-flask-debian — Slide 26 / Pagina 13 del PDF
+
+\subsection{Anatomia Di Un Template: Caso Di Studio Python Flask}
+
+Analizzando in dettaglio la struttura di uno dei template più comuni, ovvero \texttt{python3-flask-debian}, emerge la netta separazione delle responsabilità tra il runtime di sistema e la logica applicativa.
+
+L'albero dei file generato dal template presenta la seguente organizzazione:
+\begin{itemize}
+    \item \textbf{template.yml}: è il manifesto del template. Descrive i metadati dell'ambiente di esecuzione, il nome del linguaggio, i percorsi delle directory, le configurazioni per il build dell'immagine e il comando \texttt{fprocess} associato (il processo da lanciare ad ogni esecuzione).
+    \item \textbf{Dockerfile}: definisce la procedura di assemblaggio del container finale. Anziché compilare il sistema operativo da zero, si appoggia a un'immagine di base ottimizzata fornita da OpenFaaS, contenente già il supervisore di esecuzione (\emph{Watchdog}):
+\begin{lstlisting}[language=dockerfile]
+FROM openfaas/python3-flask-debian:latest
+\end{lstlisting}
+    \item \textbf{index.py}: costituisce il \textbf{runtime di ingresso} (\emph{entrypoint runtime}). Implementa un micro-server HTTP basato su Flask e supportato dal server WSGI \textbf{Waitress}. Questo componente si pone in ascolto delle connessioni HTTP in ingresso, riceve il payload dal Watchdog, e invoca programmaticamente il metodo \texttt{handler.handle(req)}. In sostanza, trasforma una semplice funzione Python in un microservizio web reattivo.
+    \item \textbf{requirements.txt (a livello root)}: elenca le dipendenze essenziali del runtime di base OpenFaaS (ad esempio \texttt{Flask} e \texttt{waitress}).
+    \item \textbf{Cartella \texttt{function/}}: contiene il codice sorgente scritto dallo sviluppatore:
+    \begin{itemize}
+        \item \textbf{handler.py}: ospita la logica di business pura. Implementa la funzione \texttt{handle()}, la quale riceve la stringa o il buffer di input \texttt{req} e restituisce il risultato elaborato:
+\begin{lstlisting}[language=python]
+def handle(req):
+    name = req.strip()
+    if name:
+        return f"Hello {name}"
+    else:
+        return "Hello stranger"
+\end{lstlisting}
+        \item \textbf{requirements.txt (interno alla cartella function)}: definisce le librerie e le dipendenze applicative specifiche richieste dalla funzione utente (es. \texttt{numpy}, \texttt{requests}, \texttt{pandas}).
+        \item \textbf{\_\_init\_\_.py}: file convenzionale che trasforma la directory \texttt{function} in un modulo importabile all'interno dell'interprete Python.
+        \item \textbf{handler\_test.py}: modulo predisposto per l'esecuzione di test unitari automatizzati della logica applicativa.
+    \end{itemize}
+    \item \textbf{tox.ini}: file di configurazione impiegato per l'automazione del testing in fase di sviluppo continuo (CI/CD), non strettamente vincolato al runtime di produzione in OpenFaaS.
+\end{itemize}
+
+\newpage
+
+% ==============================================================================
+% SEZIONE 4: IL RUOLO DEL WATCHDOG E MECCANISMI DI ESECUZIONE
+% ==============================================================================
+
+\section{Il Ruolo Del Watchdog E Meccanismi Di Esecuzione}
+
+La concezione originaria del cloud serverless prevedeva l'avvio di un container all'arrivo dell'evento scatenante e la sua immediata distruzione alla terminazione del calcolo. Sebbene questo garantisse il massimo isolamento, introduceva un sovraccarico inaccettabile dovuto ai tempi di \emph{bootstrap} dell'ambiente operativo.
+
+Per eliminare questo ritardo intrinseco, OpenFaaS inietta all'interno dell'immagine container un componente fondamentale: il \textbf{Watchdog}. Il Watchdog è un server HTTP compatto scritto in linguaggio \textbf{Go}, configurato come processo di inizializzazione (\textbf{init process}, corrispondente al \texttt{PID 1}) del container. Poiché un web server si pone in un ciclo infinito di ascolto su una determinata porta di rete, il container non termina mai spontaneamente, rimanendo costantemente attivo e caldo in memoria.
+
+Il Watchdog si interpone tra il Gateway OpenFaaS e il codice applicativo: intercetta le richieste HTTP in ingresso, le adatta per passarle alla funzione, attende la terminazione della computazione e reimballa l'output come corpo della risposta HTTP verso il Gateway.
+
+\subsection{Gestione Delle Chiusure Controllate (Graceful Shutdowns)}
+
+Il Watchdog interagisce attivamente con i probe di salute (\emph{health-check probes}) definiti dall'orchestratore Kubernetes per implementare politiche di \textbf{spegnimento controllato} (\emph{graceful shutdown}) quando un Pod deve essere rimosso o terminato.
+
+Il protocollo si articola secondo le seguenti fasi:
+\begin{enumerate}
+    \item Quando il sistema operativo o Kubernetes notifica l'intenzione di terminare il Pod, invia al processo Watchdog un segnale di terminazione \textbf{SIGTERM}.
+    \item Alla ricezione del segnale, una \emph{goroutine} interna al Watchdog cancella istantaneamente il file di lock di stato collocato in \texttt{/tmp/.lock}.
+    \item La rimozione di tale file causa il fallimento deliberato degli endpoint di controllo salute (\emph{liveness} e \emph{readiness probe}), i quali iniziano a rispondere con il codice HTTP \texttt{503 Service Unavailable}.
+    \item Il Watchdog non interrompe bruscamente i processi attivi, ma entra in uno stato di attesa controllato parametrato dalla variabile temporale \texttt{write\_timeout}.
+    \item Durante questa finestra temporale, il controller di Kubernetes ha il tempo di rilevare lo stato non sano dell'endpoint e di rimuovere l'indirizzo IP del Pod dal pool degli endpoint attivi del ClusterIP Service, cessando di instradargli nuovo traffico.
+    \item Il Watchdog smette di accettare nuove connessioni, porta a compimento le computazioni in corso entro il limite di \texttt{write\_timeout} e solo successivamente consente l'uscita definitiva del processo principale.
+\end{enumerate}
+
+\subsection{Classic Watchdog: Modello A Forking E Flussi Standard POSIX}
+
+Per comprendere il funzionamento del primo supervisore realizzato per OpenFaaS, noto come \textbf{Classic Watchdog}, è necessario richiamare il funzionamento degli stream di comunicazione standard (\textbf{STDIO}) del sistema operativo Linux:
+\begin{itemize}
+    \item \textbf{stdin (Standard Input, File Descriptor 0)}: flusso sequenziale da cui un processo acquisisce dati in ingresso.
+    \item \textbf{stdout (Standard Output, File Descriptor 1)}: canale standard su cui il processo indirizza l'output elaborato.
+    \item \textbf{stderr (Standard Error, File Descriptor 2)}: canale dedicato esclusivamente alla scrittura di messaggi diagnostici, log di errore e anomalie.
+\end{itemize}
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "OpenFaaS_Lecture.pdf"] Schema del Classic Watchdog con modello a forking e comunicazione via stdin/stdout — Slide 29 / Pagina 19 del PDF
+
+Nel modello del Classic Watchdog, il binario compilato costituisce l'\texttt{ENTRYPOINT} del container. Quando il Gateway inoltra una richiesta HTTP sulla porta \texttt{8080}, il Classic Watchdog opera secondo un \textbf{forking model}:
+
+\begin{enumerate}
+    \item Il Watchdog (processo padre) riceve la chiamata di invocazione.
+    \item Per ogni singola richiesta in arrivo, il Watchdog esegue una chiamata di sistema (\texttt{fork()}) generando un \textbf{processo figlio} dedicato all'esecuzione del codice della funzione (indicato dalla direttiva \texttt{fprocess}).
+    \item Il Watchdog scrive il corpo della richiesta HTTP direttamente nello stream \textbf{stdin} del processo figlio appena istanziato (consentendo al codice di leggere dati JSON, testuali o binari come un normale flusso di input da terminale).
+    \item Il processo figlio esegue il codice e restituisce il risultato stampandolo sul suo canale \textbf{stdout}.
+    \item Il Watchdog legge i byte emessi su \textbf{stdout} e li inserisce nel corpo della risposta HTTP da trasmettere al chiamante.
+    \item Eventuali messaggi di errore o log applicativi scritti dal figlio su \textbf{stderr} vengono intercettati dal Watchdog e riversati nei log del container di Kubernetes.
+\end{enumerate}
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "OpenFaaS_Lecture.pdf"] Macchina a stati e ciclo di esecuzione nel Classic Watchdog mode (parent/child) — Slide 30 / Pagina 23 del PDF
+
+\subsubsection{Analisi Del Ciclo Di Vita E Stati Di Uscita}
+
+La sequenza esecutiva nel modello a forking segue una transizione di stato rigida:
+\[
+\text{Ricezione Evento} \;\longrightarrow\; \text{Fork Processo Figlio} \;\longrightarrow\; \text{Passaggio Payload (stdin)} \;\longrightarrow\; \text{Attesa Terminazione} \;\longrightarrow\; \text{Teardown Figlio}
+\]
+
+Il processo padre e il processo figlio condividono una convenzione sullo stato di terminazione (\emph{exit status}). Un valore di uscita pari a zero (\texttt{exit code 0}) segnala che l'esecuzione si è conclusa regolarmente senza errori non gestiti. Qualora il processo termini con un valore diverso da zero o venga abbattuto da un segnale di sistema (\emph{signal termination}, es. \texttt{SIGSEGV} o \texttt{SIGKILL}), il Watchdog rileva tale anomalia e traduce il fallimento in un opportuno codice di errore HTTP (es. \texttt{500 Internal Server Error}).
+
+\textbf{Valutazione Ingegneristica Del Classic Watchdog}:
+Il vantaggio primario del Classic Watchdog risiede nella sua estrema semplicità e compatibilità universale: qualsiasi script shell, comando CLI o programma C/C++ non concepito per il web può essere convertito in funzione serverless senza dover implementare un server HTTP applicativo.
+
+Tuttavia, il costo computazionale associato alla creazione (\texttt{fork}) e alla successiva distruzione (\texttt{teardown}) di un intero processo per ogni singola richiesta HTTP determina un grave collo di bottiglia prestazionale sotto carichi elevati. L'overhead di gestione della memoria e della CPU penalizza la velocità massima di processamento delle richieste.
+
+\subsection{Evoluzione Verso l'of-watchdog (HTTP Mode)}
+
+Per superare i limiti strutturali del Classic Watchdog, OpenFaaS ha sviluppato l'\textbf{of-watchdog} (noto anche come Watchdog in \textbf{HTTP mode}).
+
+Nell'\texttt{of-watchdog}, il processo che incapsula la funzione non viene più forzato a ripartire da capo a ogni invocazione, né la comunicazione passa attraverso gli stream serializzati \texttt{stdin}/\texttt{stdout}. Al contrario, la funzione avvia un proprio server HTTP interno (come nel caso del modulo Flask/Waitress analizzato per Python) che rimane permanentemente attivo all'interno del container. L'\texttt{of-watchdog} si limita ad agire da \textbf{reverse proxy ad alte prestazioni}, trasmettendo le chiamate al server interno tramite socket HTTP su interfaccia \texttt{localhost}.
+
+Questo cambio di paradigma architetturale produce vantaggi determinanti:
+\begin{itemize}
+    \item \textbf{Eliminazione Del Ritardo Di Forking}: la funzione risponde con latenze sensibilmente inferiori, supportando elevati tassi di concorrenza.
+    \item \textbf{Persistenza Delle Risorse Calde}: mantenendo il processo attivo in memoria tra richieste successive, è possibile preservare connessioni verso database (\emph{connection pooling}), mantenere file aperti, memorizzare tabelle in cache o mantenere in RAM modelli computazionalmente pesanti (come reti neurali o modelli di Machine Learning) senza doverli ricaricare a ogni singola chiamata.
+    \item \textbf{Supporto Allo Streaming}: consente il passaggio efficiente e continuo di flussi di dati bidirezionali ad alta intensità di throughput.
+\end{itemize}
+
+\newpage
+
+% AA Orchestrazione_3 [47-69] ------------------------------
+
+\section{Evoluzione Del Watchdog: Da Classic Watchdog A of-watchdog}
+
+\subsection{Richiamo Architetturale: Dal Modello Fork-Exec Al Reverse Proxy}
+Nel paradigma Serverless e Function-as-a-Service (\emph{FaaS}), la funzione utente deve essere isolata, incapsulata e resa invocabile tramite interfacce di rete standardizzate. Nel contesto di OpenFaaS, il componente deputato a interfacciare il mondo esterno (rappresentato dall'API Gateway) con il codice applicativo è il \textbf{Watchdog}.
+
+Nella sua prima incarnazione, nota come \textbf{Classic Watchdog}, il sistema operava secondo un classico modello \emph{CGI-like} (\emph{Common Gateway Interface}):
+\begin{itemize}[noitemsep]
+    \item Il watchdog viene eseguito come processo principale (PID 1) all'interno del container ed espone una porta HTTP (solitamente la \texttt{8080}).
+    \item All'arrivo di ogni singola richiesta HTTP, il watchdog effettua una chiamata di sistema \texttt{fork()} ed \texttt{exec()} per generare un nuovo processo figlio effimero contenente la logica della funzione.
+    \item Il corpo (\emph{body}) della richiesta HTTP viene iniettato nel processo figlio attraverso lo standard input (\texttt{STDIN}), mentre la risposta elaborata viene catturata dallo standard output (\texttt{STDOUT}) e rediretta al chiamante; eventuali messaggi diagnostici vengono raccolti dallo standard error (\texttt{STDERR}).
+\end{itemize}
+Sebbene questo approccio garantisca la massima portabilità e consenta di eseguire qualsiasi binario Linux o script senza richiedere un runtime server integrato, esso introduce un severo collo di bottiglia prestazionale: il costo computazionale e la latenza legati al ciclo di creazione, inizializzazione e distruzione del processo per ciascuna invocazione (\emph{process creation overhead}).
+
+Per superare tale limitazione preservando al contempo la compatibilità con l'ecosistema di orchestrazione, è stato introdotto l'\textbf{of-watchdog} (\emph{OpenFaaS Watchdog}), progettato per operare in modalità \textbf{HTTP mode}. In questa configurazione, l'\texttt{of-watchdog} cessa di comportarsi come un semplice intermediario I/O basato su stream di testo e assume il ruolo di un vero e proprio \textbf{reverse proxy} HTTP ad alte prestazioni.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "OpenFaaS_watchdog_connectors_autoscaling.pdf"] Diagramma architetturale di of-watchdog in HTTP mode: il processo genitore (watchdog) effettua il fork iniziale del child server HTTP (porta 3000), fungendo da reverse proxy HTTP in ascolto sulla porta 8080 — Slide 3 / Pagina 3 del PDF
+
+Come illustrato nello schema architetturale:
+\begin{enumerate}
+    \item All'avvio del container, il watchdog (processo padre) effettua una singola operazione di \texttt{fork} per istanziare il server applicativo della funzione (processo figlio, o \emph{upstream server}), il quale si mette in ascolto su una porta TCP interna all'ambiente di rete del container (tipicamente \texttt{localhost:3000} o \texttt{localhost:8080} a seconda del template).
+    \item L'\texttt{of-watchdog} apre un socket di ascolto esterno sulla porta \texttt{8080} per ricevere il traffico proveniente dall'OpenFaaS Gateway o dalla rete di Kubernetes.
+    \item Per ogni richiesta in arrivo, il watchdog non distrugge né ricrea il processo figlio; al contrario, esegue un inoltro trasparente della richiesta HTTP verso l'upstream locale (\emph{reverse proxying}), attende la risposta HTTP generata dal processo applicativo e la reinvia al client chiamante.
+\end{enumerate}
+
+Questo cambio di paradigma comporta vantaggi operativi e prestazionali sostanziali:
+\begin{itemize}[noitemsep]
+    \item \textbf{Abbattimento della latenza e incremento del throughput}: eliminando la creazione di processi per-request, le richieste consecutive vengono servite con latenze dell'ordine dei millisecondi, consentendo una gestione efficiente dell'alta concorrenza.
+    \item \textbf{Conservazione dello stato caldo (\emph{Warm Process})}: il processo applicativo rimane residente in memoria. Di conseguenza, pool di connessioni a database relazionali (es. PostgreSQL, MySQL) o non relazionali possono essere aperti una sola volta durante la fase di \emph{bootstrap} e riutilizzati per tutte le successive richieste servite dalla medesima replica.
+    \item \textbf{Inizializzazione una-tantum di modelli e dati}: file pesanti, parametri di configurazione o modelli di Machine Learning possono essere scaricati nel \emph{filesystem} locale (ad esempio in \texttt{/tmp/}) oppure pre-caricati nei tensori di memoria durante l'inizializzazione, azzerando i costi di I/O sulle invocazioni ricorrenti.
+    \item \textbf{Adozione di web framework standard}: non occorre adottare librerie client personalizzate o costrutti di trapping I/O proprietari; gli sviluppatori possono strutturare la logica sfruttando framework consolidati quali Express.js per Node.js, Flask o FastAPI per Python, il pacchetto \texttt{net/http} nativo per Go, Sinatra per Ruby o Sun HTTP/Gradle per Java.
+\end{itemize}
+
+\subsection{Supporto Ai Metodi HTTP E Gestione Del Content-Type}
+L'\texttt{of-watchdog} implementa la specifica HTTP/1.1 e supporta la semantica completa dei metodi RESTful sia per le chiamate che prevedono un payload, sia per quelle prive di corpo:
+\begin{itemize}[noitemsep]
+    \item \textbf{Metodi con corpo}: \texttt{POST}, \texttt{PUT}, \texttt{DELETE}, \texttt{UPDATE} (o \texttt{PATCH}). Il watchdog esegue lo \emph{streaming} del corpo della richiesta verso l'upstream server senza alterarne l'integrità binaria.
+    \item \textbf{Metodi senza corpo}: \texttt{GET}. L'invocazione attraversa il reverse proxy preservando query string, percorsi e intestazioni.
+\end{itemize}
+Va notato che, per ragioni di coerenza interna e convenzione d'uso, le chiamate dirette instradate dall'API Gateway verso le funzioni fanno uso prevalente del metodo \texttt{POST}.
+
+In merito all'intestazione di negoziazione del formato \texttt{Content-Type}, il watchdog applica di default una logica simmetrica basata su quella del client:
+\begin{itemize}[noitemsep]
+    \item Se il client trasmette un payload con intestazione \texttt{Content-Type: application/json}, il watchdog propagherà automaticamente la medesima dichiarazione nella risposta al fine di mantenere allineato il parsing del payload.
+    \item Analogamente, qualora la richiesta presenti \texttt{Content-Type: text/plain}, la risposta manterrà tale attributo di default.
+\end{itemize}
+Qualora la funzione richieda un formato di risposta vincolato e indipendente dall'input (ad esempio se restituisce sempre un flusso \texttt{application/octet-stream} o un file SVG/PNG a fronte di una chiamata testuale), è possibile forzare tale intestazione a livello di container impostando la variabile d'ambiente:
+\begin{lstlisting}[language=bash]
+content_type="application/json"
+\end{lstlisting}
+Tale override sovrascrive qualsiasi euristica automatica di corrispondenza applicata dal proxy.
+
+\subsection{Implementazione Applicativa Su of-watchdog E Ciclo Di Vita faas-cli}
+Dal punto di vista dello sviluppatore, un microservizio o una funzione impacchettata con \texttt{of-watchdog} deve presentarsi come un server HTTP pienamente qualificato, responsabile dell'intero ciclo di elaborazione: gestione delle intestazioni, decodifica del corpo, calcolo della risposta e generazione del corretto codice di stato HTTP (\emph{HTTP status code}).
+
+Un esempio canonico di funzione realizzata mediante il micro-framework Python Flask illustra la semplicità del modello:
+
+\begin{lstlisting}[language=python, caption={Implementazione di una funzione compatibile con of-watchdog tramite Flask.}]
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+# Definizione del routing sulla radice per intercettare le chiamate inoltrate
+@app.route('/', methods=['POST'])
+def handle_request():
+    # Estrazione del payload JSON trasmesso dal watchdog
+    data = request.get_json(silent=True) or {}
+    name = data.get('name', 'World')
+
+    # Restituzione della struttura serializzata e status implicito 200 OK
+    return jsonify({"message": f"Hello, {name}"})
+
+if __name__ == '__main__':
+    # Il server ascolta sulla porta interna predefinita configurata nel Dockerfile
+    app.run(host='0.0.0.0', port=8080)
+\end{lstlisting}
+
+Una volta codificata la funzione, il ciclo di rilascio viene automatizzato dallo strumento da riga di comando ufficiale, la \texttt{faas-cli}. Le fasi operative prevedono:
+\begin{enumerate}
+    \item \texttt{faas-cli build}: legge il file di configurazione (\texttt{stack.yml}) e genera localmente l'immagine Docker invocando la build multi-stage definita dal template selezionato.
+    \item \texttt{faas-cli push}: invia l'immagine compilata a un registro remoto accessibile dal cluster di esecuzione (ad esempio Docker Hub, Quay o un registro privato aziendale).
+    \item \texttt{faas-cli deploy}: contatta l'API Gateway di OpenFaaS comunicando i metadati della funzione (riferimento all'immagine, etichette di scaling, variabili d'ambiente e vincoli di schedulazione), innescando la creazione dei manifesti di Deployment su Kubernetes.
+\end{enumerate}
+Per velocizzare le fasi di test e continuous delivery, il comando:
+\begin{lstlisting}[language=bash]
+faas-cli up
+\end{lstlisting}
+concatena ed esegue atomicamente l'intera sequenza \emph{build-push-deploy}. Questo disaccoppiamento basato su container OCI garantisce a OpenFaaS una completa agnolicità rispetto al linguaggio di programmazione, superando le rigide restrizioni dei motori FaaS proprietari vincolati a runtime proprietari.
+
+\newpage
+
+\section{Disaccoppiamento Degli Eventi: I Connettori OpenFaaS}
+
+\subsection{Motivazione Architetturale E Modello Operativo}
+Sebbene il protocollo HTTP costituisca la \emph{lingua franca} per l'interazione sincrona su Internet, le architetture moderne e i sistemi distribuiti su larga scala richiedono l'attivazione asincrona innescata da eventi (\emph{Event-Driven Architecture}). Imporre che ciascuna funzione serverless incorpori librerie client pesanti (\emph{SDK}) per sottoscrivere code o topic Kafka/RabbitMQ violerebbe i principi cardine del FaaS: funzioni snelle, prive di stato (\emph{stateless}), veloci da avviare e disaccoppiate dall'infrastruttura di trasporto.
+
+Per colmare questo divario, OpenFaaS adotta il pattern architetturale degli \textbf{Event Connector}. Un connettore è un componente infrastrutturale specializzato e opzionale che si frappone tra un sistema di messaggistica esterno e il Gateway di OpenFaaS, trasformando eventi asincroni in normali chiamate HTTP \texttt{POST}.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "OpenFaaS_watchdog_connectors_autoscaling.pdf"] Schema del connettore di eventi (Event-connector pattern): il connettore si sottoscrive alla sorgente, intercetta l'evento, mappa il topic alle funzioni registrate ed effettua la chiamata HTTP verso il Gateway — Slide 9 / Pagina 9 del PDF
+
+Il ciclo operativo di base di un connettore si articola in tre fasi distinte:
+\begin{enumerate}
+    \item \textbf{Sottoscrizione (\emph{Subscription})}: il connettore stabilisce una connessione persistente verso il broker di messaggistica esterno (ad esempio un cluster Apache Kafka, un broker MQTT o una coda SQS) e si iscrive ai canali o argomenti (\emph{topic}) di interesse.
+    \item \textbf{Ascolto (\emph{Listening})}: il componente rimane in attesa di eventi o pacchetti in arrivo sulla sorgente, gestendo autonomamente le conferme di ricezione (\emph{acknowledgement}), i meccanismi di polling e i retry a livello di trasporto.
+    \item \textbf{Inoltro (\emph{Send / Invocation})}: alla ricezione di un messaggio, il connettore estrae il payload utile (\emph{value}) e formula una richiesta HTTP verso l'endpoint \texttt{/function/<nome-funzione>} del Gateway di OpenFaaS, attivando l'esecuzione della funzione corrispondente.
+\end{enumerate}
+
+Questo approccio presenta vantaggi progettuali decisivi:
+\begin{itemize}[noitemsep]
+    \item \textbf{Assenza di accoppiamento tecnologico}: il codice della funzione rimane puro. Non include codice di connessione a Kafka, certificati di autenticazione verso AWS o logica di gestione code.
+    \item \textbf{Protezione del broker a fronte dello scaling}: al crescere delle repliche della funzione per assorbire un picco di carico, il numero di client connessi al broker esterno rimane costante (pari alle istanze del connettore), evitando che il database o la coda collassino sotto migliaia di connessioni concorrenti.
+\end{itemize}
+
+\subsection{Tassonomia Dei Connettori Principali}
+L'ecosistema OpenFaaS mette a disposizione connettori modulari per i principali paradigmi di messaggistica e integrazione:
+\begin{itemize}
+    \item \textbf{NATS Streaming Connector}: basato sull'architettura NATS (broker ultra-leggero nativo del mondo cloud-native), è ideale per scenari di elaborazione eventi asincroni scalabili, architetture IoT e microservizi reattivi a bassissima latenza. Un esempio tipico è un sensore che pubblica rilevazioni telemetriche sul canale \texttt{sensor-data}; il connettore intercetta il messaggio e invoca la relativa pipeline di sanitizzazione.
+    \item \textbf{Apache Kafka Connector}: progettato per l'elaborazione distribuita di flussi di dati ad altissimo throughput e volumi massivi in tempo reale (ad esempio ingestione di stream di log applicativi \texttt{app-logs}, analytics e tracciamento clickstream).
+    \item \textbf{MQTT Connector}: si interfaccia con il protocollo MQTT (\emph{Message Queuing Telemetry Transport}), standard de facto per l'Internet of Things e la sensoristica remota a basso consumo energetico. Permette, ad esempio, a una sonda termica di pubblicare su un topic \texttt{temperature}, scatenando funzioni di analisi predittiva.
+    \item \textbf{Cron Connector}: agisce come un pianificatore temporale integrato, scatenando le funzioni sulla base di espressioni schedulate (ad esempio ogni minuto, ogni ora, o giornalmente alle ore 02:00 per la generazione di report e il cleanup di tabelle).
+    \item \textbf{HTTP Connector (Native Gateway)}: costituisce il punto di ingresso predefinito del sistema per l'interazione sincrona proveniente da client esterni, applicazioni web, Single Page Application o API REST esterne.
+    \item \textbf{AWS SQS Connector}: permette l'integrazione nativa con code gestite in cloud su Amazon Web Services (\emph{Simple Queue Service}), consentendo di disaccoppiare flussi di elaborazione come la gestione degli ordini (\texttt{orders}) su infrastrutture ibride.
+    \item \textbf{AWS SNS Connector}: rappresenta una delle aggiunte più recenti all'ecosistema, consentendo di propagare notifiche \emph{publish/subscribe} originate da eventi infrastrutturali di AWS (es. modifiche su bucket S3, notifiche CloudWatch) direttamente verso funzioni OpenFaaS on-premises o multi-cloud.
+\end{itemize}
+
+\subsection{Approfondimento: Integrazione Con Apache Kafka E Il connector-sdk}
+Per comprendere nel dettaglio il meccanismo di instradamento degli eventi, è opportuno analizzare l'interazione con un cluster **Apache Kafka**.
+
+\subsubsection{Richiamo Dei Concetti Fondamentali Di Apache Kafka}
+Kafka è una piattaforma di streaming distribuito basata sul paradigma log ad alte prestazioni:
+\begin{itemize}[noitemsep]
+    \item \textbf{Producer}: entità applicativa che pubblica record sui topic di Kafka.
+    \item \textbf{Broker}: nodo server del cluster Kafka che memorizza i dati e serve i consumatori.
+    \item \textbf{Topic}: canale logico di categorizzazione dei messaggi (es. \texttt{signup}, \texttt{payment}, \texttt{orders}).
+    \item \textbf{Partition}: unità fondamentale di memorizzazione e parallelismo. Ciascun topic è suddiviso in una o più partizioni distribuite sui diversi broker.
+    \item \textbf{Consumer e Consumer Group}: entità che leggono i messaggi scorrendo le partizioni. I membri di un gruppo si spartiscono le partizioni in modo trasparente e bilanciato.
+    \item \textbf{Offset}: identificatore numerico progressivo e immutabile che traccia l'esatta posizione del consumatore all'interno di una partizione. A differenza delle code tradizionali, i messaggi non vengono cancellati dopo la lettura, ma conservati per un periodo configurabile (\emph{retention period}, es. 7 giorni), permettendo a nuovi connettori o servizi di rielaborare la serie storica.
+\end{itemize}
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "OpenFaaS_watchdog_connectors_autoscaling.pdf"] Architettura di dettaglio del Kafka Connector e OpenFaaS: query a /system/functions, costruzione della Function Map e invocazione di /function/email-welcome tramite Gateway — Slide 12 / Pagina 12 del PDF
+
+\subsubsection{Dinamica Di Risoluzione Dei Topic E connector-sdk}
+Il connettore di Kafka viene realizzato sfruttando il **connector-sdk**, una libreria sviluppata in linguaggio Go che incapsula e astrae la complessità dell'interazione con OpenFaaS:
+\begin{enumerate}
+    \item All'avvio e a intervalli periodici prefissati, il connettore interroga l'endpoint di sistema del Gateway:
+    \begin{lstlisting}[language=bash]
+    GET /system/functions
+    \end{lstlisting}
+    \item L'endpoint restituisce la lista di tutte le funzioni attive nel cluster, corredate dai rispettivi metadati ed etichette (\textbf{annotations}). Quando una funzione viene rilasciata, essa definisce nel proprio descrittore (\texttt{stack.yml}) a quale topic desidera essere associata:
+    \begin{lstlisting}[language=yaml]
+    functions:
+      email-welcome:
+        image: openfaas/email-welcome:latest
+        annotations:
+          topic: signup
+    \end{lstlisting}
+    \item Il \texttt{connector-sdk} compila in memoria una tabella di lookup dinamica (\textbf{Function Map}) associando le chiavi dei topic agli endpoint delle funzioni (es. il topic \texttt{signup} punta a \texttt{email-welcome}, mentre un topic di fatturazione punterebbe a \texttt{billing-audit}).
+    \item Quando un Producer Kafka pubblica sulla partizione del topic \texttt{signup} il messaggio JSON:
+    \begin{lstlisting}[language=json]
+    {"userid": 1013}
+    \end{lstlisting}
+    il \texttt{kafka-connector} (agendo come regolare Kafka Consumer all'interno del proprio gruppo) esegue il polling del messaggio.
+    \item Il connettore consulta la Function Map, individua che per \texttt{signup} è registrata la funzione \texttt{email-welcome}, ed effettua la chiamata HTTP POST verso il Gateway:
+    \begin{lstlisting}[language=bash]
+    POST /function/email-welcome HTTP/1.1
+    Host: gateway:8080
+    Content-Type: application/json
+
+    {"userid": 1013}
+    \end{lstlisting}
+\end{enumerate}
+
+Grazie a questo design, l'unica responsabilità del codice specifico del connettore è interfacciare il driver di ricezione della coda; tutta la logica di tracciamento, mapping delle funzioni e dispatch HTTP è interamente gestita dal framework condiviso.
+
+\newpage
+
+\section{Meccanismi E Strategie Di Autoscaling In OpenFaaS}
+
+\subsection{Architettura Di Rilevamento E Decisione: Prometheus Ed Alertmanager}
+Una delle proprietà fondamentali dei sistemi Serverless è l'elasticità autonoma, ovvero la capacità di allocare e deallocare risorse a fronte di fluttuazioni nel volume di carico. In OpenFaaS, l'autoscaling unisce i meccanismi dell'ecosistema Kubernetes con euristiche applicative a grana fine basate su metriche in tempo reale.
+
+L'architettura comprende:
+\begin{itemize}[noitemsep]
+    \item \textbf{Prometheus}: effettua costantemente lo \emph{scraping} delle metriche operative esposte dal Gateway e dai singoli watchdog (latenza, richieste al secondo, richieste in volo, errori).
+    \item \textbf{Alertmanager}: riceve regole di allerta da Prometheus; quando una metrica supera una determinata soglia preimpostata per un intervallo di valutazione stabilito, spara un evento di allerta.
+    \item \textbf{faas-netes}: operatore e runtime controller che traduce le direttive di OpenFaaS in entità Kubernetes (\emph{Deployments}, \emph{Pods}, \emph{Services}).
+\end{itemize}
+
+A livello implementativo, OpenFaaS supporta due canali di autoscaling complementari:
+\begin{enumerate}
+    \item \textbf{Kubernetes Horizontal Pod Autoscaler (HPA)}: delega l'autoscaling direttamente alle API native di Kubernetes sulla base dell'utilizzo medio di CPU, memoria o Custom Metrics.
+    \item \textbf{Logica Interna Di OpenFaaS (Prometheus/Alertmanager e Queue-Worker)}: in modalità asincrona, il sistema monitora la profondità della coda dei messaggi (in NATS o Kafka) e adatta tempestivamente il numero di \emph{queue-worker} e repliche per assorbire carichi di lavoro caratterizzati da forti raffiche (\emph{bursty traffic}).
+\end{enumerate}
+
+La gestione delle repliche viene vincolata per ciascuna funzione mediante etichette dedicate (\emph{labels}):
+\begin{itemize}[noitemsep]
+    \item \texttt{com.openfaas.scale.min}: definisce il numero minimo di repliche garantite attive (valore di default: $1$).
+    \item \texttt{com.openfaas.scale.max}: imposta il limite superiore insuperabile di pod istanziabili.
+    \item \texttt{com.openfaas.scale.factor}: specifica la percentuale di incremento o decremento delle repliche ad ogni emissione di un allarme da parte dell'Alertmanager (default: $20\%$, configurabile nell'intervallo $[0, 100]$).
+\end{itemize}
+
+\subsection{Modalità Di Scaling Avanzate: Capacity, RPS, CPU}
+Nelle versioni moderne (in particolare in OpenFaaS Pro), il motore di scalatura supera la rigida dipendenza da semplici soglie di alert, implementando algoritmi analitici proporzionali basati su tre distinte modalità:
+
+\begin{itemize}
+    \item \textbf{Capacity}: dimensionamento basato sul numero di richieste concorrenti (\emph{in-flight requests}) o connessioni aperte simultaneamente su ciascun pod. È la modalità ideale per funzioni computazionalmente pesanti, I/O-bound o a lunga esecuzione che possono tollerare solo un numero limitato di transazioni parallele per processo. Sulla funzione può essere inoltre impostato un limite rigido tramite la variabile d'ambiente \texttt{max\_inflight}.
+    \item \textbf{RPS (Requests Per Second)}: calcolato sul numero di richieste completate con successo per unità di tempo. Risulta particolarmente efficace per funzioni ultra-veloci (tempi di esecuzione nell'ordine delle frazioni di secondo) caratterizzate da altissimo throughput.
+    \item \textbf{CPU}: basato sull'assorbimento delle risorse di calcolo misurato in \emph{milli-CPU} (dove $1000\text{m} = 1\text{ core vCPU}$). È l'approccio raccomandato per carichi di tipo CPU-bound (elaborazione grafica, crittografia, compressione dati) in cui la concorrenza logica non riflette lo stress fisico della macchina.
+\end{itemize}
+
+\subsection{Formulazione Matematica Dell'Algoritmo Di Dimensionamento}
+A prescindere dalla metrica considerata (capacità concorrente, RPS o consumo di millicore CPU), l'autoscaler esegue interrogazioni periodiche per estrarre il carico aggregato del sistema e calcola il numero desiderato di repliche mediante un rapporto proporzionale.
+
+La formulazione analitica fondamentale è definita come segue:
+\begin{equation}
+    N_{\text{desired}} = \left\lceil N_{\text{ready}} \times \left( \frac{\bar{L}_{\text{pod}}}{L_{\text{target}}} \right) \right\rceil
+\end{equation}
+dove:
+\begin{itemize}[noitemsep]
+    \item $N_{\text{desired}}$: numero desiderato di repliche (pod) da impostare.
+    \item $N_{\text{ready}}$: numero di pod attualmente operativi e nello stato \emph{Ready}.
+    \item $\bar{L}_{\text{pod}}$: carico medio istantaneo registrato per singolo pod, ovvero il rapporto tra il carico totale rilevato $L_{\text{total}}$ e i pod attivi: $\bar{L}_{\text{pod}} = \frac{L_{\text{total}}}{N_{\text{ready}}}$.
+    \item $L_{\text{target}}$: valore di carico target per pod prefissato dall'amministratore.
+    \item $\lceil \cdot \rceil$: operatore soffitto (\emph{ceiling}), che garantisce l'arrotondamento all'intero superiore per non sottodimensionare il cluster.
+\end{itemize}
+
+Per modulare la reattività dell'infrastruttura ed evitare oscillazioni violente (\emph{flapping} o \emph{thrashing}), l'algoritmo introduce un coefficiente correttivo adimensionale denominato \textbf{target-proportion} ($\rho_{\text{target}} \in (0, 1]$):
+\begin{equation}
+    \boxed{N_{\text{desired}} = \left\lceil N_{\text{ready}} \times \left( \frac{\bar{L}_{\text{pod}}}{L_{\text{target}} \times \rho_{\text{target}}} \right) \right\rceil}
+\end{equation}
+
+Il parametro $\rho_{\text{target}}$ funge da moltiplicatore della tolleranza di carico:
+\begin{itemize}[noitemsep]
+    \item Un valore \textbf{basso} di $\rho_{\text{target}}$ (es. $0.7$) riduce fittiziamente la capacità nominale del pod, forzando una scalatura \textbf{anticipata, più reattiva e sensibile} ai picchi.
+    \item Un valore \textbf{alto} di $\rho_{\text{target}}$ (prossimo a $1.0$) rende la scalatura più \textbf{conservativa}, massimizzando lo sfruttamento delle risorse esistenti prima di allocare nuovi pod.
+\end{itemize}
+
+\subsection{Esempi Numerici Svolti}
+
+\subsubsection{Caso 1: Transizione Da Carico Base A Picco Concorrente}
+Si consideri una funzione denominata \texttt{sleep} configurata in modalità \emph{Capacity}:
+\begin{itemize}[noitemsep]
+    \item Carico target per pod: $L_{\text{target}} = 5\text{ richieste in volo}$.
+    \item Pod attualmente pronti: $N_{\text{ready}} = 1$ (pari al minimo garantito: \texttt{com.openfaas.scale.min = 1}).
+    \item Fattore di sensibilità: $\rho_{\text{target}} = 1.0\text{ (100\%)}$.
+    \item Si registra un picco di carico improvviso pari a $L_{\text{total}} = 15\text{ richieste concorrenti}$.
+\end{itemize}
+
+Calcolo del carico medio per pod:
+\begin{equation*}
+    \bar{L}_{\text{pod}} = \frac{L_{\text{total}}}{N_{\text{ready}}} = \frac{15}{1} = 15
+\end{equation*}
+Applicazione della formula di dimensionamento:
+\begin{align*}
+    N_{\text{desired}} &= \left\lceil 1 \times \left( \frac{15}{5 \times 1.0} \right) \right\rceil \\
+    &= \lceil 3.0 \rceil = 3\text{ repliche}.
+\end{align*}
+L'infrastruttura comanda istantaneamente l'avvio di due ulteriori pod per raggiungere un totale di 3 repliche attive.
+
+\subsubsection{Caso 2: Distribuzione Su Più Repliche Ed Esaurimento Del Carico}
+Supponiamo che, a seguito della scalatura precedente, i pod pronti siano $N_{\text{ready}} = 3$ e che il carico concorrente salga a $L_{\text{total}} = 25\text{ richieste}$:
+\begin{equation*}
+    \bar{L}_{\text{pod}} = \frac{25}{3} \approx 8.33\text{ richieste per pod}
+\end{equation*}
+Ricalcolo del numero di repliche necessarie:
+\begin{align*}
+    N_{\text{desired}} &= \left\lceil 3 \times \left( \frac{8.33}{5 \times 1.0} \right) \right\rceil \\
+    &= \lceil 3 \times 1.666 \rceil = \lceil 4.998 \rceil = 5\text{ repliche}.
+\end{align*}
+Il sistema scala a 5 istanze.
+
+Successivamente, il traffico cessa completamente, portando il carico a $L_{\text{total}} = 0$:
+\begin{equation*}
+    \bar{L}_{\text{pod}} = \frac{0}{3} = 0 \implies N_{\text{desired}} = \left\lceil 3 \times \left( \frac{0}{5} \right) \right\rceil = 0.
+\end{equation*}
+Tuttavia, poiché è impostato un limite minimo di funzionamento (\texttt{com.openfaas.scale.min = 1}), il sistema non azzera l'allocazione, ma esegue un \emph{scale-down} controllato riportando le repliche al valore soglia:
+\begin{equation*}
+    N_{\text{actual}} = \max(N_{\text{desired}}, N_{\text{min}}) = \max(0, 1) = 1\text{ replica}.
+\end{equation*}
+
+\subsubsection{Caso 3: Concorrenza Con Headroom Di Sicurezza ($\rho_{\text{target}} < 1$)}
+Si progetti un sistema con un tetto massimo di $100$ richieste per pod, introducendo un margine prudenziale del $30\%$ ($\rho_{\text{target}} = 0.7$):
+\begin{itemize}[noitemsep]
+    \item $L_{\text{target}} = 100$ richieste.
+    \item $\rho_{\text{target}} = 0.7$.
+    \item Pod pronti: $N_{\text{ready}} = 1$.
+    \item Carico rilevato: $L_{\text{total}} = 90$ richieste in volo ($\bar{L}_{\text{pod}} = 90$).
+\end{itemize}
+
+Sostituendo i valori nella formula:
+\begin{align*}
+    N_{\text{desired}} &= \left\lceil 1 \times \left( \frac{90}{100 \times 0.7} \right) \right\rceil \\
+    &= \left\lceil \frac{90}{70} \right\rceil = \lceil 1.2857 \rceil = 2\text{ repliche}.
+\end{align*}
+In questo scenario, sebbene il carico ($90$) sia nominalmente inferiore alla capacità teorica del singolo pod ($100$), l'autoscaler assegna cautelativamente una seconda replica in virtù del fattore di sensibilità, prevenendo l'intasamento della coda.
+
+\subsection{Lo Scale-To-Zero Ed Il Fenomeno Del Cold Start}
+Nelle installazioni a risorse limitate o in ambienti Public Cloud in cui il billing è strettamente legato al consumo orario dei nodi, la possibilità di scalare a zero repliche (\textbf{Scale to Zero}) in assenza di traffico rappresenta un meccanismo chiave di ottimizzazione dei costi.
+
+Tuttavia, l'attivazione di una funzione quando non vi sono pod pronti comporta l'insorgenza della latenza di primo avvio, nota come \textbf{Cold Start}. Il Cold Start si compone fisicamente delle seguenti fasi sequenziali:
+\begin{enumerate}
+    \item \textbf{Scheduling}: il control plane di Kubernetes riceve la richiesta di creazione del pod e individua un worker node idoneo in grado di soddisfarne i vincoli di memoria e CPU.
+    \item \textbf{Image Pulling}: il runtime di containerizzazione del nodo verifica la presenza dell'immagine OCI nel filesystem locale; in caso di assenza (\emph{cache miss}), esegue il download dei layer attraverso la rete dal registry remoto.
+    \item \textbf{Container Creation \& Initialization}: creazione dei namespace e dei cgroup, montaggio dei volumi e avvio del processo principale (\texttt{of-watchdog}).
+    \item \textbf{Probing di Liveness e Readiness}: esecuzione dei controlli di salute iniziali. Fino a quando i probe di readiness non hanno esito positivo, Kubernetes non registra l'IP dell'endpoint nei bilanciatori di carico.
+    \item \textbf{Cluster State Synchronization}: propagazione dello stato \emph{Ready} a tutti i nodi del cluster mediante il control plane e l'\texttt{etcd}.
+\end{enumerate}
+
+Per mitigare l'impatto del Cold Start senza rinunciare ai vantaggi dello Scale-to-Zero, si adottano le seguenti contromisure architetturali:
+\begin{itemize}[noitemsep]
+    \item \textbf{Mantenimento di almeno una replica attiva}: per servizi critici o ad alta reattività, si imposta \texttt{com.openfaas.scale.min >= 1}, evitando a priori la disattivazione totale.
+    \item \textbf{Invocazione Asincrona}: instradando le chiamate non tempo-sensibili attraverso la coda interna (NATS Streaming), il client riceve istantaneamente una risposta \texttt{202 Accepted} e il ritardo di avvio viene disaccoppiato dall'esperienza utente.
+    \item \textbf{Pre-pulling delle immagini}: pre-caricamento delle immagini Docker su ciascun nodo worker tramite DaemonSet per eliminare il costo di rete del download.
+    \item \textbf{Ottimizzazione dei Probe}: configurazione dei controlli di \emph{Liveness} e \emph{Readiness} di Kubernetes con cadenza più aggressiva (\emph{faster cadence}, es. intervalli di polling nell'ordine dei $500\text{ ms}$).
+    \item \textbf{Dimensionamento dei Timeout di Inattività}: lo scale-down a zero deve intervenire solo dopo un intervallo di inattività prolungato. La regola euristica consigliata consiste nell'impostare l'inattività minima prima dello spegnimento ad almeno $2\times$ il valore del massimo timeout applicativo configurato.
+\end{itemize}
+
+\end{document}

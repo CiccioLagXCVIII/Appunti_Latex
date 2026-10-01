@@ -1,0 +1,107 @@
+## =================================================================
+## DOCUMENTI COMPILATI (PDF E INTERMEDI)
+## =================================================================
+*.pdf
+*.dvi
+*.xdv
+*-converted-to.*
+
+# Se hai figure/immagini in formato PDF dentro cartelle Images, mantienile tracciabili:
+!**/Images/**/*.pdf
+!**/*_Images/**/*.pdf
+
+## =================================================================
+## FILE AUSILIARI DI COMPILAZIONE LATEX
+## =================================================================
+*.aux
+*.lof
+*.log
+*.lot
+*.fls
+*.out
+*.toc
+*.fmt
+*.fot
+*.cb
+*.cb2
+.*.lb
+
+## File di Bibliografia e Citazioni
+*.bbl
+*.bbl-SAVE-ERROR
+*.bcf
+*.bcf-SAVE-ERROR
+*.blg
+*-blx.aux
+*-blx.bib
+*.run.xml
+
+## File di Strumenti di Build e SyncTeX
+*.fdb_latexmk
+*.synctex
+*.synctex(busy)
+*.synctex.gz
+*.synctex.gz(busy)
+*.pdfsync
+*.rubbercache
+rubber.cache
+latex.out/
+
+## Pacchetti vari (Beamer, Algoritmi, Glossari, Indici)
+*.nav
+*.snm
+*.vrb
+*.pre
+*.alg
+*.loa
+*.idx
+*.ilg
+*.ind
+*.ist
+*.acn
+*.acr
+*.glg
+*.glo
+*.gls
+*.glsdefs
+*.thm
+*.soc
+*.loc
+*.cpt
+*.spl
+*.lol
+*.maf
+*.mlf
+*.mlt
+*.mtc*
+*.slf*
+*.slt*
+*.stc*
+
+## PythonTeX / Minted / TikZ Cache
+_minted*
+*.pyg
+*.pytxcode
+pythontex-files-*/
+*.dpth
+*.md5
+*.auxlock
+
+## =================================================================
+## BACKUP, FILE DI SISTEMA ED EDITOR
+## =================================================================
+*.bak*
+*.sav
+*.backup
+*~
+.*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+## Node / NPM
+node_modules/
+package-lock.json
+
+## Report temporanei generati da script locali
+Report_*.txt

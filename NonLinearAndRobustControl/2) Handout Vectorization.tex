@@ -1,0 +1,261 @@
+\documentclass[11pt, a4paper]{article}
+
+%---------------------------------------------------------
+% Lingua, Codifica e Font
+%---------------------------------------------------------
+\usepackage[italian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[utf8]{inputenc}
+\usepackage{csquotes}
+
+%---------------------------------------------------------
+% Layout Di Pagina E Tipografia
+%---------------------------------------------------------
+\usepackage[margin=1.5cm, top=1.5cm, bottom=1.5cm]{geometry}
+\usepackage{parskip}
+\usepackage[verbose=silent]{microtype}
+\usepackage{soul}
+\usepackage{fancybox}
+
+%---------------------------------------------------------
+% Gestione Dei Colori
+%---------------------------------------------------------
+\usepackage[table, svgnames]{xcolor}
+\definecolor{darkgreen}{RGB}{0,100,0}
+\definecolor{theoryblue}{RGB}{30,144,255}
+
+%---------------------------------------------------------
+% Matematica E Simboli (Fondamentali per ML)
+%---------------------------------------------------------
+\usepackage{amsmath, amssymb, amsfonts, amsthm}
+\usepackage{mathtools}
+\usepackage{siunitx}
+
+% BB OTTIMIZZAZIONE MATRICI LUNGHE PER LA STAMPA
+\setlength{\arraycolsep}{10pt}
+\usepackage{bm}
+\usepackage{arydshln}
+\usepackage{mathrsfs}
+\usepackage{cancel}
+
+% Operatori comuni nel Machine Learning
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator{\E}{\mathbb{E}}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Cov}{Cov}
+% Loss
+\newcommand{\Loss}{\mathcal{L}}
+% Dataset
+\newcommand{\Dataset}{\mathcal{D}}
+% Norma
+\newcommand{\Norma}[1]{\left\lVert#1\right\rVert}
+
+%---------------------------------------------------------
+% Grafica, Immagini E Tabelle
+%---------------------------------------------------------
+\usepackage{graphicx}
+\graphicspath{{./Images/}}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{caption}
+\usepackage{subcaption}
+
+% TikZ e PGFPlots
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, patterns, angles, quotes, calc, positioning}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+%---------------------------------------------------------
+% Link, Riferimenti Ed Elenchi
+%---------------------------------------------------------
+\usepackage[unicode]{hyperref}
+\hypersetup{
+  linkcolor=blue,
+  urlcolor=blue,
+  citecolor=blue,
+  pdftitle={Machine Learning \& Data Analysis},
+  pdfauthor={Francesco Lo Verde},
+}
+\usepackage{bookmark}
+\usepackage[italian, capitalize]{cleveref}
+\usepackage{enumitem}
+\setlist{noitemsep}
+
+%---------------------------------------------------------
+% Personalizzazione Titoli
+%---------------------------------------------------------
+\usepackage{titlesec}
+\titleformat{\section}{\normalfont\LARGE\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\Large\bfseries}{\thesubsection}{1em}{}
+
+%---------------------------------------------------------
+% Algoritmi
+%---------------------------------------------------------
+\usepackage[ruled,vlined,linesnumbered,italiano,onelanguage]{algorithm2e}
+
+% Comandi custom per algorithm2e
+\SetKwInput{Dati}{Input}
+\SetKwInput{Risultato}{Output}
+\SetKw{Inizializza}{Inizializza}
+
+% Definizione della struttura Se...Allora...
+\SetKwIF{Se}{AltrimentiSe}{Altrimenti}{se}{allora}{altrimenti se}{altrimenti}{finese}
+
+% Definizione della struttura Funzione
+\SetKwProg{Fn}{Funzione}{:}{fine}
+
+% Definizione dei cicli (AGGIUNTI ORA)
+\SetKwFor{Per}{per}{fai}{fine per}
+\SetKwRepeat{Ripeti}{ripeti}{finché}
+
+% Gestione commenti
+\SetKwComment{Commento}{// }{}
+
+%---------------------------------------------------------
+% Inizio Documento
+%---------------------------------------------------------
+\title{RISOLUZIONE DI UGUAGLIANZE MATRICIALI LINEARI TRAMITE VETTORIZZAZIONE}
+\author{FRANCESCO FERRANTE}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Problema e motivazione}
+Mentre la risoluzione di sistemi di uguaglianze lineari è piuttosto standard, la soluzione di equazioni matriciali lineari non è così comune. Tuttavia, molti problemi di interesse nel campo del controllo richiedono di essere in grado di gestire equazioni matriciali lineari (LME). In generale, una LME si scrive come:
+
+
+\begin{equation}
+AXC + HX + XG = B
+\end{equation}
+dove $A \in \mathbb{R}^{n \times m}$, $B \in \mathbb{R}^{n \times q}$, $C \in \mathbb{R}^{q \times q}$, $H \in \mathbb{R}^{n \times m}$, e $G \in \mathbb{R}^{q \times q}$ sono dati e $X \in \mathbb{R}^{m \times q}$ è l'incognita.
+
+\section{Strumenti}
+La difficoltà principale nel risolvere direttamente la (1) è fondamentalmente legata al fatto che il prodotto tra matrici non commuta in generale. Pertanto, è generalmente impossibile riscrivere la (1) come $A'X = B'$ per alcune matrici $A'$ e $B'$. D'altra parte, l'algebra lineare ci insegna che le matrici reali non sono altro che vettori euclidei se si guarda bene! Più formalmente, poiché lo spazio vettoriale $\mathbb{R}^{n \times m}$ è uno spazio vettoriale reale a dimensione finita, può essere mappato nello spazio $\mathbb{R}^{nm}$ tramite un isomorfismo, ovvero una trasformazione lineare invertibile. In particolare, tale trasformazione può essere assunta come l'operazione di "vettorizzazione" definita come segue per ogni $A \in \mathbb{R}^{n \times m}$:
+\[
+\text{vec}(A) =
+\begin{bmatrix}
+a_{1,1} \\
+\vdots \\
+a_{n,1} \\
+\vdots \\
+a_{1,2} \\
+\vdots \\
+a_{n,2} \\
+\vdots \\
+a_{1,m} \\
+\vdots \\
+a_{n,m}
+\end{bmatrix}
+\]
+Ad esempio, se
+\[
+A = \begin{bmatrix} 1 & 2 & 3 \\ 0 & 4 & 5 \end{bmatrix} \in \mathbb{R}^{2 \times 3}
+\]
+allora
+\[
+\text{vec}(A) = \begin{bmatrix} 1 \\ 0 \\ 2 \\ 4 \\ 3 \\ 5 \end{bmatrix} \in \mathbb{R}^6
+\]
+Chiaramente, $\text{vec}$ soddisfa tutte le belle proprietà di un isomorfismo, cioè è lineare e invertibile. OK, allora vettorizziamo le cose!
+\begin{equation}
+\text{vec}(AXC + HX + XG) = \text{vec}(B)
+\end{equation}
+possiamo certamente farlo perché $\text{vec}$ è invertibile. Inoltre, usando la linearità:
+\begin{equation}
+\text{vec}(AXC) + \text{vec}(HX) + \text{vec}(XG) = \text{vec}(B)
+\end{equation}
+Ora sappiamo che possiamo vettorizzare le cose, ma non siamo ancora in grado di gestire la (3) a causa degli elementi moltiplicati. Quindi, per farcela, dobbiamo capire come si comporta la vettorizzazione in termini di moltiplicazione tra matrici. A tal fine, dobbiamo introdurre un'altra operazione, che è il prodotto di Kronecker.
+
+Dati $A \in \mathbb{R}^{m \times n}$ e $B \in \mathbb{R}^{p \times q}$, il prodotto di Kronecker $A \otimes B$ è la seguente matrice a blocchi $pm \times qn$:
+\[
+A \otimes B =
+\begin{bmatrix}
+a_{11}B & \dots & a_{1n}B \\
+\vdots & \ddots & \vdots \\
+a_{m1}B & \dots & a_{mn}B
+\end{bmatrix}
+\]
+Ad esempio, se
+\[
+A = \begin{bmatrix} 1 & 2 \\ 3 & 4 \end{bmatrix}, \quad B = \begin{bmatrix} 0 & 5 \\ 6 & 7 \end{bmatrix}
+\]
+Allora
+\[
+A \otimes B =
+\begin{bmatrix}
+1 \begin{bmatrix} 0 & 5 \\ 6 & 7 \end{bmatrix} & 2 \begin{bmatrix} 0 & 5 \\ 6 & 7 \end{bmatrix} \\
+3 \begin{bmatrix} 0 & 5 \\ 6 & 7 \end{bmatrix} & 4 \begin{bmatrix} 0 & 5 \\ 6 & 7 \end{bmatrix}
+\end{bmatrix} =
+\begin{bmatrix}
+0 & 5 & 0 & 10 \\
+6 & 7 & 12 & 14 \\
+0 & 15 & 0 & 20 \\
+18 & 21 & 24 & 28
+\end{bmatrix} \in \mathbb{R}^{4 \times 4}
+\]
+Incredibilmente, l'aver definito questo strano prodotto permette di gestire la vettorizzazione delle moltiplicazioni standard tra matrici. In particolare, le seguenti due proprietà risolvono il problema.
+
+Siano $A \in \mathbb{R}^{k \times l}$, $B \in \mathbb{R}^{l \times m}$, e $C \in \mathbb{R}^{m \times n}$, allora valgono le seguenti identità:
+\begin{align}
+\text{vec}(ABC) &= (C^\top \otimes A)\text{vec}(B) \tag{4a} \\
+\text{vec}(AB) &= (I_m \otimes A)\text{vec}(B) \tag{4b} \\
+\text{vec}(AB) &= (B^\top \otimes I_k)\text{vec}(A) \tag{4c}
+\end{align}
+
+\section{Soluzione tramite la teoria dei sistemi lineari}
+Ora abbiamo tutto ciò di cui abbiamo bisogno per affrontare la (1). In particolare, torniamo alla (3) e vediamo come la (4) può essere utilizzata per liberare l'incognita $X$. Gestiamo termine per termine:
+\begin{align*}
+\text{vec}(AXC) &\overset{(4a)}{=} (C^\top \otimes A)\text{vec}(X) \\
+\text{vec}(HX) &\overset{(4b)}{=} (I_q \otimes H)\text{vec}(X) \\
+\text{vec}(XG) &\overset{(4c)}{=} (G^\top \otimes I_m)\text{vec}(X)
+\end{align*}
+Quindi, mettendo tutto insieme otteniamo:
+\begin{equation}
+(C^\top \otimes A)\text{vec}(X) + (I_q \otimes H)\text{vec}(X) + (G^\top \otimes I_m)\text{vec}(X) = \text{vec}(B)
+\end{equation}
+che può essere convenientemente riscritta come:
+\[
+\left( (C^\top \otimes A) + (I_q \otimes H) + (G^\top \otimes I_m) \right) \text{vec}(X) = \text{vec}(B)
+\]
+Ma questo è un normale sistema di equazioni lineari!! Quindi abbiamo finito.
+
+\section{Applicazione alle equazioni del regolatore}
+Applichiamo ora tutto l'apparato presentato al caso delle equazioni del regolatore. In particolare, dati $A \in \mathbb{R}^{n \times n}$, $B \in \mathbb{R}^{n \times m}$, $C \in \mathbb{R}^{q \times n}$, $Q \in \mathbb{R}^{q \times r}$, $S \in \mathbb{R}^{r \times r}$, $P \in \mathbb{R}^{n \times r}$, vogliamo calcolare $\Pi \in \mathbb{R}^{n \times r}$ e $\Gamma \in \mathbb{R}^{m \times r}$ tali che:
+\begin{equation}
+\begin{aligned}
+\Pi S &= A\Pi + B\Gamma + P \\
+0 &= C\Pi + Q
+\end{aligned}
+\end{equation}
+Come primo passo, riscriviamo la (6) nella forma standard (1). A tal fine, poniamo:
+\[
+X = \begin{bmatrix} \Pi \\ \Gamma \end{bmatrix} \in \mathbb{R}^{(n+m) \times r}
+\]
+Questo porta alla seguente riscrittura della (6):
+\begin{equation}
+\begin{aligned}
+\begin{bmatrix} I & 0 \end{bmatrix} XS - \begin{bmatrix} A & B \end{bmatrix} X &= P \\
+\begin{bmatrix} C & 0 \end{bmatrix} X &= -Q
+\end{aligned}
+\end{equation}
+che è equivalente a:
+\begin{equation}
+\underbrace{\begin{bmatrix} -A & -B \\ C & 0 \end{bmatrix}}_{L_1} X + \underbrace{\begin{bmatrix} I & 0 \\ 0 & 0 \end{bmatrix}}_{L_2} XS = \underbrace{\begin{bmatrix} P \\ -Q \end{bmatrix}}_{N}
+\end{equation}
+dove $L_1 \in \mathbb{R}^{(n+q) \times (n+m)}$, $L_2 \in \mathbb{R}^{(n+q) \times (n+m)}$, e $N \in \mathbb{R}^{(n+q) \times r}$. A questo punto, applicando l'apparato sviluppato in precederza, otteniamo:
+\begin{equation}
+\left( (S^\top \otimes L_2) + (I_r \otimes L_1) \right) \text{vec}(X) = \text{vec}(N)
+\end{equation}
+
+
+\end{document}
+
+
+

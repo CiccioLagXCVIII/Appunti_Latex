@@ -1,0 +1,2970 @@
+﻿% AA Classe Del Documento
+\documentclass[11pt, a4paper]{article}
+
+% AA Tipografia E Lingua
+% BB Lingua E Codifica Font
+\usepackage[italian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+% BB Geometria Pagina E Microtipografia
+\usepackage[margin=2cm, top=1.5cm, bottom=1.5cm]{geometry}
+\usepackage{parskip}
+\usepackage{microtype}
+
+% AA Gestione Dei Colori
+% BB Pacchetto Colori
+\usepackage[table]{xcolor}
+
+% BB Palette Colori Personalizzata
+\definecolor{darkgreen}{RGB}{0,100,0}
+\definecolor{theoryblue}{RGB}{0,84,147}
+\definecolor{backcolour}{RGB}{245,245,245}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+
+\definecolor{codebg}{HTML}{F8F9FA}
+\definecolor{codeframe}{HTML}{E2E8F0}
+\definecolor{codekeywords}{HTML}{7C3AED}
+\definecolor{codedocker}{HTML}{0284C7}
+\definecolor{codecomments}{HTML}{64748B}
+\definecolor{codestrings}{HTML}{0D9488}
+\definecolor{codenumbers}{HTML}{94A3B8}
+\definecolor{codetext}{HTML}{1E293B}
+
+% AA Matematica E Notazione Scientifica
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{mathtools}
+\usepackage{siunitx}
+
+% BB OTTIMIZZAZIONE MATRICI LUNGHE PER LA STAMPA
+\setlength{\arraycolsep}{10pt}
+\usepackage{bm}
+
+% AA Tabelle Ed Allineamenti
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{arydshln}
+
+% AA Grafica E Disegno Vettoriale
+% BB Gestione Figure E Posizionamento
+\usepackage{graphicx}
+\graphicspath{{./Images/Kubernetes Journey/}}
+\usepackage{subcaption}
+\usepackage{float}
+
+% BB TikZ E Pgfplots
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, patterns, angles, quotes, calc}
+\usetikzlibrary{positioning}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+% AA Listati Di Codice (Listings)
+% BB Configurazione Generale
+\usepackage{listings}
+\usepackage{upquote}
+\lstset{
+    basicstyle=\ttfamily\footnotesize\color{codetext},
+    backgroundcolor=\color{codebg},
+    frame=single,
+    rulecolor=\color{codeframe},
+    framesep=6pt,
+    xleftmargin=8pt,
+    xrightmargin=8pt,
+    breaklines=true,
+    breakatwhitespace=true,
+    showstringspaces=false,
+    keepspaces=true,
+    columns=flexible,
+    upquote=true,
+    tabsize=2,
+    captionpos=b
+}
+
+% BB Definizione Dei Linguaggi
+% CC YAML
+\lstdefinelanguage{yaml}{
+    keywords={true,false,null,yes,no,on,off},
+    keywordstyle=\bfseries\color{codekeywords},
+    comment=[l]{\#},
+    commentstyle=\itshape\color{codecomments},
+    stringstyle=\color{codestrings},
+    morestring=[b]',
+    morestring=[b]",
+    sensitive=false
+}
+
+% CC Dockerfile
+\lstdefinelanguage{dockerfile}{
+    keywords={FROM, RUN, CMD, LABEL, EXPOSE, ENV, ADD, COPY, ENTRYPOINT,
+              VOLUME, USER, WORKDIR, ARG, ONBUILD, STOPSIGNAL, HEALTHCHECK,
+              SHELL, AS},
+    keywordstyle=\bfseries\color{codedocker},
+    comment=[l]{\#},
+    commentstyle=\itshape\color{codecomments},
+    morestring=[b]",
+    morestring=[b]',
+    sensitive=true
+}
+
+% CC INI
+\lstdefinelanguage{ini}{
+    comment=[l]{\#},
+    morecomment=[l]{;},
+    commentstyle=\itshape\color{codecomments},
+    stringstyle=\color{codestrings},
+    morestring=[b]",
+    morestring=[b]',
+    keywordstyle=\bfseries\color{codekeywords}
+}
+
+% CC JSON
+\lstdefinelanguage{json}{
+    keywords={true,false,null},
+    keywordstyle=\bfseries\color{codekeywords},
+    comment=[l]{//},
+    morecomment=[s]{/*}{*/},
+    commentstyle=\itshape\color{codecomments},
+    stringstyle=\color{codestrings},
+    morestring=[b]",
+    sensitive=true
+}
+
+% AA Algoritmi E Pseudocodice
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+\SetKwData{Dati}{Input}
+\SetKwData{Risultato}{Output}
+\SetKw{Inizializza}{Inizializza}
+\SetKwFor{Per}{per}{fare}{fine per}
+\SetKwComment{Commento}{// }{}
+
+% AA Struttura, Titoli Ed Ambienti
+% BB Personalizzazione Titoli Sezioni
+\usepackage{titlesec}
+\titleformat{\section}{\normalfont\LARGE\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\Large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalfont\large\bfseries}{\thesubsubsection}{1em}{}
+
+% BB Teoremi Ed Ambienti Ausiliari
+\usepackage{comment}
+\newtheorem{theorem}{Definizione}
+
+% BB Liste Ed Elenchi Puntati
+\usepackage{enumitem}
+\setlist{noitemsep}
+\usepackage{pifont}
+
+% AA Riferimenti, Link Ipertestuali E Segnalibri
+\usepackage[unicode]{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+    citecolor=blue,
+    pdftitle={3.2) Kubernetes Journey},
+    pdfauthor={Francesco Lo Verde},
+    pdfpagemode=FullScreen,
+}
+\usepackage{bookmark}
+
+% AA Metadati Del Documento
+\title{3.2) Kubernetes Journey}
+
+\date{\today}
+
+\author{Francesco Lo Verde}
+\begin{document}
+% AA Parte 1
+% --- Pagina 1 ---
+
+\title{\textbf{Kubernetes Journey}}
+\author{Gianluca Reali}
+\date{v. 2026}
+
+{\centering
+\LARGE\textbf{Kubernetes Journey}\par
+\vspace{0.5em}
+\large Gianluca Reali\par
+\vspace{0.3em}
+\normalsize Per i miei studenti\par
+\vspace{0.3em}
+v. 2026\par
+}
+
+\vspace{1.5em}
+
+\section*{Introduzione}
+
+Questo documento illustra l'implementazione e il relativo utilizzo di un cluster Kubernetes di esempio su macchine virtuali (VM). Al fine di mantenere le cose semplici, utilizziamo unicamente due VM: una per implementare il Master di Kubernetes e l'altra per l'unico worker di Kubernetes. Si prega di segnalare eventuali errori o refusi riscontrati a \texttt{gianluca.reali@unipg.it}
+
+\section{Implementazione del cluster Kubernetes}
+
+\subsection{Configurazione}
+
+Il primo passaggio consiste nell'istanziare due VM e configurare la rete della loro singola interfaccia.
+
+Per prima cosa aprire VirtualBox e istanziare due VM utilizzando l'immagine OVA fornita di Lubuntu 24.04.rel 03, denominata \texttt{Lubuntu\_24\_04\_03.ova}. Username: \texttt{VNCC}; Password: \texttt{VNCC}. In VirtualBox utilizzare (creandola prima, se non esiste già) la rete NAT kubernetes. Le reti interne possono essere gestite tramite il menu ``File -> Strumenti -> Rete''
+
+La rete NAT kubernetes è mostrata di seguito:
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Kubernetes_Journey.pdf"] Schermata delle preferenze di VirtualBox per la configurazione della rete NAT kubernetes — Pagina 1 del PDF
+% Testo presente nell'immagine:
+% Menu: Crea | Rimuovi | Proprietà
+% Schede: Rete solo host | Reti con NAT | Reti Cloud
+% Tabella reti con NAT:
+% Nome: Ansible | Prefisso IPv4: 172.29.0.0/16 | Prefisso IPv6: fd17:625c:f037:1100::/64 | Server DHCP: Abilitato
+% Nome: br-ext | Prefisso IPv4: 192.1.1.0/24 | Prefisso IPv6: fd17:625c:f037:101::/64 | Server DHCP: Disabilitato
+% Nome: Cloud | Prefisso IPv4: 10.0.10.0/24 | Prefisso IPv6: fd17:625c:f037:a::/64 | Server DHCP: Disabilitato
+% Nome: kubernetes | Prefisso IPv4: 192.168.43.0/24 | Prefisso IPv6: fd17:625c:f037:a82b::/64 | Server DHCP: Abilitato
+% Nome: Management | Prefisso IPv4: 10.0.0.0/24 | Prefisso IPv6: fd17:625c:f037:2::/64 | Server DHCP: Abilitato
+% Nome: MatNetwork | Prefisso IPv4: 10.0.2.0/24 | Prefisso IPv6: fd17:625c:f037:2::/64 | Server DHCP: Abilitato
+% Dettagli: Opzioni generali | Inoltro delle porte
+% Nome: kubernetes | Prefisso IPv4: 192.168.43.0/24 | [X] Abilita DHCP
+% [X] Abilita IPv6 | Prefisso IPv6: fd17:625c:f037:a82b::/64 | [ ] Pubblica la rotta predefinita IPv6
+% Pulsanti: Applica | Ripristina
+% Riquadro evidenziato: PRESTARE ATTENZIONE A SELEZIONARE Reti con NAT
+
+\begin{figure}[H]
+\centering
+\caption{Rete NAT creata in VirtualBox ed utilizzata}
+\end{figure}
+
+In ciascuna VM, modificare il file \texttt{/etc/netplan/01-network-manager-all.yaml}, configurando gli indirizzi IP (\texttt{192.168.43.10/24} nel nodo Master e \texttt{192.168.43.11/24} nel nodo worker), come nel seguente esempio:
+
+\begin{lstlisting}[language=yaml]
+network:
+ version: 2
+ renderer: NetworkManager
+\end{lstlisting}
+
+% --- Pagina 2 ---
+
+\begin{lstlisting}[language=yaml]
+ ethernets:
+  enp0s3:
+   dhcp4: no
+   addresses: [192.168.43.10/24]
+   routes:
+    - to: default
+      via: 192.168.43.1
+   nameservers:
+    addresses: [8.8.8.8, 8.8.4.4]
+\end{lstlisting}
+
+Rimuovere o rinominare il file \texttt{/etc/netplan/50-cloud-init.yaml.bak} (se presente)
+
+\begin{lstlisting}[language=bash]
+$ sudo mv /etc/netplan/50-cloud-init.yaml /etc/netplan/50-cloud-init.yaml.bak
+$ sudo netplan try (or sudo netplan apply)
+\end{lstlisting}
+
+Se si desidera utilizzare l'opzione ``appunti condivisi'' (shared clipboard), ricordarsi di configurare l'interfaccia di rete virtuale della VM per operare in modalità promiscua.
+
+In entrambi i nodi, modificare il file \texttt{/etc/hosts} inserendo quanto segue.
+
+\begin{lstlisting}
+127.0.0.1 localhost
+192.168.43.10 node1 node1.example.com
+192.168.43.11 node2 node2.example.com
+\end{lstlisting}
+
+I nomi definiti sono ridondanti, ma non creano problemi e forniscono compatibilità con le altre VM già distribuite. Per lo stesso motivo, modificare in entrambi i nodi il file \texttt{/etc/hostname} come segue. Nel nodo controller:
+
+\begin{lstlisting}
+node1
+\end{lstlisting}
+
+Nel nodo worker:
+
+\begin{lstlisting}
+node2
+\end{lstlisting}
+
+\subsection{Guida all'installazione del cluster Kubernetes tramite Kubespray}
+
+Successivamente, creare le chiavi su entrambi gli host per consentire la connessione senza password tramite una coppia di chiavi pubblica/privata. Eseguire il seguente comando su entrambe le VM per installare il server SSH.
+
+\begin{lstlisting}[language=bash]
+$ sudo apt install openssh-server
+\end{lstlisting}
+
+Generare il login senza password per la sessione SSH, necessario per Ansible (non inserire alcuna passphrase):
+
+\begin{lstlisting}[language=bash]
+$ ssh-keygen -t rsa
+\end{lstlisting}
+
+Non digitare alcuna password, altrimenti il comportamento passwordless risulterebbe impossibile.
+
+% --- Pagina 3 ---
+
+Dopo la generazione, è necessario far scambiare la chiave pubblica tra gli host. Copiare la chiave pubblica su tutti i nodi del cluster (incluso il nodo Master (node1), poiché Ansible effettuerà una connessione SSH anche con localhost). Su entrambi gli host, eseguire i seguenti comandi:
+
+\begin{lstlisting}[language=bash]
+$ ssh-copy-id 192.168.43.10
+\end{lstlisting}
+rispondere ``yes'' al prompt e digitare la propria password
+
+\begin{lstlisting}[language=bash]
+$ ssh-copy-id 192.168.43.11
+\end{lstlisting}
+rispondere ``yes'' al prompt e digitare la password
+
+Durante l'esecuzione del playbook, Ansible richiede i privilegi di root. Oltre a ciò, è necessario che non venga richiesta la password per le operazioni di root. Pertanto, occorre modificare il file \texttt{/etc/sudoers} (con sudo) per consentire comandi sudo senza password su tutti i nodi.
+
+Dopo la riga \texttt{\%sudo ALL=(ALL:ALL) ALL} inserire
+
+\begin{lstlisting}
+root ALL=(ALL) NOPASSWD: ALL (this is probably overkill, but the root operation of Ansible could use it)
+vncc ALL=(ALL) NOPASSWD: ALL
+\end{lstlisting}
+
+Verificare la presenza di file nella directory \texttt{/etc/sudoers.d/} che potrebbero sovrascrivere le regole appena inserite. Ad esempio, in Lubuntu è necessario rimuovere il file con \texttt{rm 10-installer}.
+
+Infine, è necessario installare Python su tutti i nodi, poiché Ansible lo richiede:
+
+\begin{lstlisting}[language=bash]
+$ sudo apt install python3-pip
+$ sudo pip3 install --upgrade pip
+\end{lstlisting}
+
+Ora è possibile verificare la versione con \texttt{pip --version}
+
+Kubespray è uno strumento che automatizza l'installazione di Kubernetes e del cluster tramite un playbook Ansible. Come primo passo, scaricare il repository da GitHub.
+
+Nel nodo master è possibile scaricare Kubespray.
+
+\begin{lstlisting}[language=bash]
+$ sudo apt install git
+$ git clone https://github.com/kubernetes-sigs/kubespray.git
+\end{lstlisting}
+
+Si raccomanda di installare Ansible e le sue dipendenze all'interno di un ambiente virtuale Python, in modo da non entrare in conflitto con eventuali versioni già presenti sulla macchina host. Sul nodo master, procedere come segue:
+
+\begin{lstlisting}[language=bash]
+$ VENVDIR=kubespray-venv
+$ KUBESPRAYDIR=kubespray
+$ sudo apt install python3.12-venv
+$ python3 -m venv $VENVDIR
+$ source $VENVDIR/bin/activate
+cd $KUBESPRAYDIR
+$ pip install -U -r requirements.txt
+\end{lstlisting}
+
+Ora avviare la configurazione opportuna (\url{https://github.com/kubernetes-sigs/kubespray})
+
+% --- Pagina 4 ---
+
+Copiare la directory \texttt{inventory/sample} come \texttt{inventory/mycluster}
+
+\begin{lstlisting}[language=bash]
+$ cp -rfp inventory/sample inventory/mycluster (sample folder for this example)
+\end{lstlisting}
+
+All'interno di mycluster, modificare il file \texttt{inventory.ini} come segue:
+
+\begin{lstlisting}[language=ini]
+[kube_control_plane]
+node1 ansible_host=192.168.43.10
+[etcd:children]
+kube_control_plane
+[kube_node]
+node2 ansible_host=192.168.43.11
+\end{lstlisting}
+
+Modificare il file \texttt{inventory/mycluster/group\_vars/all/all.yml} :
+
+\begin{lstlisting}[language=yaml]
+upstream_dns_servers: ........remove #
+- 8.8.8.8
+- 8.8.4.4
+\end{lstlisting}
+
+Modificare il file \texttt{inventory/mycluster/group\_vars/k8s-cluster/k8s-cluster.yml} specificando gli IP e le subnet da utilizzare, come segue:
+
+\begin{lstlisting}[language=yaml]
+kube_config_dir: /etc/kubernetes
+
+kube_network_plugin: calico
+
+# Kubernetes internal network for services, unused block of space.
+kube_service_addresses: 10.233.0.0/18
+
+# internal network. When used, it will assign IP
+# addresses from this range to individual pods.
+# This network must be unused in your network infrastructure!
+kube_pods_subnet: 10.233.64.0/18
+
+#it allows a lot of nodes
+kube_network_node_prefix: 24 #using 24 here and above means you can use a single node, see comment below
+\end{lstlisting}
+
+Spiegazione:
+
+\texttt{kube\_service\_addresses} - Subnet per gli IP del cluster (il valore predefinito è \texttt{10.233.0.0/18}). Non deve sovrapporsi a \texttt{kube\_pods\_subnet}
+
+% --- Pagina 5 ---
+
+\texttt{kube\_pods\_subnet} - Subnet per gli IP dei Pod (il valore predefinito è \texttt{10.233.64.0/18}). Non deve sovrapporsi a \texttt{kube\_service\_addresses}.
+
+\texttt{kube\_network\_node\_prefix} - Subnet allocata per singolo nodo per gli IP dei pod. I bit rimanenti in \texttt{kube\_pods\_subnet} stabiliscono quanti \texttt{kube\_nodes} possono essere presenti nel cluster. L'impostazione di questo valore a $>$ 25 genererà un'asserzione nei playbook se la variabile \texttt{kubelet\_max\_pods} non viene anch'essa regolata di conseguenza (asserzione non applicabile a Calico, che non lo utilizza come limite rigido; vedere le dimensioni dei blocchi IP di Calico).
+
+\begin{lstlisting}[language=yaml]
+kube_network_node_prefix: 24
+
+container_manager: containerd
+
+resolvconf_mode: host_resolvconf
+\end{lstlisting}
+
+Tuttavia, i Pod creati con l'opzione \texttt{hostnetwork: true}, ossia che utilizzano l'interfaccia di rete dell'host, non possono raggiungere il DNS del cluster.
+
+Prima di eseguire il playbook, è una buona norma effettuare un reset per assicurarsi che tutto sia pulito e pronto all'uso, poiché l'esecuzione del playbook di configurazione richiede diverso tempo.
+
+\begin{lstlisting}
+# Clean up old Kubernetes cluster with Ansible Playbook - run the playbook as root
+# The option `--become` is required, as for example cleaning up SSL keys in /etc/,
+# uninstalling old packages and interacting with various systemd daemons.
+# Without --become the playbook will fail to run!
+# And be mind it will remove the current kubernetes cluster (if it's running)!
+\end{lstlisting}
+
+Prima di utilizzare il file \texttt{reset.yml}, come descritto di seguito, apportare le seguenti modifiche nel file \texttt{inventory/mycluster/group\_vars/k8s-cluster/k8s-cluster.yml}:
+
+rimuovere la ``v'' nella variabile ``\texttt{kube\_version = v1.32.2}'' (sembra che non ce ne sia bisogno)
+
+ora connettersi via SSH reciprocamente (\texttt{ssh node1} dal worker, \texttt{ssh node2} dal master) e rispondere yes. Quindi uscire da entrambe le connessioni.
+
+Successivamente:
+
+\begin{lstlisting}[language=bash]
+$ ansible-playbook -i inventory/mycluster/inventory.ini --become --become-user=root reset.yml
+\end{lstlisting}
+
+Ora installare Kubernetes come segue:
+
+\begin{lstlisting}[language=bash]
+$ ansible-playbook -i inventory/mycluster/inventory.ini --become --become-user=root --private-key=~/.ssh/id_rsa cluster.yml
+\end{lstlisting}
+
+Una volta completata l'installazione, è necessario installare kubectl sul nodo master per gestire il cluster come segue:
+
+% --- Pagina 6 ---
+
+\begin{lstlisting}[language=bash]
+$ sudo snap install kubectl --classic
+\end{lstlisting}
+
+Ora è possibile eseguire kubectl come utente root. Per verificarlo, utilizzare il seguente comando:
+
+\begin{lstlisting}[language=bash]
+$ sudo kubectl get nodes
+\end{lstlisting}
+
+Per utilizzarlo come utente vncc, procedere secondo la seguente procedura:
+
+Dalla directory home, creare una directory nascosta kube:
+
+\begin{lstlisting}[language=bash]
+$ mkdir .kube
+$ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+$ sudo chown $(id -u):$(id -g) $HOME/.kube/config
+\end{lstlisting}
+
+Verificare se il cluster è effettivamente funzionante:
+
+\begin{lstlisting}[language=bash]
+$ kubectl get nodes
+\end{lstlisting}
+
+\subsection{Implementazione di un servizio di esempio}
+
+Creare il seguente file manifesto YAML ed effettuarne il deploy utilizzando \texttt{Kubectl create -f <filename>}:
+
+\begin{lstlisting}[language=yaml]
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  labels:
+    app: proxy
+spec:
+  selector:
+    matchLabels:
+      app: proxy
+  template:
+    metadata:
+      labels:
+        app: proxy
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+          name: http-web-svc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  type: NodePort
+  #type: ExternalName
+  #externalName: cname.dns
+\end{lstlisting}
+
+% --- Pagina 7 ---
+
+\begin{lstlisting}[language=yaml]
+  selector:
+    app: proxy
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8080
+    targetPort: http-web-svc
+    nodePort: 30007
+  #externalIPs:
+  #- 192.168.1.15
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx-ingress
+spec:
+  rules:
+  - host: "foo.bar.com"
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/bar"
+        backend:
+          service:
+            name: nginx-service
+            port:
+              number: 80
+\end{lstlisting}
+
+Verificare quanto creato e commentarlo. Perché il servizio risponde da node1 a \texttt{curl 192.168.43.11:30007} e a \texttt{curl <cluster\_IP>:8080}? Perché il nodo apre la NodePort sull'interfaccia ``fisica'', mentre il pod è raggiungibile dall'interno del cluster tramite il cluster\_IP.
+
+\subsection{Deployment della UI della Kubernetes Dashboard}
+
+Il progetto Kubernetes Dashboard è stato archiviato e non è più mantenuto attivamente. Per le nuove installazioni, la documentazione ufficiale di Kubernetes raccomanda di utilizzare \textbf{Headlamp}
+
+Eseguire il seguente comando:
+
+\begin{lstlisting}[language=bash]
+$ sudo snap install helm --classic
+$ helm repo add headlamp https://kubernetes-sigs.github.io/headlamp/
+$ helm repo update
+$ helm upgrade --install headlamp headlamp/headlamp --namespace headlamp --create-namespace
+\end{lstlisting}
+
+\begin{lstlisting}
+Release "headlamp" does not exist. Installing it now.
+NAME: headlamp
+LAST DEPLOYED: Tue Apr 14 15:19:19 2026
+\end{lstlisting}
+
+% --- Pagina 8 ---
+
+\begin{lstlisting}
+NAMESPACE: headlamp
+STATUS: deployed
+REVISION: 1
+DESCRIPTION: Install complete
+TEST SUITE: None
+NOTES:
+1. Get the application URL by running these commands:
+ export POD_NAME=$(kubectl get pods --namespace headlamp -l "app.kubernetes.io/name=headlamp,app.kubernetes.io/instance=headlamp" -o jsonpath="{.items[0].metadata.name}")
+ export CONTAINER_PORT=$(kubectl get pod --namespace headlamp $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+ echo "Visit http://127.0.0.1:8080 to use your application"
+ kubectl --namespace headlamp port-forward $POD_NAME 8080:$CONTAINER_PORT
+2. Get the token using
+ kubectl create token headlamp --namespace headlamp
+\end{lstlisting}
+
+Il primo comando blocca la shell per il port forwarding. Per eseguire il secondo comando aprire un'altra shell, ottenere il token e utilizzarlo nell'interfaccia web. Utilizzando i due comandi sopra indicati, la seguente interfaccia viene aperta su \texttt{http://localhost:8080}
+
+% --- Pagina 9 ---
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Kubernetes_Journey.pdf"] Schermata del terminale con esecuzione di port-forward e creazione del token per Headlamp, affiancata dalla dashboard web di Headlamp (Overview del cluster) — Pagina 9 del PDF
+% Testo presente nell'immagine (Terminale superiore):
+% vncc@node1:~/esempi$ export POD_NAME=$(kubectl get pods --namespace headlamp -l "app.kubernetes.io/name=headlamp,app.kubernetes.io/instance=headlamp" -o jsonpath="{.items[0].metadata.name}")
+% export CONTAINER_PORT=$(kubectl get pod --namespace headlamp $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+% echo "Visit http://127.0.0.1:8080 to use your application"
+% kubectl --namespace headlamp port-forward $POD_NAME 8080:$CONTAINER_PORT
+% Forwarding from 127.0.0.1:8080 -> 4466
+% Forwarding from [::1]:8080 -> 4466
+% Handling connection for 8080 ...
+% Testo presente nell'immagine (Terminale inferiore):
+% vncc@node1:~$ kubectl create token headlamp --namespace headlamp
+% eyJhbGciOiJSUzI1NiIsImtpZCI6IlQycG... (token JWT troncato)
+% Testo presente nell'immagine (Browser Headlamp UI):
+% Clusters / Overview
+% CPU: 0%, Memory: 0% 19.31 GB, Pods: 14/14 Requested 100.0%, Nodes: 2/2 Ready 100.0%
+% Events / Only warnings (10)
+
+\subsection{HorizontalPODAutoscaler}
+
+La prima cosa da fare è la creazione del metrics server. Per prima cosa scaricare il seguente manifesto:
+
+\begin{lstlisting}[language=bash]
+$ wget -O components.yaml https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+\end{lstlisting}
+
+Aprire il file e inserire la seguente riga:
+
+\begin{lstlisting}[language=yaml]
+apiVersion: apps/v1
+k8s-app: metrics-server
+name: metrics-server
+namespace: kube-system
+spec:
+\end{lstlisting}
+
+% --- Pagina 10 ---
+
+\begin{lstlisting}[language=yaml]
+... skipped ...
+spec:
+  containers:
+  - args:
+    - --cert-dir=/tmp
+    - --secure-port=10250
+    - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
+    - --kubelet-use-node-status-port
+    - --metric-resolution=15s
+    - --kubelet-insecure-tls        # ADD THIS
+\end{lstlisting}
+
+Ora creare il metrics server, come segue
+
+\begin{lstlisting}[language=bash]
+$ kubectl apply -f ./components.yaml
+\end{lstlisting}
+
+Verificare che tutti i Pod siano in esecuzione.
+
+Ora facciamo uso dell'HPA. Ho adattato la documentazione disponibile all'indirizzo:
+\url{https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/}
+
+Un HorizontalPodAutoscaler (in breve HPA) aggiorna automaticamente una risorsa di carico di lavoro (come un Deployment o uno StatefulSet), con l'obiettivo di scalare automaticamente il carico di lavoro per adeguarlo alla domanda.
+
+Per dimostrare un HorizontalPodAutoscaler, si avvierà prima un Deployment che esegue un container utilizzando l'immagine \texttt{hpa-example}, esponendolo come Service tramite il seguente manifesto:
+
+\begin{lstlisting}[language=yaml]
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php-apache
+spec:
+  selector:
+    matchLabels:
+      run: php-apache
+  template:
+    metadata:
+      labels:
+        run: php-apache
+    spec:
+      containers:
+      - name: php-apache
+        image: registry.k8s.io/hpa-example
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: 500m
+          requests:
+            cpu: 200m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: php-apache
+  labels:
+    run: php-apache
+spec:
+\end{lstlisting}
+
+% --- Pagina 11 ---
+
+\begin{lstlisting}[language=yaml]
+  ports:
+  - port: 80
+  selector:
+    run: php-apache
+\end{lstlisting}
+
+Ora, se il server è in esecuzione, creare l'autoscaler utilizzando il seguente manifesto, \texttt{kubectl apply -f ./<filename>}:
+
+\begin{lstlisting}[language=yaml]
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: php-apache
+  namespace: default
+spec:
+  maxReplicas: 10
+  metrics:
+  - resource:
+      name: cpu
+      target:
+        averageUtilization: 50
+        type: Utilization
+    type: Resource
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: php-apache
+\end{lstlisting}
+
+Successivamente, osservare come l'autoscaler reagisce all'aumento di carico. Per fare ciò, si avvierà un Pod differente con funzione di client. Il container all'interno del Pod client viene eseguito in un ciclo infinito, inviando query al servizio php-apache.
+
+\begin{lstlisting}[language=bash]
+# Run this in a separate terminal
+# so that the load generation continues and you can carry on with the rest of the steps
+$ kubectl run -i --tty load-generator --rm --image=busybox:1.28 --restart=Never -- /bin/sh -c "while sleep 0.01; do wget -q -O- http://php-apache; done"
+\end{lstlisting}
+
+Questo comando crea un Pod che sovraccarica il Deployment. Ora verificare i Pod attivi. Si dovrebbero vedere le repliche create.
+
+\section{Funzionalità aggiuntive:}
+
+Modificare \texttt{\textasciitilde/kubespray/inventory/mycluster/group\_vars/k8s\_cluster/addons.yml} per abilitare il local volume provisioner in modo da poter utilizzare i volumi persistenti e il cert manager per poter in seguito effettuare automaticamente il provisioning dei certificati SSL:
+
+\begin{lstlisting}[language=yaml]
+# Enable local volume provisioner for persistent storage
+local_volume_provisioner_enabled: true
+\end{lstlisting}
+
+% --- Pagina 12 ---
+
+\begin{lstlisting}[language=yaml]
+...
+# Enable cert-manager for automatic management of SSL certificates
+cert_manager_enabled: true
+...
+# Enable and configure Metrics Server for pod and node metrics
+metrics_server_enabled: true
+metrics_server_container_port: 10250
+metrics_server_kubelet_insecure_tls: true
+metrics_server_metric_resolution: 15s
+metrics_server_kubelet_preferred_address_types: "InternalIP,ExternalIP,Hostname"
+metrics_server_host_network: false
+metrics_server_replicas: 1
+\end{lstlisting}
+
+Dalla directory radice di Kubespray (\texttt{\textasciitilde/kubespray}), eseguire il playbook \texttt{cluster.yml} come fatto per l'installazione iniziale:
+
+\begin{lstlisting}[language=bash]
+$ cd ~/kubespray
+# $ ansible-playbook -i inventory/mycluster/hosts.yaml -b cluster.yml (non farlo)
+$ source /home/vncc/kubespray-venv/bin/activate
+$ ansible-playbook -i inventory/mycluster/inventory.ini --become --become-user=root --private-key=~/.ssh/id_rsa cluster.yml
+\end{lstlisting}
+
+Perché funziona e non compromette nulla? I playbook di Kubespray sono strutturati per essere eseguiti più volte senza alcun effetto collaterale. Ansible analizzerà lo stato corrente del cluster, confronterà le configurazioni e installerà solo i nuovi add-on abilitati (cert-manager, local-volume-provisioner, metrics-server). I componenti che sono già presenti e funzionanti, come il cluster Kubernetes e il pod nginx, non verranno modificati.
+
+\section{Load Balancer}
+
+Per abilitare \textbf{MetalLB}:
+
+\subsection*{Opzione 1 (Passare all'opzione 2)}
+
+Nel file \texttt{\textasciitilde/kubespray/inventory/mycluster/group\_vars/k8s\_cluster/k8s-cluster.yml}
+
+\begin{lstlisting}[language=yaml]
+kube_proxy_strict_arp: true
+\end{lstlisting}
+
+% --- Pagina 13 ---
+
+Nel file \texttt{\textasciitilde/kubespray/inventory/mycluster/group\_vars/k8s\_cluster/addons.yml}
+
+\begin{lstlisting}[language=yaml]
+metallb_enabled: true
+metallb_speaker_enabled: true
+...other nearby parameters are available...
+# this is range of IPs that is in the same subnet as the k8s nodes
+metallb_ip_range:
+  - 192.168.1.200-192.168.1.220
+\end{lstlisting}
+
+\subsection*{Opzione 2}
+
+In alternativa (eseguire questa procedura), è possibile installare il file in un cluster già esistente come segue:
+
+Esistono tre modalità supportate per installare MetalLB: utilizzando normali manifesti Kubernetes, utilizzando Kustomize oppure utilizzando Helm. Procederemo utilizzando i manifesti.
+
+\subsubsection*{Preparazione}
+
+Se si sta utilizzando kube-proxy in modalità IPVS, a partire da Kubernetes v1.14.2 è necessario abilitare la modalità strict ARP.
+
+È possibile ottenere questo risultato modificando la configurazione di kube-proxy nel cluster corrente:
+
+\begin{lstlisting}[language=bash]
+$ kubectl edit configmap -n kube-system kube-proxy (if you like the vi editor)
+$ KUBE_EDITOR="nano" kubectl edit configmap -n kube-system kube-proxy (if you like the prefer the nano editor)
+\end{lstlisting}
+
+e impostare:
+
+\begin{lstlisting}[language=yaml]
+apiVersion: kubeproxy.config.k8s.io/v1alpha1
+kind: KubeProxyConfiguration
+mode: ipvs
+ipvs:
+  strictARP: true
+\end{lstlisting}
+
+È inoltre possibile aggiungere questo frammento di configurazione al proprio kubeadm-config, semplicemente inserendolo in coda preceduto da --- dopo la configurazione principale.
+
+Se si sta tentando di automatizzare questa modifica, questi frammenti di shell potrebbero risultare utili:
+
+\begin{lstlisting}[language=bash]
+# see what changes would be made, returns nonzero return code if different
+$ kubectl get configmap kube-proxy -n kube-system -o yaml | \
+sed -e "s/strictARP: false/strictARP: true/" | \
+kubectl diff -f - -n kube-system
+\end{lstlisting}
+
+% --- Pagina 14 ---
+
+\begin{lstlisting}[language=bash]
+# actually apply the changes, returns nonzero returncode on errors only
+ARP$ kubectl get configmap kube-proxy -n kube-system -o yaml | \
+sed -e "s/strictARP: false/strictARP: true/" | \
+kubectl apply -f - -n kube-system
+\end{lstlisting}
+
+Una volta configurato adeguatamente l'ambiente, applicare il file manifesto come segue:
+
+\begin{lstlisting}[language=bash]
+$ kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.3/config/manifests/metallb-native.yaml
+\end{lstlisting}
+
+Ora verificare se i seguenti oggetti risultano creati e in esecuzione:
+
+\begin{lstlisting}[language=bash]
+$ kubectl get all -n metallb-system
+NAME                                      READY   STATUS    RESTARTS   AGE
+pod/controller-7d678cf54-cw2tr            1/1     Running   0          37s
+pod/speaker-8k95t                         1/1     Running   0          37s
+pod/speaker-ks46n                         1/1     Running   0          37s
+pod/speaker-prhc6                         1/1     Running   0          37s
+
+NAME                                      TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE
+service/webhook-service                   ClusterIP   10.233.33.222    <none>        443/TCP   37s
+
+NAME                                      DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
+daemonset.apps/speaker                    3         3         3       3            3           kubernetes.io/os=linux   37s
+
+NAME                                      READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/controller                1/1     1            1           37s
+
+NAME                                      DESIRED   CURRENT   READY   AGE
+replicaset.apps/controller-7d678cf54      1         1         1       37s
+\end{lstlisting}
+
+\subsubsection*{Configurazione (Vedere anche \url{https://metallb.universe.tf/configuration/})}
+
+Ora creare il pool di indirizzi \texttt{ipaddresspool.yaml}, un nuovo Kind introdotto in questa versione che ha sostituito il vecchio metodo di provisioning della configurazione dell'address pool con ConfigMap:
+
+\begin{lstlisting}[language=yaml]
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+\end{lstlisting}
+
+% --- Pagina 15 ---
+
+\begin{lstlisting}[language=yaml]
+  name: default-pool
+  namespace: metallb-system
+spec:
+  addresses:
+  - 192.168.1.240-192.168.1.250
+\end{lstlisting}
+
+IMPORTANTE: Assicurarsi di escludere gli indirizzi IP utilizzati dal pool di indirizzi del server DHCP della rete domestica, se presente.
+
+La modalità Layer 2 non richiede che gli IP siano associati alle interfacce di rete dei nodi worker. Funziona rispondendo direttamente alle richieste ARP sulla rete locale, fornendo l'indirizzo MAC della macchina ai client.
+
+In questo esempio collegheremo MetalLB agli indirizzi compresi tra 192.168.1.240 e 192.168.1.250 della rete domestica.
+
+A tal fine dobbiamo creare un manifesto aggiuntivo ed effettuare il provisioning di un oggetto di tipo \texttt{L2Advertisement} (anch'esso un kind introdotto di recente), utilizzando il seguente manifesto \texttt{l2advertisement.yaml}
+
+\begin{lstlisting}[language=yaml]
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: default
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+  - default-pool
+\end{lstlisting}
+
+Questo viene utilizzato per configurare MetalLB, il ``load balancer'' per cluster Kubernetes in ambienti bare-metal (come questo). Fondamentalmente, indica a MetalLB come ``annunciare'' gli indirizzi IP ai servizi esterni al cluster.
+
+Il file configura la modalità L2 di MetalLB. Quando si crea un servizio LoadBalancer nel cluster, MetalLB gli assegna un IP da un pool definito in precedenza. Il file L2Advertisement dice a MetalLB: ``L'IP prelevato dal pool denominato default-pool deve essere annunciato sulla rete locale tramite il protocollo ARP.'' In un cloud pubblico (AWS, GCP, Azure), quando si richiede un LoadBalancer, il cloud provider fornisce un IP che è già configurato e annunciato dal rispettivo router centrale. Il cluster non deve ``comunicare'' nulla a nessuno.
+
+In bare-metal, la rete non è a conoscenza dell'esistenza del cluster. Se il router vede un pacchetto indirizzato a 192.168.1.100, non sa che tale pacchetto deve arrivare al nodo node1.
+
+Qualcuno deve comunicarlo al router, e questo compito spetta a MetalLB tramite l'annuncio.
+
+Ora applicare entrambi i manifesti come segue:
+
+\begin{lstlisting}[language=bash]
+$ kubectl apply -f ipaddresspool.yaml
+$ kubectl apply -f l2advertisement.yaml
+\end{lstlisting}
+
+Successivamente, un semplice esempio con il deployment di nginx:
+
+\begin{lstlisting}[language=bash]
+$ kubectl create deploy nginx --image=nginx --replicas=1
+\end{lstlisting}
+
+Ora esporre il servizio nginx verso l'esterno:
+
+\begin{lstlisting}[language=bash]
+$ kubectl expose deployment nginx --type LoadBalancer --port 80 --target-port 8080
+\end{lstlisting}
+
+Controllare il risultato e visualizzare l'IP esterno configurato:
+
+% --- Pagina 16 ---
+
+\begin{lstlisting}[language=bash]
+$ kubectl get svc
+NAME    TYPE           CLUSTER-IP    EXTERNAL-IP     PORT(S)        AGE
+nginx   LoadBalancer   10.233.44.6   192.168.1.240   80:31236/TCP   10m
+\end{lstlisting}
+
+\section{Installare OpenFaas}
+
+\subsection{Installare Arkade}
+
+Utilizzeremo \textbf{arkade} per installare OpenFaaS. Arkade è una CLI open-source che facilita la gestione delle app. È scritta in linguaggio Go e utilizza helm chart e kubectl per installare applicazioni sul cluster Kubernetes.
+
+Utilizzare il comando seguente per installare arkade sul nodo master.
+
+\begin{lstlisting}[language=bash]
+$ sudo apt update
+$ curl -sLS https://get.arkade.dev | sudo sh
+\end{lstlisting}
+
+\subsection{Installare OpenFaas}
+
+Una volta installato arkade, scaricare OpenFaaS utilizzando il comando:
+
+È necessario installare una storageclass per la gestione dei volumi e renderla predefinita:
+
+\begin{lstlisting}[language=bash]
+$ kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
+$ kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+$ arkade install openfaas-ce --basic-auth-password vncc
+\end{lstlisting}
+
+In questo modo, OpenFaaS viene installato utilizzando l'helm chart ufficiale. OpenFaaS è stato installato con la propria password ``vncc'' (funziona solo per OpenFaaS Pro, altrimenti controllare la password generata utilizzando il comando pertinente nella sezione Comandi Utili) e con faasIdler.dryRun disabilitato. Questo è necessario per l'autoscaling.
+
+È anche possibile eseguire nuovamente arkade install con nuovi parametri e l'installazione di OpenFaaS verrà aggiornata.
+
+\subsection{Installare faas-cli}
+
+La \textbf{faas-cli} è richiesta una volta completata l'installazione di OpenFaaS. Viene utilizzata per effettuare il deploy e testare le funzioni con OpenFaaS. Installarla utilizzando il comando:
+
+\begin{lstlisting}[language=bash]
+$ curl -sL https://cli.openfaas.com | sudo sh
+\end{lstlisting}
+
+\begin{itemize}[noitemsep]
+  \item \texttt{-L}, \texttt{--location}: se il server segnala che la pagina richiesta è stata spostata in una posizione differente (indicata tramite l'header Location: e un codice di risposta 3XX), questa opzione fa sì che curl ripeta la richiesta verso la nuova posizione.
+  \item \texttt{-s}, \texttt{--silent}: modalità silenziosa o quieta. Non mostra l'indicatore di avanzamento né i messaggi di errore. Rende curl muto. Restituisce comunque i dati richiesti, potenzialmente anche sul terminale/stdout a meno che non vengano reindirizzati.
+\end{itemize}
+
+% --- Pagina 17 ---
+
+In seguito inoltrare tutte le richieste inviate a \texttt{http://localhost:8080} tramite il comando \texttt{kubectl port-forward}.
+
+Aprire un altro terminale per il port forwarding:
+
+\begin{lstlisting}[language=bash]
+$ kubectl port-forward -n openfaas svc/gateway 8080:8080
+\end{lstlisting}
+
+Questa connessione rimane aperta per tutto il tempo in cui il processo è in esecuzione. Se dovesse disconnettersi per qualche motivo, eseguirla nuovamente. È possibile avviarla in background inserendo \& alla fine.
+
+\subsection{Accedere alla UI web di OpenFaaS}
+
+Ora accedere all'interfaccia web di OpenFaaS utilizzando l'URL \url{http://127.0.0.1:8080}.
+
+Si noti nella finestra dei comandi sottostante che è stato effettuato l'accesso alla password e quest'ultima non corrisponde a ``vncc''. Ciò è dovuto all'utilizzo della Community Edition. Per ottenere la password:
+
+\begin{lstlisting}[language=bash]
+$ echo $(kubectl get secret -n openfaas basic-auth -o jsonpath="{.data.basic-auth-password}" | base64 --decode)
+\end{lstlisting}
+
+L'username è \textbf{admin}.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Kubernetes_Journey.pdf"] Schermata del terminale con installazione di faas-cli, verifica pod nel namespace openfaas, estrazione della password basic-auth in password.txt e interfaccia OpenFaaS sul browser — Pagina 17 del PDF
+% Testo presente nell'immagine (Terminale):
+% studente@node1:~$ curl -sL https://cli.openfaas.com | sudo sh
+% Finding latest version from GitHub: 0.16.23
+% Downloading package ...
+% Creating alias 'faas' for 'faas-cli'.
+% OpenFaaS CLI commit: a3e72b5881c4efcc7a366a2e8dc384399c807dfc, version: 0.16.23
+% studente@node1:~$ kubectl get pods -n openfaas
+% NAME                                READY   STATUS    RESTARTS   AGE
+% alertmanager-6db77b9d8f-fh8fg       1/1     Running   0          4m5s
+% gateway-5ffd7f574-dj8t4             2/2     Running   0          4m5s
+% nats-56d4b94f49-dbcmp               1/1     Running   0          4m5s
+% prometheus-846bcb466f-xsd0w         1/1     Running   0          4m5s
+% queue-worker-b9965cc56-scxnh        1/1     Running   0          4m5s
+% studente@node1:~$ echo $(kubectl get secret -n openfaas basic-auth -o jsonpath="{.data.basic-auth-password}" | base64 --decode) > password.txt
+% studente@node1:~$ cat password.txt
+% Nzhp20pf0ddU
+% Testo presente nell'immagine (Browser OpenFaaS):
+% OPENFAAS - Deploy a New Function
+
+Possiamo ora effettuare il deploy di una nuova funzione su OpenFaaS facendo clic su \textbf{Deploy a new Function}.
+
+% --- Pagina 18 ---
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Kubernetes_Journey.pdf"] Schermata con finestra modale "Deploy A New Function" dell'interfaccia OpenFaaS e lista delle funzioni disponibili dallo store — Pagina 18 del PDF
+% Testo presente nell'immagine (Superiore):
+% Finestra di dialogo: Deploy A New Function
+% Tabs: FROM STORE | CUSTOM
+% Campo ricerca: Search for functions
+% Lista funzioni: Figlet, NodeInfo, etc.
+
+Fare clic su deploy e la nuova funzione apparirà come mostrato.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Kubernetes_Journey.pdf"] Schermata di OpenFaaS che mostra la funzione nodeinfo distribuita con stato Ready e repliche attive — Pagina 18 del PDF
+% Testo presente nell'immagine (Inferiore):
+% OPENFAAS
+% Elenco funzioni a sinistra: nodeinfo (Status: Ready, Replicas: 1)
+% Dettagli a destra: Invoke function, Request body, Text / JSON / Download, Invoke button
+
+Selezionarla e invocarla. Verranno quindi mostrate le informazioni del nodo. In alternativa, è possibile utilizzare l'URL fornito per visualizzare le informazioni del nodo.
+
+% --- Pagina 19 ---
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Kubernetes_Journey.pdf"] Schermata della risposta HTTP invocando nodeinfo su OpenFaaS con parametri di sistema (Hostname, Arch, Total Mem, Uptime) e terminale a lato — Pagina 19 del PDF
+% Testo presente nell'immagine:
+% Response status: 200
+% Response body:
+% Hostname: nodeinfo-7fc8756589-9k9gz
+% Arch: x64
+% CPUs: 2
+% Total mem: 3911MB
+% Platform: linux
+% Uptime: 1007.37
+
+\subsection{Template}
+
+Prima di creare una nuova funzione, è essenziale comprendere il concetto di template in OpenFaaS. I template costituiscono fondamentalmente un wrapper per le proprie funzioni. Il medesimo template può essere impiegato per molteplici funzioni. OpenFaaS mette già a disposizione svariati template per diversi linguaggi di programmazione da cui partire.
+
+Esistono due tipologie di template a seconda del web server utilizzato:
+
+\begin{itemize}[noitemsep]
+  \item \textbf{classic watchdog} che utilizza il formato di template da\\
+  \url{https://github.com/openfaas/templates}
+  \item \textbf{of-watchdog} che utilizza il formato di template da\\
+  \url{https://github.com/openfaas-incubator?q=template&type=&language=}
+\end{itemize}
+
+I watchdog sono essenzialmente web server che operano come proxy per le richieste verso le nostre funzioni.
+
+Utilizzeremo i template che supportano il più recente of-watchdog. È possibile approfondire il funzionamento del watchdog di OpenFaaS su\\
+\url{https://docs.openfaas.com/architecture/watchdog/}.
+
+La componente più rilevante all'interno della directory dei template è il Dockerfile, il quale gestisce ogni aspetto: dal watchdog al modo e al percorso in cui la funzione viene posizionata all'interno del template. È inoltre possibile creare un proprio template personalizzato in base alle specifiche esigenze della propria funzione.
+
+Scaricare il template Flask dallo store:
+
+\begin{lstlisting}[language=bash]
+$ faas-cli template store pull python3-flask
+\end{lstlisting}
+
+Questo scaricherà tutti i template per Python dallo store di OpenFaaS all'interno della directory dei template nella propria cartella di progetto. Utilizzeremo il template \texttt{python3-flask-debian}. È possibile ignorare i rimanenti template oppure eliminarli.
+
+% AA Parte 2
+% --- Slide 1 / Pagina 1 ---
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "document.pdf"] Screenshot del terminale in Oracle VirtualBox che mostra la struttura ad albero della directory template/python3-flask-debian — Slide 1 / Pagina 1 del PDF
+% vncc@node1:~/template/python3-flask-debian$ tree
+% .
+% |-- arkade.yaml
+% |-- Dockerfile
+% |-- function
+% |   |-- handler.py
+% |   |-- handler_test.py
+% |   |-- __init__.py
+% |   |-- requirements.txt
+% |   `-- tox.ini
+% |-- index.py
+% |-- meta.json
+% |-- requirements.txt
+% `-- template.yml
+% 2 directories, 11 files
+
+Sopra è mostrata la struttura di base del template per tutti i linguaggi.
+
+\subsection*{Spiegazione della struttura del template}
+
+Se vogliamo creare template personalizzati, dobbiamo prima comprendere come funzionano. Vediamo innanzitutto da quali file è composto il template:
+\begin{itemize}[noitemsep]
+    \item \textbf{Manifest del template} - il file \texttt{template.yml} è un file che descrive il template stesso, in modo che \textbf{OpenFaaS} sappia come creare ed effettuare il deployment delle funzioni a partire da esso. In questo file è possibile trovare informazioni quali il linguaggio, i pacchetti richiesti o \texttt{fprocess} (il processo da eseguire per ciascuna invocazione)
+    \item \texttt{index.py}, che è un entrypoint. Affinché la funzione funzioni, abbiamo bisogno di un file (entrypoint) che sia in ascolto delle richieste HTTP oppure legga da STDIO e inoltri tali richieste alla funzione stessa. Quale sia questo file di entrypoint dipende dal linguaggio, quindi si possono avere ad es. \texttt{main.go}, \texttt{index.py}, \texttt{index.js}, ecc.
+    \item \texttt{handler.py} - Ora che abbiamo un entrypoint che passa le richieste alla nostra funzione, dobbiamo in qualche modo gestirle. A tale scopo abbiamo \texttt{handler.\{go,js,py...\}}, che svolge il lavoro effettivo e restituisce la risposta dalla funzione
+    \item \textbf{Dipendenze} - Nella maggior parte dei casi, la funzione utilizzerà alcuni pacchetti. Questi possono essere specificati secondo le modalità proprie del linguaggio, ad esempio utilizzando \texttt{package.json} per JavaScript o \texttt{go.mod} per Golang. Il file \texttt{requirements.txt} nella directory principale del progetto contiene le dipendenze per la nostra applicazione Flask. Contiene Flask e waitress (WSGI).
+    \item \texttt{\_\_init\_\_.py} può anche essere vuoto, ma ha una funzione molto importante per Python nel contesto del template di \textbf{OpenFaaS}. Viene utilizzato principalmente per trasformare la cartella \texttt{./test} in un package Python valido e importabile. Ecco i due ruoli principali che svolge:
+    \begin{itemize}[noitemsep]
+        \item \textbf{Definisce una directory come package Python} Questo è il suo scopo fondamentale. Se osservi la struttura, nella cartella \texttt{test/} sono presenti i file \texttt{handler.py} e \texttt{requirements.txt}. Per consentire al sistema di importare il codice come se fosse una libreria (ad esempio, utilizzando \texttt{import test} o \texttt{from test import handler}), Python deve trovare un file \texttt{\_\_init\_\_.py} in tale directory. È sufficiente un file vuoto per segnalare "questa cartella è un package".
+        \item Di fatto, senza questo file, l'engine di \textbf{OpenFaaS} (\textbf{of-watchdog}) non sarebbe in grado di individuare e caricare la funzione \texttt{handle} scritta in \texttt{handler.py}.
+    \end{itemize}
+    \item \textbf{Dockerfile} (in \texttt{/home/vncc/build/<function\_name>}) - Infine, per impacchettare tutti questi file in una funzione abbiamo il Dockerfile, che si occupa sia del build, sia dei test, sia della creazione dell'immagine \emph{runner} finale su cui può essere eseguito il deployment in \textbf{OpenFaaS}.
+\end{itemize}
+
+% --- Slide 2 / Pagina 2 ---
+
+Ora che sappiamo da cosa è composta la funzione, come funziona in concreto? Esistono due versioni dei template di \textbf{OpenFaaS} - i template classici (\textbf{watchdog}) e i nuovi template beta (\textbf{of-watchdog}). Entrambi operano creando un piccolo webserver in Golang, che effettua il marshalling di una richiesta HTTP ricevuta sull'\textbf{API Gateway}, la quale viene quindi inoltrata alla funzione invocata. Questo per quanto riguarda le analogie; vediamo ora le differenze:
+\begin{itemize}[noitemsep]
+    \item \textbf{watchdog}: i template classici operano effettuando il fork di un processo per richiesta. Una volta avviato il fork del processo, il watchdog passa la richiesta HTTP tramite \texttt{stdin} e legge la risposta HTTP tramite \texttt{stdout}.
+\end{itemize}
+
+Possiamo ora creare una funzione Serverless. Ad esempio, creiamo una funzione dizionario che restituisce il significato delle parole richieste, utilizzando il modulo \texttt{PyDictionary}.
+
+Avendo a disposizione un template, possiamo utilizzarlo per generare l'impalcatura (scaffold) della funzione. Utilizziamo la directory \texttt{function} e il file \texttt{template.yml} all'interno della cartella del template \texttt{python3-flask-debianv}. Possiamo sfruttare tali elementi per creare la nostra nuova funzione tramite la \texttt{faas-cli} con il comando \texttt{faas-cli new <function-name> --lang <template-name>}
+
+\begin{lstlisting}[language=bash]
+$ faas-cli new pydict --lang python3-flask-debian
+\end{lstlisting}
+
+Questo creerà una cartella con il nome della funzione (\texttt{pydict}) insieme ai contenuti visti in precedenza all'interno della cartella function del template, oltre a un file yaml con il nome della funzione (\texttt{stack.yml}). Rinomina il file in \texttt{pydict.yml}.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "document.pdf"] Screenshot dell'interfaccia web di OpenFaaS affiancata al terminale che mostra la cartella della funzione pydict creata con tree — Slide 2 / Pagina 2 del PDF
+% OPENFAAS nodeinfo
+% Invoke function
+% student@node1:~/pydict$ tree
+% .
+% |-- handler.py
+% |-- handler_test.py
+% |-- __init__.py
+% |-- requirements.txt
+% `-- tox.ini
+% 0 directories, 5 files
+
+Aggiungi la dipendenza al file \texttt{requirements.txt} della cartella della funzione (\texttt{pydict}).
+
+% --- Slide 3 / Pagina 3 ---
+
+\begin{lstlisting}
+nltk
+\end{lstlisting}
+
+Aggiorna \texttt{handler.py} con il seguente codice (è possibile eliminare tutto il codice preesistente nel file).
+
+\begin{lstlisting}[language=Python]
+import json
+import nltk
+from nltk.corpus import wordnet as wn
+
+# Scarica i dati di WordNet (solo la prima volta)
+try:
+    nltk.data.find('corpora/wordnet.zip')
+except LookupError:
+    nltk.download('wordnet', quiet=True)
+
+def handle(req):
+    # Estrai la parola dall'input
+    try:
+        body = json.loads(req)
+        word = body.get("word", "")
+    except (json.JSONDecodeError, TypeError):
+        word = req.strip()
+
+    if not word:
+        return {
+            "statusCode": 400,
+            "body": {"error": "No word provided"}
+        }
+
+    # Cerca i significati in WordNet
+    synsets = wn.synsets(word)
+
+    if not synsets:
+        return {
+            "statusCode": 404,
+            "body": {
+                "word": word,
+                "message": f"Word '{word}' not found in WordNet"
+            }
+        }
+
+    # Organizza i significati per parte del discorso
+    meanings = {}
+    for syn in synsets:
+        pos = syn.pos()
+        pos_name = {'n': 'Noun', 'v': 'Verb', 'a': 'Adjective', 'r': 'Adverb'}.get(pos, pos)
+
+        if pos_name not in meanings:
+            meanings[pos_name] = []
+
+        meanings[pos_name].append({
+            "definition": syn.definition(),
+            "examples": syn.examples() if syn.examples() else []
+        })
+\end{lstlisting}
+
+% --- Slide 4 / Pagina 4 ---
+
+\begin{lstlisting}[language=Python]
+    return {
+        "statusCode": 200,
+        "body": {
+            "word": word,
+            "meanings": meanings
+        }
+    }
+\end{lstlisting}
+
+La funzione è completa.
+
+Poiché utilizziamo Kubernetes, è opportuno verificare lo stato dei deployment. \texttt{faas-cli} ha già creato un file yaml per la nostra funzione nella home directory (\texttt{/home/vncc/}), ovvero \texttt{pydict.yml}
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "document.pdf"] Screenshot dell'interfaccia OpenFaaS affiancata al terminale che mostra il contenuto del file pydict.yml con cat — Slide 4 / Pagina 4 del PDF
+% student@node1:~$ cat pydict.yml
+% version: 1.0
+% provider:
+%   name: openfaas
+%   gateway: http://127.0.0.1:8080
+% functions:
+%   pydict:
+%     lang: python3-flask-debian
+%     handler: ./pydict
+%     image: pydict:latest
+
+Questo file fornirà a faas-cli informazioni sulle funzioni e sulle immagini di cui vogliamo eseguire il deployment, sui template di linguaggio che vogliamo utilizzare, sul fattore di scalabilità e su altre configurazioni.
+
+\subsection*{Analisi del file YAML}
+\begin{itemize}[noitemsep]
+    \item \textbf{gateway} determina l'indirizzo IP a cui connettersi per il servizio \textbf{OpenFaas}. Poiché lo stiamo testando localmente, il gateway fornito per impostazione predefinita va bene. \\
+    Nota: se stessimo effettuando il deployment su un cloud gestito, prenderemmo l'indirizzo IP di gateway-external
+    \item Sotto \textbf{functions} possiamo registrare le diverse funzioni Serverless di cui vogliamo eseguire il deployment, insieme alla loro configurazione.
+    \item \textbf{lang} nome del template di linguaggio utilizzato dalla funzione.
+    \item \textbf{handler} posizione della nostra funzione Serverless.
+    \item \textbf{image} URL completo del registry Docker insieme al nome dell'immagine e al tag.
+\end{itemize}
+
+Poiché stiamo utilizzando il registry di Docker Hub, dobbiamo modificare il tag dell'immagine per incorporarlo. Modifica il valore di image nel seguente:
+
+\begin{lstlisting}
+Image: <your_dockerhub_id>/pydict:latest
+\end{lstlisting}
+
+\subsection*{Port-Forward To Localhost:}
+Dobbiamo effettuare il port-forwarding del servizio gateway di \textbf{OpenFaas} verso la porta del nostro localhost (lo abbiamo già fatto sopra, ma qualora il forwarding debba essere reimpostato, si proceda come segue). Ricorda il gateway specificato nel file yaml.
+
+% --- Slide 5 / Pagina 5 ---
+
+Per verificare il gateway del servizio \textbf{OpenFaas}, esegui:
+\begin{lstlisting}[language=bash]
+$ kubectl get service -n openfaas
+\end{lstlisting}
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "document.pdf"] Screenshot del comando kubectl get service -n openfaas nel terminale con il servizio gateway evidenziato — Slide 5 / Pagina 5 del PDF
+% student@node1:~$ kubectl get service -n openfaas
+% NAME              TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+% alertmanager      ClusterIP   10.233.29.190   <none>        9093/TCP         16h
+% gateway           ClusterIP   10.233.16.152   <none>        8080/TCP         16h
+% gateway-external  NodePort    10.233.45.233   <none>        8080:31112/TCP   16h
+% nats              ClusterIP   10.233.46.166   <none>        4222/TCP         16h
+% prometheus        ClusterIP   10.233.63.90    <none>        9090/TCP         16h
+
+\begin{lstlisting}[language=bash]
+$ kubectl port-forward -n openfaas svc/gateway 8080:8080
+\end{lstlisting}
+
+Sebbene il cluster sia distribuito localmente, al suo interno Kubernetes gestisce i propri indirizzi IP. Stiamo effettuando il port-forwarding per accedere al servizio interno al cluster Kubernetes dalla nostra macchina locale. Una volta fatto ciò, apri una nuova finestra di terminale. Possiamo compilare l'immagine (build), inviarla al registry (push) ed eseguirne il deployment su Kubernetes.
+
+\subsection*{Build dell'immagine:}
+Prima di tutto è necessario \textbf{installare Docker} per poter elaborare il Dockerfile. Non confondere il container runtime installato nel cluster Kubernetes (\textbf{containerd}) con il demone Docker da utilizzare per creare le immagini Docker, non ancora installato nel sistema.
+
+Innanzitutto, disinstalla eventuali pacchetti in conflitto (sebbene non dovrebbero essere presenti nel sistema):
+\begin{lstlisting}[language=bash]
+$ for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do sudo apt-get remove $pkg; done
+\end{lstlisting}
+
+Si noti che il \textbf{containerd} di Kubernetes si trova nel nodo worker, pertanto non si verificano conflitti.
+
+Aggiorna i repository di Ubuntu:
+\begin{lstlisting}[language=bash]
+$ sudo apt update
+\end{lstlisting}
+
+Ora scarica la chiave pubblica del repository di Docker. È una chiave con armatura ASCII, ma viene salvata come un semplice file denominato \texttt{gpg} senza estensione, mentre dovrebbe essere salvata come \texttt{*.asc}, rispettivamente \texttt{docker.asc}:
+\begin{lstlisting}[language=bash]
+$ sudo apt install ca-certificates curl
+\end{lstlisting}
+\begin{itemize}[noitemsep]
+    \item \texttt{ca-certificates}: contiene certificati root attendibili per connessioni HTTPS sicure
+    \item \texttt{curl}: strumento per trasferire dati da/verso server (utilizzato per scaricare la chiave GPG)
+\end{itemize}
+
+\begin{lstlisting}[language=bash]
+$ sudo install -m 0755 -d /etc/apt/keyrings
+\end{lstlisting}
+Creazione della directory per le chiavi
+
+% --- Slide 6 / Pagina 6 ---
+
+\begin{enumerate}[noitemsep]
+    \item \texttt{install}: comando che crea directory e imposta i permessi in un unico passaggio
+    \item \texttt{-m 0755}: imposta i permessi su \texttt{rwxr-xr-x} (lettura/scrittura/esecuzione per root; solo lettura/esecuzione per gli altri)
+    \item \texttt{-d}: indica la creazione di una directory
+    \item \texttt{/etc/apt/keyrings}: directory standard in cui APT memorizza le chiavi GPG per verificare i repository
+\end{enumerate}
+``keyrings'' è una funzionalità interna al kernel per la gestione e la conservazione delle chiavi (\url{https://man7.org/linux/man-pages/man7/keyrings.7.html}).
+
+\begin{lstlisting}[language=bash]
+$ sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+\end{lstlisting}
+Download della chiave GPG di Docker
+\begin{enumerate}[noitemsep]
+    \item \texttt{curl -fsSL}:
+    \begin{enumerate}[noitemsep]
+        \item \texttt{-f} (fail): non mostra output in caso di errore
+        \item \texttt{-s} (Silent): modalità silenziosa (nessuna barra di avanzamento)
+        \item \texttt{-S} (show error): mostra gli errori (insieme a \texttt{-s})
+        \item \texttt{-L} (location): segue i redirect se la pagina è stata spostata
+    \end{enumerate}
+    \item \texttt{-o /etc/apt/keyrings/docker.asc}: salva il download nel file specificato
+    \item \texttt{.asc}: estensione file GPG con armatura ASCII (chiave pubblica in formato testo)
+\end{enumerate}
+
+\begin{lstlisting}[language=bash]
+$ sudo chmod a+r /etc/apt/keyrings/docker.asc
+\end{lstlisting}
+Permessi della chiave
+
+\texttt{a+r} significa concedere il permesso di lettura a tutti gli utenti. Aggiungi il repository alle sorgenti di Apt:
+\begin{lstlisting}[language=bash]
+$ echo \
+ "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+ $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+ sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+\end{lstlisting}
+
+Aggiunta del repository Docker alle sorgenti APT. Il comando scrive una riga in \texttt{/etc/apt/sources.list.d/docker.list}:
+\begin{itemize}[noitemsep]
+    \item \texttt{deb} Indica un repository di pacchetti binari
+    \item \texttt{arch=\$(dpkg --print-architecture)} Architettura di sistema (es. amd64)
+    \item \texttt{signed-by=/etc/apt/keyrings/docker.asc} Usa questa chiave per verificare la firma
+    \item \texttt{https://download.docker.com/linux/ubuntu} URL del repository Docker
+    \item \texttt{\$(. /etc/os-release \&\& echo "\$VERSION\_CODENAME")} Nome in codice della versione di Ubuntu (es. noble)
+    \item \texttt{stable} Canale di rilascio (stable, test, nightly)
+\end{itemize}
+
+Normalmente, per scrivere un file in una directory protetta (\texttt{/etc/apt/sources.list.d/}) sarebbero necessari i privilegi di root. Un tentativo diretto \textbf{fallirebbe} poiché il redirect \texttt{>} viene eseguito dalla shell corrente, che non dispone dei permessi di scrittura in tale directory. Il comando \texttt{tee} risolve questo problema perché \texttt{echo} produce l'
+
+% --- Slide 7 / Pagina 7 ---
+
+output (la riga del repository), \texttt{|} (pipe) passa tale output a \texttt{sudo tee} e \textbf{sudo eleva i privilegi SOLO per il comando tee}. \texttt{tee} scrive l'output nel file e contemporaneamente lo mostra a schermo, ma ``\texttt{> /dev/null}'' sopprime l'output di tee verso il terminale.
+
+\begin{lstlisting}[language=bash]
+$ sudo apt update
+$ sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+\end{lstlisting}
+
+Si noti che il containerd di Kubernetes si trova nel nodo worker, pertanto non si verificano conflitti.
+
+Durante l'installazione non modificare alcun file relativo a containerd quando viene presentata una relativa opzione.
+
+In caso di errori di aggiornamento o di installazione, come ad esempio ``Errore: Il pacchetto "docker-ce" non ha candidati da installare'', aprire il file \texttt{/etc/apt/sources.list.d/docker.list} e sostituire ``plucky stable'' con ``noble stable''.
+
+Dopo l'installazione probabilmente i comandi docker richiederanno il prefisso sudo. Per poter utilizzare i comandi docker senza sudo procedere come segue:
+\begin{lstlisting}[language=bash]
+$ sudo groupadd docker
+\end{lstlisting}
+Crea un nuovo gruppo denominato docker nel sistema (se non esiste già). Docker dovrebbe creare questo gruppo automaticamente durante l'installazione, ma a volte non lo fa. Questo comando lo crea manualmente. Gli utenti che fanno parte del gruppo docker possono eseguire comandi Docker senza sudo
+
+\begin{lstlisting}[language=bash]
+$ sudo usermod -aG docker vncc
+\end{lstlisting}
+Usermod è un comando per modificare un account utente, \texttt{-a} (append) aggiunge il gruppo senza rimuovere l'utente dai gruppi esistenti, \texttt{-G} (groups) specifica i gruppi secondari a cui l'utente deve essere aggiunto, \texttt{docker} è il nome del gruppo, \texttt{vncc} è il nome utente. L'utente vncc appartiene ora al gruppo docker (insieme agli altri suoi gruppi)
+
+\begin{lstlisting}[language=bash]
+$ newgrp docker
+\end{lstlisting}
+Avvia una nuova shell con il gruppo docker immediatamente attivo. È necessario poiché normalmente le modifiche ai gruppi richiedono la disconnessione e il successivo accesso per avere effetto. newgrp le rende attive immediatamente nella shell corrente.
+
+Sfortunatamente a volte è necessario riavviare la VM (altre opzioni diverse non hanno funzionato\dots). Ricordarsi di eseguire nuovamente il port-forwarding del servizio gateway di OpenFaas dopo il riavvio.
+
+\begin{lstlisting}[language=bash]
+kubectl port-forward -n openfaas svc/gateway 8080:8080
+\end{lstlisting}
+
+Ora avvia il deployment del comando
+
+Modificare quindi la seguente riga nel file \texttt{pydict.yaml} come segue:
+\begin{lstlisting}[language=yaml]
+image: <username hub>/pydict:latest
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash]
+$ faas-cli build -f pydict.yaml --no-cache (try without sudo)
+\end{lstlisting}
+
+Per evitare di usare sudo, utilizzare il seguente comando:
+\begin{lstlisting}[language=bash]
+$ sudo chown -R vncc:vncc ./build (Now avoid this, if the previous command should give you an error clean the old files created with sudo and then build without sudo:
+bash
+sudo rm -rf build/ pydict/
+faas-cli build -f pydict.yaml --no-cache
+\end{lstlisting}
+
+% --- Slide 8 / Pagina 8 ---
+
+E poi:
+
+\subsection*{Push della nostra immagine sul Registry}
+Utilizza prima le tue credenziali per accedere a Docker Hub.
+\begin{lstlisting}[language=bash]
+$ docker login -u <username hub> -p <password>
+$ docker tag pydict <username hub>/pydict:latest
+\end{lstlisting}
+\emph{Questo non è necessario poiché faas-cli build applica già il tag all'immagine con il nome specificato nel file pydict.yaml. Se hai già impostato \texttt{image: <username hub>/pydict:latest} nel file YAML, il tag è già stato applicato automaticamente.}
+
+\begin{lstlisting}[language=bash]
+$ faas-cli push -f pydict.yaml
+\end{lstlisting}
+
+Ora per eseguire il deployment della funzione nel cluster, dobbiamo effettuare il login a faas-cli. Generiamo le credenziali per l'autenticazione.
+
+Recupera la password:
+\begin{lstlisting}[language=bash]
+$ PASSWORD=$(kubectl get secret -n openfaas basic-auth -o jsonpath="{.data.basic-auth-password}" | base64 --decode; echo)
+\end{lstlisting}
+
+Verifica se la password esiste:
+\begin{lstlisting}[language=bash]
+$ echo $PASSWORD
+\end{lstlisting}
+
+Ora effettua il login a faas-cli:
+\begin{lstlisting}[language=bash]
+$ echo -n $PASSWORD | faas-cli login --username admin --password-stdin
+\end{lstlisting}
+
+Esegui il deployment della funzione:
+\begin{lstlisting}[language=bash]
+$ faas-cli deploy -f pydict.yaml -g http://127.0.0.1:8080
+\end{lstlisting}
+
+Tutti questi passaggi vengono eseguiti contemporaneamente dal comando
+\begin{lstlisting}[language=bash]
+$ faas-cli up -f pydict.yaml -g http://127.0.0.1:8080 --no-cache
+\end{lstlisting}
+
+Verifica se il deployment è andato a buon fine.
+\begin{lstlisting}[language=bash]
+$ kubectl get pods -n openfaas-fn
+$ echo "brevity" | faas-cli invoke pydict
+\end{lstlisting}
+Osserva il risultato stampato.
+
+Per testare le funzionalità di autoscaling di \textbf{OpenFaas}, modifica il file \texttt{pydict.yaml} come segue:
+
+\begin{lstlisting}[language=yaml]
+version: 1.0
+provider:
+  name: openfaas
+  gateway: http://127.0.0.1:8080
+functions:
+  pydict:
+\end{lstlisting}
+
+% --- Slide 9 / Pagina 9 ---
+
+\begin{lstlisting}[language=yaml]
+    lang: python3-flask-debian
+    handler: ./pydict
+    image: gianlucareali/pydict:latest
+    labels:
+      com.openfaas.scale.min: 1
+      com.openfaas.scale.max: 5
+      com.openfaas.scale.factor: 100
+\end{lstlisting}
+
+Esegui nuovamente il deployment della funzione come segue:
+\begin{lstlisting}[language=bash]
+$ faas-cli up -f pydict.yaml -g http://127.0.0.1:8080
+\end{lstlisting}
+
+Nel caso in cui le precedenti fasi di deployment abbiano modificato la proprietà del file (ownership), usa il prefisso sudo.
+
+Ora è necessario sovraccaricare la funzione. A questo scopo, installa il componente Linux \texttt{pv}
+\begin{lstlisting}[language=bash]
+$ sudo apt install pv
+\end{lstlisting}
+ed esegui i comandi
+\begin{lstlisting}[language=bash]
+$ cmd='echo "brevity" | faas-cli invoke pydict'
+$ yes | pv -qL50 |xargs -n1 -P30 sh -c "$cmd" sh
+\end{lstlisting}
+
+Se la dashboard non è installata, è possibile installare rapidamente una dashboard Grafana privata per OpenFaaS come segue:
+\begin{lstlisting}[language=bash]
+$ kubectl -n openfaas run --image=stefanprodan/faas-grafana:4.6.3 --port=3000 grafana
+\end{lstlisting}
+
+Effettua il forwarding della porta 3000 del pod di Grafana come segue (utilizza una shell separata)
+\begin{lstlisting}[language=bash]
+$ kubectl port-forward pod/grafana 3000:3000 -n openfaas
+\end{lstlisting}
+
+È ora possibile aprire questa dashboard di Grafana nel browser all'indirizzo \texttt{127.0.0.1:3000} e inserire la password predefinita per Grafana, che è \textbf{admin: admin}.
+
+% --- Slide 10 / Pagina 10 ---
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "document.pdf"] Screenshot della dashboard Grafana per OpenFaaS con grafici di Function rate, Replica scaling, Execution duration e Total requests (5408 richieste 200 OK) — Slide 10 / Pagina 10 del PDF
+% OpenFaaS Dashboard
+% Function rate | Replica scaling
+% Total requests - 200 OK: 5408 | Execution duration (s) | Total requests - 200 OK: 5408
+
+\section*{Uso della risorsa INGRESS}
+
+\subsection*{Installazione dell'NGINX Ingress Controller}
+
+\subsubsection*{Creazione di un namespace per l'Ingress Controller}
+È buona norma installare l'Ingress Controller in un namespace dedicato.
+\begin{lstlisting}[language=bash]
+$ kubectl create namespace ingress-nginx
+\end{lstlisting}
+
+È possibile installare l'NGINX Ingress Controller utilizzando i manifest YAML ufficiali.
+\begin{lstlisting}[language=bash]
+$ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.1/deploy/static/provider/cloud/deploy.yaml -n ingress-nginx
+\end{lstlisting}
+
+È possibile verificare che l'Ingress Controller sia stato installato correttamente controllando i pod nel namespace \texttt{ingress-nginx}:
+\begin{lstlisting}[language=bash]
+$ kubectl get pods -n ingress-nginx
+\end{lstlisting}
+
+Creiamo un semplice deployment e service per un'applicazione di esempio.
+
+File: \texttt{example-app.yaml}
+
+% --- Slide 11 / Pagina 11 ---
+
+\begin{lstlisting}[language=yaml]
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: example-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: example-app
+  template:
+    metadata:
+      labels:
+        app: example-app
+    spec:
+      containers:
+      - name: example-app
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: example-service
+spec:
+  selector:
+    app: example-app
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash]
+$ kubectl apply -f example-app.yaml
+\end{lstlisting}
+
+Ora creiamo una risorsa Ingress per esporre l'applicazione di esempio.
+
+File: \texttt{example-ingress.yaml}
+
+\begin{lstlisting}[language=yaml]
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: example-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: example.com
+    http:
+\end{lstlisting}
+
+% --- Slide 12 / Pagina 12 ---
+
+\begin{lstlisting}[language=yaml]
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: example-service
+            port:
+              number: 80
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash]
+$ kubectl apply -f example-ingress.yaml
+\end{lstlisting}
+
+È possibile verificare che l'Ingress sia stato creato correttamente:
+\begin{lstlisting}[language=bash]
+$ kubectl get ingress
+\end{lstlisting}
+
+Per testare l'Ingress, puoi aggiungere una voce al tuo file \texttt{/etc/hosts} per mappare \texttt{example.com} sull'indirizzo IP del tuo cluster.
+
+\subsubsection*{Passo 1: Ottenere l'indirizzo IP dell'Ingress Controller}
+Esegui il seguente comando per ottenere l'indirizzo IP del servizio dell'Ingress Controller:
+\begin{lstlisting}[language=bash]
+$ kubectl get svc -n ingress-nginx
+\end{lstlisting}
+Cerca il servizio \texttt{ingress-nginx-controller} e annota l'IP esterno (EXTERNAL-IP).
+
+\subsubsection*{Passo 2: Modificare il file /etc/hosts}
+Aggiungi una voce al tuo file \texttt{/etc/hosts} per mappare \texttt{example.com} sull'indirizzo IP ottenuto:
+\begin{lstlisting}
+<EXTERNAL-IP> example.com
+\end{lstlisting}
+
+\subsubsection*{Passo 3: Testare l'accesso}
+Ora puoi testare l'accesso all'applicazione di esempio visitando \texttt{http://example.com} nel browser oppure utilizzando curl:
+\begin{lstlisting}[language=bash]
+$ curl http://example.com
+\end{lstlisting}
+
+\begin{lstlisting}[language=html]
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+\end{lstlisting}
+
+% --- Slide 13 / Pagina 13 ---
+
+\begin{lstlisting}[language=html]
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
+\end{lstlisting}
+
+Se desideri rimuovere l'Ingress Controller e le risorse di esempio, puoi eseguire i seguenti comandi:
+\begin{lstlisting}[language=bash]
+$ kubectl delete -f example-ingress.yaml
+$ kubectl delete -f example-app.yaml
+$ kubectl delete namespace ingress-nginx (this can be skipped to preserve the ingress controller)
+\end{lstlisting}
+
+Presta attenzione alla definizione della classe di ingress. Se qualcosa va storto, esegui il seguente comando per verificare se esiste una risorsa IngressClass:
+\begin{lstlisting}[language=bash]
+$ kubectl get ingressclass
+\end{lstlisting}
+
+Se non è elencata alcuna IngressClass, è necessario crearne una.
+
+File: \texttt{ingress-class.yaml}
+\begin{lstlisting}[language=yaml]
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  name: nginx
+spec:
+  controller: k8s.io/ingress-nginx
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash]
+$ kubectl apply -f ingress-class.yaml
+\end{lstlisting}
+
+Questo è un passaggio fondamentale poiché il controller NGINX utilizza l'IngressClass per determinare quali risorse Ingress deve gestire.
+
+\newpage
+
+\section*{Deployment orchestrato di un servizio di Machine Learning in Kubernetes}
+
+Vogliamo ora creare un'applicazione che addestri un semplice modello di ML tramite un Job, salvi questi dati in un Volume condiviso al fine di memorizzare i pesi del modello e crei un altro pod che utilizzi tali pesi per effettuare predizioni. Il pod sarà dotato di un servizio in grado di gestire richieste HTTP ed esposto all'esterno del cluster tramite un Service, in modo da poter effettuare richieste dal terminale Windows dell'host. Come primo approccio, mostriamo come istanziare il job per il training in modo dichiarativo utilizzando kubectl e il file yaml.
+
+\subsection*{Fase 1: Training e deployment di un modello ML addestrato}
+
+% --- Slide 14 / Pagina 14 ---
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "document.pdf"] Diagramma architetturale di Phase 1 (Training and Deployment of a trained ML model) e Phase 2 (Access to the trained ML model) — Slide 14 / Pagina 14 del PDF
+% --- Fase 1: Training e deployment di un modello ML addestrato ---
+% node1: 192.168.43.10 - master - Orchestrazione tramite il file deployment.py
+% Creazione del persistent volume -> vncc-pv: host_path=/home/vncc
+% "La configurazione host_path indica che la directory /home/vncc del nodo host (node2 in questo caso), in cui viene eseguito il pod, viene montata nel volume all'interno del pod. Pertanto in /home/vncc di node2 vedremo il contenuto del volume nel pod in esecuzione."
+% Creazione della persistent volume claim -> ml-data-pvc: host_path=/home/vncc
+% Creazione del job di training -> ml-training-job:
+%   Pod: ml-training
+%   container: trainer
+%   image: ml-training
+%   Command: python3 /home/vncc train.py
+%   Mounted volume: vncc-pv
+%   Trained model: /home/vncc/svc_model.model
+% Docker HUB -> Pull image jupyter/scipy-notebook
+% node2: 192.168.43.11 - worker:
+%   Dockerfile -> image: jupyter/scipy-notebook, Inclusione del file train.py
+%   File: train.py
+%   Build e push dell'immagine ml-training -> vncc-registry (Creazione del registry locale, memorizzazione dell'immagine docker ml-training)
+%   Modello addestrato prodotto -> Visibile in /home/vncc/ di node2
+%
+% --- Fase 2: Accesso al modello ML addestrato ---
+% node1: 192.168.43.10 - master - Orchestrazione tramite il file deployment.yaml
+% File: prediction_app.py
+% Creazione della ConfigMap -> Copia di Predicition_app.py
+% Creazione del pod di classificazione -> classifier-pod:
+%   container: classifier
+%   image: jupyter/scipy-notebook (Pull image jupyter/scipy-notebook from Docker HUB)
+%   Command: python3 /home/vncc train.py
+%   Mounted volume: config-volume /app
+%   Mounted volume: vncc-pv /home/vncc
+%   Commands: pip install Flask and POST setup; python3 /app/prediction-app.py
+% Existing PV, PVC: config-volume (Config name: classifier-py-configmap), vncc-pv (PV claim: ml-data-pvc)
+% Creazione del service -> Classifier-service type="NodePort": port 5000, target_port=5000, node_port=30000
+% Richiesta esterna (ad es. da node1 o node2) -> Richiesta alla porta 3000 -> Nodeport: 3000 -> Inoltro di K8s alla porta 5000 -> Service: 5000 -> Inoltro di K8s alla porta 5000 -> Pod che esegue Flask: 5000
+
+\subsection*{Fase 2: Accesso al modello ML addestrato}
+
+È necessario installare Docker nel nodo worker, come segue.
+
+% --- Slide 15 / Pagina 15 ---
+
+Installa alcune dipendenze prima di installare Docker:
+\begin{lstlisting}[language=bash]
+$ sudo apt install apt-transport-https ca-certificates curl software-properties-common
+\end{lstlisting}
+
+Docker utilizza una chiave GPG (GNU Privacy Guard, un'implementazione open source dello standard OpenPGP) per firmare i propri pacchetti. Aggiungi questa chiave al tuo sistema:
+\begin{lstlisting}[language=bash]
+$ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+\end{lstlisting}
+
+Questo comando preleva la chiave pubblica GPG di Docker dalla sorgente ufficiale, la converte dal formato con armatura ASCII a binario (dearmor) e la memorizza nella directory dei keyring di sistema.
+
+Ora aggiungi il repository ufficiale di Docker per il tuo sistema:
+\begin{lstlisting}[language=bash]
+$ echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+\end{lstlisting}
+
+Sostanzialmente, aggiunge il repository ufficiale di Docker all'elenco delle sorgenti APT. Prima stampa la riga di configurazione con le informazioni sul repository Docker, poi usa tee con sudo per scrivere il file (sono richiesti i permessi di root). \texttt{> /dev/null} viene utilizzato per evitare che l'output venga stampato a schermo.
+
+Dopo aver aggiunto il repository, aggiorna l'elenco dei pacchetti:
+\begin{lstlisting}[language=bash]
+$ sudo apt update
+\end{lstlisting}
+
+Ora puoi installare Docker:
+\begin{lstlisting}[language=bash]
+$ sudo apt install docker-ce
+\end{lstlisting}
+
+In caso di errori di aggiornamento o di installazione, come ad esempio ``Errore: Il pacchetto "docker-ce" non ha candidati da installare'', aprire il file \texttt{/etc/apt/sources.list.d/docker.list} e sostituire ``plucky stable'' con ``noble stable''.
+
+Assicurati che Docker sia avviato e si avvii automaticamente all'avvio del sistema:
+\begin{lstlisting}[language=bash]
+$ sudo systemctl start docker
+$ sudo systemctl enable docker
+\end{lstlisting}
+
+Aggiungi l'utente VNCC al gruppo docker:
+\begin{lstlisting}[language=bash]
+$ sudo usermod -aG docker $USER
+$ newgrp docker
+\end{lstlisting}
+
+Per verificare che Docker sia stato installato correttamente, puoi eseguire il seguente comando:
+\begin{lstlisting}[language=bash]
+sudo docker --version
+\end{lstlisting}
+
+Crea il Dockerfile nella home directory del nodo worker:
+\begin{lstlisting}[language=dockerfile]
+FROM jupyter/scipy-notebook
+COPY train.py ./train.py
+\end{lstlisting}
+
+% --- Slide 16 / Pagina 16 ---
+
+Crea il file \texttt{train.py}, lo script Python per il training sul nodo worker:
+\begin{lstlisting}[language=Python]
+from sklearn import svm
+from sklearn import datasets
+from joblib import dump, load
+clf = svm.SVC()
+X, y = datasets.load_iris(return_X_y=True)
+clf.fit(X,y)
+print("Model finished training")
+dump(clf, "/home/vncc/svc_model.model")
+\end{lstlisting}
+
+Questo programma serve per addestrare un modello Support Vector Classifier (SVC) utilizzando il dataset Iris e salvare il modello addestrato in un file tramite joblib. Il dataset Iris comprende fiori con 4 feature (lunghezza del sepalo, larghezza del sepalo, lunghezza del petalo, larghezza del petalo) e 3 classi (tipologie di fiori di Iris).
+
+Creiamo un registry locale in modo che Kubernetes abbia accesso all'immagine. Quando il job viene creato, essa verrà scaricata dal registry locale del nodo worker. Si crea quindi questo registry sulla porta 5000 del nodo worker eseguendo sul nodo worker il comando:
+
+\begin{lstlisting}[language=bash]
+docker run -d -p 5000:5000 --name vncc-registry registry:2
+\end{lstlisting}
+
+\texttt{docker run}: esegue un container. \texttt{-d}: esegue il container in modalità "detached" (in background). \texttt{-p 5000:5000}: mappa la porta 5000 del sistema (host) sulla porta 5000 del container. \texttt{--name vncc-registry}: assegna un nome al container, in questo caso vncc-registry. \texttt{registry:2}: l'immagine che si sta tentando di eseguire, ovvero l'immagine ufficiale di un registry Docker (versione 2).
+
+È possibile visualizzare il seguente output:
+\begin{lstlisting}
+Unable to find image 'registry:2' locally
+2: Pulling from library/registry
+f54a5150a760: Pull complete
+b6afea20d55c: Pull complete
+c8f4e00e7d3c: Pull complete
+665375f37302: Pull complete
+9959184a302f: Pull complete
+Digest: sha256:319881be2ee9e345d5837d15842a04268de6a139e23be42654fc7664fc6eaf52
+Status: Downloaded newer image for registry:2
+615a7d642103366511ad8154a42edf1e20a24d9786014e3dc57b749b2303aeeb
+\end{lstlisting}
+
+Dalla cartella in cui si trovano lo script Python e il Dockerfile, viene quindi effettuato il build dell'immagine. All'interno del nome, deve essere inserito il prefisso \texttt{localhost:5000} per indicare a Docker che l'immagine deve essere caricata sul registry appena creato nel nodo worker.
+
+\begin{lstlisting}[language=bash]
+$ docker build -t localhost:5000/ml-training .
+\end{lstlisting}
+
+In altre parole, viene utilizzato per compilare un'immagine Docker a partire da un Dockerfile nella directory corrente (.), e applica all'immagine risultante uno specifico nome e tag (\texttt{localhost:5000/ml-training}). \texttt{localhost:5000} indica il registry verso cui effettuare il push o da cui effettuare il pull dell'immagine. Si tratta di un registry Docker locale in esecuzione sulla propria macchina sulla porta 5000. Ciò significa che l'immagine verrà memorizzata localmente, e \texttt{localhost:5000} è l'indirizzo del proprio registry Docker privato.
+
+% --- Slide 17 / Pagina 17 ---
+
+Ora invia l'immagine tramite push al registry locale:
+\begin{lstlisting}[language=bash]
+$ docker push localhost:5000/ml-training
+\end{lstlisting}
+
+Per verificare che l'immagine sia stata caricata correttamente:
+\begin{lstlisting}[language=bash]
+$ curl http://localhost:5000/v2/ml-training/tags/list
+\end{lstlisting}
+
+Giusto per compiere un passaggio intermedio, crea il file manifest \texttt{job.yaml} sul nodo master, al fine di istanziare il job in modo dichiarativo. Se ti senti sicuro, puoi saltare questo job.
+
+\begin{lstlisting}[language=yaml]
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ml-training-job
+spec:
+  template:
+    metadata:
+      name: ml-training
+    spec:
+      containers:
+      - name: ml-training
+        #image: 192.168.43.10:5000/ml-training:latest
+        image: localhost:5000/ml-training:latest
+        command: ["python3", "/home/jovyan/train.py"]
+        resources:
+          requests:
+            memory: "4Gi"
+            cpu: "1"
+          limits:
+            memory: "6Gi"
+            cpu: "2"
+      restartPolicy: Never
+  backoffLimit: 4
+\end{lstlisting}
+
+Ora prova a istanziare il job:
+\begin{lstlisting}[language=bash]
+$ kubectl apply -f job.yaml
+$ kubectl get pods
+$ kubectl describe pod <pod-name>
+\end{lstlisting}
+
+Si può notare che il job è stato completato.
+
+Nel nodo master installa il client Python di Kubernetes.
+
+Ricorda di utilizzare l'ambiente virtuale Python creato
+\begin{lstlisting}[language=bash]
+$ source /home/vncc/kubespray-venv/bin/activate
+$ pip install kubernetes
+\end{lstlisting}
+
+% --- Slide 18 / Pagina 18 ---
+
+Crea ed esegui i seguenti file:
+\begin{lstlisting}[language=bash]
+$ (kubespray-venv) vncc@node1:~$ python3 deployment.py
+\end{lstlisting}
+
+\texttt{prediction-app.py}
+\begin{lstlisting}[language=Python]
+from joblib import load
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+model = load("/home/vncc/svc_model.model") # Percorso all'interno del pod che montera il volume
+
+@app.route('/classify', methods=['POST'])
+def classify():
+    data = request.json
+    if not data or 'features' not in data:
+        return jsonify({'error':'Invalid input'}), 400
+    # Prelievo delle features e predizione
+    class_names = {
+        0: 'Setosa',
+        1: 'Versicolor',
+        2: 'Virginica'
+    }
+    features = data['features']
+    prediction = model.predict([features])
+    species_name = class_names.get(prediction[0],'Unknown')
+    return jsonify({'prediction': species_name})
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
+\end{lstlisting}
+
+Questo codice configura un'API Flask che può essere utilizzata per effettuare predizioni con il modello SVC addestrato e salvato in precedenza.
+
+Alcune note:
+\begin{itemize}[noitemsep]
+    \item \textbf{joblib}: una libreria utile per caricare oggetti Python serializzati, come i modelli di machine learning salvati in formato \texttt{.model}.
+    \item \textbf{Flask}: un framework web leggero per la creazione di applicazioni web in Python.
+    \item \textbf{request}: utilizzato per gestire le richieste HTTP in ingresso.
+    \item \textbf{jsonify}: utilizzato per restituire risposte HTTP in formato JSON.
+\end{itemize}
+
+\texttt{app = Flask(\_\_name\_\_)}: crea un'istanza dell'applicazione Flask. \texttt{\_\_name\_\_} è una variabile speciale di Python che indica il nome del modulo corrente.
+
+\texttt{load('/home/volume/svc\_model.model')}: carica un modello di machine learning pre-addestrato da un file utilizzando joblib. Il file si trova in \texttt{/home/volume/svc\_model.model}, che è un volume montato all'interno del pod Kubernetes.
+
+\texttt{model}: una variabile che contiene il modello caricato, pronto per essere utilizzato per effettuare predizioni.
+
+% --- Slide 19 / Pagina 19 ---
+
+\texttt{@app.route('/classify', methods=['POST'])}: definisce un endpoint HTTP POST all'URL \texttt{/classify}. Quando viene inviata una richiesta POST a questo endpoint, viene eseguita la funzione \texttt{classify()}.
+
+\texttt{data = request.json}: recupera i dati JSON inviati nella richiesta HTTP.
+
+\texttt{if not data or 'features' not in data:}: verifica se i dati JSON sono validi e contengono la chiave \texttt{'features'}. In caso contrario, restituisce un errore HTTP 400 (Bad Request) con un messaggio di errore.
+
+\texttt{class\_names}: un dizionario che mappa i valori numerici restituiti dal modello (0, 1, 2) sui nomi delle classi (Setosa, Versicolor, Virginica). Questo è utile per rendere la risposta più leggibile.
+
+\texttt{features = data['features']}: recupera l'array di feature inviato nella richiesta JSON.
+
+\texttt{prediction = model.predict([features])}: utilizza il modello caricato per effettuare una predizione sulle feature fornite. Il metodo predict accetta una lista di feature (motivo per cui \texttt{[features]} è racchiuso in una lista).
+
+\texttt{species\_name = class\_names.get(prediction[0], 'Unknown')}: converte il valore numerico della predizione in un nome di classe utilizzando il dizionario \texttt{class\_names}. Se il valore non è presente nel dizionario, restituisce 'Unknown'.
+
+\texttt{return jsonify(\{'prediction': species\_name\})}: restituisce una risposta JSON contenente il nome della specie predetta.
+
+\texttt{if \_\_name\_\_ == '\_\_main\_\_':}: verifica se lo script viene eseguito direttamente (anziché essere importato come modulo).
+
+\texttt{app.run(host='0.0.0.0', port=5000)}: avvia il server Flask in ascolto su tutte le interfacce di rete (0.0.0.0) sulla porta 5000. Ciò rende l'applicazione accessibile dall'esterno del pod.
+
+Il seguente script Python ripulisce il namespace di default dagli oggetti dovuti a tentativi precedenti, se presenti, e successivamente esegue il deployment di tutti gli oggetti fino alla creazione del servizio NodePort.
+
+\texttt{deployment.py}
+\begin{lstlisting}[language=Python]
+from kubernetes import client, config
+from kubernetes.client.rest import ApiException
+import time
+
+#Caricamento della configurazione del cluster
+config.load_kube_config()
+#Questa riga carica il file di configurazione predefinito (di solito ~/.kube/config) per connettersi al cluster Kubernetes.
+
+# Inizializzazione dei client API
+v1 = client.CoreV1Api()
+batch_v1 = client.BatchV1Api()
+
+# Definizione delle variabili
+CONFIGMAP_NAME = "classifier-py-configmap"
+APP_PATH = "/home/vncc/prediction-app.py"
+
+# Eliminazione di tutti i Pod nel namespace "default"
+pods = v1.list_namespaced_pod('default')
+for pod in pods.items:
+\end{lstlisting}
+
+% AA Parte 3
+% ==============================================================================
+% SEZIONE: AUTOMAZIONE DEL CICLO DI VITA ML TRAMITE KUBERNETES PYTHON CLIENT
+% ==============================================================================
+
+\section{Automazione Del Ciclo Di Vita Di Un Modello ML Tramite Kubernetes Python Client}
+
+Nei sistemi cloud-native moderni, l'orchestrazione dichiarativa tramite file statici YAML rappresenta lo standard de facto; tuttavia, quando si progettano pipeline dinamiche di \emph{Machine Learning} (MLOps) o cicli di controllo adattivi, sorge la necessità di interagire programmaticamente con il \textbf{Control Plane} di Kubernetes.
+A questo scopo, il client ufficiale Python (\texttt{kubernetes-client}) espone le primitive OpenAPI implementate dal server \textbf{kube-apiserver}, consentendo di eseguire in modo imperativo o semi-dichiarativo le operazioni CRUD (\emph{Create, Read, Update, Delete}) su tutte le risorse del cluster.
+
+\subsection{Idempotenza E Pulizia Dello Stato Nel Namespace Default}
+
+Prima di istanziare un flusso di lavoro complesso composto da computazioni a termine (\textbf{Job}), carichi persistenti di inferenza (\textbf{Pod}), astrazioni di rete (\textbf{Service}) e storage condiviso (\textbf{PersistentVolume} e \textbf{PersistentVolumeClaim}), è fondamentale garantire l'\textbf{idempotenza} dello script. Un'architettura software distribuita deve poter gestire riesecuzioni senza incorrere in conflitti di denominazione o inconsistenze dello stato.
+
+Lo script \texttt{deployment.py} implementa una routine di bonifica preventiva che interroga le API di Kubernetes per individuare ed eliminare le risorse preesistenti allocate in esecuzioni precedenti nel namespace \texttt{default}.
+
+\subsubsection{Cancellazione Dei Pod Preesistenti E Gestione Delle Eccezioni}
+
+Il client distingue le API in base ai gruppi e alle versioni:
+\begin{itemize}[noitemsep]
+    \item \texttt{CoreV1Api}: gestisce le risorse fondamentali del nucleo di Kubernetes, tra cui \textbf{Pod}, \textbf{Service}, \textbf{ConfigMap}, \textbf{PersistentVolume} (PV) e \textbf{PersistentVolumeClaim} (PVC).
+    \item \texttt{BatchV1Api}: gestisce le risorse per carichi di lavoro batch a completamento, ovvero i \textbf{Job} e i \textbf{CronJob}.
+\end{itemize}
+
+Durante l'interrogazione delle risorse tramite chiamate di lettura (ad esempio \texttt{read\_namespaced\_pod}), qualora l'oggetto non sia presente nel cluster, il server API restituisce un codice di stato HTTP \texttt{404 Not Found}, intercettato nel codice Python attraverso l'eccezione \texttt{ApiException}. Tale errore non rappresenta un'anomalia di sistema, bensì la conferma che la risorsa può essere creata ex novo.
+
+\begin{lstlisting}[language=Python]
+print(f"Eliminando pod: {pod.metadata.name} nel namespace {pod.metadata.namespace}")
+v1.delete_namespaced_pod(pod.metadata.name, pod.metadata.namespace)
+
+# Verifica e gestione del Pod "classifier-pod"
+try:
+    # Prova a leggere il Pod
+    v1.read_namespaced_pod(name="classifier-pod", namespace="default")
+    print(f"Il Pod 'classifier-pod' esiste gia'. Verra' eliminato e ricreato.")
+    # Elimina il Pod se esiste
+    v1.delete_namespaced_pod(name="classifier-pod", namespace="default")
+    print(f"Il Pod 'classifier-pod' e' stato eliminato.")
+    # Aspetta che il pod sia effettivamente eliminato
+    """ while True:
+    try:
+        v1.read_namespaced_pod(name="classifier-pod", namespace="default")
+        time.sleep(1) # Aspetta 1 secondo e riprova
+    except ApiException as e:
+        if e.status == 404:
+            print(f"Il pod e' stato eliminato con successo.")
+            break """
+except ApiException as e:
+    if e.status == 404: # Il Pod non esiste, quindi possiamo crearne uno nuovo
+        print(f"Il Pod 'classifier-pod' non esiste. Verra' creato un nuovo Pod.")
+    else:
+        print(f"Errore durante il controllo del Pod: {e}")
+
+# Verifica dell'esistenza e gestione del Job "ml-training-job"
+try:
+    # Prova a ottenere il job
+    batch_v1.read_namespaced_job(name="ml-training-job", namespace="default")
+    print(f"Il job 'ml-training-job' esiste gia'. Verra' eliminato e rilanciato.")
+    # Elimina il job se esiste
+    batch_v1.delete_namespaced_job(name="ml-training-job", namespace="default")
+    print(f"Il job 'ml-training-job' e' stato eliminato.")
+except ApiException as e:
+    if e.status == 404:
+        print(f"Il job 'ml-training-job' non esiste. Verra' creato un nuovo job.")
+    else:
+        print(f"Errore durante il controllo del job: {e}")
+
+# Verifica se la config map classifier-py esiste gia' e gestione della stessa
+try:
+    v1.read_namespaced_config_map(name=CONFIGMAP_NAME, namespace="default")
+    print(f"La ConfigMap 'classifier-py' esiste gia'. Verra' eliminata e ricreata.")
+    v1.delete_namespaced_config_map(name=CONFIGMAP_NAME, namespace="default")
+except ApiException as e:
+    if e.status == 404:
+        print(f"La ConfigMap 'classifier-py' non esiste, verra' creata.")
+\end{lstlisting}
+
+\subsubsection{Sincronizzazione E Attesa Attiva Nell'Eliminazione Dello Storage E Dei Servizi}
+
+La cancellazione delle risorse di storage richiede particolare attenzione architetturale. L'eliminazione di un \textbf{PersistentVolume} (PV) è un'operazione asincrona a livello di infrastruttura: il control plane contrassegna la risorsa con un timestamp di cancellazione (\emph{deletion timestamp}) e attende il distacco dei volumi fisici e la rimozione di eventuali \emph{finalizers}. Se il codice tentasse di ricreare un PV con lo stesso nome prima che il ciclo di deallocazione sia concluso, il server API rifiuterebbe la richiesta generando una collisione.
+
+Per prevenire questa \emph{race condition}, il codice adotta un ciclo di sincronizzazione ad attesa attiva (\emph{polling} con \texttt{while True} e \texttt{time.sleep(2)}), interrogando continuativamente lo stato del PV fino alla ricezione dell'errore \texttt{404 Not Found}.
+
+\begin{lstlisting}[language=Python]
+# Verifica e gestione del PersistentVolumeClaim (PVC)
+try:
+    v1.read_namespaced_persistent_volume_claim(name="ml-data-pvc", namespace="default")
+    print(f"Il PersistentVolumeClaim 'ml-data-pvc' esiste gia'. Verra' eliminato e ricreato.")
+    v1.delete_namespaced_persistent_volume_claim(name="ml-data-pvc", namespace="default")
+except ApiException as e:
+    if e.status == 404: # Non trovato, possiamo crearlo
+        print(f"Il PersistentVolumeClaim 'ml-data-pvc' non esiste, verra' creato.")
+
+# Verifica e gestione del PersistentVolume (PV)
+try:
+    v1.read_persistent_volume(name="vncc-pv")
+    print(f"Il PersistentVolume 'vncc-pv' esiste gia'. Verra' eliminato e ricreato.")
+    v1.delete_persistent_volume(name="vncc-pv")
+    # Attendi che il PV venga eliminato
+    while True:
+        try:
+            v1.read_persistent_volume(name="vncc-pv")
+            time.sleep(2) # Aspetta prima di provare di nuovo
+        except ApiException as e:
+            if e.status == 404:
+                print(f"PersistentVolume 'vncc-pv' eliminato con successo.")
+                break
+except ApiException as e:
+    if e.status == 404: # Non trovato, possiamo crearlo
+        print(f"Il PersistentVolume 'vncc-pv' non esiste, lo creeremo.")
+
+# Verifica e gestione del Service
+try:
+    v1.read_namespaced_service(name="classifier-service", namespace="default")
+    print(f"Il service esiste gia'. Verra' eliminato...")
+    v1.delete_namespaced_service(name="classifier-service", namespace="default")
+    time.sleep(2) # Aspetta un attimo per garantire l'eliminazione
+    print(f"Service eliminato con successo.")
+except ApiException as e:
+    if e.status == 404:
+        print(f"Il service non esiste, procedo con la creazione.")
+    else:
+        print(f"Errore durante la verifica del Service: {e}")
+        exit(1)
+\end{lstlisting}
+
+\subsection{Provisioning Dello Storage Persistente E Del Job Di Training}
+
+Il disaccoppiamento tra computazione e persistenza dello stato costituisce uno dei pilastri della progettazione cloud-native. I container sono intrinsecamente effimeri: al loro riavvio o terminazione, le modifiche apportate al \emph{filesystem} interno vengono irrimediabilmente perse (grazie al layer di \emph{copy-on-write} dello storage driver del runtime).
+
+Nel nostro scenario di addestramento:
+\begin{enumerate}[noitemsep]
+    \item Un container batch esegue l'algoritmo di machine learning e genera i coefficienti del modello addestrato in un file serializzato (\texttt{svc\_model.model}).
+    \item Tale file deve sopravvivere alla distruzione fisiologica del Job ed essere successivamente accessibile in sola lettura (o lettura/scrittura) dal pod che erogherà il servizio di predizione REST.
+\end{enumerate}
+
+\subsubsection{Definizione Di PersistentVolume E PersistentVolumeClaim}
+
+Il \textbf{PersistentVolume} (PV) rappresenta la risorsa di storage concreta approvvigionata nel cluster, mentre il \textbf{PersistentVolumeClaim} (PVC) costituisce la richiesta di capacità e permessi avanzata da un utente o pod. Il volume viene configurato con:
+\begin{itemize}[noitemsep]
+    \item \textbf{hostPath}: monta direttamente il percorso del file system del nodo host (\texttt{/home/vncc}) all'interno del pod. Sebbene in ambienti di produzione multi-nodo si preferiscano storage di rete (NFS, Ceph, CSI Cloud), nel contesto didattico su cluster a due nodi consente di ispezionare visivamente gli artefatti prodotti sul nodo worker.
+    \item \textbf{persistent\_volume\_reclaim\_policy="Retain"}: preserva i dati fisici memorizzati su disco anche quando il PVC viene cancellato, evitando la perdita involontaria del modello addestrato.
+    \item \textbf{access\_modes=["ReadWriteOnce"]}: autorizza il volume a essere montato con privilegi di lettura e scrittura da parte di un singolo nodo del cluster alla volta.
+\end{itemize}
+
+\begin{lstlisting}[language=Python]
+# Creazione del Persistent Volume (PV)
+pv = client.V1PersistentVolume(
+    api_version="v1",
+    kind="PersistentVolume",
+    metadata=client.V1ObjectMeta(name="vncc-pv"),
+    spec=client.V1PersistentVolumeSpec(
+        capacity={"storage": "1Gi"},
+        access_modes=["ReadWriteOnce"],
+        persistent_volume_reclaim_policy="Retain",
+        # This setting tells Kubernetes what to do with the physical storage (the
+        # actual disk) after the PersistentVolumeClaim (PVC) that was using it is
+        # deleted. The PersistentVolume (PV) is not deleted.
+        # The data on the volume remains intact.
+        host_path=client.V1HostPathVolumeSource(path="/home/vncc")
+    )
+)
+v1.create_persistent_volume(body=pv)
+print("Persistent Volume creato.")
+
+# Creazione del Persistent Volume Claim (PVC)
+pvc = client.V1PersistentVolumeClaim(
+    api_version="v1",
+    kind="PersistentVolumeClaim",
+    metadata=client.V1ObjectMeta(name="ml-data-pvc"),
+    spec=client.V1PersistentVolumeClaimSpec(
+        access_modes=["ReadWriteOnce"],
+        resources=client.V1ResourceRequirements(
+            requests={"storage": "300Mi"}
+        )
+    )
+)
+v1.create_namespaced_persistent_volume_claim(namespace="default", body=pvc)
+print("Persistent Volume Claim creato.")
+\end{lstlisting}
+
+\subsubsection{Orchestrazione Del Job Di Addestramento}
+
+Un \textbf{Job} Kubernetes è progettato specificamente per carichi di lavoro a esaurimento: esso crea uno o più pod e garantisce che un numero stabilito di essi termini con successo (codice di uscita 0).
+
+I parametri critici includono:
+\begin{itemize}[noitemsep]
+    \item \texttt{restart\_policy="OnFailure"}: impedisce che il pod venga riavviato in caso di successo, consentendo invece il recupero se lo script termina in errore prima del completamento.
+    \item \texttt{backoff\_limit=4}: stabilisce il numero massimo di ritentativi prima che l'intero Job venga dichiarato definitivamente fallito dal controller.
+    \item \texttt{volume\_mounts}: collega il volume referenziato dal PVC (\texttt{ml-data-pvc}) nel percorso \texttt{/home/vncc} all'interno del container, permettendo al codice \texttt{train.py} di salvare il file del modello in modo che persista sull'host.
+\end{itemize}
+
+\begin{lstlisting}[language=Python]
+# Creazione del Job per l'addestramento del modello
+job = client.V1Job( # Definizione del Job (client.V1Job):
+    metadata=client.V1ObjectMeta(name="ml-training-job"), # metadata mediante V1ObjectMeta
+    spec=client.V1JobSpec(
+        template=client.V1PodTemplateSpec( # specifica il modello del pod che il Job deve creare
+            metadata=client.V1ObjectMeta(labels={"app": "ml-training"}), # etichette (labels) per identificare il pod
+            spec=client.V1PodSpec(
+                containers=[
+                    client.V1Container(
+                        name="trainer", # nome assegnato al container
+                        image="localhost:5000/ml-training:latest", # immagine nel registry locale
+                        command=["python3", "/home/vncc/train.py"], # esecuzione dello script di training
+                        volume_mounts=[
+                            client.V1VolumeMount(
+                                mount_path="/home/vncc", # directory di montaggio all'interno del container
+                                name="vncc-pv"
+                            )
+                        ]
+                    )
+                ],
+                restart_policy="OnFailure", # riavvio consentito unicamente in caso di errore
+                volumes=[
+                    client.V1Volume(
+                        name="vncc-pv",
+                        persistent_volume_claim=client.V1PersistentVolumeClaimVolumeSource(
+                            claim_name="ml-data-pvc" # associazione alla richiesta di volume
+                        )
+                    )
+                ]
+            )
+        ),
+        backoff_limit=4 # Tentativi massimi di fallimento consentiti
+    )
+)
+batch_v1.create_namespaced_job(namespace="default", body=job)
+\end{lstlisting}
+
+\subsection{Distribuzione Del Servizio Di Inferenza Tramite ConfigMap E NodePort}
+
+Completato l'addestramento, il modello deve essere servito a client esterni. La progettazione del pod di classificazione (\texttt{classifier-pod}) adotta il pattern architetturale del disaccoppiamento tra il codice applicativo (memorizzato in una \textbf{ConfigMap}) e i pesi matematici del modello (letti dal volume persistente montato).
+
+\subsubsection{Iniezione Del Codice Tramite ConfigMap E Avvio Del Pod}
+
+Una \textbf{ConfigMap} memorizza dati non confidenziali in coppie chiave-valore. In questo scenario, l'intero sorgente del web server Flask (\texttt{prediction-app.py}) viene letto dal disco del nodo master e inserito come stringa nel corpo della risorsa.
+
+All'avvio del container:
+\begin{enumerate}[noitemsep]
+    \item La ConfigMap viene montata come volume nel percorso \texttt{/app}, rendendo disponibile il file \texttt{prediction-app.py} come file di sola lettura.
+    \item Il volume persistente viene montato nel percorso \texttt{/home/vncc}, fornendo l'accesso al file serializzato \texttt{svc\_model.model}.
+    \item Viene eseguito il comando composito della shell:
+    \begin{lstlisting}[language=bash]
+    sh -c "pip install flask && python3 /app/prediction-app.py"
+    \end{lstlisting}
+    installando dinamicamente il framework web su un'immagine base data-science (\texttt{jupyter/scipy-notebook}) ed eseguendo l'inferenza.
+\end{enumerate}
+
+\begin{lstlisting}[language=Python]
+# Creazione della ConfigMap
+config_map = client.V1ConfigMap(
+    metadata=client.V1ObjectMeta(name=CONFIGMAP_NAME),
+    data={"prediction-app.py": open(APP_PATH).read()} # Carica il sorgente applicativo
+)
+v1.create_namespaced_config_map(namespace="default", body=config_map)
+print("ConfigMap creata.")
+
+# Creazione del Pod per la predizione che monta ConfigMap e PVC
+pod = client.V1Pod(
+    metadata=client.V1ObjectMeta(
+        name="classifier-pod",
+        labels={"app": "classifier-pod"}
+    ),
+    spec=client.V1PodSpec(
+        containers=[
+            client.V1Container(
+                name="classifier",
+                image="jupyter/scipy-notebook",
+                command=["sh", "-c", "pip install flask && python3 /app/prediction-app.py"],
+                volume_mounts=[
+                    client.V1VolumeMount(
+                        mount_path="/app", # sorgente iniettato dalla ConfigMap
+                        name="config-volume"
+                    ),
+                    client.V1VolumeMount(
+                        mount_path="/home/vncc", # modello caricato dal PersistentVolume
+                        name="vncc-pv"
+                    )
+                ]
+            )
+        ],
+        volumes=[
+            client.V1Volume(
+                name="config-volume",
+                config_map=client.V1ConfigMapVolumeSource(name="classifier-py-configmap")
+            ),
+            client.V1Volume(
+                name="vncc-pv",
+                persistent_volume_claim=client.V1PersistentVolumeClaimVolumeSource(
+                    claim_name="ml-data-pvc"
+                )
+            )
+        ],
+        restart_policy="Never" # Esecuzione singola non gestita da controller di replica
+    )
+)
+v1.create_namespaced_pod(namespace="default", body=pod)
+print("Pod creato con successo.")
+\end{lstlisting}
+
+\subsubsection{Esposizione Di Rete Tramite Servizio NodePort}
+
+I singoli pod possiedono indirizzi IP interni instabili, soggetti a variazione a ogni riavvio. Per esporre stabilmente il servizio web verso l'esterno del cluster, viene creato un oggetto \textbf{Service} di tipo \textbf{NodePort}.
+
+Il meccanismo di instradamento si articola su tre livelli di porte:
+\begin{itemize}[noitemsep]
+    \item \texttt{port=5000}: porta logica su cui il servizio riceve le richieste all'interno della rete del cluster (\textbf{ClusterIP}).
+    \item \texttt{target\_port=5000}: porta fisica su cui il demone Flask è in ascolto all'interno del container del pod.
+    \item \texttt{node\_port=30000}: porta statica allocata su tutte le interfacce fisiche di tutti i nodi del cluster (nell'intervallo standard 30000-32767). Il componente \textbf{kube-proxy} imposta regole di \emph{Network Address Translation} (iptables o IPVS) affinché il traffico indirizzato a \texttt{<NodeIP>:30000} venga inoltrato al pod, a prescindere dal nodo fisico su cui esso sia effettivamente in esecuzione.
+\end{itemize}
+
+\begin{lstlisting}[language=Python]
+# Definizione del Service
+service = client.V1Service(
+    api_version="v1",
+    kind="Service",
+    metadata=client.V1ObjectMeta(name="classifier-service"),
+    spec=client.V1ServiceSpec(
+        selector={"app": "classifier-pod"},
+        ports=[
+            client.V1ServicePort(
+                protocol="TCP",
+                port=5000,        # Porta interna al cluster
+                target_port=5000, # Porta dell'applicazione all'interno del container
+                node_port=30000   # Porta esposta sull'IP esterno di ciascun nodo
+            )
+        ],
+        type="NodePort"
+    )
+)
+# Creazione del Service nel namespace "default"
+v1.create_namespaced_service(namespace="default", body=service)
+print("Service creato con successo")
+\end{lstlisting}
+
+\subsubsection{Verifica Funzionale Dell'Inferenza}
+
+A completamento del deployment, l'endpoint HTTP POST può essere testato sia dal nodo master (\texttt{192.168.43.10}) sia dal nodo worker (\texttt{192.168.43.11}) trasmettendo un vettore di quattro feature numeriche relative alla morfologia del fiore dell'Iris (lunghezza e larghezza di sepali e petali):
+
+\begin{lstlisting}[language=bash]
+curl -X POST http://192.168.43.10:30000/classify \
+     -H "Content-Type: application/json" \
+     -d '{"features": [5.1, 3.5, 1.4, 0.2]}'
+
+curl -X POST http://192.168.43.11:30000/classify \
+     -H "Content-Type: application/json" \
+     -d '{"features": [5.1, 3.5, 1.4, 0.2]}'
+\end{lstlisting}
+
+Il server elabora il payload JSON, converte l'array in una struttura compatibile con scikit-learn, esegue il metodo \texttt{predict} e restituisce la classificazione corretta:
+
+\begin{lstlisting}[language=json]
+{"prediction": "Setosa"}
+\end{lstlisting}
+
+\newpage
+
+% ==============================================================================
+% SEZIONE: AUTOSCALING BASATO SU REINFORCEMENT LEARNING (PPO)
+% ==============================================================================
+
+\section{Autoscaling Intelligente Tramite Reinforcement Learning (PPO)}
+
+Nei sistemi cloud tradizionali, il ridimensionamento orizzontale automatico dei pod (\textbf{Horizontal Pod Autoscaler} o HPA) opera tipicamente secondo politiche a soglia reattive basate su parametri di sistema come l'utilizzo percentuale di CPU o memoria:
+\[
+\text{Repliche Target} = \left\lceil \text{Repliche Attuali} \times \frac{\text{Utilizzo Rilevato}}{\text{Utilizzo Target}} \right\rceil
+\]
+Tale paradigma presenta limitazioni intrinseche:
+\begin{itemize}[noitemsep]
+    \item Non correla direttamente con le metriche a livello applicativo (\emph{Service Level Objectives}, SLO), come la latenza end-to-end percepita dall'utente.
+    \item Mostra ritardi fisiologici dovuti ai tempi di accodamento delle metriche e all'avvio a freddo (\emph{cold start}) dei pod, causando violazioni dell'accordo sul livello di servizio (\emph{Service Level Agreement}, SLA) o, al contrario, sovra-allocazione e spreco di risorse.
+\end{itemize}
+
+Per superare queste criticità, l'architettura illustrata sfrutta tecniche di \textbf{Reinforcement Learning} (RL), nello specifico l'algoritmo \textbf{Proximal Policy Optimization} (PPO), per addestrare un agente in grado di apprendere una politica ottimale di autoscaling mediante interazione diretta con l'ambiente Kubernetes.
+
+% --- Inizio Placeholder Figura Architetturale RL ---
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "document.pdf"] Diagramma dell'architettura per l'autoscaling basato su Reinforcement Learning (PPO) e coordinamento Master-Worker — Slide 8 / Pagina 8 del PDF
+% --- Fine Placeholder Figura Architetturale RL ---
+
+\subsection{Topologia Architetturale Del Sistema Di Controllo}
+
+Come evidenziato nello schema logico:
+\begin{itemize}[noitemsep]
+    \item \textbf{Nodo Master (\texttt{192.168.43.10})}: ospita il modulo di orchestrazione e apprendimento.
+    \begin{itemize}[noitemsep]
+        \item \texttt{controller.py}: avvia il processo di training PPO sfruttando le librerie \texttt{stable-baselines3} e la classe personalizzata \texttt{LatencyEnv}.
+        \item \texttt{latency\_env.py}: incapsula la dinamica del cluster implementando le interfacce standard di \texttt{gymnasium} (\texttt{reset}, \texttt{step}, spazi di azione e osservazione).
+        \item \texttt{monitor.py}: interroga ciclicamente lo stato delle repliche attive e la latenza del servizio a fini di telemetria e validazione.
+        \item \texttt{deployment1.yaml}: manifest Kubernetes che dichiara il deployment scalabile \texttt{calculator} e il rispettivo \texttt{calculator-service}.
+    \end{itemize}
+    \item \textbf{Nodo Worker (\texttt{192.168.43.11})}: esegue i carichi computazionali.
+    \begin{itemize}[noitemsep]
+        \item Ospita il container del servizio \texttt{calculator.py}, che simula un'applicazione con ritardo di elaborazione controllato.
+        \item Mantiene il registry Docker locale privato (\texttt{vncc-registry}) attivo sulla porta 5000, su cui viene memorizzata l'immagine di calcolo.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Costruzione Del Servizio Di Calcolo Sul Nodo Worker}
+
+Sul nodo master e sul nodo worker si predispone una directory di lavoro dedicata:
+\begin{lstlisting}[language=bash]
+$ mkdir ppo
+$ cd ppo
+\end{lstlisting}
+
+Sul nodo worker viene strutturato un container minimale basato su Python 3.8 che esegue un'applicazione Flask.
+
+\subsubsection{Specifiche Del Dockerfile E Delle Dipendenze}
+
+Il \texttt{Dockerfile} e il file \texttt{requirements.txt} garantiscono la creazione di un'immagine leggera e deterministica:
+
+\begin{lstlisting}[language=dockerfile]
+FROM python:3.8-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+CMD ["python", "calculator.py"]
+\end{lstlisting}
+
+\begin{lstlisting}
+flask
+\end{lstlisting}
+
+\subsubsection{Implementazione Dell'Applicazione Web Con Ritardo Simulato}
+
+L'applicazione \texttt{calculator.py} espone la rotta HTTP POST \texttt{/calculate}. Per riprodurre in modo controllato il consumo di tempo tipico di una computazione scientifica o di un'inferenza su rete neurale, il codice introduce un'attesa artificiale di \SI{0.3}{\second} (\texttt{time.sleep(0.3)}):
+
+\begin{lstlisting}[language=Python]
+from flask import Flask, request, jsonify
+import time
+
+app = Flask(__name__)
+
+@app.route('/calculate', methods=['POST'])
+def calculate():
+    data = request.json
+    # Simula un tempo di elaborazione
+    time.sleep(0.3) # Simula un calcolo che richiede 0.3 secondi
+    result = data['value'] * 2 # Esempio di calcolo
+    return jsonify({'result': result})
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
+\end{lstlisting}
+
+\begin{itemize}[noitemsep]
+    \item \texttt{time}: utilizzato per simulare la latenza computazionale del carico di lavoro.
+    \item \texttt{Flask}: microframework web WSGI per la gestione degli endpoint HTTP.
+    \item \texttt{request}: intercetta il body e i metadati della richiesta in arrivo.
+    \item \texttt{jsonify}: converte i dizionari nativi Python in risposte standard \texttt{application/json}.
+\end{itemize}
+
+Testando il microservizio localmente tramite \texttt{curl}:
+\begin{lstlisting}[language=bash]
+$ curl -X POST http://localhost:5000/calculate \
+       -H "Content-Type: application/json" \
+       -d '{"value": 10}'
+\end{lstlisting}
+si ottiene l'output atteso:
+\begin{lstlisting}[language=json]
+{
+  "result": 20
+}
+\end{lstlisting}
+
+\subsubsection{Compilazione E Push Nel Registry Privato}
+
+L'immagine viene compilata e caricata nel registro locale del nodo worker:
+\begin{lstlisting}[language=bash]
+$ docker build -t localhost:5000/calculator .
+$ docker image list
+$ docker start vncc-registry
+$ docker push localhost:5000/calculator
+\end{lstlisting}
+La notazione \texttt{localhost:5000/calculator} definisce sia il nome identificativo del repository sia l'indirizzo di rete su cui il demone Docker instrada l'operazione di push.
+
+\subsection{Distribuzione Del Servizio Su Kubernetes}
+
+Sul nodo master viene applicato il manifest dichiarativo composto da un \textbf{Deployment} e un \textbf{Service}.
+
+\begin{lstlisting}[language=yaml]
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: calculator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: calculator
+  template:
+    metadata:
+      labels:
+        app: calculator
+    spec:
+      containers:
+      - name: calculator
+        image: localhost:5000/calculator:latest
+        ports:
+        - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: calculator-service
+spec:
+  selector:
+    app: calculator
+  ports:
+  - protocol: TCP
+    port: 5000
+    targetPort: 5000
+\end{lstlisting}
+
+Applicazione del manifest:
+\begin{lstlisting}[language=bash]
+$ kubectl apply -f deployment1.yaml
+\end{lstlisting}
+
+\subsection{Formalizzazione Dell'Ambiente Di Reinforcement Learning (Gymnasium)}
+
+Per applicare l'algoritmo di controllo PPO, il problema del ridimensionamento del cluster viene modellato matematicamente come un \textbf{Processo Decisionale di Markov} (MDP), definito dalla quadrupla $\langle \mathcal{S}, \mathcal{A}, \mathcal{P}, \mathcal{R} \rangle$:
+\begin{itemize}[noitemsep]
+    \item \textbf{Spazio degli Stati} $\mathcal{S}$: rappresenta le informazioni che l'agente osserva dal cluster.
+    \item \textbf{Spazio delle Azioni} $\mathcal{A}$: l'insieme dei comandi che l'agente può inviare all'attuatore.
+    \item \textbf{Funzione di Transizione} $\mathcal{P}(s' \mid s, a)$: la probabilità che il sistema evolva nello stato $s'$ applicando l'azione $a$ nello stato $s$.
+    \item \textbf{Funzione di Ricompensa} $\mathcal{R}(s, a)$: il feedback scalare restituito dall'ambiente all'agente per guidare l'apprendimento.
+\end{itemize}
+
+Sul nodo master, all'interno dell'ambiente virtuale Python:
+\begin{lstlisting}[language=bash]
+$ source ../kubespray-venv/bin/activate
+$ pip install stable-baselines3
+$ pip install gymnasium
+\end{lstlisting}
+
+\subsubsection{Spazi Di Azione E Di Osservazione}
+
+Il modulo \texttt{latency\_env.py} estende la classe base \texttt{gym.Env}:
+\begin{enumerate}[noitemsep]
+    \item \textbf{Azione} ($a \in \mathcal{A}$): definita come uno spazio discreto di dimensione 3 (\texttt{spaces.Discrete(3)}):
+    \[
+    a \in \{0, 1, 2\} \implies \Delta R \in \{-1, 0, +1\}
+    \]
+    dove l'azione numerica viene mappata tramite la trasformazione:
+    \[
+    \text{action\_mapped} = a - 1
+    \]
+    consentendo rispettivamente di ridurre di una replica ($a=0$), mantenere invariato il cluster ($a=1$) o incrementare di una replica ($a=2$).
+
+    \item \textbf{Stato/Osservazione} ($s \in \mathcal{S}$): definito come uno spazio continuo monodimensionale (\texttt{spaces.Box(low=1, high=10, shape=(1,), dtype=np.float32)}), contenente il numero corrente di pod attivi $R_t \in [1, 10]$.
+\end{enumerate}
+
+\subsubsection{Formulazione Della Funzione Di Ricompensa}
+
+L'obiettivo di controllo richiede di mantenere la latenza del servizio $L_t$ vicina a un valore target $L^* = \SI{0.5}{\second}$, penalizzando contemporaneamente l'instabilità (\emph{churn}) derivante da frequenti variazioni del numero di repliche.
+
+La ricompensa al passo temporale $t$ è formalizzata come segue:
+\begin{equation}
+R_t = - \underbrace{\lvert L_t - L^* \rvert}_{\text{Errore di Latenza}} - \underbrace{0.1 \cdot \lvert R_{t} - R_{t-1} \rvert}_{\text{Costo di Riconfigurazione}}
+\end{equation}
+In questo modo:
+\begin{itemize}[noitemsep]
+    \item Se la latenza supera il target (sotto-dimensionamento), la ricompensa decresce rapidamente, spingendo l'agente ad aumentare le repliche.
+    \item Se il sistema è sovra-dimensionato, la latenza risulterà molto bassa ($\approx \SI{0.3}{\second}$), generando comunque una penalità $\lvert 0.3 - 0.5 \rvert = 0.2$; l'agente apprenderà a ridurre le repliche superflue.
+    \item Il termine di regolarizzazione penalizza oscillazioni continue, favorendo la convergenza a stati stazionari stabili.
+\end{itemize}
+
+\subsubsection{Codice Dell'Ambiente LatencyEnv}
+
+\begin{lstlisting}[language=Python]
+import time
+import requests
+import numpy as np
+import gymnasium as gym
+from gymnasium import spaces
+from kubernetes import client, config
+
+# Configura il client Kubernetes
+config.load_kube_config()
+# Questa riga carica il file di configurazione predefinito (di solito ~/.kube/config) per connettersi al cluster Kubernetes.
+v1 = client.AppsV1Api()
+
+# URL del servizio di calcolo
+CALCULATOR_SERVICE_URL = "http://calculator-service:5000/calculate"
+
+class LatencyEnv(gym.Env):
+    def __init__(self):
+        super(LatencyEnv, self).__init__()
+        # Definiamo lo spazio delle azioni: -1 (riduci repliche), 0 (mantieni), +1 (aumenta repliche)
+        self.action_space = spaces.Discrete(3)
+        # Definiamo lo spazio delle osservazioni: numero corrente di repliche
+        self.observation_space = spaces.Box(low=1, high=10, shape=(1,), dtype=np.float32)
+        # l'osservazione (cioe' lo "stato" che l'agente riceve) e' un array NumPy di
+        # forma (1,), quindi un singolo valore contenuto in un array (es. [3.0])
+        # con valori che vanno da 1 a 10 (il numero di repliche possibili) di tipo float32
+        self.current_replicas = 1 # Numero corrente di repliche
+        self.target_latency = 0.5 # Latenza obiettivo di 0.5 secondi
+        self.max_steps = 10       # Numero massimo di passi per episodio
+        self.current_step = 0     # Contatore dei passi
+
+    def reset(self, seed=None, options=None):
+        """
+        Resetta l'ambiente all'inizio di un nuovo episodio.
+        """
+        # Ripristina il numero di repliche a 1
+        self.current_replicas = 1
+        self.current_step = 0 # Resetta il contatore dei passi
+        self._scale_deployment(self.current_replicas)
+        # Restituisce lo stato iniziale
+        return np.array([self.current_replicas], dtype=np.float32), {}
+
+    def step(self, action):
+        """
+        Esegue un passo nell'ambiente.
+        """
+        # Incrementa il contatore dei passi
+        self.current_step += 1
+
+        # Mappa l'azione: 0 -> -1, 1 -> 0, 2 -> +1
+        action_mapped = action - 1
+        new_replicas = self.current_replicas + action_mapped
+        new_replicas = max(1, min(new_replicas, 10)) # Limita tra 1 e 10 repliche
+        self._scale_deployment(new_replicas)
+
+        # Attendi che il deployment si stabilizzi
+        time.sleep(0.1) # Riduci il tempo di attesa per velocizzare l'addestramento
+
+        # Misura la latenza
+        latency = self._get_latency()
+
+        # Calcola la ricompensa
+        latency_error = abs(latency - self.target_latency)
+        replicas_change = abs(new_replicas - self.current_replicas)
+        reward = -latency_error - 0.1 * replicas_change # Penalizza sia la latenza che il cambiamento
+
+        # Aggiorna il numero di repliche
+        self.current_replicas = new_replicas
+
+        # Condizione per terminare l'episodio
+        done = self.current_step >= self.max_steps # Termina dopo max_steps passi
+
+        # Informazioni aggiuntive (opzionale)
+        info = {
+            "latency": latency,
+            "replicas": self.current_replicas,
+            "step": self.current_step
+        }
+
+        # Logging per il debug
+        print(f"Step: {self.current_step}, Replicas: {self.current_replicas}, Latency: {latency:.3f}, Reward: {reward:.3f}, Done: {done}")
+
+        # Restituisce lo stato, la ricompensa, e se l'episodio e' terminato
+        return np.array([self.current_replicas], dtype=np.float32), reward, done, False, info
+
+    def _get_latency(self):
+        """
+        Misura la latenza del servizio di calcolo.
+        """
+        start_time = time.time()
+        response = requests.post(CALCULATOR_SERVICE_URL, json={'value': 10})
+        end_time = time.time()
+        return end_time - start_time
+
+    def _scale_deployment(self, replicas):
+        """
+        Scala il deployment Kubernetes al numero di repliche specificato.
+        """
+        # Converti il valore numpy.int64 in un tipo int nativo
+        replicas = int(replicas)
+        body = {"spec": {"replicas": replicas}}
+        v1.patch_namespaced_deployment_scale(name="calculator", namespace="default", body=body)
+\end{lstlisting}
+
+\subsection{Addestramento Dell'Agente PPO (Controller)}
+
+L'algoritmo \textbf{PPO} appartiene alla famiglia dei metodi \emph{Actor-Critic} su policy gradient. Esso ottimizza una funzione obiettivo limitata (\emph{clipped surrogate objective}) per evitare aggiornamenti della politica eccessivamente ampi che potrebbero compromettere la convergenza:
+\[
+L^{\text{CLIP}}(\theta) = \hat{\mathbb{E}}_t \left[ \min\left( r_t(\theta)\hat{A}_t, \, \text{clip}(r_t(\theta), 1-\epsilon, 1+\epsilon)\hat{A}_t \right) \right]
+\]
+dove $r_t(\theta) = \frac{\pi_\theta(a_t \mid s_t)}{\pi_{\theta_{\text{old}}}(a_t \mid s_t)}$ rappresenta il rapporto tra la probabilità della nuova e della vecchia politica, e $\hat{A}_t$ è lo stimatore del vantaggio.
+
+Lo script \texttt{controller.py} imposta l'addestramento con una politica multistrato completamente connessa (\texttt{"MlpPolicy"}) e registra un callback per interrompere l'iterazione dopo un numero prefissato di episodi completi.
+
+\begin{lstlisting}[language=Python]
+from stable_baselines3 import PPO
+from stable_baselines3.common.callbacks import BaseCallback
+from latency_env import LatencyEnv
+
+# Callback per interrompere l'addestramento dopo un numero massimo di episodi
+class EarlyStoppingCallback(BaseCallback):
+    def __init__(self, max_episodes=1, verbose=0):
+        super(EarlyStoppingCallback, self).__init__(verbose)
+        self.max_episodes = max_episodes
+        self.episode_count = 0
+
+    def _on_step(self) -> bool:
+        # Controlla se l'episodio e' terminato
+        if "done" in self.locals and self.locals["done"]:
+            self.episode_count += 1
+            if self.episode_count >= self.max_episodes:
+                return False # Interrompi l'addestramento
+        return True
+
+# Crea l'ambiente
+env = LatencyEnv()
+
+# Crea il modello PPO
+model = PPO("MlpPolicy", env, verbose=1)
+
+# Crea il callback
+callback = EarlyStoppingCallback(max_episodes=5) # Interrompi dopo 5 episodi
+
+print("Addestra il modello")
+model.learn(total_timesteps=1000, callback=callback)
+
+print("Salva il modello")
+model.save("ppo_latency_control")
+
+print("Testa il modello")
+obs, _ = env.reset()
+for _ in range(10): # Esegui 10 passi di test
+    action, _states = model.predict(obs)
+    obs, rewards, dones, truncated, info = env.step(action)
+    print(f"Replicas: {obs[0]}, Reward: {rewards}")
+\end{lstlisting}
+
+\subsection{Script Di Monitoraggio Delle Prestazioni}
+
+Per verificare in tempo reale l'efficacia del controllore senza interferire con il ciclo di apprendimento, viene impiegato un processo parallelo (\texttt{monitor.py}) che legge la cardinalità dei pod attivi tramite le API di Kubernetes e ne misura periodicamente la latenza effettiva:
+
+\begin{lstlisting}[language=Python]
+import time
+import requests
+from kubernetes import client, config
+
+# Configura il client Kubernetes
+config.load_kube_config()
+v1 = client.CoreV1Api()
+
+# URL del servizio di calcolo
+CALCULATOR_SERVICE_URL = "http://calculator-service:5000/calculate"
+
+def get_latency():
+    start_time = time.time()
+    response = requests.post(CALCULATOR_SERVICE_URL, json={'value': 10})
+    end_time = time.time()
+    return end_time - start_time
+
+def get_pod_count():
+    pods = v1.list_namespaced_pod(namespace="default", label_selector="app=calculator")
+    return len(pods.items)
+
+while True:
+    latency = get_latency()
+    pod_count = get_pod_count()
+    print(f"Latency: {latency}, Pod Count: {pod_count}")
+    time.sleep(5)
+\end{lstlisting}
+
+Esecuzione del controller e del monitoraggio:
+\begin{lstlisting}[language=bash]
+$ python3 controller.py
+$ python3 monitor.py
+\end{lstlisting}
+
+\subsubsection{Considerazioni Ingegneristiche Sulla Stabilizzazione Del Cluster}
+
+Nelle sessioni di addestramento su ambienti reali, l'impostazione di un'adeguata finestra temporale di stabilizzazione (\emph{cooldown} o \emph{settling time}) dopo l'invio dell'azione di scalatura è cruciale:
+\begin{itemize}[noitemsep]
+    \item Se l'intervallo è troppo breve (\texttt{time.sleep(0.1)}), il runtime non ha il tempo fisico di avviare il container, effettuare il pull dell'immagine e inserire il pod negli endpoint del Service; la latenza misurata risulterà falsata.
+    \item Un intervallo realistico di stabilizzazione (es. \SI{10}{\second} tramite \texttt{time.sleep(10)}) consente al traffico di bilanciarsi correttamente tra tutti i pod attivi prima di raccogliere la metrica di latenza successiva.
+\end{itemize}
+
+\newpage
+
+% ==============================================================================
+% SEZIONE: COMANDI UTILI DI AMMINISTRAZIONE, DIAGNOSTICA E CNI
+% ==============================================================================
+
+\section{Prontuario Operativo: Diagnostica Di Rete, Cluster E Componenti CNI}
+
+L'amministrazione professionale di cluster Kubernetes bare-metal o virtualizzati richiede una solida padronanza degli strumenti di introspezione di sistema operativo e delle CLI di orchestrazione.
+
+\subsection{Comandi Fondamentali Per Il Controllo Del Cluster}
+
+\subsubsection{Ispezione Di Rete E Risorse Del Cluster}
+\begin{lstlisting}[language=bash]
+nmcli device show <interfacename>
+kubectl logs pydict-75d6857df5-sh54s -n openfaas-fn | more
+kubectl api-versions -o wide
+kubectl describe pod kube-apiserver -n kube-system
+kubectl port-forward svc/web-servers 8080:80
+kubectl explain pods.spec
+kubectl config current-context kubernetes-admin@provaspray.local
+kubectl get serviceaccounts
+kubectl get endpoints
+kubectl get pv
+kubectl get pvc
+\end{lstlisting}
+
+\subsubsection{Accesso Interattivo Ai Container E Bonifica}
+Per aprire una sessione interattiva all'interno di un container in esecuzione:
+\begin{lstlisting}[language=bash]
+kubectl exec -it <nome pod> -- /bin/sh
+kubectl exec -it <nome pod> -- <command>
+\end{lstlisting}
+Per cancellare in blocco tutte le risorse del namespace \texttt{default}:
+\begin{lstlisting}[language=bash]
+kubectl delete all --all --namespace=default
+\end{lstlisting}
+
+\subsubsection{Risoluzione Dello Stato ``NOT READY'' Sui Nodi}
+Se un nodo del cluster passa allo stato \textbf{NotReady}, il piano di controllo non riceve i regolari battiti di stato (\emph{heartbeat}) dal demone locale \textbf{kubelet}. L'analisi diagnostica si effettua con:
+\begin{lstlisting}[language=bash]
+kubectl describe node <nome nodo>
+sudo journalctl -u kubelet -f
+\end{lstlisting}
+
+\subsubsection{Verifica E Riavvio Del Container Runtime}
+Qualora il container runtime (\textbf{containerd}) non venga rilevato dal kubelet pur risultando attivo nei servizi di sistema:
+\begin{lstlisting}[language=bash]
+sudo systemctl status containerd
+sudo systemctl restart containerd
+\end{lstlisting}
+
+\subsubsection{Generazione Di Carico E Registry Locale}
+Per sottoporre a benchmark o stress test un endpoint HTTP (es. la funzione OpenFaaS), si impiega un generatore di carico ad alte prestazioni come \texttt{hey}:
+\begin{lstlisting}[language=bash]
+hey -n 10000 -c 5 http://localhost:8080/
+\end{lstlisting}
+Gestione del ciclo di vita del container del registry privato:
+\begin{lstlisting}[language=bash]
+docker start <registry name>
+docker stop <registry name>
+docker rm <registry name>
+\end{lstlisting}
+
+\subsubsection{Configurazioni Di Kernel E Parametri Di Rete}
+Kubernetes richiede che il kernel Linux instradi correttamente i pacchetti tra interfacce fisiche e bridge virtuali:
+\begin{lstlisting}[language=bash]
+# Abilitazione permanente del packet forwarding IPv4
+echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+
+# Disabilitazione tassativa della memoria di swap (richiesta da kubelet)
+swapoff -a
+\end{lstlisting}
+
+\subsubsection{Query Avanzate Tramite Jsonpath E Formattazione Personalizzata}
+Estrazione mirata di pod e container senza l'utilizzo di strumenti terzi di parsing:
+\begin{lstlisting}[language=bash]
+kubectl get pod -o="custom-columns=NAME:.metadata.name,INIT-CONTAINERS:.spec.initContainers[*].name,CONTAINERS:.spec.containers[*].name"
+
+kubectl get po -o jsonpath='{range .items[*]}{"pod: "}{.metadata.name}{"\n"}{range .spec.containers[*]}{"\tname: "}{.name}{"\n\timage: "}{.image}{"\n"}{end}' -n openfaas-fn
+\end{lstlisting}
+
+\subsubsection{Gestione Delle Credenziali Di OpenFaaS}
+\begin{lstlisting}[language=bash]
+echo $(kubectl get secret -n openfaas basic-auth -o jsonpath="{.data.basic-auth-password}" | base64 --decode) > password.txt
+echo Your admin password is: $(cat password.txt)
+kubectl get deploy --namespace openfaas
+kubectl rollout status -n openfaas deploy/gateway
+kubectl logs <podname> -n openfaas-fn
+\end{lstlisting}
+
+\subsubsection{Gestione Dei Servizi Systemd}
+\begin{lstlisting}[language=bash]
+systemctl list-unit-files --type=service
+systemctl list-unit-files --type=service | less
+sudo systemctl start <nome-servizio>
+sudo systemctl stop <nome-servizio>
+sudo systemctl restart <nome-servizio>
+sudo netstat -tulnp
+\end{lstlisting}
+
+\subsection{Analisi Architetturale Del CNI (Calico)}
+
+Il plugin \textbf{CNI} (Container Network Interface) definisce il modo in cui i pod ottengono un indirizzo IP routabile e come il traffico di rete viene instradato tra i nodi dell'infrastruttura. Uno dei CNI più utilizzati in installazioni \textbf{Kubespray} è \textbf{Project Calico}.
+
+\subsubsection{Meccanismi Di Incapsulamento E Routing}
+
+Calico supporta diverse modalità di instradamento del traffico inter-nodo:
+\begin{itemize}[noitemsep]
+    \item \textbf{BGP nativo (non incapsulato)}: ogni nodo del cluster funge da router BGP (tramite il demone \textbf{BIRD}), annunciando le rotte dei propri pod alla rete fisica sottostante. Non aggiunge alcun overhead di incapsulamento, garantendo le massime prestazioni.
+    \item \textbf{IP-in-IP}: crea un tunnel virtuale di livello 3 inserendo il pacchetto IP originale all'interno di un secondo pacchetto IP (protocollo IP 4). Introduce un'interfaccia di rete virtuale \texttt{tunl0} sul nodo host.
+    \item \textbf{VXLAN}: incapsula i frame di livello 2 (Ethernet) all'interno di pacchetti UDP sulla porta standard 4789. Permette l'overlay cross-subnet anche su infrastrutture di rete che bloccano il traffico IP-in-IP. L'interfaccia associata è solitamente denominata \texttt{vxlan.calico}.
+\end{itemize}
+
+Per verificare quale modalità di incapsulamento sia attiva, si interroga la risorsa personalizzata \texttt{FelixConfiguration}:
+\begin{lstlisting}[language=bash]
+$ kubectl get felixconfiguration -o yaml
+\end{lstlisting}
+\begin{itemize}[noitemsep]
+    \item Se \texttt{IpInIpEnabled: true} $\implies$ Calico utilizza la modalità di tunneling \textbf{IP-in-IP}.
+    \item Se \texttt{VXLanEnabled: true} $\implies$ Calico utilizza l'overlay \textbf{VXLAN}.
+    \item Se entrambi i parametri risultano \texttt{false} $\implies$ Calico opera in modalità \textbf{BGP} pura senza incapsulamento.
+\end{itemize}
+
+\subsubsection{Verifica Del Datastore E Delle Interfacce Di Rete}
+
+Calico può memorizzare la propria tabella di routing e i criteri di sicurezza (\emph{Network Policies}) direttamente in un cluster \textbf{etcd} dedicato oppure riutilizzare l'API server di Kubernetes:
+\begin{lstlisting}[language=bash]
+$ kubectl get configmap -n kube-system calico-config -o yaml | grep datastore
+\end{lstlisting}
+\begin{itemize}[noitemsep]
+    \item \texttt{datastore: kubernetes} $\implies$ Calico delega lo stato al control plane k8s tramite Custom Resource Definitions (CRD).
+    \item \texttt{datastore: etcd} $\implies$ Calico si collega a un cluster etcd indipendente.
+\end{itemize}
+
+Ispezione delle interfacce virtuali di overlay sul kernel del nodo host:
+\begin{lstlisting}[language=bash]
+$ ip link show
+\end{lstlisting}
+Se il sistema utilizza BGP, le sessioni di peering tra i nodi e gli eventuali Top-of-Rack (ToR) switch possono essere verificate tramite la CLI \texttt{calicoctl}:
+\begin{lstlisting}[language=bash]
+$ calicoctl get bgppeers
+\end{lstlisting}
+
+\subsection{Fonti E Riferimenti Documentali}
+
+A supporto delle attività pratiche e per consultazione bibliografica avanzata, si riportano i riferimenti documentali citati:
+\begin{itemize}[noitemsep]
+    \item Guida all'installazione di Kubernetes tramite Kubespray: \url{https://elatov.github.io/2022/10/using-kubespray-to-install-kubernetes/}
+    \item Dashboard Web ufficiale di Kubernetes: \url{https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/}
+    \item Creazione di credenziali amministrative per la Dashboard: \url{https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md}
+    \item Riferimento comandi \texttt{kubectl autoscale}: \url{https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands#autoscale}
+    \item Gestione avanzata dei carichi applicativi con kubectl: \url{https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands}
+    \item Load Balancing bare-metal tramite MetalLB: \url{https://metallb.universe.tf/installation/#installation-by-manifest}
+    \item Analisi approfondita di MetalLB: \url{https://akyriako.medium.com/load-balancing-with-metallb-in-bare-metal-kubernetes-271aab751fb8}
+    \item Dizionario delle variabili di configurazione di Kubespray: \url{https://github.com/kubernetes-sigs/kubespray/blob/master/docs/vars.md}
+    \item Guida all'integrazione di OpenFaaS su Kubernetes: \url{https://computingforgeeks.com/deploy-openfaas-serverless-framework-on-kubernetes/}
+    \item Repository ufficiale e guida alla CLI di OpenFaaS: \url{https://github.com/openfaas/faas-cli}
+\end{itemize}
+
+\end{document}

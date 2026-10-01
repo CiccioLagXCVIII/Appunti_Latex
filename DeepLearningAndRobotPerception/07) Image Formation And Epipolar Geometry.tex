@@ -1,0 +1,1585 @@
+﻿\documentclass[11pt, a4paper]{article}
+
+%
+% Lingua E Codifica
+%
+\usepackage[italian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+%
+% Layout Di Pagina E Tipografia
+%
+\usepackage[margin=2cm, top=1.5cm, bottom=1.5cm]{geometry}
+\usepackage{parskip}
+\usepackage{microtype}
+
+%
+% Gestione Dei Colori
+%
+\usepackage[table]{xcolor}
+\definecolor{darkgreen}{RGB}{0,100,0}
+
+%
+% Matematica E Simboli
+%
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{mathtools}
+\usepackage{siunitx}
+
+% BB OTTIMIZZAZIONE MATRICI LUNGHE PER LA STAMPA
+\setlength{\arraycolsep}{10pt}
+\usepackage{bm}
+\usepackage{arydshln}
+
+
+%
+% Grafica, Immagini E Tabelle
+%
+\usepackage{graphicx}
+\graphicspath{{./Images/Image Formation And Epipolar Geometry/}}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, patterns, angles, quotes, calc}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+
+%
+% Link, Riferimenti Ed Elenchi
+%
+\usepackage[unicode]{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+    citecolor=blue,
+    pdftitle={Capitolo 7 - Image Formation And Epipolar Geometry},
+    pdfauthor={Francesco Lo Verde},
+    pdfpagemode=FullScreen,
+}
+\usepackage{bookmark}
+\usepackage{enumitem}
+\setlist{noitemsep}
+
+%
+% Personalizzazione Titoli E Altri Pacchetti
+%
+\usepackage{titlesec}
+\titleformat{\section}{\normalfont\LARGE\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\Large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalfont\large\bfseries}{\thesubsubsection}{1em}{}
+
+\usepackage{comment}
+\newtheorem{theorem}{Definizione}
+
+% Pacchetto per gli algoritmi
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+
+\SetKwData{Dati}{Input}
+\SetKwData{Risultato}{Output}
+\SetKw{Inizializza}{Inizializza}
+\SetKwFor{Per}{per}{fai}{fine per}
+\SetKwIF{Se}{AltrimentiSe}{Altrimenti}{se}{allora}{altrimenti se}{allora}{fine se}
+\SetKwComment{Commento}{// }{}
+
+\author{Francesco Lo Verde}
+\begin{document}
+\section{Introduzione Alla Geometria Epipolare E Alla Formazione Dell'Immagine}
+
+Il problema della percezione robotica e della visione artificiale parte dalla comprensione di come il mondo tridimensionale venga proiettato e catturato su un piano bidimensionale. Per modellare la relazione geometrica tra più viste dello stesso scenario, si introduce il concetto di \textbf{geometria epipolare} (\emph{epipolar geometry}).
+
+% [IMMAGINE RIF INTERVALLO 1-31] Schema geometrico della Geometria Epipolare con i centri ottici $O_L, O_R$, i punti proiettati $X_L, X_R$ sui rispettivi piani dell'immagine (Left/Right view) e i punti nello spazio $X, X_1, X_2, X_3$ — Slide 1 / Pagina 1 del PDF
+
+La geometria epipolare descrive la geometria intrinseca tra due viste. Come mostrato nello schema di riferimento:
+\begin{itemize}[noitemsep]
+    \item I punti $O_L$ e $O_R$ rappresentano i centri ottici (o centri di proiezione) rispettivamente della vista sinistra (\emph{Left view}) e della vista destra (\emph{Right view}).
+    \item Un punto generico $X$ nello spazio tridimensionale viene proiettato sul piano dell'immagine sinistro nel punto $X_L$ e sul piano dell'immagine destro nel punto $X_R$.
+    \item La linea che congiunge i due centri ottici $O_L$ e $O_R$ interseca i piani dell'immagine in due punti fondamentali, detti \textbf{epipoli} (\emph{epipoles}), indicati con $e_L$ ed $e_R$.
+    \item Qualsiasi punto tridimensionale (come $X_1$, $X_2$, $X_3$) che giace sul raggio proiettivo passante per $O_L$ e $X_L$ si proietterà necessariamente nel medesimo punto $X_L$ nella vista sinistra, ma si distribuirà lungo una linea nella vista destra, definita \textbf{linea epipolare}.
+\end{itemize}
+
+I riferimenti bibliografici principali per approfondire tali argomenti includono i capitoli 7, 11 e 12 del testo di Szeliski, \emph{Computer Vision: Algorithms and Applications} (Springer).
+
+\newpage
+
+\subsection{Che Cos'è Un'Immagine E Come Si Formano I Dati Visivi}
+
+Per comprendere la natura dei dati che un robot deve elaborare, è necessario analizzare il processo fisico di formazione di un'immagine. Un'immagine è il risultato dell'interazione tra una sorgente di illuminazione (energia), gli elementi geometrici e materici della scena che riflettono tale energia, e un sistema di acquisizione ottico che proietta la luce riflessa su un piano sensore interno.
+
+% [IMMAGINE RIF INTERVALLO 1-31] Schema dell'acquisizione dell'immagine (sorgente di luce, elemento della scena, sistema di imaging e piano dell'immagine) confrontato con il funzionamento di una fotocamera digitale e dell'occhio umano — Slide 3 / Pagina 3 del PDF
+
+Il processo di acquisizione può essere modellato in modo analogo sia per i dispositivi artificiali sia per i sistemi biologici:
+\begin{itemize}[noitemsep]
+    \item \textbf{Fotocamera Digitale}: Cattura i raggi luminosi riflessi dalla scena e li discretizza attraverso una griglia di sensori fotosensibili, traducendo l'intensità luminosa in una matrice di pixel.
+    \item \textbf{L'Occhio Umano}: La luce attraversa la cornea e il cristallino (che funge da lente regolabile tramite i muscoli ciliari), proiettandosi sulla retina lungo l'asse visivo. I segnali fotorecettoriali vengono poi trasmessi al cervello tramite le fibre del nervo ottico.
+\end{itemize}
+
+
+
+\subsection{Progettazione Di Una Fotocamera: Il Modello A Foro Stenopeico}
+
+Se volessimo progettare un dispositivo in grado di catturare un'immagine nitida di un oggetto tridimensionale (ad esempio, un albero), l'approccio più semplice e intuitivo potrebbe essere quello di posizionare una pellicola fotosensibile direttamente di fronte all'oggetto.
+
+% [IMMAGINE RIF INTERVALLO 1-31] Illustrazione del fallimento dell'idea di posizionare una pellicola direttamente di fronte a un oggetto senza barriere (sovrapposizione totale dei raggi di luce) — Slide 5 / Pagina 5 del PDF
+
+Questo primo tentativo tuttavia fallisce. Poiché la luce riflessa da ciascun punto dell'oggetto si propaga in tutte le direzioni dello spazio, ogni singolo punto della pellicola verrebbe colpito contemporaneamente dai raggi luminosi provenienti da molteplici parti dell'oggetto. Il risultato finale sulla pellicola sarebbe una sovrapposizione caotica di luce, ovvero un'immagine completamente sfocata e priva di forme riconoscibili.
+
+Per risolvere questo problema e ottenere un'immagine definita, è necessario limitare i raggi luminosi che colpiscono la pellicola. Questo obiettivo si ottiene interponendo una barriera opaca dotata di una piccolissima apertura tra l'oggetto e la pellicola.
+
+% [IMMAGINE RIF INTERVALLO 1-31] Schema geometrico di una camera a foro stenopeico (pinhole camera) con barriera, apertura e formazione dell'immagine capovolta sulla pellicola — Slide 6 / Pagina 6 del PDF
+
+La barriera blocca la quasi totalità dei raggi luminosi divergenti, consentendo il passaggio solo a un ristretto fascio di luce per ogni punto dell'oggetto. Questo dispositivo prende il nome di \textbf{camera a foro stenopeico} (\emph{pinhole camera}).
+\begin{itemize}[noitemsep]
+    \item La riduzione del diametro del foro riduce drasticamente la sfocatura (\emph{blurring}).
+    \item L'apertura fisica attraverso cui passa la luce è definita \textbf{apertura} (\emph{aperture}).
+    \item Poiché i raggi luminosi si propagano in linea retta e si incrociano in corrispondenza del foro, l'immagine proiettata sulla pellicola risulta ruotata di $180^\circ$ (capovolta sia verticalmente che orizzontalmente).
+\end{itemize}
+
+Il modello a foro stenopeico è un'approssimazione matematica ideale del processo di formazione dell'immagine, noto come \textbf{proiezione prospettica} (\emph{perspective projection}).
+
+% [IMMAGINE RIF INTERVALLO 1-31] Rappresentazione tridimensionale del modello pinhole che illustra l'oggetto (candela), il piano dell'immagine virtuale (eretto) e il piano dell'immagine reale (capovolto) — Slide 7 / Pagina 7 del PDF
+
+Trattando l'apertura come un singolo punto matematico infinitesimo (il centro di proiezione), si assume che un solo raggio di luce proveniente da un punto dello spazio possa penetrare all'interno della camera. Per semplificare la trattazione geometrica ed evitare di lavorare con immagini capovolte, si introduce convenzionalmente un \textbf{piano dell'immagine virtuale} (\emph{virtual image}) posto in posizione simmetrica davanti al centro di proiezione. In questo modo, l'immagine virtuale proiettata risulta orientata correttamente.
+
+\newpage
+
+\subsection{Cenni Storici: La Camera Obscura}
+
+Il principio fisico del foro stenopeico è alla base della \textbf{camera obscura} (locuzione latina per "camera buia").
+
+% [IMMAGINE RIF INTERVALLO 1-31] Prima illustrazione storica pubblicata di una camera obscura durante l'eclissi solare del 1544 di Gemma-Frisius — Slide 8 / Pagina 8 del PDF
+
+La prima illustrazione pubblicata di questo fenomeno è attribuita allo scienziato Reinerus Gemma-Frisius, che utilizzò una camera obscura per osservare un'eclissi solare a Lovanio il 24 gennaio 1544. L'illustrazione fu inserita nel suo trattato \emph{De Radio Astronomica et Geometrica} del 1545 ed è storicamente considerata la prima testimonianza visiva stampata di questo dispositivo.
+
+% [IMMAGINE RIF INTERVALLO 1-31] Schizzo e fotografia di una camera obscura domestica in cui il paesaggio esterno è proiettato capovolto sulla parete interna di una camera da letto — Slide 9 / Pagina 9 del PDF
+
+Questo fenomeno ottico può essere facilmente riprodotto anche in ambito domestico oscurando completamente una stanza e praticando un piccolo foro (o applicando una lente semplice) sulla finestra. La luce proveniente dall'esterno proietterà l'immagine capovolta del paesaggio sulla parete opposta.
+
+
+
+\subsection{Effetti E Proprietà Della Proiezione Prospettica}
+
+La proiezione prospettica introduce distorsioni geometriche sistematiche che riflettono il modo in care i sensori visivi percepiscono lo spazio tridimensionale.
+
+\subsubsection{Riduzione Delle Dimensioni Con La Distanza}
+
+La dimensione apparente di un oggetto sul piano dell'immagine è inversamente proporzionale alla sua distanza dal centro di proiezione. Di conseguenza, oggetti posizionati a distanze maggiori appaiono più piccoli.
+
+% [IMMAGINE RIF INTERVALLO 1-31] Grafico geometrico che dimostra come tre oggetti di diversa altezza posizionati a distanze diverse proiettino altezze differenti sul piano dell'immagine — Slide 10 / Pagina 10 del PDF
+
+% [IMMAGINE RIF INTERVALLO 1-31] Fotografia di una strada urbana che mostra l'effetto prospettico di riduzione delle dimensioni degli edifici distanti — Slide 11 / Pagina 11 del PDF
+
+\subsubsection{Convergenza Delle Linee Parallele}
+
+Le rette che sono tra loro parallele nello spazio tridimensionale (e che non sono parallele al piano dell'immagine) non vengono proiettate come linee parallele. Al contrario, esse convergono in un unico punto sull'immagine, definito punto di fuga. Se queste linee giacciono su un piano orizzontale (come il terreno), i loro punti di fuga si troveranno tutti sulla \textbf{linea dell'orizzonte} (\emph{horizon line}).
+
+% [IMMAGINE RIF INTERVALLO 1-31] Modello geometrico della proiezione di linee parallele su un piano $\Pi$ che convergono sulla linea dell'orizzonte $H$ sul piano dell'immagine virtuale — Slide 12 / Pagina 12 del PDF
+
+\subsubsection{Proprietà Geometriche E Casi Degeneri}
+
+Possiamo riassumere le proprietà della proiezione prospettica come segue:
+\begin{itemize}[noitemsep]
+    \item \textbf{Molti-a-uno} (\emph{Many-to-one}): Qualsiasi insieme di punti allineati lungo lo stesso raggio proiettivo viene mappato sul medesimo punto dell'immagine. Pertanto, la profondità del singolo punto viene persa durante la proiezione.
+    \item \textbf{Conservazione delle linee}: I punti dello spazio reale vengono proiettati come punti dell'immagine ($\text{Punti} \rightarrow \text{punti}$), e le linee dello spazio vengono proiettate come linee dell'immagine ($\text{Linee} \rightarrow \text{linee}$). La collinearità è preservata.
+    \item \textbf{Non conservazione di metriche}: Le distanze reali e gli angoli tra le rette \textbf{non vengono preservati} nel piano dell'immagine.
+\end{itemize}
+
+Esistono inoltre dei \textbf{casi degeneri} particolari:
+\begin{enumerate}[noitemsep]
+    \item Una retta che passa esattamente per il centro focale della camera viene proiettata come un singolo punto.
+    \item Un piano che passa per il centro focale viene proiettato come una singola linea.
+    \item Un piano perpendicolare al piano dell'immagine si proietta su una porzione definita dell'immagine stessa.
+\end{enumerate}
+
+\newpage
+
+\section{Ottica Fisica E L'Uso Delle Lenti}
+
+Il modello ideale a foro stenopeico presenta un grave limite pratico: per ottenere immagini nitide, il foro deve essere estremamente piccolo. Tuttavia, un'apertura microscopica lascia passare pochissima luce sulla pellicola o sul sensore. Questo richiede tempi di esposizione estremamente lunghi, rendendo impossibile la cattura di scene in movimento.
+
+Per superare questo limite tecnologico si introduce una \textbf{lente} (\emph{lens}).
+
+% [IMMAGINE RIF INTERVALLO 1-31] Diagramma di una lente che focalizza i raggi luminosi sulla pellicola mostrando la formazione del cerchio di confusione per i punti fuori fuoco — Slide 14 / Pagina 14 del PDF
+
+La lente consente di raccogliere una quantità nettamente superiore di raggi luminosi divergenti provenienti da un singolo punto dell'oggetto e di farli convergere nuovamente in un unico punto sul piano dell'immagine. Questo processo introduce nuove caratteristiche fisiche:
+\begin{itemize}[noitemsep]
+    \item Esiste una sola distanza specifica dello spazio a cui gli oggetti risultano perfettamente nitidi e a fuoco (\emph{in focus}).
+    \item I punti situati a distanze diverse proietteranno sul sensore un'area circolare sfocata, chiamata \textbf{cerchio di confusione} (\emph{circle of confusion}).
+    \item Modificando la curvatura o la forma della lente è possibile variare la distanza di messa a fuoco.
+\end{itemize}
+
+
+
+\subsection{Parametri Geometrici E Fisici Di Una Lente}
+
+Una lente ideale focalizza i raggi paralleli all'asse ottico in un unico punto, denominato \textbf{punto focale} (\emph{focal point}) $F$, posizionato a una distanza $f$ (lunghezza focale) dal piano principale della lente.
+
+% [IMMAGINE RIF INTERVALLO 1-31] Illustrazione dei parametri principali di una lente: asse ottico, centro ottico (centro di proiezione), apertura $D$ e lunghezza focale $f$ rispetto al punto focale $F$ — Slide 15 / Pagina 15 del PDF
+
+I parametri principali che caratterizzano una lente sono:
+\begin{itemize}[noitemsep]
+    \item \textbf{Asse ottico} (\emph{optical axis}): L'asse di simmetria perpendicolare alla lente.
+    \item \textbf{Centro ottico} o Centro di Proiezione (\emph{optical center}): Il punto centrale della lente attraverso cui i raggi luminosi passano senza subire deviazioni angolari.
+    \item \textbf{Lunghezza focale} $f$: È una proprietà intrinseca determinata dalla forma geometrica della lente (curvatura) e dal suo indice di rifrazione.
+    \item \textbf{Apertura di diametro} $D$: Una barriera fisica che limita l'ampiezza del fascio di luce che attraversa la lente. Può essere posizionata prima o dopo la lente stessa.
+\end{itemize}
+
+Le lenti commerciali sono generalmente di forma sferica per facilità di produzione. Nella realtà, i sistemi ottici delle fotocamere utilizzano complessi gruppi composti da molteplici lenti per correggere le aberrazioni ottiche e geometriche.
+
+
+
+\subsection{L'Assunzione Di Lente Sottile}
+
+Per studiare matematicamente il comportamento delle lenti si adotta l'\textbf{assunzione di lente sottile} (\emph{thin lens assumption}), ipotizzando che lo spessore della lente sia nullo rispetto alla sua lunghezza focale.
+
+% [IMMAGINE RIF INTERVALLO 1-31] Schema dell'assunzione di lente sottile confrontato con un sistema di lenti reali multi-elemento — Slide 16 / Pagina 16 del PDF
+
+Sebbene questa assunzione non corrisponda alla realtà fisica dei sistemi complessi multi-lente (utilizzati per rendere piatto il piano di messa a fuoco), essa costituisce un'ottima approssimazione. In questa prospettiva, la camera a foro stenopeico può essere interpretata come il caso limite ideale di una lente sottile il cui diametro dell'apertura $D$ tende a zero.
+
+\newpage
+
+\subsection{Derivazione Dell'Equazione Delle Lenti Sottili}
+
+Vogliamo determinare la relazione matematica che lega la distanza dell'oggetto dal centro ottico, indicata con $u$, la distanza di messa a fuoco sul piano sensore, indicata con $v$, e la lunghezza focale $f$.
+
+Consideriamo innanzitutto i triangoli simili formati dall'asse ottico, dall'oggetto di altezza $y$ situato a distanza $u$, e dall'immagine proiettata di altezza $y'$ sul piano sensore a distanza $v$.
+
+% [IMMAGINE RIF INTERVALLO 1-31] Triangoli simili evidenziati in rosso per ricavare il rapporto d'ingrandimento $y'/y = v/u$ — Slide 17 / Pagina 17 del PDF
+
+Dalla similitudine geometrica di questi triangoli ricaviamo il rapporto di ingrandimento:
+\begin{equation}
+    \frac{y'}{y} = \frac{v}{u}
+\end{equation}
+
+Consideriamo ora il comportamento dei raggi luminosi che passano attraverso il punto focale. Analizzando i triangoli simili che si formano sul lato destro della lente (lato immagine) che coinvolgono la lunghezza focale $f$:
+
+% [IMMAGINE RIF INTERVALLO 1-31] Triangoli simili evidenziati in verde sul lato posteriore della lente per ricavare la relazione $(v-f)/f$ — Slide 18 / Pagina 18 del PDF
+
+Da questa seconda relazione geometrica otteniamo:
+\begin{equation}
+    \frac{y'}{y} = \frac{v - f}{f}
+\end{equation}
+
+Uguagliando le due espressioni (1) e (2) ricavate per il rapporto $\frac{y'}{y}$, possiamo svolgere i passaggi algebrici:
+\begin{align*}
+    \frac{v}{u} &= \frac{v - f}{f} \\
+    \frac{v}{u} &= \frac{v}{f} - 1
+\end{align*}
+
+Dividendo entrambi i membri dell'equazione per la distanza $v$, otteniamo la formula fondamentale nota come \textbf{equazione delle lenti sottili} (\emph{thin lens equation}):
+\begin{equation}
+    \boxed{\frac{1}{f} = \frac{1}{u} + \frac{1}{v}}
+\end{equation}
+
+Qualsiasi punto dello spazio tridimensionale posizionato a una distanza $u$ che soddisfi questa relazione sarà perfettamente a fuoco sul piano sensore situato a distanza $v$.
+
+Se manteniamo fissa la distanza del sensore $v$:
+\begin{itemize}[noitemsep]
+    \item Un valore elevato di lunghezza focale $f$ richiede un valore elevato di $u$ (oggetti molto distanti a fuoco).
+    \item Un valore ridotto di lunghezza focale $f$ richiede un valore ridotto di $u$ (oggetti molto vicini a fuoco).
+\end{itemize}
+
+\newpage
+
+\subsection{Profondità Di Campo E Regolazione Dell'Apertura}
+
+La variazione del diametro dell'apertura della lente influenza direttamente la \textbf{profondità di campo} (\emph{depth of field}, DoF), ovvero l'intervallo di distanze davanti e dietro l'oggetto a fuoco entro cui l'immagine risulta accettabilmente nitida.
+
+% [IMMAGINE RIF INTERVALLO 1-31] Confronto visivo tra due foto di fiori scattate a $f/5.6$ (bassa profondità di campo) e $f/32$ (alta profondità di campo) con relativi schemi ottici — Slide 20 / Pagina 20 del PDF
+
+La scelta dell'apertura influisce sulla qualità dell'immagine e sull'acquisizione in due modi:
+\begin{itemize}[noitemsep]
+    \item \textbf{Apertura piccola} (valori di f-number elevati, ad esempio $f/32$): I cerchi di confusione si rimpiccioliscono. Questo aumenta l'intervallo di distanze in cui gli oggetti sono considerati approssimativamente a fuoco (ampia profondità di campo).
+    \item \textbf{Apertura grande} (valori di f-number bassi, ad esempio $f/5.6$): Consente il passaggio di una quantità significativamente maggiore di luce, riducendo i tempi di esposizione richiesti. Tuttavia, questo riduce drasticamente la profondità di campo, sfocando rapidamente tutto ciò che si trova al di fuori del piano di messa a fuoco.
+\end{itemize}
+
+
+
+\subsection{Relazione Sperimentale Tra Dimensione Del Foro E Nitidezza}
+
+Nel caso limite del foro stenopeico puro (senza lenti), la dimensione fisica dell'apertura influisce in modo non lineare sulla nitidezza.
+
+% [IMMAGINE RIF INTERVALLO 1-31] Serie di sei immagini della scritta "LUZ OPTICA FOTOGRAFIA" scattate variando il diametro del foro stenopeico da $2\text{ mm}$ a $0.07\text{ mm}$ — Slide 22 / Pagina 22 del PDF
+
+All'inizio, riducendo il diametro dell'apertura (ad esempio da $2\text{ mm}$ a $0.6\text{ mm}$ o $0.15\text{ mm}$), la nitidezza dell'immagine migliora progressivamente poiché si riduce la sovrapposizione geometrica dei raggi luminosi. Tuttavia, scendendo al di sotto di una certa soglia critica (ad esempio $0.07\text{ mm}$), l'immagine comincia a sfocarsi nuovamente. Questo comportamento è dovuto al fenomeno della \textbf{diffrazione d'onda} della luce, che diventa dominante quando le dimensioni dell'apertura sono confrontabili con la lunghezza d'onda della luce visibile.
+
+
+
+\subsection{Il Campo Visivo}
+
+Il \textbf{campo visivo} (\emph{field of view}, FOV) esprime l'ampiezza della porzione di spazio tridimensionale catturata dal sensore e dipende direttamente dalla lunghezza focale $f$:
+
+% [IMMAGINE RIF INTERVALLO 1-31] Diagramma che illustra la variazione del campo visivo (Field of view) al variare delle distanze focali $f_1, f_2, f_3$ — Slide 23 / Pagina 23 del PDF
+
+\begin{itemize}[noitemsep]
+    \item Riducendo la lunghezza focale $f$, l'immagine diventa più \textbf{grandangolare} (\emph{wide angle}): una porzione di spazio molto più ampia viene proiettata sulla superficie del sensore di dimensioni finite.
+    \item Aumentando la lunghezza focale $f$, l'immagine diventa più \textbf{telescopica} (\emph{telescopic}): solo una piccola porzione dello spazio viene ingrandita sul piano del sensore.
+\end{itemize}
+
+% [IMMAGINE RIF INTERVALLO 1-31] Schema geometrico per il calcolo dell'angolo di campo $\varphi$ in funzione della dimensione del sensore $d$ e della lunghezza focale $f$ — Slide 24 / Pagina 24 del PDF
+
+Geometricamente, la semiampiezza del campo visivo $\varphi$ è legata alla dimensione lineare del sensore $d$ (spesso paragonato alla retina) e alla lunghezza focale $f$ dalla relazione trigonometrica:
+\begin{equation}
+    \boxed{\varphi = \tan^{-1}\left(\frac{d}{2f}\right)}
+\end{equation}
+
+Da questa formula si deduce direttamente che un campo visivo più stretto (valore di $\varphi$ inferiore) corrisponde a una lunghezza focale $f$ maggiore.
+
+\newpage
+
+\section{Modellizzazione Matematica E Geometria Proiettiva}
+
+Per elaborare le informazioni visive in algoritmi di robotica e deep learning, dobbiamo definire analiticamente la trasformazione geometrica che mappa un punto $P$ dello spazio tridimensionale nel punto proiettato $P'$ sul piano dell'immagine.
+
+% [IMMAGINE RIF INTERVALLO 1-31] Modello di proiezione prospettica di una candela che mappa il punto 3D $P$ sul punto 2D $P'$ sul piano dell'immagine virtuale — Slide 25 / Pagina 25 del PDF
+
+Nel modello a foro stenopeico ideale, assumiamo che il piano dell'immagine virtuale sia situato esattamente a distanza pari alla lunghezza focale $f$ dal centro ottico $C$.
+
+Dato un punto espresso in coordinate cartesiane tridimensionali rispetto al sistema di riferimento della camera:
+\[
+P = (x, y, z)
+\]
+La sua proiezione sul piano dell'immagine cartesiano bidimensionale è data dal punto:
+\begin{equation}
+    P' = \left(f\frac{x}{z}, f\frac{y}{z}\right)
+\end{equation}
+
+Questo processo definisce una mappatura dallo spazio euclideo $\mathbb{R}^3$ al piano euclideo $\mathbb{R}^2$ (indicata matematicamente come $\mathbb{R}^3 \overset{E}{\rightarrow} \mathbb{R}^2$).
+
+
+
+\subsection{La Necessità Delle Coordinate Omogenee}
+
+La trasformazione di proiezione prospettica definita dall'equazione (5) \textbf{non è una trasformazione lineare}. La presenza della coordinata di profondità $z$ al denominatore rende l'operazione intrinsecamente non lineare. Di conseguenza, non è possibile rappresentare direttamente questa proiezione attraverso una moltiplicazione standard per una matrice di dimensione $3 \times 3$.
+
+Per superare questa limitazione e linearizzare la proiezione prospettica, si introducono le \textbf{coordinate omogenee} (\emph{homogeneous coordinates}). Questo espediente matematico consiste nell'aggiungere una coordinata aggiuntiva al vettore cartesiano:
+\begin{itemize}[noitemsep]
+    \item Un punto nel piano dell'immagine $(x, y)$ espresso in coordinate omogenee diventa:
+    \[
+    (x, y) \Longrightarrow \begin{bmatrix} x \\ y \\ 1 \end{bmatrix}
+    \]
+    \item Un punto nello spazio tridimensionale $(x, y, z)$ espresso in coordinate omogenee diventa:
+    \[
+    (x, y, z) \Longrightarrow \begin{bmatrix} x \\ y \\ z \\ 1 \end{bmatrix}
+    \]
+\end{itemize}
+
+Il passaggio inverso da coordinate omogenee a coordinate cartesiane (proiezione sul piano affine) si effettua dividendo ciascuna coordinata per l'ultima componente $w$:
+\begin{align*}
+    \begin{bmatrix} x \\ y \\ w \end{bmatrix} &\Longrightarrow \left(\frac{x}{w}, \frac{y}{w}\right) \\
+    \begin{bmatrix} x \\ y \\ z \\ w \end{bmatrix} &\Longrightarrow \left(\frac{x}{w}, \frac{y}{w}, \frac{z}{w}\right)
+\end{align*}
+
+\newpage
+
+\subsection{La Matrice Di Proiezione Prospettica}
+
+L'introduzione delle coordinate omogenee consente di esprimere la proiezione prospettica attraverso una moltiplicazione lineare tra una matrice e il vettore omogeneo del punto tridimensionale.
+
+Consideriamo la seguente moltiplicazione matriciale:
+\begin{equation}
+    \begin{bmatrix} 1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 1/f' & 0 \end{bmatrix} \begin{bmatrix} x \\ y \\ z \\ 1 \end{bmatrix} = \begin{bmatrix} x \\ y \\ z/f' \end{bmatrix}
+\end{equation}
+
+Dividendo il vettore risultante per la sua terza coordinata (operazione necessaria per convertire nuovamente il punto omogeneo in coordinate cartesiane), otteniamo esattamente le coordinate cartesiane di proiezione:
+\[
+\left(f'\frac{x}{z}, f'\frac{y}{z}\right)
+\]
+
+In alternativa, una formulazione equivalente e ampiamente diffusa prevede di inserire il parametro della lunghezza focale $f$ direttamente nei coefficienti della matrice, evitando di avere frazioni all'interno delle componenti matriciali. Definiamo il punto proiettato omogeneo $P'$ come:
+\begin{equation}
+    P' = \begin{bmatrix} f x \\ f y \\ z \end{bmatrix} = \underbrace{\begin{bmatrix} f & 0 & 0 & 0 \\ 0 & f & 0 & 0 \\ 0 & 0 & 1 & 0 \end{bmatrix}}_{\bm{M}} \begin{bmatrix} x \\ y \\ z \\ 1 \end{bmatrix}
+\end{equation}
+
+La matrice di dimensione $3 \times 4$ indicata con $\bm{M}$ è definita \textbf{matrice di proiezione} (\emph{projection matrix}). Utilizzando questa rappresentazione lineare, la proiezione prospettica si esprime semplicemente come:
+\begin{equation}
+    \boxed{P' = \bm{M} P}
+\end{equation}
+
+Tale operazione esprime una mappatura lineare nello spazio proiettivo, indicata come $\mathbb{R}^4 \overset{H}{\rightarrow} \mathbb{R}^3$.
+
+
+
+\subsection{Assunzioni Intrinseche Ed Estrinseche}
+
+La matrice di proiezione $\bm{M}$ descritta nell'equazione (7) rappresenta un modello semplificato valido sotto specifiche assunzioni geometriche e fisiche riguardanti sia la struttura interna della camera sia la sua posa nello spazio.
+
+Queste assunzioni si dividono in due categorie principali:
+\begin{enumerate}[noitemsep]
+    \item \textbf{Assunzioni Intrinseche} (\emph{Intrinsic Assumptions}):
+    \begin{itemize}[noitemsep]
+        \item \textbf{Unità del rapporto d'aspetto} (\emph{Unit aspect ratio}): Si assume che i singoli elementi fotosensibili del sensore (pixel) siano perfettamente quadrati, ossia che il fattore di conversione scala-pixel sia identico lungo l'asse orizzontale e verticale.
+        \item \textbf{Centro ottico in $(0,0)$}: Si ipotizza che l'asse ottico attraversi il piano dell'immagine esattamente in corrispondenza dell'origine delle coordinate dell'immagine.
+        \item \textbf{Assenza di inclinazione} (\emph{No skew}): Gli assi del sensore dell'immagine si assumono perfettamente ortogonali tra loro.
+    \end{itemize}
+    \item \textbf{Assunzioni Estrinseche} (\emph{Extrinsic Assumptions}):
+    \begin{itemize}[noitemsep]
+        \item \textbf{Assenza di rotazione}: Il sistema di riferimento della fotocamera è perfettamente orientato e allineato con il sistema di riferimento globale del mondo.
+        \item \textbf{Camera posizionata nell'origine}: Il centro di proiezione della fotocamera coincide esattamente con l'origine globale delle coordinate tridimensionali, ossia con il punto $(0, 0, 0)$.
+    \end{itemize}
+\end{enumerate}
+
+\newpage
+
+\subsection{La Matrice Di Calibrazione Intrinseca K}
+
+Sotto le assunzioni ideali descritte, possiamo decomporre la matrice di proiezione $\bm{M}$ per isolare i parametri ottici interni del dispositivo da quelli geometrici di proiezione. Svolgendo il prodotto tra matrici:
+\begin{equation}
+    \bm{M} = \begin{bmatrix} f & 0 & 0 & 0 \\ 0 & f & 0 & 0 \\ 0 & 0 & 1 & 0 \end{bmatrix} = \begin{bmatrix} f & 0 & 0 \\ 0 & f & 0 \\ 0 & 0 & 1 \end{bmatrix} \begin{bmatrix} 1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 1 & 0 \end{bmatrix}
+\end{equation}
+
+Definiamo la matrice quadrata di dimensione $3 \times 3$ come la \textbf{matrice di calibrazione intrinseca} (\emph{intrinsic calibration matrix}), comunemente indicata con il simbolo $\bm{K}$:
+\begin{equation}
+    \boxed{\bm{K} = \begin{bmatrix} f & 0 & 0 \\ 0 & f & 0 \\ 0 & 0 & 1 \end{bmatrix}}
+\end{equation}
+
+La matrice di proiezione complessiva $\bm{M}$ può quindi essere riscritta in forma compatta come il prodotto tra la matrice intrinseca $\bm{K}$ e una matrice di proiezione canonica standard che applica le assunzioni estrinseche:
+\begin{equation}
+    P' = \bm{K} \begin{bmatrix} \bm{I} & \bm{0} \end{bmatrix} P
+\end{equation}
+
+In questa espressione, $\bm{I}$ rappresenta la matrice identità di dimensione $3 \times 3$ (che esprime l'allineamento degli assi e l'assenza di rotazione del sistema di riferimento) mentre $\bm{0}$ è il vettore colonna nullo di dimensione $3 \times 1$ (che indica la coincidenza dell'origine della camera con l'origine del mondo).
+\section{Estensione Del Modello Intrinseco Della Fotocamera}
+
+Nel capitolo precedente abbiamo derivato la matrice di calibrazione intrinseca $\bm{K}$ partendo da assunzioni semplificate in un mondo ideale. Tuttavia, le fotocamere reali presentano imperfezioni costruttive e deviazioni geometriche che rendono tale modello insufficiente. Per ottenere una modellizzazione accurata in contesti reali di robotica e visione artificiale, dobbiamo rimuovere sistematicamente tali assunzioni semplificative.
+
+
+
+\subsection{Rimozione Dell'Assunzione Del Centro Ottico Centrale}
+
+Nel modello ideale, si assume che l'asse ottico intersechi il piano dell'immagine esattamente nell'origine delle coordinate locali $(0,0)$. Nella pratica costruttiva dei sensori, a causa di imperfezioni nell'allineamento meccanico tra la lente e il piano del sensore CCD o CMOS, questo punto di intersezione (chiamato \textbf{punto principale}) si trova in una posizione spostata, indicata con le coordinate coordinate $(u_0, v_0)$.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Rappresentazione matriciale con lo spostamento del centro ottico a $(u_0, v_0)$ — Slide 1 / Pagina 1 del PDF
+
+Per integrare questa traslazione nel modello proiettivo, aggiorniamo la matrice di proiezione introducendo i parametri $(u_0, v_0)$ nell'ultima colonna della sottomatrice di calibrazione. Esprimendo la trasformazione in coordinate omogenee, otteniamo la seguente relazione:
+
+\begin{equation}
+P' = \bm{K} \begin{bmatrix} \bm{I} & \bm{0} \end{bmatrix} P \implies w \begin{bmatrix} u \\ v \\ 1 \end{bmatrix} = \begin{bmatrix} f & 0 & u_0 & 0 \\ 0 & f & v_0 & 0 \\ 0 & 0 & 1 & 0 \end{bmatrix} \begin{bmatrix} x \\ y \\ z \\ 1 \end{bmatrix}
+\end{equation}
+
+In questa formulazione, la coordinata di scala omogenea $w$ coincide con la coordinata di profondità $z$ del punto nello spazio tridimensionale dopo aver eseguito la moltiplicazione.
+
+
+
+\subsection{Rimozione Dell'Assunzione Di Pixel Quadrati}
+
+Il modello ideale assume che i pixel del sensore siano perfettamente quadrati. Nei sensori reali, tuttavia, i singoli elementi fotosensibili possono presentare un rapporto d'aspetto (\emph{aspect ratio}) non unitario, risultando leggermente rettangolari. Ciò implica che i fattori di scala che convertono le lunghezze fisiche (espresse in millimetri) in coordinate pixel siano differenti lungo le due direzioni principali del sensore.
+
+Indichiamo con $k_u$ e $k_v$ il numero di pixel per unità di lunghezza rispettivamente lungo l'asse orizzontale e verticale. Possiamo definire due differenti lunghezze focali espresse direttamente in unità di pixel:
+
+\begin{align*}
+\alpha &= f \cdot k_u \\
+\beta &= f \cdot k_v
+\end{align*}
+
+% [IMMAGINE RIF INTERVALLO 32-62] Rimozione dell'assunzione di pixel quadrati con l'introduzione di pixel rettangolari e parametri $\alpha$ e $\beta$ — Slide 2 / Pagina 2 del PDF
+
+Sostituendo la lunghezza focale ideale $f$ con i parametri $\alpha$ e $\beta$ nella matrice di calibrazione, otteniamo:
+
+\begin{equation}
+w \begin{bmatrix} u \\ v \\ 1 \end{bmatrix} = \begin{bmatrix} \alpha & 0 & u_0 & 0 \\ 0 & \beta & v_0 & 0 \\ 0 & 0 & 1 & 0 \end{bmatrix} \begin{bmatrix} x \\ y \\ z \\ 1 \end{bmatrix}
+\end{equation}
+
+Questa formulazione consente di gestire sensori con pixel rettangolari modellando in modo indipendente la deformazione ottica lungo l'asse $u$ e l'asse $v$.
+
+
+
+\subsection{Rimozione Dell'Assunzione Di Assenza Di Distorsione D'Inclinazione}
+
+Un'ulteriore imperfezione fisica si verifica quando gli assi del piano sensore non sono perfettamente ortogonali tra loro. Questa lieve deviazione introduce un errore di inclinazione noto come \textbf{skew}.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Schema dell'inclinazione dell'asse dei pixel (skew) e aggiornamento della matrice intrinseca con il parametro $s$ — Slide 3 / Pagina 3 del PDF
+
+Per descrivere matematicamente questa non-ortogonalità, introduciamo un parametro di skew $s$ all'interno della matrice di calibrazione. Il parametro $s$ agisce come un termine di taglio geometrico (\emph{shear}) lungo la direzione orizzontale del sensore.
+
+Integrando questo parametro, definiamo infine la matrice di calibrazione intrinseca $\bm{K}$ completa per una fotocamera reale:
+
+\begin{equation}
+\bm{K} = \begin{bmatrix} \alpha & s & u_0 \\ 0 & \beta & v_0 \\ 0 & 0 & 1 \end{bmatrix}
+\end{equation}
+
+% [IMMAGINE RIF INTERVALLO 32-62] Riepilogo dei parametri intrinseci finali della fotocamera — Slide 4 / Pagina 4 del PDF
+
+La matrice $\bm{K}$ racchiude tutti i $5$ \textbf{parametri intrinseci} necessari a descrivere la geometria interna della camera reale:
+\begin{itemize}[noitemsep]
+    \item $\alpha$: Lunghezza focale orizzontale espressa in pixel.
+    \item $\beta$: Lunghezza focale verticale espressa in pixel.
+    \item $u_0$: Coordinata orizzontale del punto principale sul sensore.
+    \item $v_0$: Coordinata verticale del punto principale sul sensore.
+    \item $s$: Parametro di skew per la non-ortogonalità degli assi dei pixel.
+\end{itemize}
+
+\newpage
+
+\section{Modellizzazione Dei Parametri Estrinseci E Fotocamera Reale}
+
+Nelle sezioni precedenti abbiamo assunto che la fotocamera fosse posizionata nell'origine del sistema di riferimento globale del mondo e che i suoi assi ottici fossero perfettamente allineati con quest'ultimo. In uno scenario reale, la fotocamera è montata su una struttura mobile (ad esempio, il braccio di un manipolatore o la testa di un robot umanoide) e può trovarsi in una qualsiasi posizione e orientamento nello spazio tridimensionale.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Rappresentazione geometrica della relazione tra il sistema di riferimento del mondo e quello della fotocamera reale tramite traslazione $\bm{t}$ e rotazione $\bm{R}$ — Slide 5 / Pagina 5 del PDF
+
+Dobbiamo quindi definire la trasformazione rigida di coordinate che esprime i punti dal sistema di riferimento globale (\emph{world frame}) al sistema di riferimento locale della fotocamera (\emph{camera frame}). Questa trasformazione è descritta dai \textbf{parametri estrinseci}, composti da una traslazione $\bm{t}$ e da una rotazione $\bm{R}$.
+
+
+
+\subsection{Rimozione Dell'Assunzione Di Assenza Di Traslazione}
+
+Se la fotocamera viene spostata dall'origine globale ma mantiene i propri assi paralleli a quelli del mondo, il suo centro si troverà in una posizione di coordinate $\bm{t} = (t_x, t_y, t_z)$.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Rimozione dell'assunzione di assenza di traslazione della camera nello spazio — Slide 6 / Pagina 6 del PDF
+
+Per modellare questa traslazione nello spazio proiettivo, introduciamo il vettore colonna di traslazione $\bar{\bm{t}}$ nella sottomatrice estrinseca. La relazione di proiezione si scrive:
+
+\begin{equation}
+P' = \bm{K} \begin{bmatrix} \bm{I} & \bar{\bm{t}} \end{bmatrix} P \implies w \begin{bmatrix} u \\ v \\ 1 \end{bmatrix} = \begin{bmatrix} \alpha & 0 & u_0 \\ 0 & \beta & v_0 \\ 0 & 0 & 1 \end{bmatrix} \begin{bmatrix} 1 & 0 & 0 & t_x \\ 0 & 1 & 0 & t_y \\ 0 & 0 & 1 & t_z \end{bmatrix} \begin{bmatrix} x \\ y \\ z \\ 1 \end{bmatrix}
+\end{equation}
+
+
+
+\subsection{Rimozione Dell'Assunzione Di Assenza Di Rotazione}
+
+Per modellare l'orientamento generico della fotocamera nello spazio tridimensionale, dobbiamo considerare la rotazione del suo sistema di riferimento rispetto a quello del mondo. Una rotazione generica in tre dimensioni può essere espressa come la composizione di tre rotazioni elementari antiorarie attorno agli assi principali coordinati.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Rappresentazione delle rotazioni elementari antiorarie attorno agli assi cartesiani — Slide 7 / Pagina 7 del PDF
+
+Le tre matrici di rotazione elementare sono definite come:
+\begin{align*}
+R_x(\alpha) &= \begin{bmatrix} 1 & 0 & 0 \\ 0 & \cos\alpha & -\sin\alpha \\ 0 & \sin\alpha & \cos\alpha \end{bmatrix} \\
+R_y(\beta) &= \begin{bmatrix} \cos\beta & 0 & \sin\beta \\ 0 & 1 & 0 \\ -\sin\beta & 0 & \cos\beta \end{bmatrix} \\
+R_z(\gamma) &= \begin{bmatrix} \cos\gamma & -\sin\gamma & 0 \\ \sin\gamma & \cos\gamma & 0 \\ 0 & 0 & 1 \end{bmatrix}
+\end{align*}
+
+Moltiplicando tra loro queste matrici elementari si ottiene la matrice di rotazione ortonormale complessiva $\bm{R} \in \mathbb{R}^{3 \times 3}$:
+\[
+\bm{R} = \begin{bmatrix} r_{11} & r_{12} & r_{13} \\ r_{21} & r_{22} & r_{23} \\ r_{31} & r_{32} & r_{33} \end{bmatrix}
+\]
+
+
+
+\subsection{La Matrice Di Proiezione Prospettica Generica}
+
+Integrando simultaneamente la matrice di rotazione $\bm{R}$ e il vettore di traslazione $\bar{\bm{t}}$ nel modello proiettivo, otteniamo la formulazione completa della proiezione per una fotocamera reale.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Matrice di proiezione prospettica finale che integra rotazione $\bm{R}$ e traslazione $\bar{\bm{t}}$ — Slide 8 / Pagina 8 del PDF
+
+La relazione generale che lega un punto tridimensionale $P$ in coordinate omogenee globali al punto proiettato $P'$ in coordinate omogenee del piano immagine è definita da:
+
+\begin{equation}
+\boxed{P' = \bm{K} \begin{bmatrix} \bm{R} & \bar{\bm{t}} \end{bmatrix} P}
+\end{equation}
+
+Esplicitando i singoli termini all'interno delle matrici, l'equazione (15) assume la seguente forma:
+
+\begin{equation}
+w \begin{bmatrix} u \\ v \\ 1 \end{bmatrix} = \begin{bmatrix} \alpha & s & u_0 \\ 0 & \beta & v_0 \\ 0 & 0 & 1 \end{bmatrix} \begin{bmatrix} r_{11} & r_{12} & r_{13} & t_x \\ r_{21} & r_{22} & r_{23} & t_y \\ r_{31} & r_{32} & r_{33} & t_z \end{bmatrix} \begin{bmatrix} x \\ y \\ z \\ 1 \end{bmatrix}
+\end{equation}
+
+% [IMMAGINE RIF INTERVALLO 32-62] Riepilogo grafico della matrice di proiezione prospettica generica — Slide 9 / Pagina 9 del PDF
+
+Questa equazione rappresenta il modello fondamentale di proiezione prospettica della fotocamera geometrica.
+
+
+
+\subsection{Analisi Dei Gradi Di Libertà}
+
+L'espressione ricavata per la proiezione prospettica generica permette di quantificare la complessità del modello attraverso il calcolo dei suoi \textbf{gradi di libertà} (\emph{degrees of freedom}, DoF):
+
+% [IMMAGINE RIF INTERVALLO 32-62] Evidenziazione dei gradi di libertà intrinseci (5) ed estrinseci (6) nella matrice finale — Slide 10 / Pagina 10 del PDF
+
+\begin{itemize}[noitemsep]
+    \item \textbf{Parametri Intrinseci} ($5$ gradi di libertà): Racchiusi nella matrice $\bm{K}$ ($\alpha$, $\beta$, $u_0$, $v_0$, $s$). Rappresentano le caratteristiche fisiche interne del sensore e dell'ottica.
+    \item \textbf{Parametri Estrinseci} ($6$ gradi di libertà): Composti da $3$ parametri per la rotazione nello spazio (ad esempio, gli angoli di Eulero $\alpha, \beta, \gamma$) e $3$ parametri per la traslazione lineare ($t_x, t_y, t_z$). Rappresentano la posizione e l'orientamento della camera nel mondo.
+\end{itemize}
+
+Il modello finale presenta complessivamente \textbf{11 gradi di libertà}. Il processo volto a determinare sperimentalmente o analiticamente questi undici parametri per un dato sistema ottico prende il nome di \textbf{calibrazione della fotocamera} (\emph{camera calibration}).
+
+\newpage
+
+\section{Visione Stereoscopica E Percezione Tridimensionale}
+
+Una singola fotocamera esegue una proiezione molti-a-uno, perdendo l'informazione fondamentale relativa alla profondità geometrica degli elementi della scena. Il problema centrale della percezione robotica consiste nel comprendere come sia possibile recuperare automaticamente la geometria tridimensionale a partire da immagini bidimensionali.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Schema del problema della perdita di profondità nel passaggio dal mondo 3D all'immagine 2D — Slide 11 / Pagina 11 del PDF
+
+
+
+\subsection{Indizi Visivi Per La Ricostruzione 3D}
+
+Sia i sistemi biologici sia gli algoritmi di computer vision estraggono informazioni sulla profondità analizzando diversi \textbf{indizi visivi} (\emph{visual cues}) presenti nelle immagini:
+
+\begin{itemize}[noitemsep]
+    \item \textbf{Ombreggiatura} (\emph{shading}): La variazione dell'intensità luminosa riflessa da una superficie fornisce indizi sulla curvatura e sull'orientamento tridimensionale dell'oggetto.
+
+    % [IMMAGINE RIF INTERVALLO 32-62] Esempio di come l'ombreggiatura (\emph{shading}) fornisca informazioni sulla struttura tridimensionale di un volto — Slide 12 / Pagina 12 del PDF
+
+    \item \textbf{Tessitura} (\emph{texture}): La variazione prospettica della densità e della scala dei pattern superficiali indica cambiamenti di distanza o inclinazione (come dimostrato negli esperimenti classici di percezione visiva).
+
+    % [IMMAGINE RIF INTERVALLO 32-62] Esperimento del "Visual Cliff" che dimostra l'effetto della prospettiva sulla tessitura per percepire la profondità — Slide 13 / Pagina 3 del PDF
+
+    \item \textbf{Messa a fuoco} (\emph{focus}): Il livello di sfocatura di porzioni dell'immagine situate al di fuori della profondità di campo consente di stimare distanze relative.
+
+    % [IMMAGINE RIF INTERVALLO 32-62] Esempio di utilizzo della messa a fuoco e sfocatura per dedurre la distanza relativa degli oggetti — Slide 14 / Pagina 14 del PDF
+
+    \item \textbf{Movimento} (\emph{motion}): Lo spostamento relativo di elementi della scena dovuto al movimento dell'osservatore o degli oggetti stessi fornisce forti vincoli geometrici sulla struttura 3D.
+
+    % [IMMAGINE RIF INTERVALLO 32-62] Serie di tre scatti di un gargoyle che mostra come il movimento della camera riveli la tridimensionalità della scena — Slide 15 / Pagina 15 del PDF
+\end{itemize}
+
+Tra gli altri indizi visivi si annoverano i riflessi speculari (\emph{highlights}), le ombre portate (\emph{shadows}), le sagome d'occlusione (\emph{silhouettes}), le riflessioni mutue tra oggetti (\emph{inter-reflections}), la simmetria geometrica (\emph{symmetry}) e la polarizzazione della luce (\emph{light polarization}).
+
+La classe di algoritmi che ricostruisce la forma geometrica partendo da uno specifico indizio visivo viene definita \textbf{Shape From X} (dove $X$ può essere \emph{shading}, \emph{texture}, \emph{focus}, \emph{motion}, ecc.). Nel seguito di questa trattazione ci concentreremo in particolare sull'utilizzo dell'indizio del movimento (\emph{motion}) e della disparità visiva.
+
+
+
+\subsection{La Stereopsi Umana}
+
+La visione binoculare permette agli esseri umani di percepire la tridimensionalità dello spazio circostante attraverso la \textbf{stereopsi} (\emph{stereopsis}).
+
+% [IMMAGINE RIF INTERVALLO 32-62] Rappresentazione umoristica di un ciclope confrontato con Odisseo per illustrare i vantaggi della visione binoculare — Slide 17 / Pagina 17 del PDF
+
+Avere due occhi posizionati a una breve distanza reciproca consente di acquisire contemporaneamente due immagini della stessa scena da punti di vista leggermente diversi.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Diagramma della stereopsi umana e del meccanismo di fissazione oculare sulla fovea — Slide 18 / Pagina 18 del PDF
+
+Gli occhi umani ruotano in modo coordinato per fissare lo stesso punto dello spazio tridimensionale, garantendo che le immagini corrispondenti si formino esattamente al centro della fovea di ciascun occhio. La differenza geometrica tra le posizioni dei punti proiettati sulle due retine prende il nome di \textbf{disparità} (\emph{disparity}) ed è inversamente proporzionale alla distanza dell'oggetto dall'osservatore.
+
+\newpage
+
+\subsection{Parametri Geometrici In Un Sistema Di Visione Stereo}
+
+La visione stereoscopica artificiale emula la stereopsi biologica posizionando due fotocamere a una distanza nota. Per elaborare geometricamente le immagini acquisite da questo sistema, definiamo i parametri che lo descrivono:
+
+% [IMMAGINE RIF INTERVALLO 32-62] Illustrazione dei sistemi di riferimento di due camere stereo e dei relativi parametri intrinseci ed estrinseci — Slide 19 / Pagina 19 del PDF
+
+\begin{itemize}[noitemsep]
+    \item \textbf{Parametri Estrinseci}: Definiscono la trasformazione rigida di coordinate (rotazione $\bm{R}$ e traslazione $\bar{\bm{t}}$) per mappare il sistema di riferimento della prima camera (\emph{Camera frame 1}) in quello della seconda camera (\emph{Camera frame 2}).
+    \item \textbf{Parametri Intrinseci}: Definiscono per ciascuna fotocamera la trasformazione dalle coordinate locali dell'immagine alle coordinate espresse in pixel (includendo lunghezza focale, dimensione fisica dei pixel, punto principale e parametri di distorsione radiale).
+\end{itemize}
+
+Nelle analisi geometriche che seguono, assumeremo che tutti i parametri intrinseci ed estrinseci del sistema stereo siano già stati calibrati, risultando pertanto noti e costanti.
+
+\newpage
+
+\section{Geometria E Calcolo Della Profondità In Un Sistema Stereo Semplice}
+
+Il fine della visione stereo consiste nel calcolare la profondità geometrica $Z$ di un punto dello spazio trovando, per ogni pixel di coordinata $x$ nella prima immagine, la coordinata $x'$ corrispondente nella seconda immagine.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Schema prospettico 3D e 2D del calcolo della profondità $Z$ tramite stereo — Slide 20 / Pagina 20 del PDF
+
+Questo obiettivo solleva due problematiche fondamentali:
+\begin{enumerate}[noitemsep]
+    \item \textbf{Calibrazione}: Determinare la relazione geometrica spaziale tra le due fotocamere (qualora non sia già nota).
+    \item \textbf{Corrispondenza} (\emph{Correspondence problem}): Determinare per ciascun punto della prima immagine quale sia il punto corrispondente nella seconda immagine.
+\end{enumerate}
+
+% [IMMAGINE RIF INTERVALLO 32-62] Schema delle due sfide principali: calibrazione e corrispondenza — Slide 21 / Pagina 21 del PDF
+
+% [IMMAGINE RIF INTERVALLO 32-62] Indice degli argomenti: focus sulla geometria epipolare a assi paralleli — Slide 22 / Pagina 22 del PDF
+
+% [IMMAGINE RIF INTERVALLO 32-62] Titolo di transizione per la geometria del sistema stereo semplice — Slide 23 / Pagina 23 del PDF
+
+
+
+\subsection{Derivazione Matematica Della Profondità}
+
+Analizziamo il caso geometrico di un \textbf{sistema stereo semplice}, caratterizzato da due fotocamere identiche i cui assi ottici sono perfettamente paralleli tra loro e ortogonali alla linea che unisce i due centri di proiezione.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Schema geometrico dettagliato del sistema stereo ad assi paralleli con baseline $T$, profondità $Z$ e punti d'immagine $p_l, p_r$ — Slide 24 / Pagina 24 del PDF
+
+I parametri del sistema sono definiti come segue:
+\begin{itemize}[noitemsep]
+    \item $O_l$ e $O_r$ rappresentano i centri ottici rispettivamente della fotocamera sinistra e destra.
+    \item $T$ rappresenta la distanza orizzontale tra i due centri ottici, definita \textbf{linea di base} (\emph{baseline}).
+    \item $f$ è la lunghezza focale (identica per entrambe le camere).
+    \item $P$ è un punto dello spazio tridimensionale situato a una distanza di profondità $Z$ rispetto alla linea dei centri ottici.
+    \item $x_l$ e $x_r$ sono le coordinate orizzontali delle proiezioni del punto $P$ sui rispettivi piani immagine sinistro ($p_l$) e destro ($p_r$), misurate rispetto all'asse ottico locale di ciascuna camera.
+\end{itemize}
+
+% [IMMAGINE RIF INTERVALLO 32-62] Triangoli simili evidenziati in verde e blu sul sistema ad assi paralleli per la derivazione di $Z$ — Slide 25 / Pagina 25 del PDF
+
+Dalla costruzione geometrica, consideriamo le coppie di triangoli simili formati nello schema:
+\begin{enumerate}[noitemsep]
+    \item Il triangolo avente come vertici i punti d'immagine e il punto nello spazio, ossia $(p_l, P, p_r)$.
+    \item Il triangolo avente come vertici i due centri ottici e il punto nello spazio, ossia $(O_l, P, O_r)$.
+\end{enumerate}
+
+Sfruttando la similitudine geometrica di questi triangoli, possiamo impostare la seguente uguaglianza di rapporti tra basi e altezze:
+
+\begin{equation}
+\frac{T + x_l - x_r}{Z - f} = \frac{T}{Z}
+\end{equation}
+
+Risolviamo l'equazione (17) passo dopo passo per esplicitare la variabile di profondità $Z$:
+
+\begin{align*}
+Z(T + x_l - x_r) &= T(Z - f) \\
+Z T + Z(x_l - x_r) &= Z T - f T \\
+Z(x_l - x_r) &= - f T \\
+Z(x_r - x_l) &= f T
+\end{align*}
+
+Otteniamo così la relazione fondamentale della stereopsi:
+
+\begin{equation}
+\boxed{Z = f \frac{T}{x_r - x_l}}
+\end{equation}
+
+Il termine a denominatore rappresenta la differenza tra le coordinate di proiezione sui due piani immagine e viene definito \textbf{disparità} (\emph{disparity}):
+\begin{equation}
+d = x_r - x_l
+\end{equation}
+
+Dall'equazione (18) si evince una proprietà fisica cruciale: \textbf{la profondità $Z$ è inversamente proporzionale alla disparità $d$}. Punti molto vicini alla fotocamera generano un valore di disparità elevato, mentre punti estremamente distanti tendono ad avere disparità che approssimano lo zero.
+
+
+
+\subsection{La Mappa Di Disparità}
+
+Se siamo in grado di risolvere il problema di corrispondenza per ogni pixel della scena, possiamo calcolare una rappresentazione densa delle distanze denominata \textbf{mappa di disparità} (\emph{disparity map}), indicata con $D(x,y)$.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Esempio di coppia stereo (immagine sinistra e destra) con la corrispondente mappa di disparità $D(x,y)$ — Slide 26 / Pagina 26 del PDF
+
+La relazione geometrica di corrispondenza tra i pixel delle due immagini $I(x,y)$ e $I'(x', y')$ si esprime come:
+\begin{equation}
+(x', y') = (x + D(x, y), y)
+\end{equation}
+
+Poiché gli assi ottici sono perfettamente paralleli, non vi è alcuno spostamento verticale dei punti proiettati. Di conseguenza, la ricerca del pixel corrispondente si riduce a una scansione puramente monodimensionale lungo la medesima riga orizzontale dell'immagine ($y' = y$).
+
+\newpage
+
+\section{Geometria Epipolare E Vincolo Epipolare Nel Caso Generale}
+
+Quando i piani delle due fotocamere non sono paralleli o si ha una configurazione generica di movimento nello spazio, la ricerca delle corrispondenze lungo le righe orizzontali non è più valida. In linea di principio, la ricerca del punto corrispondente dovrebbe essere eseguita sull'intera superficie bidimensionale del secondo piano immagine, comportando un costo computazionale proibitivo.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Indice degli argomenti: focus sulla geometria epipolare generica — Slide 27 / Pagina 27 del PDF
+
+Per risolvere questo problema, si sfrutta la geometria epipolare che impone un vincolo geometrico forte noto come \textbf{vincolo epipolare} (\emph{epipolar constraint}).
+
+
+
+\subsection{Il Vincolo Epipolare}
+
+Il vincolo epipolare stabilisce che la ricerca di un punto corrispondente non debba essere condotta sull'intero piano bidimensionale dell'immagine, bensì possa essere limitata a una singola linea unidimensionale.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Rappresentazione visiva del vincolo epipolare generico per limitare la ricerca delle corrispondenze a una retta unidimensionale — Slide 28 / Pagina 28 del PDF
+
+Il principio geometrico si basa sul fatto che il centro ottico della prima camera $O$, il punto dello spazio $X$ e il centro ottico della seconda camera $O'$ definiscono un unico piano nello spazio tridimensionale.
+\begin{itemize}[noitemsep]
+    \item Dato un punto proiettato $x$ nella prima immagine, il corrispondente punto reale $X$ deve giacere necessariamente lungo il raggio di proiezione che unisce $O$ a $x$.
+    \item La proiezione di questo intero raggio di luce sul secondo piano immagine corrisponde a una retta, indicata con $l'$.
+    \item Di conseguenza, il punto corrispondente $x'$ nella seconda immagine deve giacere obbligatoriamente sulla linea $l'$.
+    \item Simmetricamente, i possibili match per il punto $x'$ sul primo piano immagine devono trovarsi lungo la corrispondente linea epipolare $l$.
+\end{itemize}
+
+
+
+\subsection{Terminologia Geometrica Formale}
+
+Per descrivere formalmente la geometria epipolare, si introduce la seguente terminologia standard:
+
+% [IMMAGINE RIF INTERVALLO 32-62] Schema geometrico formale con la notazione della geometria epipolare (baseline, epipoli, piano e linee epipolari) — Slide 29 / Pagina 29 del PDF
+
+\begin{itemize}[noitemsep]
+    \item \textbf{Linea di base} (\emph{baseline}): La retta che congiunge i due centri ottici $O$ e $O'$ delle fotocamere.
+    \item \textbf{Piano epipolare} (\emph{epipolar plane}): Il piano che contiene la linea di base e il punto dello spazio $X$. Al variare di $X$ nello spazio, si definisce un fascio di piani epipolari (famiglia a $1$ grado di libertà) incernierati sulla linea di base.
+    \item \textbf{Epipoli} (\emph{epipoles}): I punti di intersezione della linea di base con i rispettivi piani immagine, indicati con $e$ ed $e'$. Essi rappresentano geometricamente la proiezione del centro ottico di una fotocamera sul piano immagine dell'altra.
+    \item \textbf{Linee epipolari} (\emph{epipolar lines}): Le rette ottenute dall'intersezione del piano epipolare con i due piani immagine, indicate con $l$ e $l'$. Ciascun piano epipolare definisce una coppia di linee epipolari corrispondenti. Tutte le linee epipolari di un'immagine convergono nel rispettivo epipolo.
+\end{itemize}
+
+\newpage
+
+\subsection{Esempi Di Configurazioni Geometriche}
+
+A seconda della posa relativa delle fotocamere nello spazio, la disposizione geometrica delle linee epipolari varia sistematicamente.
+
+\subsubsection{Fotocamere Convergenti}
+
+Nel caso di fotocamere i cui assi ottici convergono verso la scena, gli epipoli $e$ ed $e'$ si trovano all'interno o in prossimità dei sensori attivi.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Esempio di camere convergenti con le relative linee epipolari non parallele proiettate su un vaso classico — Slide 30 / Pagina 30 del PDF
+
+Le linee epipolari proiettate sulle immagini non sono parallele tra loro, ma convergono visibilmente verso la posizione degli epipoli. La ricerca delle corrispondenze deve essere eseguita lungo queste rette inclinate.
+
+\subsubsection{Movimento Parallelo Al Piano Dell'Immagine}
+
+Se lo spostamento relativo tra le fotocamere (o il movimento della fotocamera nel tempo) avviene lungo una direzione che è perfettamente parallela al piano dell'immagine, la linea di base risulta parallela ai piani sensore.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Esempio di movimento parallelo al piano dell'immagine in cui le linee epipolari risultano parallele e gli epipoli sono all'infinito — Slide 31 / Pagina 31 del PDF
+
+Poiché la linea di base non interseca i piani immagine a distanza finita, gli epipoli $e$ ed $e'$ si trovano posizionati all'infinito ($\infty$). Di conseguenza, le linee epipolari risultano perfettamente parallele tra loro. Se la traslazione è puramente orizzontale (come nel caso del sistema stereo semplice descritto precedentemente), le linee epipolari sono rette orizzontali parallele alle righe dell'immagine.
+
+\section{Casi Particolari Della Geometria Epipolare: Il Movimento In Avanti}
+
+Oltre alla configurazione ad assi paralleli e a quella convergente, un caso di notevole interesse pratico nella percezione robotica è il \textbf{movimento in avanti} (\emph{forward motion}), che si verifica ad esempio quando un robot mobile o un veicolo autonomo si sposta lungo la direzione del proprio asse ottico (asse $Z$).
+
+% [IMMAGINE RIF INTERVALLO 63-93] Esempio di movimento in avanti (forward motion) in un corridoio con epipoli coincidenti denominati "Focus of expansion" — Slide 1 / Pagina 1 del PDF
+
+In questa configurazione si osservano le seguenti proprietà geometriche:
+\begin{itemize}[noitemsep]
+    \item L'epipolo ha esattamente le stesse coordinate in entrambe le immagini proiettate.
+    \item I punti della scena si muovono lungo linee che si irradiano direttamente dall'epipolo $e$. Questo punto centrale di convergenza e irraggiamento prende il nome di \textbf{fuoco di espansione} (\emph{focus of expansion}).
+\end{itemize}
+
+\newpage
+
+\section{Geometria Stereo Con Camere Calibrate E Matrice Essenziale}
+
+Nel caso in cui il sistema stereo sia completamente calibrato, siamo in grado di determinare analiticamente la relazione geometrica che lega i due sistemi di riferimento delle camere.
+
+% [IMMAGINE RIF INTERVALLO 63-93] Geometria stereo con camere calibrate: relazioni spaziali fondamentali tra due sistemi di riferimento di camera — Slide 2 / Pagina 2 del PDF
+
+
+
+\subsection{La Relazione Spaziale Tra Le Camere}
+
+Se il sistema di acquisizione stereo è calibrato, conosciamo esattamente la trasformazione rigida (rotazione e traslazione) necessaria per mappare il sistema di riferimento della prima camera (\emph{Camera reference frame 1}) nel sistema di riferimento della seconda camera (\emph{Camera reference frame 2}).
+
+Questa trasformazione è espressa tramite:
+\begin{itemize}[noitemsep]
+    \item Una matrice di rotazione $\bm{R}$ di dimensione $3 \times 3$.
+    \item Un vettore di traslazione $\bm{T}$ di dimensione $3 \times 1$.
+\end{itemize}
+
+Dato un punto dello spazio espresso nel sistema di riferimento della prima camera come $\bm{X}_c$, la sua coordinata nel secondo sistema di riferimento $\bm{X}'_c$ si ricava mediante la trasformazione affine:
+\begin{equation}
+\bm{X}'_c = \bm{R} \bm{X}_c + \bm{T}
+\end{equation}
+
+
+
+\subsection{Rappresentazione Matriciale Del Prodotto Vettoriale}
+
+Per sviluppare i passaggi algebrici che conducono al vincolo epipolare, è necessario fare una breve digressione sul prodotto vettoriale (\emph{cross product}) e sulla sua formulazione matriciale.
+
+Dati due vettori generici $\bm{a}$ e $\bm{b}$, il loro prodotto vettoriale produce un terzo vettore $\bm{c}$ che è ortogonale a entrambi i vettori di input:
+\[
+\bm{a} \times \bm{b} = \bm{c}
+\]
+
+Poiché $\bm{c}$ è ortogonale sia ad $\bm{a}$ sia a $\bm{b}$, il loro prodotto scalare (\emph{dot product}) è nullo:
+\begin{align*}
+\bm{a} \cdot \bm{c} &= 0 \\
+\bm{b} \cdot \bm{c} &= 0
+\end{align*}
+
+Possiamo esprimere il prodotto vettoriale sotto forma di una moltiplicazione matriciale lineare. Definiamo la matrice antisimmetrica $[\bm{a}]_{\times}$ associata al vettore $\bm{a}$ come:
+\begin{equation}
+[\bm{a}]_{\times} = \begin{bmatrix} 0 & -a_3 & a_2 \\ a_3 & 0 & -a_1 \\ -a_2 & a_1 & 0 \end{bmatrix}
+\end{equation}
+
+Si noti che la matrice $[\bm{a}]_{\times}$ ha rango pari a 2. Sfruttando questa definizione, il prodotto vettoriale si scrive in forma lineare come:
+\begin{equation}
+\bm{a} \times \bm{b} = [\bm{a}]_{\times} \bm{b}
+\end{equation}
+
+
+
+\subsection{Derivazione Algebrica Del Vincolo Coplanare}
+
+Utilizziamo ora la formulazione del prodotto vettoriale per esprimere algebricamente la coplanarità dei vettori che giacciono sul piano epipolare.
+
+% [IMMAGINE RIF INTERVALLO 63-93] Passaggio geometrico-algebrico che illustra la relazione del prodotto vettoriale con $\bm{T}$ per ricavare la normale al piano epipolare — Slide 7 / Pagina 7 del PDF
+
+Partiamo dalla trasformazione di coordinate definita dall'equazione (21), omettendo per brevità il pedice $c$:
+\[
+\bm{X}' = \bm{R} \bm{X} + \bm{T}
+\]
+
+Applichiamo il prodotto vettoriale con il vettore di traslazione $\bm{T}$ a entrambi i membri dell'equazione. Sfruttando la proprietà distributiva, otteniamo:
+\[
+\bm{T} \times \bm{X}' = \bm{T} \times (\bm{R} \bm{X}) + \bm{T} \times \bm{T}
+\]
+
+Poiché il prodotto vettoriale di un vettore con se stesso è identicamente nullo ($\bm{T} \times \bm{T} = \bm{0}$), l'equazione si riduce a:
+\begin{equation}
+\bm{T} \times \bm{X}' = \bm{T} \times (\bm{R} \bm{X})
+\end{equation}
+
+Il vettore risultante $\bm{T} \times \bm{X}'$ rappresenta la direzione normale (perpendicolare) al piano epipolare.
+
+% [IMMAGINE RIF INTERVALLO 63-93] Evidenziazione della relazione di ortogonalità finale $\bm{X}' \cdot (\bm{T} \times \bm{R}\bm{X}) = 0$ — Slide 8 / Pagina 8 del PDF
+
+Eseguiamo ora il prodotto scalare tra il vettore $\bm{X}'$ e il vettore normale al piano epipolare espresso dal membro destro della (24). Poiché $\bm{X}'$ giace per definizione sul piano epipolare, esso deve essere perpendicolare alla normale del piano stesso. Pertanto, il loro prodotto scalare deve essere nullo:
+\begin{equation}
+\bm{X}' \cdot (\bm{T} \times \bm{R} \bm{X}) = 0
+\end{equation}
+
+
+
+\subsection{Definizione Della Matrice Essenziale}
+
+Riscriviamo l'equazione di coplanarità (25) sostituendo il prodotto vettoriale con la corrispondente moltiplicazione per la matrice antisimmetrica $[\bm{T}]_{\times}$ definita nella (22):
+\[
+\bm{X}' \cdot \left( [\bm{T}]_{\times} \bm{R} \bm{X} \right) = 0
+\]
+
+Esprimendo il prodotto scalare in forma matriciale (moltiplicazione per il vettore trasposto), otteniamo:
+\begin{equation}
+\bm{X}'^T \left( [\bm{T}]_{\times} \bm{R} \right) \bm{X} = 0
+\end{equation}
+
+Definiamo la \textbf{matrice essenziale} (\emph{essential matrix}) $\bm{E}$ come il prodotto tra la matrice antisimmetrica di traslazione $[\bm{T}]_{\times}$ e la matrice di rotazione $\bm{R}$:
+\begin{equation}
+\bm{E} = [\bm{T}]_{\times} \bm{R}
+\end{equation}
+
+Sostituendo la (27) nella (26), ricaviamo l'equazione del vincolo epipolare espressa tramite la matrice essenziale:
+\begin{equation}
+\boxed{\bm{X}'^T \bm{E} \bm{X} = 0}
+\end{equation}
+
+% [IMMAGINE RIF INTERVALLO 63-93] Schema geometrico della camera relativo alla definizione della matrice essenziale $\bm{E}$ — Slide 9 / Pagina 9 del PDF
+
+La matrice essenziale $\bm{E}$ esprime la relazione geometrica tra punti corrispondenti nei sistemi di riferimento locali delle due fotocamere, conoscendo esclusivamente la rotazione e la traslazione relative. Qualora si osservi un punto in una vista, la sua posizione nell'altra vista è vincolata a giacere lungo la retta definita dall'equazione (28). Si noti che questa formulazione assume che le coordinate dei punti siano espresse nei sistemi di riferimento locali delle fotocamere.
+
+
+
+\subsection{Proprietà Della Matrice Essenziale}
+
+Per esprimere il vincolo epipolare direttamente nei sistemi di riferimento dei piani immagine (coordinate retiniche/sensore), dobbiamo legare i vettori tridimensionali $\bm{X}$ e $\bm{X}'$ alle loro proiezioni bidimensionali.
+
+Le relazioni di proiezione prospettica per le due camere sono date da:
+\begin{align*}
+\bm{x}' &= \frac{f'}{Z'} \bm{X}' \implies \bm{X}' = \frac{Z'}{f'} \bm{x}' \\
+\bm{x} &= \frac{f}{Z} \bm{X} \implies \bm{X} = \frac{Z}{f} \bm{x}
+\end{align*}
+
+Sostituendo queste relazioni all'interno dell'equazione del vincolo epipolare (28), otteniamo:
+\[
+\left( \frac{Z'}{f'} \bm{x}' \right)^T \bm{E} \left( \frac{Z}{f} \bm{x} \right) = 0
+\]
+
+Estraendo i fattori scalari di profondità e lunghezza focale (che sono quantità strettamente positive e diverse da zero):
+\[
+\frac{Z' Z}{f' f} \left( \bm{x}'^T \bm{E} \bm{x} \right) = 0
+\]
+
+Otteniamo così l'equazione del vincolo epipolare espresso rispetto alle coordinate sul piano dell'immagine:
+\begin{equation}
+\boxed{\bm{x}'^T \bm{E} \bm{x} = 0}
+\end{equation}
+
+
+
+\subsection{Esempio: Camere Con Assi Paralleli}
+
+Verifichiamo la validità della matrice essenziale applicandola al caso ideale di due fotocamere ad assi paralleli.
+
+% [IMMAGINE RIF INTERVALLO 63-93] Schema geometrico di camere parallele associato all'esempio della matrice essenziale — Slide 11 / Pagina 11 del PDF
+
+Per due camere parallele separate da una distanza di baseline $d$:
+\begin{itemize}[noitemsep]
+    \item Non vi è rotazione relativa: $\bm{R} = \bm{I}$.
+    \item Il vettore di traslazione è puramente orizzontale: $\bm{T} = [-d, 0, 0]^T$.
+\end{itemize}
+
+Sostituendo $\bm{T}$ nella definizione della matrice antisimmetrica (22), la matrice essenziale diventa:
+\begin{equation}
+\bm{E} = [\bm{T}]_{\times} \bm{R} = \begin{bmatrix} 0 & 0 & 0 \\ 0 & 0 & d \\ 0 & -d & 0 \end{bmatrix}
+\end{equation}
+
+Siano $\bm{x} = [x, y, w]^T$ e $\bm{x}' = [x', y', w]^T$ due punti corrispondenti sul piano dell'immagine espressi in coordinate omogenee. Sostituiamo questi vettori nell'equazione del vincolo epipolare:
+\[
+\begin{bmatrix} x' & y' & w \end{bmatrix} \begin{bmatrix} 0 & 0 & 0 \\ 0 & 0 & d \\ 0 & -d & 0 \end{bmatrix} \begin{bmatrix} x \\ y \\ w \end{bmatrix} = 0
+\]
+
+Eseguiamo la moltiplicazione:
+\begin{align*}
+\begin{bmatrix} x' & y' & w \end{bmatrix} \begin{bmatrix} 0 \\ dw \\ -dy \end{bmatrix} &= 0 \\
+y'(dw) - w(dy) &= 0 \\
+d w (y' - y) &= 0
+\end{align*}
+
+Poiché la distanza di baseline $d \neq 0$ e il fattore di scala omogeneo $w \neq 0$, l'equazione ammette come unica soluzione:
+\begin{equation}
+\boxed{y = y'}
+\end{equation}
+
+Questo risultato conferma analiticamente che per fotocamere parallele i punti corrispondenti devono giacere necessariamente sulla medesima riga orizzontale in entrambi i piani immagine.
+
+
+
+\subsection{Relazione Tra Punti E Linee Epipolari}
+
+L'equazione di una retta generica in forma cartesiana è espressa da $au + bv + c = 0$. Possiamo scriverla in forma matriciale definendo il vettore punto $\bm{x}$ e il vettore riga $\bm{l}$:
+\[
+\bm{x} = \begin{bmatrix} u \\ v \\ 1 \end{bmatrix}, \quad \bm{l} = \begin{bmatrix} a \\ b \\ c \end{bmatrix} \implies \bm{x}^T \bm{l} = \bm{l}^T \bm{x} = 0
+\]
+
+Confrontiamo questa equazione con il vincolo epipolare $\bm{x}'^T \bm{E} \bm{x} = 0$. Possiamo raggruppare i termini come:
+\begin{equation}
+\bm{x}'^T \underbrace{\left(\bm{E} \bm{x}\right)}_{\bm{l}'} = 0 \implies \bm{x}'^T \bm{l}' = 0
+\end{equation}
+
+La relazione (32) definisce la retta su cui deve giacere il punto $\bm{x}'$. Pertanto, la linea epipolare associata al punto $\bm{x}$ nella seconda immagine è definita dal vettore:
+\begin{equation}
+\bm{l}' = \bm{E} \bm{x}
+\end{equation}
+
+Simmetricamente, riscriviamo il vincolo trasponendo l'intera equazione scalare:
+\begin{equation}
+\left( \bm{x}'^T \bm{E} \bm{x} \right)^T = 0 \implies \bm{x}^T \underbrace{\left( \bm{E}^T \bm{x}' \right)}_{\bm{l}} = 0 \implies \bm{x}^T \bm{l} = 0
+\end{equation}
+
+Quindi, la linea epipolare associata al punto $\bm{x}'$ nella prima immagine è definita dal vettore:
+\begin{equation}
+\bm{l} = \bm{E}^T \bm{x}'
+\end{equation}
+
+Utilizzando queste proprietà, possiamo formalizzare la relazione geometrica che lega gli epipoli $e$ ed $e'$ alla matrice essenziale:
+\begin{itemize}[noitemsep]
+    \item Poiché l'epipolo giace per definizione su tutte le linee epipolari, l'equazione deve essere soddisfatta per qualsiasi punto. Questo implica che gli epipoli appartengono rispettivamente ai nuclei (\emph{null spaces}) sinistro e destro della matrice:
+    \begin{align}
+        \bm{E} \bm{e} &= \bm{0} \\
+        \bm{e}'^T \bm{E} &= \bm{0} \implies \bm{E}^T \bm{e}' = \bm{0}
+    \end{align}
+    \item Inoltre, si verifica che $\bm{e}'^T \bm{E} \bm{x} = 0$ per ogni $\bm{x}$, e $\bm{x}'^T \bm{E} \bm{e} = 0$ per ogni $\bm{x}'$.
+\end{itemize}
+
+\newpage
+
+\section{Calibrazione Debole E Matrice Fondamentale}
+
+L'utilizzo della matrice essenziale richiede la conoscenza esplicita dei parametri di calibrazione interna (matrice $\bm{K}$) di entrambe le fotocamere.
+
+% [IMMAGINE RIF INTERVALLO 63-93] Schema delle due sfide principali: calibrazione e corrispondenza — Slide 14 / Pagina 14 del PDF
+
+% [IMMAGINE RIF INTERVALLO 63-93] Schema delle due sfide principali: calibrazione e corrispondenza — Slide 15 / Pagina 15 del PDF
+
+Qualora tali parametri non siano noti, è possibile ricorrere alla \textbf{calibrazione debole} (\emph{weak calibration}).
+
+
+
+\subsection{Motivazione Della Calibrazione Debole}
+
+La calibrazione debole consente di stimare la geometria epipolare dello scenario direttamente a partire dalle corrispondenze tra punti immagine, senza richiedere la preventiva calibrazione dei parametri intrinseci o estrinseci delle camere. Questo approccio è indispensabile in scenari reali quali:
+\begin{itemize}[noitemsep]
+    \item Elaborazione di video d'archivio o storici (in cui le fotocamere fisiche non sono più disponibili per la calibrazione).
+    \item Ricostruzione a partire da collezioni di fotografie scattate da utenti diversi con dispositivi differenti.
+    \item Sistemi di visione dinamici in cui la lunghezza focale (zoom) varia continuamente durante l'acquisizione.
+\end{itemize}
+
+L'idea chiave consiste nello stimare la geometria epipolare a partire da un insieme (anche ridondante) di corrispondenze di punti estratti (\textbf{keypoints appaiati}) tra le due viste non calibrate.
+
+
+
+\subsection{Derivazione Della Matrice Fondamentale}
+
+Richiamiamo la modellizzazione generale della proiezione prospettica espressa rispetto a un sistema di riferimento globale del mondo:
+\begin{equation}
+w \begin{bmatrix} x_{im} \\ y_{im} \\ 1 \end{bmatrix} = \bm{K}_{\text{int}} \bm{\Phi}_{\text{ext}} \begin{bmatrix} X_w \\ Y_w \\ Z_w \\ 1 \end{bmatrix}
+\end{equation}
+
+Definiamo in modo esplicito le matrici intrinseche ed estrinseche coinvolte:
+\begin{align*}
+\bm{\Phi}_{\text{ext}} &= \begin{bmatrix} r_{11} & r_{12} & r_{13} & T_x \\ r_{21} & r_{22} & r_{23} & T_y \\ r_{31} & r_{32} & r_{33} & T_z \end{bmatrix} \\
+\bm{K}_{\text{int}} &= \begin{bmatrix} -f/s_x & 0 & o_x \\ 0 & -f/s_y & o_y \\ 0 & 0 & 1 \end{bmatrix}
+\end{align*}
+
+La matrice $\bm{K}_{\text{int}}$ è invertibile, scala le coordinate lungo gli assi $x$ e $y$ e assume l'assenza di skew. Esprimiamo il punto in coordinate immagine $\bm{p}_{im}$ legandolo alla coordinata locale della camera $\bm{p}_c$:
+\begin{equation}
+\bm{p}_{im} = \bm{K}_{\text{int}} \underbrace{\bm{\Phi}_{\text{ext}} \bm{P}_w}_{\bm{p}_c} \implies \bm{p}_{im} = \bm{K}_{\text{int}} \bm{p}_c
+\end{equation}
+
+Sfruttando l'invertibilità della matrice dei parametri intrinseci, possiamo ricavare le coordinate locali della camera per la vista sinistra e destra:
+\begin{align}
+\bm{p}_{c,\text{right}} &= \bm{K}_{\text{int},\text{right}}^{-1} \bm{p}_{im,\text{right}} \\
+\bm{p}_{c,\text{left}} &= \bm{K}_{\text{int},\text{left}}^{-1} \bm{p}_{im,\text{left}}
+\end{align}
+
+La matrice essenziale $\bm{E}$ lega le coordinate locali della camera tramite la relazione:
+\begin{equation}
+\bm{p}_{c,\text{right}}^T \bm{E} \bm{p}_{c,\text{left}} = 0
+\end{equation}
+
+Sostituiamo le espressioni (39) e (40) all'interno dell'equazione del vincolo (41):
+\[
+\left( \bm{K}_{\text{int},\text{right}}^{-1} \bm{p}_{im,\text{right}} \right)^T \bm{E} \left( \bm{K}_{\text{int},\text{left}}^{-1} \bm{p}_{im,\text{left}} \right) = 0
+\]
+
+Applicando la proprietà della trasposizione del prodotto matriciale:
+\begin{equation}
+\bm{p}_{im,\text{right}}^T \underbrace{\left( \bm{K}_{\text{int},\text{right}}^{-T} \bm{E} \bm{K}_{\text{int},\text{left}}^{-1} \right)}_{\bm{F}} \bm{p}_{im,\text{left}} = 0
+\end{equation}
+
+Definiamo la \textbf{matrice fondamentale} (\emph{fundamental matrix}) $\bm{F}$ di dimensione $3 \times 3$ come:
+\begin{equation}
+\boxed{\bm{F} = \bm{K}_{\text{int},\text{right}}^{-T} \bm{E} \bm{K}_{\text{int},\text{left}}^{-1}}
+\end{equation}
+
+Otteniamo così il vincolo epipolare generale per camere non calibrate espresso in coordinate di pixel:
+\begin{equation}
+\boxed{\bm{p}^T \bm{F} \bm{p}' = 0}
+\end{equation}
+
+In questa equazione, $\bm{p}$ rappresenta il punto espresso in coordinate pixel omogenee nella vista destra, mentre $\bm{p}'$ rappresenta il punto omogeneo corrispondente nella vista sinistra.
+
+\subsection{Proprietà Della Matrice Fondamentale}
+
+La matrice fondamentale eredita e generalizza le proprietà geometriche della matrice essenziale:
+
+% [IMMAGINE RIF INTERVALLO 63-93] Rappresentazione tridimensionale della relazione proiettiva descritta dalla matrice fondamentale $\bm{F}$ — Slide 20 / Pagina 20 del PDF
+
+\begin{itemize}[noitemsep]
+    \item \textbf{Definizione delle linee epipolari}:
+    \begin{align}
+        \bm{l} &= \bm{F} \bm{p}' \quad (\text{linea epipolare associata al punto } \bm{p}') \\
+        \bm{l}' &= \bm{F}^T \bm{p} \quad (\text{linea epipolare associata al punto } \bm{p})
+    \end{align}
+    \item \textbf{Calcolo degli epipoli}: Gli epipoli $e$ ed $e'$ appartengono ai nuclei della matrice fondamentale e della sua trasposta:
+    \begin{equation}
+        \bm{F} \bm{e}' = \bm{0}, \quad \bm{F}^T \bm{e} = \bm{0}
+    \end{equation}
+    \item \textbf{Singolarità}: La matrice $\bm{F}$ è singolare. Poiché esegue una mappatura da un punto bidimensionale a una famiglia monodimensionale di linee epipolari, il suo rango è pari a 2. Di conseguenza, il suo determinante deve essere nullo:
+    \begin{equation}
+        \det(\bm{F}) = 0
+    \end{equation}
+\end{itemize}
+
+% [IMMAGINE RIF INTERVALLO 63-93] Esempio pratico di linee epipolari sovrapposte a immagini di un castello — Slide 21 / Pagina 21 del PDF
+
+La stima della matrice fondamentale a partire da coordinate pixel consente di ricostruire interamente la geometria epipolare dello scenario senza richiedere alcuna informazione sui parametri intrinseci ed estrinseci del sistema.
+
+\newpage
+
+\section{Algoritmo Degli Otto Punti E Stima Di F}
+
+Vediamo ora come calcolare gli elementi della matrice fondamentale $\bm{F}$ a partire da un insieme di corrispondenze note tra pixel.
+
+Ciascuna corrispondenza tra due punti immagine $\bm{p}_{im,\text{right}} = [u', v', 1]^T$ e $\bm{p}_{im,\text{left}} = [u, v, 1]^T$ impone un singolo vincolo scalare lineare sugli elementi della matrice $\bm{F}$:
+\begin{equation}
+\bm{p}_{im,\text{right}}^T \bm{F} \bm{p}_{im,\text{left}} = 0
+\end{equation}
+
+Esplicitando la moltiplicazione matriciale:
+\[
+\begin{bmatrix} u' & v' & 1 \end{bmatrix} \begin{bmatrix} f_{11} & f_{12} & f_{13} \\ f_{21} & f_{22} & f_{23} \\ f_{31} & f_{32} & f_{33} \end{bmatrix} \begin{bmatrix} u \\ v \\ 1 \end{bmatrix} = 0
+\]
+
+Sviluppando il prodotto si ottiene l'equazione lineare scalare:
+\begin{equation}
+u'u f_{11} + u'v f_{12} + u' f_{13} + v'u f_{21} + v'v f_{22} + v' f_{23} + u f_{31} + v f_{32} + f_{33} = 0
+\end{equation}
+
+Raccogliendo $n$ corrispondenze distinte, possiamo strutturare un sistema di equazioni lineari omogenee nella forma $\bm{A}\bm{f} = \bm{0}$:
+
+\begin{equation}
+\begin{bmatrix} u'_1 u_1 & u'_1 v_1 & u'_1 & v'_1 u_1 & v'_1 v_1 & v'_1 & u_1 & v_1 & 1 \\ \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots \\ u'_n u_n & u'_n v_n & u'_n & v'_n u_n & v'_n v_n & v'_n & u_n & v_n & 1 \end{bmatrix} \begin{bmatrix} f_{11} \\ f_{12} \\ f_{13} \\ f_{21} \\ f_{22} \\ f_{23} \\ f_{31} \\ f_{32} \\ f_{33} \end{bmatrix} = \bm{0}
+\end{equation}
+
+
+
+\subsection{Gli Algoritmi Di Stima}
+
+Esistono diverse strategie per risolvere il sistema omogeneo ed effettuare la stima dei parametri:
+\begin{itemize}[noitemsep]
+    \item \textbf{Algoritmo degli 8 punti} (\emph{8-point algorithm}): Richiede almeno $n \ge 8$ coppie di punti. Risolve il sistema lineare $\bm{A}\bm{f} = \bm{0}$ tramite minimizzazione ai minimi quadrati usando la decomposizione ai valori singolari (SVD) e forza successivamente il vincolo di singolarità $\det(\bm{F}) = 0$.
+    \item \textbf{Algoritmo dei 7 punti} (\emph{7-point algorithm}): Sfrutta esattamente $7$ corrispondenze. Utilizza l'SVD per calcolare una base bidimensionale del nucleo (due vettori soluzione $\bm{F}_1$ e $\bm{F}_2$). Risolve quindi un'equazione di terzo grado imponendo il vincolo $\det(\bm{F}_1 + \lambda \bm{F}_2) = 0$ per determinare fino a tre possibili soluzioni reali per la matrice.
+    \item \textbf{Minimizzazione dell'errore di riproiezione}: Approccio non lineare ai minimi quadrati per ottimizzare la stima correggendo gli errori di misura dei pixel.
+\end{itemize}
+
+A differenza della stima dell'omografia, ogni coppia di punti corrispondenti fornisce un singolo vincolo scalare poiché l'equazione del vincolo epipolare è una quantità scalare.
+
+
+
+\subsection{Formulazione Matematica Dell'Algoritmo Degli 8 Punti}
+
+Vogliamo trovare una soluzione non banale per l'equazione lineare omogenea:
+\[
+\bm{A}\bm{f} = \bm{0}
+\]
+
+Poiché la norma del vettore dei parametri $\bm{f}$ è arbitraria (la matrice fondamentale è definita a meno di un fattore di scala), imponiamo il vincolo $\lVert\bm{f}\rVert^2 = 1$. Il problema si riconduce alla seguente minimizzazione vincolata:
+\begin{equation}
+\min_{\bm{f}} \lVert\bm{A}\bm{f}\rVert^2 \quad \text{s.t.} \quad \lVert\bm{f}\rVert^2 = 1
+\end{equation}
+
+Sviluppiamo la norma quadratica esprimendola in termini vettoriali:
+\begin{align*}
+\lVert\bm{A}\bm{f}\rVert^2 &= (\bm{A}\bm{f})^T (\bm{A}\bm{f}) = \bm{f}^T \bm{A}^T \bm{A} \bm{f} \\
+\lVert\bm{f}\rVert^2 &= \bm{f}^T \bm{f} = 1
+\end{align*}
+
+Definiamo la funzione di costo utilizzando il metodo dei moltiplicatori di Lagrange:
+\begin{equation}
+L(\bm{f}, \lambda) = \bm{f}^T \bm{A}^T \bm{A} \bm{f} - \lambda (\bm{f}^T \bm{f} - 1)
+\end{equation}
+
+Per trovare i punti di minimo, calcoliamo le derivate parziali di $L(\bm{f}, \lambda)$ rispetto al vettore dei parametri $\bm{f}$ e al moltiplicatore $\lambda$, uguagliandole a zero:
+\begin{align}
+\frac{\partial L}{\partial \bm{f}} &= 2 \bm{A}^T \bm{A} \bm{f} - 2 \lambda \bm{f} = \bm{0} \implies \bm{A}^T \bm{A} \bm{f} = \lambda \bm{f} \\
+\frac{\partial L}{\partial \lambda} &= \bm{f}^T \bm{f} - 1 = 0 \implies \bm{f}^T \bm{f} = 1
+\end{align}
+
+L'equazione (54) definisce un classico problema agli autovalori (\emph{eigenvalue problem}): il vettore dei parametri ottimale $\bm{f}$ deve essere un autovettore della matrice simmetrica $\bm{A}^T \bm{A}$ con autovalore associato $\lambda$.
+
+Indichiamo con $\bm{e}_{\lambda}$ l'autovettore normalizzato associato all'autovalore $\lambda$. Sostituiamo questa soluzione all'interno della funzione di costo originaria per verificarne il valore nel minimo:
+\begin{equation}
+L(\bm{e}_{\lambda}) = \bm{e}_{\lambda}^T \bm{A}^T \bm{A} \bm{e}_{\lambda} - \lambda (\bm{e}_{\lambda}^T \bm{e}_{\lambda} - 1) = \lambda \bm{e}_{\lambda}^T \bm{e}_{\lambda} - \lambda \bm{e}_{\lambda}^T \bm{e}_{\lambda} + \lambda = \lambda
+\end{equation}
+
+Per minimizzare la funzione di costo dobbiamo scegliere l'autovettore associato all'autovalore $\lambda$ più piccolo. Questo autovettore si ottiene calcolando la decomposizione SVD della matrice $\bm{A}$ ed estraendo la colonna finale della matrice $\bm{V}$ (autovettore di $\bm{A}^T\bm{A}$ associato al valore singolare minimo).
+
+Di seguito viene riportata l'implementazione lineare di base dell'algoritmo in codice MATLAB:
+\begin{verbatim}
+[U, S, V] = svd(A);
+f = V(:, end);
+F = reshape(f, [3 3])';
+\end{verbatim}
+
+
+
+\subsection{Forzamento Del Vincolo Di Singolarità}
+
+La stima lineare ottenuta risolvendo il sistema $\bm{A}\bm{f} = \bm{0}$ non garantisce che la matrice risultante soddisfi il vincolo di rango pari a 2. A causa del rumore di misura presente sulle coordinate dei pixel, la matrice stimata $\bm{F}$ avrà generalmente rango pieno (pari a 3), il che comporta che le linee epipolari non convergano esattamente in un unico epipolo comune.
+
+% [IMMAGINE RIF INTERVALLO 63-93] Immagine comparativa del corridoio: linee epipolari non coincidenti con F non corretta (a sinistra) vs linee epipolari coincidenti con F corretta a rango 2 (a destra) — Slide 28 / Pagina 28 del PDF
+
+Per correggere la soluzione lineare e forzare il rango a 2, si applica una correzione ottimale basata sulla decomposizione SVD della matrice $\bm{F}$ stimata:
+
+\begin{equation}
+\bm{F} = \bm{U} \bm{D} \bm{V}^T
+\end{equation}
+
+La matrice diagonale dei valori singolari ha la forma:
+\[
+\bm{D} = \begin{bmatrix} r & 0 & 0 \\ 0 & s & 0 \\ 0 & 0 & t \end{bmatrix}
+\]
+
+Azzeriamo l'ultimo valore singolare (quello più piccolo, ovvero $t$), definendo la nuova matrice diagonale $\hat{\bm{D}}$:
+\begin{equation}
+\hat{\bm{D}} = \begin{bmatrix} r & 0 & 0 \\ 0 & s & 0 \\ 0 & 0 & 0 \end{bmatrix}
+\end{equation}
+
+Ricostruiamo infine la matrice fondamentale corretta $\hat{\bm{F}}$, che per costruzione avrà rango pari a 2 ed è la matrice più vicina a $\bm{F}$ in norma di Frobenius che soddisfa il vincolo di singolarità:
+\begin{equation}
+\hat{\bm{F}} = \bm{U} \hat{\bm{D}} \bm{V}^T
+\end{equation}
+
+
+
+\subsection{Algoritmo Completo E Note Pratiche}
+
+L'algoritmo degli 8 punti si articola nelle seguenti due fasi sequenziali:
+
+\begin{algorithm}[H]
+    \caption{Algoritmo degli 8 punti per la stima di F}
+    \Dati{Insieme di corrispondenze di punti $\{\bm{p}_i \leftrightarrow \bm{p}'_i\}$}
+    \Risultato{Matrice fondamentale corretta $\bm{F}$ di rango 2}
+    \Inizializza\;
+    \Commento{Fase 1: Soluzione del sistema lineare omogeneo}
+    Costruisci la matrice dei coefficienti $\bm{A}$ a partire dalle corrispondenze\;
+    Calcola la decomposizione $[\bm{U}, \bm{S}, \bm{V}] = \text{SVD}(\bm{A})$\;
+    Estrai il vettore dei parametri $\bm{f} = \bm{V}(:, \text{end})$\;
+    Riorganizza il vettore $\bm{f}$ nella matrice iniziale $\bm{F}$ di dimensione $3 \times 3$\;
+    \Commento{Fase 2: Correzione del rango tramite SVD}
+    Calcola la decomposizione $[\bm{U}, \bm{S}, \bm{V}] = \text{SVD}(\bm{F})$\;
+    Imponi la singolarità azzerando l'elemento minimo: $\bm{S}(3,3) = 0$\;
+    Ricostruisci la matrice finale: $\bm{F} = \bm{U} \bm{S} \bm{V}^T$\;
+\end{algorithm}
+
+Per garantire la robustezza numerica e l'efficacia dell'algoritmo in presenza di dati reali, è fondamentale adottare i seguenti accorgimenti pratici:
+\begin{itemize}[noitemsep]
+    \item \textbf{RANSAC}: Per gestire ed eliminare le false corrispondenze (\emph{outliers}), si inserisce l'algoritmo all'interno di un ciclo RANSAC, campionando ripetutamente sottoinsiemi minimi di 8 punti.
+    \item \textbf{Normalizzazione delle coordinate}: Prima di costruire la matrice $\bm{A}$, è indispensabile normalizzare le coordinate dei pixel in modo che abbiano media nulla ($\text{mean} = 0$) e distanza RMS standardizzata ($\text{RMS distance} = [1, 1, 1]^T$). Questa operazione di condizionamento numerico è analoga a quella impiegata nella stima dell'omografia per il mosaico di immagini (\emph{image stitching}).
+\end{itemize}
+
+\section{Stima Dell'Omografia Standard vs Algoritmo A Otto Punti}
+
+Nello studio della geometria multivista e della percezione per sistemi robotici, la stima della relazione geometrica tra due viste dello stesso scenario rappresenta un pilastro fondamentale. Quando si dispone di un insieme di punti corrispondenti associati $\bm{x} \leftrightarrow \bm{x}'$ estratti da due immagini distinte, la presenza di rumore e di accoppiamenti errati (\emph{outlier}) richiede strategie robuste di stima.
+
+Si analizzano e si mettono a confronto le due principali pipeline algoritmiche utilizzate per stimare, rispettivamente, la matrice di \textbf{omografia} $\bm{H}$ e la \textbf{matrice fondamentale} $\bm{F}$.
+
+% [IMMAGINE RIF FILE "94-123"] Schema riassuntivo di confronto tra la pipeline di stima dell'omografia e della matrice fondamentale — Slide 1 / Pagina 1 del PDF
+
+\subsection{Pipeline Di Stima Dell'Omografia}
+
+La relazione di corrispondenza proiettiva bidimensionale è descritta dall'omografia tramite l'equazione:
+\[ \bm{x}' = \bm{H}\bm{x} \implies \bm{x}' \times \bm{H}\bm{x} = \bm{0} \]
+La formulazione basata sul prodotto vettoriale indica che il punto osservato $\bm{x}'$ e il punto riproiettato $\bm{H}\bm{x}$ devono essere collinearmente equivalenti in coordinate omogenee. I passaggi per la stima robusta sono i seguenti:
+
+\begin{enumerate}
+    \item \textbf{Normalizzazione delle coordinate immagine}: Per evitare l'instabilità numerica dovuta alla grande differenza di ordine di grandezza tra le coordinate dei pixel (es. $10^3$) e la coordinata omogenea $1$, si applica una trasformazione affine di normalizzazione $\bm{T}$ e $\bm{T}'$:
+    \begin{align*}
+        \tilde{\bm{x}} &= \bm{T}\bm{x} \\
+        \tilde{\bm{x}}' &= \bm{T}'\bm{x}'
+    \end{align*}
+    La trasformazione trasla il baricentro dei punti nell'origine del sistema di riferimento e ne scala la distanza media affinché sia pari a $\sqrt{2}$.
+
+    \item \textbf{RANSAC con 4 punti}: La matrice di omografia $\bm{H}$ ha dimensione $3 \times 3$ ed è definita a meno di un fattore di scala globale, possedendo quindi $8$ gradi di libertà. Poiché ciascuna corrispondenza puntuale fornisce $2$ equazioni indipendenti (una per la coordinata $x$ e una per la coordinata $y$), il numero minimo di punti necessari per calcolare una soluzione è pari a $4$. Si esegue un ciclo \textbf{RANSAC} campionando ripetutamente gruppi di $4$ corrispondenze al fine di identificare il modello geometrico che massimizza il numero di \emph{inlier}.
+
+    \item \textbf{Denormalizzazione}: Una volta stimata l'omografia normalizzata $\tilde{\bm{H}}$ sul set ottimale di punti, la matrice finale $\bm{H}$ riferita al sistema di coordinate originario viene ripristinata tramite la relazione:
+    \[ \boxed{\bm{H} = \bm{T}'^{-1}\tilde{\bm{H}}\bm{T}} \]
+\end{enumerate}
+
+\subsection{Pipeline Di Stima Della Matrice Fondamentale}
+
+La relazione di corrispondenza epipolare per scene tridimensionali generiche è governata dalla matrice fondamentale $\bm{F}$ tramite l'equazione:
+\[ \bm{x}'^T \bm{F}\bm{x} = 0 \]
+I passaggi algoritmici per la sua stima differiscono in punti critici rispetto a quelli dell'omografia:
+
+\begin{enumerate}
+    \item \textbf{Normalizzazione delle coordinate immagine}: Si esegue la medesima normalizzazione preliminare definita per l'omografia:
+    \begin{align*}
+        \tilde{\bm{x}} &= \bm{T}\bm{x} \\
+        \tilde{\bm{x}}' &= \bm{T}'\bm{x}'
+    \end{align*}
+
+    \item \textbf{RANSAC con 8 punti}: La matrice fondamentale $\bm{F}$ ha dimensione $3 \times 3$, possiede $7$ gradi di libertà (essendo definita a meno di scala e con vincolo di rango pari a 2). Nella formulazione lineare nota come \textbf{algoritmo a 8 punti}, ciascuna corrispondenza fornisce $1$ equazione lineare omogenea. Di conseguenza, sono necessarie almeno $8$ corrispondenze all'interno dello schema RANSAC per stimare linearmente la matrice fondamentale iniziale.
+
+    \item \textbf{Imposizione del vincolo di rango tramite SVD}: Per costruzione geometrica, le linee epipolari devono convergere nell'epipolo, il che implica che la matrice fondamentale deve avere determinante nullo:
+    \[ \det(\tilde{\bm{F}}) = 0 \]
+    Poiché la stima lineare diretta al punto precedente non garantisce tale vincolo a causa del rumore, si applica la decomposizione ai valori singolari (\textbf{SVD}) sulla matrice stimata $\tilde{\bm{F}}$:
+    \[ \tilde{\bm{F}} = \bm{U}\bm{\Sigma}\bm{V}^T \]
+    dove $\bm{\Sigma} = \operatorname{diag}(\sigma_1, \sigma_2, \sigma_3)$ con $\sigma_1 \ge \sigma_2 \ge \sigma_3$. Si forza il rango a $2$ annullando il valore singolare più piccolo ($\sigma_3 = 0$), ottenendo la matrice diagonale corretta $\tilde{\bm{\Sigma}} = \operatorname{diag}(\sigma_1, \sigma_2, 0)$. La matrice fondamentale normalizzata e corretta viene ricostruita come:
+    \[ \tilde{\bm{F}}_{\text{projected}} = \bm{U}\tilde{\bm{\Sigma}}\bm{V}^T \]
+
+    \item \textbf{Denormalizzazione}: La denormalizzazione si ricava imponendo che la relazione epipolare originale sia soddisfatta:
+    \[ \tilde{\bm{x}}'^T \tilde{\bm{F}}\tilde{\bm{x}} = 0 \implies (\bm{T}'\bm{x}')^T \tilde{\bm{F}}(\bm{T}\bm{x}) = 0 \implies \bm{x}'^T \left( \bm{T}'^T \tilde{\bm{F}}\bm{T} \right) \bm{x} = 0 \]
+    Da cui deriva l'espressione per la denormalizzazione:
+    \[ \boxed{\bm{F} = \bm{T}'^T\tilde{\bm{F}}\bm{T}} \]
+\end{enumerate}
+
+\newpage
+
+\section{Differenze Concettuali Tra Omografia E Matrice Fondamentale}
+
+Sebbene sia la matrice fondamentale sia la matrice di omografia codifichino la trasformazione geometrica tra due immagini, esse operano sotto assunzioni fisiche e matematiche profondamente differenti.
+
+\begin{itemize}
+    \item \textbf{L'omografia come caso speciale}: La trasformazione di omografia proiettiva costituisce un caso speciale rispetto alla formulazione più generale della matrice fondamentale. Essa adotta un'assunzione strettamente \textbf{bidimensionale (2D)}, cercando una matrice di trasformazione proiettiva $3 \times 3$ in grado di mappare (\emph{warpare}) globalmente tutti i punti della prima immagine per farli coincidere con quelli della seconda. Questa condizione è fisicamente valida solo in tre scenari specifici:
+    \begin{itemize}
+        \item \textbf{Baseline ridotta}: Lo spostamento spaziale (traslazione) tra i centri ottici delle due camere è nullo o estremamente piccolo (rotazione pura della camera).
+        \item \textbf{Punti complanari}: I punti tridimensionali dell'ambiente giacciono tutti su un unico piano geometrico nello spazio 3D.
+        \item \textbf{Trasformazioni globali bidimensionali}: La seconda immagine è strettamente una versione ruotata, scalata o deformata della prima, come accade tipicamente nell'unione di immagini per la creazione di panorami (\emph{panoramic stitching}).
+    \end{itemize}
+
+    \item \textbf{La matrice fondamentale come relazione 3D}: Al contrario, la matrice fondamentale assume che le immagini siano due viste distinte dello \textbf{stesso scenario tridimensionale (3D)}, come avviene in un sistema stereoscopico. La corrispondenza si basa sulla struttura tridimensionale della scena e necessita di un \textbf{baseline significativo} (una traslazione non nulla tra le viste) affinché la geometria epipolare sia ben definita e utilizzabile per la ricostruzione.
+\end{itemize}
+
+\newpage
+
+\section{Stima Della Rotazione Tra Camere}
+
+\subsection{Dalla Calibrazione Debole Alla Matrice Essenziale}
+
+La stima della matrice fondamentale $\bm{F}$ non richiede la conoscenza preliminare dei parametri interni delle camere. Per questa ragione, tale processo viene comunemente definito in letteratura come \textbf{calibrazione debole} (\emph{weak calibration}).
+
+Qualora siano invece note le matrici di calibrazione intrinseca delle due camere, rispettivamente $\bm{K}$ e $\bm{K}'$, è possibile passare dalle coordinate pixel alle coordinate normalizzate della camera. Questo consente di definire la \textbf{matrice essenziale} $\bm{E}$:
+\[ \boxed{\bm{E} = \bm{K}'^T \bm{F}\bm{K}} \]
+
+Mentre la matrice fondamentale opera direttamente sulle coordinate dei pixel, la matrice essenziale esprime il vincolo epipolare in coordinate fisiche normalizzate della camera. Di conseguenza, essa contiene esclusivamente l'informazione geometrica relativa alla \textbf{rotazione} $\bm{R}$ e alla \textbf{traslazione} $\bm{t}$ relative tra le due camere (ovvero i loro parametri estrinseci), secondo la relazione $\bm{E} = [\bm{t}]_{\times}\bm{R}$.
+
+\subsection{Applicazioni Pratiche Nei Sistemi Robotici}
+
+Questo formalismo è ampiamente impiegato nelle principali applicazioni di visione robotica, dove le condizioni d'uso variano a seconda dell'hardware montato sul robot:
+
+\begin{itemize}
+    \item \textbf{Matrice intrinseca $\bm{K}$ nota}: È sempre possibile ricavare i parametri intrinseci delle camere mediante procedure di calibrazione standard (ad esempio con l'ausilio di una scacchiera piana), rendendo immediata la disponibilità della matrice $\bm{K}$.
+    \item \textbf{Configurazione con rig stereoscopico}: In una testa stereoscopica rigida, i parametri estrinseci (la posa reciproca delle due camere) sono costanti e possono essere calcolati una sola volta in fase di calibrazione del sistema di sensori.
+    \item \textbf{Configurazione con camera singola (monoculare)}: Se si acquisisce una sequenza temporale di immagini da una singola camera in movimento, la trasformazione relativa tra pose successive è a priori ignota e cambia per ogni coppia di fotogrammi.
+\end{itemize}
+
+La stima del movimento monoculare avviene quindi tramite i seguenti passaggi:
+\[ \text{Corrispondenze di Keypoint} \implies \text{Stima di } \bm{F} \implies \text{Calcolo di } \bm{E} = \bm{K}'^T \bm{F}\bm{K} \implies \text{Decomposizione in } \bm{R} \text{ e } \bm{t} \]
+Questo flusso di calcolo costituisce la spina dorsale della \textbf{Odometria Visuale} (\emph{Visual Odometry}).
+
+\newpage
+
+\section{Il Problema Della Corrispondenza E Rettifica delle Immagini}
+
+\subsection{Definizione Del Problema Di Corrispondenza Densa}
+
+Per ricostruire una mappa di profondità densa dello scenario tridimensionale, non è sufficiente accoppiare tra loro solo un insieme discreto di punti di interesse (come angoli o \emph{keypoints} estratti tramite rilevatori sparsi). È invece necessario riproiettare \textbf{ogni singolo pixel} in un punto 3D.
+
+Poiché non tutti i pixel presentano caratteristiche distintive tali da renderli punti di interesse isolabili, la ricerca di corrispondenze su tutta l'immagine diventa un problema ad alta complessità. Per renderlo trattabile dal punto di vista computazionale, si sfrutta il \textbf{vincolo epipolare}: per ogni pixel nell'immagine sinistra, il suo corrispondente nell'immagine destra deve trovarsi sulla relativa linea epipolare.
+
+\subsection{Rettifica Stereoscopica}
+
+In una coppia generica di immagini, le linee epipolari sono inclinate e convergono verso l'epipolo. Per semplificare la ricerca, si applica la \textbf{rettifica stereoscopica} (\emph{stereo image rectification}).
+
+% [IMMAGINE RIF FILE "94-123"] Geometria proiettiva della rettifica d'immagine: riproiezione dei piani immagine su un piano comune parallelo alla baseline — Slide 6 / Pagina 6 del PDF
+
+La rettifica consiste nel riproiettare i piani immagine originali su un \textbf{piano comune virtuale parallelizzato} rispetto alla linea che unisce i centri ottici delle camere (la baseline). Questa trasformazione offre vantaggi fondamentali:
+\begin{itemize}
+    \item Le linee epipolari si trasformano in linee rette orizzontali e parallele tra loro, coincidenti con le righe (\emph{scanline}) dei pixel delle immagini.
+    \item Il movimento di un pixel tra la prima e la seconda vista (la \textbf{disparità}) avviene esclusivamente lungo la direzione orizzontale.
+    \item L'intera trasformazione viene implementata applicando \textbf{due omografie} distinte (trasformazioni proiettive $3 \times 3$), una per ciascuna delle due immagini di input.
+\end{itemize}
+
+% [IMMAGINE RIF FILE "94-123"] Esempio reale di rettifica stereo: le immagini iniziale deformate vengono allineate orizzontalmente in modo che i dettagli corrispondenti giacciano sulla stessa altezza — Slide 7 / Pagina 7 del PDF
+
+\newpage
+
+\section{Ricerca Delle Corrispondenze E Vincoli Soft}
+
+\subsection{Ambiguità Nella Ricerca}
+
+Anche dopo aver ristretto la ricerca alla sola dimensione orizzontale della scanline rettificata, il problema della corrispondenza rimane geometricamente ambiguo. Diversi punti nello spazio 3D possono proiettarsi lungo le medesime rette epipolari, generando molteplici ipotesi di associazione matematicamente compatibili con il vincolo epipolare.
+
+% [IMMAGINE RIF FILE "94-123"] Rappresentazione delle molteplici intersezioni di raggi ottici che soddisfano il vincolo epipolare generandone ipotesi errate — Slide 8 / Pagina 8 del PDF
+
+Per risolvere questa ambiguità e identificare la corrispondenza corretta, oltre al vincolo geometrico rigido (\textbf{vincolo hard}) fornito dall'epipolo, si introducono alcune assunzioni euristiche sull'ambiente fisico, dette \textbf{vincoli morbidi} (\emph{soft constraints}):
+
+\begin{itemize}
+    \item \textbf{Somiglianza} (\emph{Similarity}): Si assume che la maggior parte dei punti della scena sia visibile da entrambe le viste e che le corrispondenti regioni di immagine presentino un aspetto visivo (colore, intensità) fortemente simile.
+    \item \textbf{Unicità} (\emph{Uniqueness}): Per ogni punto nell'immagine sinistra deve esistere al massimo un solo punto corrispondente nell'immagine destra.
+
+    % [IMMAGINE RIF FILE "94-123"] Schema geometrico di violazione del vincolo di unicità dovuto all'intersezione multipla di raggi ottici — Slide 22 / Pagina 22 del PDF
+
+    \item \textbf{Gradiente di disparità} (\emph{Disparity Gradient}): Assumendo che le superfici della scena reale siano continue a tratti (\emph{piecewise continuous}), la disparità stimata deve variare in modo smooth (morbido e continuo) nello spazio locale.
+
+    % [IMMAGINE RIF FILE "94-123"] Rappresentazione geometrica del vincolo sul gradiente di disparità locale — Slide 23 / Pagina 23 del PDF
+
+    Nel caso illustrato, note le corrispondenze già stabilite, un nuovo punto nell'immagine sinistra deve necessariamente accoppiarsi con un punto limitrofo (es. Punto 1) che mantenga la disparità coerente con l'intorno, escludendo punti remoti (es. Punto 2) che violerebbero il limite del gradiente di disparità.
+
+    \item \textbf{Ordinamento} (\emph{Ordering}): Se i punti giacciono sulla superficie di un oggetto opaco continuo, essi manterranno lo stesso ordine spaziale relativo da sinistra a destra in entrambe le viste della camera.
+
+    % [IMMAGINE RIF FILE "94-123"] Diagramma del vincolo di ordinamento rispettato per punti giacenti su un'unica superficie continua opaca — Slide 24 / Pagina 24 del PDF
+\end{itemize}
+
+\subsection{Eccezioni Ai Vincoli Soft}
+
+I vincoli fisici sopra descritti non hanno validità universale e possono fallire in situazioni specifiche:
+\begin{itemize}
+    \item Il vincolo di unicità viene violato in presenza di materiali trasparenti o strutture filiformi sottili.
+    \item Il vincolo di ordinamento decade quando si osservano oggetti trasparenti o in presenza di salti netti di profondità dovuti a superfici d'occlusione in cui un oggetto in primo piano si sovrappone parzialmente allo sfondo.
+\end{itemize}
+
+% [IMMAGINE RIF FILE "94-123"] Esempio geometrico in cui il vincolo di ordinamento viene violato a causa di una superficie occludente o di un oggetto trasparente — Slide 25 / Pagina 25 del PDF
+
+\newpage
+
+\section{Metodi Di Ricerca: Approcci Sparsi E Densi}
+
+La determinazione delle corrispondenze può essere affrontata mediante due paradigmi di calcolo: la ricerca sparsa e la ricerca densa.
+
+\subsection{Ricerca Densa Basata Su Finestra}
+
+L'algoritmo di corrispondenza densa esamina l'immagine in modo sistematico:
+
+% [IMMAGINE RIF FILE "94-123"] Visualizzazione della ricerca a finestra mobile lungo la riga epipolare orizzontale su ritratti stereoscopici — Slide 10 / Pagina 10 del PDF
+
+La procedura standard prevede la scansione per ogni riga epipolare:
+
+\begin{algorithm}[H]
+\caption{Ricerca Densa della Disparità}
+\Dati{Immagine sinistra $I_1$, Immagine destra $I_2$ rettificata}
+\Risultato{Mappa di disparità $D$}
+\Per{ogni riga epipolare (scanline) $y$}{
+    \Per{ogni pixel $x$ nella riga dell'immagine sinistra}{
+        Estrai la finestra di intensità $W_1(x, y)$\;
+        Inizializza il costo minimo di matching o la massima correlazione\;
+        \Per{ogni pixel candidato $x'$ sulla stessa riga nell'immagine destra}{
+            Calcola la metrica di similarità tra $W_1(x, y)$ e $W_2(x', y)$\;
+        }
+        Assegna la disparità $d = x - x'$ che minimizza il costo d'errore (SSD) o massimizza la correlazione\;
+    }
+}
+\end{algorithm}
+
+% [IMMAGINE RIF FILE "94-123"] Camere allineate con righe dell'immagine perfettamente corrispondenti alle linee epipolari — Slide 11 / Pagina 11 del PDF
+
+% [IMMAGINE RIF FILE "94-123"] Confronto dei profili di intensità del segnale monodimensionale lungo la stessa riga nelle due immagini — Slide 12 / Pagina 12 del PDF
+
+La ricerca basata sul singolo pixel presenta forti ambiguità a causa del rumore del sensore. Per questa ragione, si confrontano interi \textbf{intorni (finestre)} di pixel adiacenti che racchiudono pattern di intensità più strutturati e distintivi.
+
+% [IMMAGINE RIF FILE "94-123"] Finestre quadrate di pixel centrate sul target per valutare la somiglianza locale — Slide 13 / Pagina 13 del PDF
+
+% [IMMAGINE RIF FILE "94-123"] Andamento della correlazione incrociata normalizzata al variare dello shift orizzontale (disparità) — Slide 14 / Pagina 14 del PDF
+
+\subsubsection{Fattori Limitanti Della Ricerca Densa}
+
+\begin{itemize}
+    \item \textbf{Aree prive di texture} (\emph{Textureless Regions}): Se la finestra di analisi si trova all'interno di una regione uniforme (es. una parete bianca), il segnale di correlazione non mostra un picco netto ma rimane piatto, rendendo impossibile identificare univocamente il punto di match.
+
+    % [IMMAGINE RIF FILE "94-123"] Profilo di correlazione privo di un massimo evidente in una regione d'immagine non strutturata — Slide 15 / Pagina 15 del PDF
+
+    \item \textbf{Scelta della dimensione della finestra} ($W$):
+    \begin{itemize}
+        \item Una finestra piccola (es. $W=3$) è molto sensibile al rumore e genera mappe di disparità frammentate.
+        \item Una finestra grande (es. $W=20$) media il rumore e gestisce meglio le zone poco strutturate, ma tende a sfocare i dettagli minuti e a perdere la precisione lungo i bordi degli oggetti. Essa viola l'assunzione di disparità costante all'interno della finestra stessa.
+    \end{itemize}
+
+    % [IMMAGINE RIF FILE "94-123"] Confronto tra mappe di disparità stimate con dimensioni di finestra W=3 (rumorosa) e W=20 (troppo smussata) — Slide 17 / Pagina 17 del PDF
+
+    \item \textbf{Effetti di accorciamento prospettico} (\emph{Foreshortening}): Quando la superficie inquadrata non è parallela al piano dei sensori (superficie inclinata), la proiezione della sua lunghezza reale differisce tra l'immagine sinistra e destra, deformando la finestra e riducendo l'accuratezza del matching basato su correlazione standard.
+
+    % [IMMAGINE RIF FILE "94-123"] Differenza geometrica di proiezione tra una superficie fronto-parallela e una superficie inclinata — Slide 18 / Pagina 18 del PDF
+
+    \item \textbf{Occlusioni}: Alcune parti della scena visibili da una camera sono fisicamente nascoste all'altra a causa della presenza di oggetti frapposti lungo i diversi punti di vista, rendendo impossibile trovare un accoppiamento valido.
+
+    % [IMMAGINE RIF FILE "94-123"] Geometria delle aree occluse oscurate all'obiettivo destro o sinistro — Slide 19 / Pagina 19 del PDF
+\end{itemize}
+
+\subsection{Ricerca Sparsa}
+
+La ricerca sparsa aggira questi problemi limitando il calcolo solo a un insieme ristretto di punti d'interesse estratti nell'immagine (es. angoli o contorni marcati).
+
+% [IMMAGINE RIF FILE "94-123"] Estrazione e accoppiamento selettivo di feature puntuali sparse sulle facce — Slide 20 / Pagina 20 del PDF
+
+Anziché confrontare i valori grezzi di intensità dei pixel, si impiegano \textbf{descrittori locali di feature} che vengono associati calcolandone la distanza nello spazio delle caratteristiche, mantenendo comunque il vincolo geometrico epipolare per restringere il campo di ricerca.
+
+\subsubsection{Compromessi Tra Approccio Denso E Sparso}
+\begin{itemize}
+    \item \textbf{Ricerca Sparsa}: Molto efficiente dal punto di vista computazionale e robusta ai cambi di illuminazione, ma fornisce informazioni di profondità incomplete (solo in corrispondenza dei punti d'interesse estratti).
+    \item \textbf{Ricerca Densa}: Fornisce una mappa di profondità completa e dettagliata dell'ambiente, ma richiede un elevato costo computazionale ed è soggetta ad ambiguità in zone omogenee e vicino ai bordi di occlusione.
+\end{itemize}
+
+\newpage
+
+\section{Ottimizzazione Globale Della Disparità}
+
+Per superare i limiti derivanti dall'analisi locale a finestra singola, è necessario considerare l'assegnazione delle corrispondenze come un problema di ottimizzazione congiunta.
+
+\subsection{Stereo Su Linea Di Scansione Con Programmazione Dinamica}
+
+Invece di valutare ogni finestra in modo indipendente, l'algoritmo di \textbf{stereo su scanline} (\emph{scanline stereo}) cerca di determinare l'accoppiamento ottimale per un'intera riga dell'immagine simultaneamente.
+
+% [IMMAGINE RIF FILE "94-123"] Profili di segnale completi estratti per la ricerca globale lungo una riga di scansione — Slide 27 / Pagina 27 del PDF
+
+La ricerca della corrispondenza ottima lungo la riga può essere modellata come il calcolo del \textbf{cammino minimo} all'interno di un grafo bidimensionale, dove gli assi coordinati rappresentano le scansioni orizzontali della riga sinistra $S_{\text{left}}$ e della riga destra $S_{\text{right}}$.
+
+% [IMMAGINE RIF FILE "94-123"] Griglia discreta usata dall'algoritmo di cammino minimo per mappare accoppiamenti e occlusioni — Slide 28 / Pagina 28 del PDF
+
+L'algoritmo (noto in letteratura come formulazione di Ohta \& Kanade '85 o Cox et al. '96) viene risolto in modo efficiente mediante \textbf{Programmazione Dinamica (DP)}:
+\begin{itemize}
+    \item Un passo diagonale nella griglia corrisponde a un pixel associato con successo (la cui disparità è legata alla distanza dalla diagonale principale).
+    \item Passi orizzontali o verticali corrispondono a situazioni di occlusione sinistra o destra.
+\end{itemize}
+
+\paragraph{Limiti dello scanline stereo:} Poiché ogni riga di scansione viene ottimizzata in modo del tutto indipendente da quelle adiacenti, la mappa di disparità risultante soffre di evidenti artefatti di striatura orizzontale (\emph{streaking artifacts}) dovuti alla mancanza di coerenza verticale.
+
+% [IMMAGINE RIF FILE "94-123"] Effetto di striatura orizzontale generato sulle disparità dall'ottimizzazione separata delle righe — Slide 29 / Pagina 29 del PDF
+
+Non è possibile estendere direttamente l'algoritmo di programmazione dinamica a una griglia 2D completa per via della complessità computazionale (il problema diventa NP-difficile).
+
+\subsection{Stereo Coerente Su Griglia 2D Tramite Graph Cuts}
+
+Per ottenere coerenza spaziale in ogni direzione, la stima della disparità viene formulata come un problema globale di \textbf{minimizzazione dell'energia} definito su una griglia bidimensionale.
+
+% [IMMAGINE RIF FILE "94-123"] Schema grafico di calcolo dell'energia e mappa di disparità finale ripulita dal rumore — Slide 30 / Pagina 30 del PDF
+
+La funzione di costo globale da minimizzare è definita come:
+\[ \boxed{E(D) = \alpha E_{\text{data}}(I_1, I_2, D) + \beta E_{\text{smooth}}(D)} \]
+
+Dove:
+\begin{itemize}
+    \item $E_{\text{data}}(I_1, I_2, D)$ rappresenta il termine di fedeltà ai dati (\textbf{costo fotometrico}), che misura la discrepanza locale tra i valori di intensità delle finestre corrispondenti data una certa configurazione di disparità $D$:
+    \[ E_{\text{data}} = \sum_{i} \left( W_1(i) - W_2(i + D(i)) \right)^2 \]
+
+    \item $E_{\text{smooth}}(D)$ rappresenta il termine di regolarizzazione (\textbf{vincolo di smooth}), che penalizza le variazioni brusche di disparità tra pixel adiacenti $i, j$ per favorire l'uniformità delle superfici continue:
+    \[ E_{\text{smooth}} = \sum_{\text{vicini } i, j} \rho(D(i) - D(j)) \]
+    In questo termine, $\rho$ costituisce una funzione di costo robusta progettata per limitare la penalità in corrispondenza dei bordi netti di profondità della scena.
+
+    \item I parametri $\alpha$ e $\beta$ sono fattori di scala che regolano il bilanciamento tra l'aderenza ai dati catturati e la regolarizzazione spaziale del modello.
+\end{itemize}
+
+Funzioni di energia strutturate in questa forma possono essere ottimizzate in modo efficiente per l'intera griglia 2D sfruttando algoritmi basati sul taglio minimo di grafi (\textbf{Graph Cuts}), garantendo una stima della disparità altamente coerente e priva degli artefatti tipici dei metodi locali.
+\end{document}

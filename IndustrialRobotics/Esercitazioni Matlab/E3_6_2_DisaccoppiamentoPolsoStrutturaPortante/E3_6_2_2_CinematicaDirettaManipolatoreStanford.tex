@@ -1,0 +1,188 @@
+﻿%!TEX program = xelatex
+\documentclass[11pt, a4paper, landscape]{article}
+
+% AA LINGUA E GESTIONE FONT (Specifica per XeLaTeX)
+\usepackage{fontspec}
+\setmainfont{Latin Modern Roman}
+\usepackage[italian]{babel}
+
+% AA LAYOUT DI PAGINA OTTIMIZZATO PER RILEGATURA (Ruotato 90° a sinistra: rilegatura sul bordo TOP)
+\usepackage[left=1.4cm, right=1.4cm, top=2.2cm, bottom=1.4cm]{geometry}
+
+% AA Spaziatura tra paragrafi controllata (compatta ed evita salti enormi)
+\usepackage[skip=3pt plus 1pt minus 1pt]{parskip}
+\setlength{\parindent}{0pt}
+
+% AA Microtype per XeLaTeX
+\usepackage[protrusion=true]{microtype}
+\raggedbottom
+
+% AA GESTIONE DEI COLORI
+\usepackage{xcolor}
+
+% BB COLORI E MACRO PER I SIGMA
+\definecolor{sigRed}{RGB}{215, 0, 0}
+\definecolor{sigBlue}{RGB}{0, 70, 220}
+\definecolor{sigGreen}{RGB}{0, 145, 45}
+\definecolor{sigPurple}{RGB}{140, 0, 195}
+\definecolor{sigOrange}{RGB}{235, 75, 0}
+\definecolor{sigTeal}{RGB}{0, 140, 150}
+\definecolor{sigPink}{RGB}{220, 0, 110}
+
+\newcommand{\sigone}{\textcolor{sigRed}{\boldsymbol{\sigma_1}}}
+\newcommand{\sigtwo}{\textcolor{sigBlue}{\boldsymbol{\sigma_2}}}
+\newcommand{\sigthree}{\textcolor{sigGreen}{\boldsymbol{\sigma_3}}}
+\newcommand{\sigfour}{\textcolor{sigPurple}{\boldsymbol{\sigma_4}}}
+\newcommand{\sigfive}{\textcolor{sigOrange}{\boldsymbol{\sigma_5}}}
+\newcommand{\sigsix}{\textcolor{sigTeal}{\boldsymbol{\sigma_6}}}
+\newcommand{\sigseven}{\textcolor{sigPink}{\boldsymbol{\sigma_7}}}
+
+% AA MATEMATICA E SIMBOLI
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{silence}
+\usepackage[warnings-off={mathtools-overbracket,mathtools-colon}]{unicode-math}
+\setmathfont{Latin Modern Math}
+
+% BB OTTIMIZZAZIONE MATRICI LUNGHE PER LA STAMPA
+\setlength{\arraycolsep}{10pt}
+\renewcommand{\arraystretch}{1.3}
+
+% AA Spaziature verticali attorno alle formule matematiche
+\setlength{\abovedisplayskip}{3pt plus 1pt minus 1pt}
+\setlength{\belowdisplayskip}{3pt plus 1pt minus 1pt}
+\setlength{\abovedisplayshortskip}{0pt plus 1pt}
+\setlength{\belowdisplayshortskip}{2pt plus 1pt minus 1pt}
+
+% AA PERSONALIZZAZIONE TITOLI
+\usepackage{titlesec}
+\titleformat{\section}{\normalfont\Large\bfseries\color{blue!80!black}}{\thesection}{1em}{}
+\titleformat{name=\section,numberless}{\normalfont\Large\bfseries\color{blue!80!black}}{}{0pt}{}
+\titleformat{\subsection}{\normalfont\large\bfseries\color{blue!80!black}}{\thesubsection}{1em}{}
+\titleformat{name=\subsection,numberless}{\normalfont\large\bfseries\color{blue!80!black}}{}{0pt}{}
+
+\titlespacing*{\section}{0pt}{1ex plus 0.3ex minus 0.2ex}{0.4ex plus 0.2ex}
+\titlespacing*{\subsection}{0pt}{0.8ex plus 0.2ex minus 0.2ex}{0.4ex plus 0.2ex}
+
+% AA INTEGRAZIONE CODICE MATLAB
+\usepackage{matlab}
+
+% BB Riconfigurazione Automatica Titoli Esportati da MATLAB
+\renewcommand{\matlabheading}[1]{\section*{#1}}
+\renewcommand{\matlabheadingtwo}[1]{\subsection*{#1}}
+\renewcommand{\matlabheadingthree}[1]{\subsubsection*{#1}}
+
+% BB Formule E Matrici Simboliche
+\renewenvironment{matlabsymbolicoutput}{%
+  \par\vspace{2pt}%
+  \begingroup
+  \centering
+}{%
+  \par\vspace{2pt}%
+  \endgroup
+}
+
+% BB Output Testuale Console
+\renewenvironment{matlaboutput}{%
+  \par\vspace{1pt}%
+  \Verbatim[xleftmargin=10pt, formatcom=\color{black!75}, fontsize=\footnotesize]%
+}{%
+  \endVerbatim
+  \vspace{1pt}%
+}
+
+% BB Box Codice (Stile Moderno con Barra Laterale Colorata)
+\lstset{
+  backgroundcolor={},
+  aboveskip=0pt,
+  belowskip=0pt,
+  basicstyle=\ttfamily\footnotesize,
+  xleftmargin=0pt
+}
+
+\mdfdefinestyle{matlabcode}{%
+  topline=false,
+  bottomline=false,
+  rightline=false,
+  leftline=true,
+  linewidth=2.5pt,
+  linecolor=blue!75!black,
+  backgroundcolor=black!3,
+  innertopmargin=3pt,
+  innerbottommargin=3pt,
+  innerleftmargin=7pt,
+  innerrightmargin=6pt,
+  skipabove=2pt,
+  skipbelow=2pt
+}
+
+\allowdisplaybreaks
+
+% AA LINK, METADATI ED ELENCHI
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!80!black,
+    urlcolor=blue!80!black,
+    citecolor=blue!80!black,
+    pdftitle={Cinematica Diretta Manipolatore Stanford - Configurazione Orizzontale},
+    pdfauthor={Francesco Lo Verde},
+}
+\usepackage{bookmark}
+
+% BB Spaziatura Elenchi (Arieggiata per la Stampa)
+\usepackage{enumitem}
+\setlist{itemsep=3.5pt plus 1pt minus 1pt, topsep=4pt plus 1pt minus 1pt, partopsep=0pt, parsep=1pt}
+
+
+\author{Francesco Lo Verde}
+\begin{document}
+\subsection*{CINEMATICA DIRETTA MANIPOLATORE STANFORD}
+
+\begin{matlabcode}
+T06 = T03 * T36;
+T06 = simplify(T06);
+
+fprintf('Matrice Di Trasformazione Omogenea ^{0}T_{6}:\n');
+
+disp(T06);
+\end{matlabcode}
+\begin{matlaboutput}
+Matrice Di Trasformazione Omogenea ^{0}T_{6}:
+\end{matlaboutput}
+
+\begin{matlabsymbolicoutput}
+\[
+\begin{pmatrix}
+    -s(q_1)\,\sigfour - c(q_1)c(q_2)\,\sigone - c(q_1)c(q_6)s(q_2)s(q_5) &
+    c(q_1)s(q_2)s(q_5)s(q_6) - c(q_1)c(q_2)\,\sigtwo - s(q_1)\,\sigthree &
+    \sigfive &
+    q_3\,c(q_1)s(q_2) - d_2\,s(q_1) + d_6\,\sigfive \\[8pt]
+
+    c(q_1)\,\sigfour - c(q_2)s(q_1)\,\sigone - c(q_6)s(q_1)s(q_2)s(q_5) &
+    c(q_1)\,\sigthree - c(q_2)s(q_1)\,\sigtwo + s(q_1)s(q_2)s(q_5)s(q_6) &
+    \sigsix &
+    d_2\,c(q_1) + q_3\,s(q_1)s(q_2) + d_6\,\sigsix \\[8pt]
+
+    s(q_2)\,\sigone - c(q_2)c(q_6)s(q_5) &
+    s(q_2)\,\sigtwo + c(q_2)s(q_5)s(q_6) &
+    \sigseven &
+    q_3\,c(q_2) + d_6\,\sigseven \\[8pt]
+
+    0 & 0 & 0 & 1
+\end{pmatrix}
+\]
+\end{matlabsymbolicoutput}
+
+\vspace{2pt}
+\textbf{Dove:}
+\[
+\begin{aligned}
+\sigone   &= s(q_4)s(q_6) - c(q_4)c(q_5)c(q_6) &\hspace{3cm} \sigfive   &= c(q_1)c(q_5)s(q_2) - s(q_1)s(q_4)s(q_5) + c(q_1)c(q_2)c(q_4)s(q_5) \\[4pt]
+\sigtwo   &= c(q_6)s(q_4) + c(q_4)c(q_5)s(q_6) &\hspace{3cm} \sigsix    &= c(q_5)s(q_1)s(q_2) + c(q_1)s(q_4)s(q_5) + c(q_2)c(q_4)s(q_1)s(q_5) \\[4pt]
+\sigthree &= c(q_4)c(q_6) - c(q_5)s(q_4)s(q_6) &\hspace{3cm} \sigseven  &= c(q_2)c(q_5) - c(q_4)s(q_2)s(q_5) \\[4pt]
+\sigfour  &= c(q_4)s(q_6) + c(q_5)c(q_6)s(q_4)
+\end{aligned}
+\]
+
+\end{document}

@@ -1,0 +1,1207 @@
+﻿\documentclass[11pt, a4paper]{article}
+
+%---------------------------------------------------------
+% Lingua E Codifica
+%---------------------------------------------------------
+\usepackage[italian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+
+%---------------------------------------------------------
+% Layout Di Pagina E Tipografia
+%---------------------------------------------------------
+\usepackage[margin=2cm, top=1.5cm, bottom=1.5cm]{geometry}
+\usepackage{parskip}
+\usepackage{microtype}
+
+%---------------------------------------------------------
+% Gestione Dei Colori
+%---------------------------------------------------------
+\usepackage[table]{xcolor}
+\definecolor{darkgreen}{RGB}{0,100,0}
+\definecolor{theoryblue}{RGB}{0, 119, 187}
+
+%---------------------------------------------------------
+% Matematica E Simboli
+%---------------------------------------------------------
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{mathtools}
+\usepackage{siunitx}
+
+% BB OTTIMIZZAZIONE MATRICI LUNGHE PER LA STAMPA
+\setlength{\arraycolsep}{10pt}
+\usepackage{bm}
+\usepackage{arydshln}
+
+
+%---------------------------------------------------------
+% Grafica, Immagini E Tabelle
+%---------------------------------------------------------
+\usepackage{graphicx}
+\graphicspath{{./Images/Image Descriptor And Feature Matching/}}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, patterns, angles, quotes, calc}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+
+%---------------------------------------------------------
+% Link, Riferimenti Ed Elenchi
+%---------------------------------------------------------
+\usepackage[unicode]{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+    citecolor=blue,
+    pdftitle={Capitolo 4 - Image Descriptor And Feature Matching},
+    pdfauthor={Francesco Lo Verde},
+    pdfpagemode=FullScreen,
+}
+\usepackage{bookmark}
+\usepackage{enumitem}
+\setlist{noitemsep}
+
+%---------------------------------------------------------
+% Personalizzazione Titoli E Altri Pacchetti
+%---------------------------------------------------------
+\usepackage{titlesec}
+\titleformat{\section}{\normalfont\LARGE\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\Large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalfont\large\bfseries}{\thesubsubsection}{1em}{}
+
+\usepackage{comment}
+\newtheorem{theorem}{Definizione}
+
+% Pacchetto per gli algoritmi
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+
+\SetKwData{Dati}{Input}
+\SetKwData{Risultato}{Output}
+\SetKw{Inizializza}{Inizializza}
+\SetKwFor{For}{for}{do}{endfor}
+\SetKwComment{Commento}{// }{}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\author{Francesco Lo Verde}
+\begin{document}
+\section{Proprietà E Matching Di Feature}
+
+Nel campo della percezione robotica e della computer vision, uno dei compiti fondamentali consiste nel trovare corrispondenze affidabili tra immagini differenti che ritraggono la medesima scena. Questo processo è alla base di applicazioni cruciali quali la calibrazione delle camere, la ricostruzione 3D, la localizzazione e la navigazione autonoma dei robot.
+
+% [IMMAGINE RIF INTERVALLO 1-31] Esempio di corrispondenze (matching) tra un'inquadratura su uno smartphone e l'immagine reale del Golden Gate Bridge — Slide 1 / Pagina 1 del PDF
+
+\subsection{La Pipeline Del Feature Matching}
+
+Il processo completo di associazione delle caratteristiche, comunemente noto come \emph{feature matching}, si articola in tre fasi sequenziali fondamentali:
+
+% [IMMAGINE RIF INTERVALLO 1-31] Fasi principali della pipeline di Feature Matching (Rilevamento, Descrizione e Matching) applicate a immagini di montagne — Slide 2 / Pagina 2 del PDF
+
+\begin{enumerate}
+    \item \textbf{Detection} (Rilevamento): Questa prima fase consiste nell'identificare i cosiddetti punti di interesse (\emph{interest points} o \emph{keypoints}) all'interno dell'immagine. Questi punti devono possedere caratteristiche geometriche tali da renderli facilmente e precisamente localizzabili.
+    \item \textbf{Description} (Descrizione): Per ciascun punto di interesse rilevato nella fase precedente, viene estratto un vettore di caratteristiche che riassume e caratterizza l'intorno locale del punto, chiamato descrittore (\emph{feature descriptor}). Formalmente, per un punto generico $1$, il descrittore viene rappresentato come un vettore multidimensionale:
+    \[ \bm{x}_1 = \left[ x_1^{(1)}, \dots, x_d^{(1)} \right] \]
+    dove $d$ rappresenta la dimensionalità dello spazio del descrittore.
+    \item \textbf{Matching} (Accoppiamento): L'obiettivo finale consiste nel determinare la corrispondenza corretta tra i descrittori calcolati in due viste differenti. Dati i descrittori della prima immagine $\bm{x}_1$ e quelli della seconda immagine (es. $\bm{x}_2 = \left[ x_1^{(2)}, \dots, x_d^{(2)} \right]$), l'algoritmo calcola una misura di similarità per associarli in coppie coerenti.
+\end{enumerate}
+
+\subsection{Requisiti Comuni E Sfide Principali}
+
+Per progettare un sistema di accoppiamento che sia robusto alle variazioni reali dell'ambiente di ripresa, è necessario superare due problemi fondamentali legati alle proprietà intrinseche delle feature.
+
+\subsubsection{Problema 1: Rilevamento Indipendente}
+Il primo vincolo richiede di rilevare lo stesso punto fisico della scena in modo completamente indipendente in entrambe le immagini. Se i punti estratti nelle due viste non coincidono geometricamente, non vi sarà alcuna possibilità di stabilire una corrispondenza.
+
+% [IMMAGINE RIF INTERVALLO 1-31] Esempio di mancata corrispondenza dei punti di interesse rilevati su due viste differenti della stessa montagna — Slide 3 / Pagina 3 del PDF
+
+Per risolvere questo problema, è indispensabile disporre di un \textbf{rilevatore ripetibile} (\emph{repeatable detector}), in grado di identificare le medesime strutture fisiche nonostante le variazioni nell'acquisizione delle immagini.
+
+\subsubsection{Problema 2: Riconoscimento E Distintività}
+Il secondo vincolo impone che, per ogni punto rilevato, si sia in grado di riconoscere correttamente e senza ambiguità il punto corrispondente nell'altra immagine.
+
+% [IMMAGINE RIF INTERVALLO 1-31] Ambiguità nell'associazione causata da descrittori non sufficientemente distintivi — Slide 4 / Pagina 4 del PDF
+
+Per superare questa difficoltà, è necessario definire un \textbf{descrittore affidabile e distintivo} (\emph{reliable and distinctive descriptor}), capace di ridurre al minimo i falsi accoppiamenti caratterizzando in modo univoco l'intorno di ciascun punto di interesse.
+
+\subsection{Invarianza Alle Trasformazioni Geometriche E Fotometriche}
+
+Al fine di garantire la ripetibilità del rilevamento (risolvendo il Problema 1), desideriamo identificare i medesimi punti di interesse indipendentemente dalle alterazioni che l'immagine può subire. Se disponiamo di due versioni trasformate della stessa immagine, le feature devono essere rilevate nelle posizioni corrispondenti della scena. I rilevatori devono quindi essere progettati per essere invarianti rispetto a due macro-classi di variazioni:
+
+\begin{itemize}
+    \item \textbf{Variazioni geometriche}: Traslazioni, rotazioni, cambiamenti di scala e distorsioni prospettiche.
+    \item \textbf{Variazioni fotometriche}: Cambiamenti di illuminazione, contrasto ed esposizione della camera.
+\end{itemize}
+
+\subsubsection{Livelli Di Invarianza Geometrica}
+Le trasformazioni geometriche che possono intercorrere tra due inquadrature presentano diversi livelli di complessità matematica, organizzati in una gerarchia di invarianza:
+
+% [IMMAGINE RIF INTERVALLO 1-31] Diagramma dei livelli di trasformazione geometrica: traslazione, Euclidea, similarità, affine e proiettiva — Slide 6 / Pagina 6 del PDF
+
+A seconda dello scenario operativo, l'algoritmo di rilevamento deve possedere proprietà di invarianza adeguate per garantire che la localizzazione dei punti di interesse rimanga coerente.
+
+\subsubsection{Invarianza Fotometrica}
+Le variazioni fotometriche modificano i valori di intensità dei pixel associati alla medesima porzione di scena fisica a causa di variazioni nell'illuminazione ambientale o nei parametri della fotocamera.
+
+% [IMMAGINE RIF INTERVALLO 1-31] Esempi di variazioni fotometriche reali (illuminazione e contrasto) sulla copertina di un libro — Slide 7 / Pagina 7 del PDF
+
+Questi cambiamenti vengono comunemente modellati in computer vision tramite una \textbf{trasformazione lineare} dell'intensità, espressa mediante un fattore di scala (\emph{scaling}) e uno spostamento costante (\emph{offset}):
+\[ I \to aI + b \]
+
+\subsection{Requisiti Complessivi Per L'Estrazione Di Regioni}
+
+Un algoritmo ideale per l'estrazione di regioni di interesse deve soddisfare un insieme di severi requisiti operativi:
+\begin{itemize}
+    \item \textbf{Ripetibilità e accuratezza}: L'estrazione deve essere \textcolor{theoryblue}{invariante} a traslazioni, rotazioni e variazioni di scala. Deve essere inoltre \textcolor{theoryblue}{robusta o covariante} rispetto a trasformazioni fuori dal piano dell'immagine (approssimabili localmente come trasformazioni affini) e \textcolor{theoryblue}{robusta} rispetto a variazioni di luce, rumore termico, sfocatura (\emph{blur}) e quantizzazione del sensore.
+    \item \textbf{Località}: Le feature devono basarsi su un intorno locale limitato, rendendo il sistema robusto alle occlusioni parziali e alla presenza di elementi di disturbo sullo sfondo (\emph{clutter}).
+    \item \textbf{Quantità}: Il numero di regioni rilevate deve essere sufficiente a coprire l'oggetto o la scena d'interesse in modo denso.
+    \item \textbf{Distintività}: Le regioni estratte devono contenere una struttura geometrica o fotometrica ricca e interessante per facilitare la successiva fase di matching.
+    \item \textbf{Efficienza}: Il costo computazionale deve essere compatibile con i requisiti del tempo reale (\emph{real-time}).
+\end{itemize}
+
+La letteratura scientifica offre una vasta gamma di rilevatori progettati per soddisfare questi requisiti:
+\begin{itemize}
+    \item Rilevatori basati su matrici Hessian e Harris \cite{Beaudet78, Harris88}.
+    \item Rilevatori basati su Laplacian e Difference of Gaussians (DoG) \cite{Lindeberg98, Lowe99}.
+    \item Approcci multi-scala integrati come Harris-Laplace e Hessian-Laplace \cite{MikolajczykSchmid01}.
+    \item Estensioni affini quali Harris-Affine e Hessian-Affine \cite{MikolajczykSchmid04}.
+    \item Metodi basati su regioni come EBR (\emph{Edge-Based Region}), IBR (\emph{Intensity-Based Region}) \cite{TuytelaarsVanGool04} e MSER (\emph{Maximally Stable Extremal Regions}) \cite{Matas02}.
+    \item Rilevatori di regioni salienti basati su misure informative \cite{KadirBrady01}.
+\end{itemize}
+Questi algoritmi costituiscono i mattoni fondamentali per la maggior parte delle applicazioni moderne di Computer Vision.
+
+\newpage
+
+\section{Il Rilevatore Di Harris: Ricapitolazione E Formulazione}
+
+Il rilevatore di angoli di Harris (\emph{Harris corner detector}) è un metodo classico e robusto per identificare punti di interesse caratterizzati da forti variazioni bidimensionali di intensità luminosa.
+
+\subsection{Formulazione Matematica Di Harris}
+
+Il principio fondamentale di Harris si basa sulla misura della variazione di intensità dell'immagine risultante da un piccolo spostamento locale $[u, v]$ di una finestra d'osservazione. Definiamo la funzione di variazione di energia $E(u, v)$ come:
+\[ E(u, v) = \sum_{x, y} \underbrace{w(x, y)}_{\text{Funzione finestra}} \left[ \underbrace{I(x + u, y + v)}_{\text{Intensità traslata}} - \underbrace{I(x, y)}_{\text{Intensità originale}} \right]^2 \]
+
+In questa espressione:
+\begin{itemize}
+    \item $I(x, y)$ indica l'intensità del pixel alla coordinata $(x, y)$.
+    \item $I(x + u, y + v)$ rappresenta l'intensità del pixel nella posizione traslata dal vettore $[u, v]$.
+    \item $w(x, y)$ è una funzione finestra che pesa il contributo dei singoli pixel all'interno dell'intorno. Può essere definita come una finestra rettangolare unitaria (pari a $1$ all'interno di una determinata regione e $0$ al di fuori) oppure come una funzione \textbf{Gaussiana}, che attribuisce un peso via via decrescente man mano che ci si allontana dal centro, riducendo la sensibilità al rumore e alle direzioni preferenziali della griglia dei pixel.
+\end{itemize}
+
+% [IMMAGINE RIF INTERVALLO 1-31] Rappresentazione grafica delle funzioni finestra (finestra rettangolare unitaria vs Gaussiana) — Slide 10 / Pagina 10 del PDF
+
+\subsection{Classificazione Dei Punti Tramite Autovalori}
+
+Sviluppando il termine dell'intensità traslata $I(x + u, y + v)$ tramite lo sviluppo in serie di Taylor arrestato al primo ordine, è possibile approssimare la variazione locale $E(u, v)$ mediante una forma quadratica basata sulla matrice del secondo momento $M$ (nota anche come struttura tensoriale):
+\[ E(u, v) \approx \begin{bmatrix} u & v \end{bmatrix} M \begin{bmatrix} u \\ v \end{bmatrix} \]
+
+La natura locale della struttura dell'immagine può essere analizzata studiando i due autovalori $\sigma_1$ e $\sigma_2$ della matrice $M$:
+
+% [IMMAGINE RIF INTERVALLO 1-31] Grafico di classificazione dei punti spaziali (Flat, Edge, Corner) basato sui valori degli autovalori sigma_1 e sigma_2 della matrice M — Slide 11 / Pagina 11 del PDF
+
+La classificazione dei punti dell'immagine si suddivide in tre casi principali:
+\begin{itemize}
+    \item \textbf{Regione piatta} (\emph{Flat region}): Entrambi gli autovalori $\sigma_1$ e $\sigma_2$ sono piccoli. Di conseguenza, la variazione $E(u, v)$ è quasi costante in tutte le direzioni dello spostamento.
+    \item \textbf{Bordo} (\emph{Edge}): Un autovalore è significativamente maggiore dell'altro ($\sigma_1 \gg \sigma_2$ oppure $\sigma_2 \gg \sigma_1$). La variazione di intensità è molto forte solo lungo la direzione ortogonale al bordo, mentre è minima lungo la direzione parallela al bordo stesso.
+    \item \textbf{Angolo} (\emph{Corner}): Entrambi gli autovalori $\sigma_1$ e $\sigma_2$ assumono valori elevati e sono di entità comparabile ($\sigma_1 \sim \sigma_2$). In questo scenario, uno spostamento in una qualsiasi direzione produce un incremento significativo della variazione $E(u, v)$.
+\end{itemize}
+
+\subsection{La Pipeline Di Rilevamento Dei Corner}
+
+Il processo completo di estrazione dei punti di interesse tramite l'algoritmo di Harris si articola secondo il seguente schema a blocchi:
+
+% [IMMAGINE RIF INTERVALLO 1-31] Diagramma di flusso sequenziale per la rilevazione dei corner di Harris — Slide 12 / Pagina 12 del PDF
+
+\begin{algorithm}[H]
+\caption{Rilevamento dei Corner di Harris}
+\Dati{Immagine di input $I$}
+\Risultato{Insieme dei punti identificati come corner}
+\Inizializza\;
+Applica l'operatore di corner per calcolare la mappa di cornerness $f$\;
+Applica una soglia alla mappa di cornerness per identificare la maschera binaria dei candidati ($f > \text{valore}$)\;
+Esegui la soppressione dei non-massimi (\emph{Non-maximal Suppression}) per isolare i picchi locali\;
+Identifica i massimi locali di $f$ e restituisci i relativi corner\;
+\end{algorithm}
+
+Le slide illustrano l'effetto di ciascuna fase della pipeline utilizzando un'immagine di esempio con un giocattolo a forma di mucca:
+
+% [IMMAGINE RIF INTERVALLO 1-31] Immagini originali di un giocattolo a forma di mucca acquisito da due angolazioni — Slide 13 / Pagina 13 del PDF
+
+% [IMMAGINE RIF INTERVALLO 1-31] Visualizzazione della mappa dei valori della funzione f (in rosso i valori elevati, in blu i valori bassi) — Slide 14 / Pagina 14 del PDF
+
+% [IMMAGINE RIF INTERVALLO 1-31] Maschera binaria risultante dall'applicazione della soglia f > valore — Slide 15 / Pagina 15 del PDF
+
+% [IMMAGINE RIF INTERVALLO 1-31] Individuazione dei singoli punti corrispondenti ai massimi locali della mappa f — Slide 16 / Pagina 16 del PDF
+
+% [IMMAGINE RIF INTERVALLO 1-31] Sovrapposizione finale dei corner di Harris (evidenziati in rosso) sulle immagini originali — Slide 17 / Pagina 17 del PDF
+
+\subsubsection{Parametri Del Filtro Gaussiano}
+Il comportamento del rilevatore di Harris è governato da due parametri spaziali legati all'applicazione di filtri Gaussiani:
+\begin{itemize}
+    \item $\sigma_D$: parametro di smoothing del filtro Gaussiano applicato per il calcolo delle derivate spaziali dell'immagine, avente lo scopo di attenuare il rumore ad alta frequenza.
+    \item $\sigma_I$: dimensione della finestra del filtro Gaussiano di integrazione che definisce la regione spaziale su cui accumulare e calcolare la matrice dei momenti secondi $M$.
+\end{itemize}
+
+\newpage
+
+\section{Proprietà Di Invarianza Del Rilevatore Di Harris}
+
+Analizziamo ora sistematicamente le proprietà di invarianza geometrica e fotometrica offerte dal rilevatore di Harris.
+
+\subsection{Invarianza Alla Rotazione}
+
+Il rilevatore di Harris è \textbf{completamente invariante rispetto alla rotazione dell'immagine}.
+
+% [IMMAGINE RIF INTERVALLO 1-31] Illustrazione geometrica dell'ellisse associata alla matrice M che ruota mantenendo invariati i propri autovalori — Slide 19 / Pagina 19 del PDF
+
+Dal punto di vista analitico, una rotazione dell'immagine si traduce in una rotazione equivalente degli assi dell'ellisse associata alla matrice $M$. Poiché la rotazione di una matrice non ne altera gli autovalori $\sigma_1$ e $\sigma_2$, la forma complessiva dell'ellisse e i valori numerici degli autovalori rimangono costanti. Di conseguenza, la risposta di cornerness calcolata sulla base di essi non varia, assicurando il rilevamento dello stesso angolo in modo indipendente dall'orientamento dell'immagine.
+
+\subsection{Invarianza Fotometrica (Cambiamenti Di Intensità Affine)}
+
+Consideriamo una variazione di intensità fotometrica affine modellata dall'equazione $I \to aI + b$.
+
+Poiché la formulazione del rilevatore di Harris si basa esclusivamente sulle derivate spaziali parziali dell'immagine, l'applicazione del termine costante di offset $b$ viene annullata dall'operatore di derivazione. Pertanto, il rilevatore presenta una totale \textbf{invarianza rispetto allo shift di intensità} ($I \to I + b$).
+
+Al contrario, la presenza del fattore di scala dell'intensità $a$ ($I \to aI$) influenza direttamente i gradienti dell'immagine, scalando quadraticamente la risposta di cornerness $R$:
+
+% [IMMAGINE RIF INTERVALLO 1-31] Grafico del profilo della risposta di cornerness R al variare dell'intensità luminosa (effetto del superamento della soglia) — Slide 20 / Pagina 20 del PDF
+
+La variazione di scala dell'intensità modifica l'ampiezza assoluta dei picchi della funzione di risposta $R$. Di conseguenza, l'applicazione di una soglia fissa può far sì che alcuni picchi non vengano rilevati o che nuove fluttuazioni superino la soglia, modificando l'insieme finale dei punti rilevati. Per questa ragione, il rilevatore di Harris è classificato come \textbf{parzialmente invariante ai cambiamenti di intensità affini}.
+
+\subsection{Non-Invarianza Al Cambiamento Di Scala}
+
+Il limite principale del rilevatore di Harris classico risiede nella sua \textbf{non-invarianza ai cambiamenti di scala geometrici}.
+
+% [IMMAGINE RIF INTERVALLO 1-31] Visualizzazione dell'effetto di zoom su un angolo rilevato erroneamente come bordo a causa della scala — Slide 21 / Pagina 21 del PDF
+
+Quando si effettua un forte ingrandimento (zoom) su un angolo, la porzione d'angolo racchiusa all'interno della finestra di integrazione locale del rilevatore appare localmente rettilinea. In questa condizione, l'algoritmo rileva un gradiente significativo lungo una sola direzione, classificando erroneamente i punti corrispondenti come \textbf{bordi} (\emph{edges}) anziché come corner.
+
+Per gestire questa problematica, distinguiamo due scenari:
+\begin{itemize}
+    \item \textbf{Scala della feature nota}: Se la scala della feature è nota a priori, è sufficiente adattare in modo proporzionale i parametri dei filtri Gaussiani $\sigma_D$ e $\sigma_I$ e calcolare la risposta corretta di cornerness mediante la formulazione:
+    \[ R(C) = \det(C(x, y, \sigma_I, \sigma_D)) - k \operatorname{trace}^2(C(x, y, \sigma_I, \sigma_D)) \]
+    \item \textbf{Scala della feature sconosciuta}: Nella maggior parte delle applicazioni reali, le feature corrispondenti appaiono a scale arbitrarie e non note. Risulta quindi necessario trovare un meccanismo in grado di determinare automaticamente la scala corretta per ciascuna feature.
+\end{itemize}
+
+% [IMMAGINE RIF INTERVALLO 1-31] Ricerca spaziale della scala mediante cerchi concentrici attorno a un punto di interesse — Slide 22 / Pagina 22 del PDF
+
+\newpage
+
+\section{Invarianza Di Scala E Selezione Automatica Della Scala}
+
+Per consentire l'estrazione e il matching robusto di descrittori locali, è necessario estendere la teoria dei punti di interesse a intere regioni associate.
+
+\subsection{Dai Punti Alle Regioni Di Interesse}
+
+Mentre gli operatori classici di Harris e Hessian consentono di determinare la posizione precisa di un punto di interesse garantendo un'elevata ripetibilità spaziale, per poter definire e confrontare descrittori locali dobbiamo calcolare le informazioni su un'intera \textbf{regione di supporto}.
+
+% [IMMAGINE RIF INTERVALLO 1-31] Evidenziazione di una regione di supporto rettangolare gialla su un dettaglio di un'immagine di graffiti — Slide 23 / Pagina 23 del PDF
+
+La sfida consiste nel definire l'estensione di tale regione in modo del tutto invariante rispetto alla scala geometrica della scena.
+
+\subsection{Approccio Naïve: Ricerca Esaustiva}
+
+Un primo approccio intuitivo prevede l'implementazione di una procedura multi-scala basata su una ricerca esaustiva, in cui si confrontano i descrittori variando sistematicamente la dimensione della patch considerata.
+
+% [IMMAGINE RIF INTERVALLO 1-31] Schema di confronto multi-scala tra una patch di riferimento e patch di dimensioni variabili nell'immagine di destinazione — Slides 24-27 / Pagine 24-27 del PDF
+
+Estraendo descrittori di colore o di gradiente (indicati con $f_A$ e $f_B$), la misura di similarità $d(f_A, f_B)$ fornirà un accoppiamento errato ($f_A \neq f_B$) per tutte le dimensioni di patch non corrispondenti. L'allineamento corretto ($f_A = f_B$) si verificherà esclusivamente in corrispondenza del corretto fattore di scala relativo.
+
+Sebbene applicabile per l'allineamento di singole coppie di immagini, questo approccio presenta pesanti limitazioni:
+\begin{itemize}
+    \item È \textbf{computazionalmente inefficiente}.
+    \item Risulta del tutto \textbf{proibitivo per la ricerca in grandi database} di immagini (\emph{retrieval}).
+    \item Risulta \textbf{incompatibile per applicazioni di riconoscimento} in tempo reale.
+\end{itemize}
+
+\subsection{Selezione Automatica Della Scala}
+
+L'alternativa efficiente consiste nell'utilizzare tecniche di \textbf{selezione della scala} (\emph{scale selection}) per determinare in modo diretto la \textbf{scala caratteristica} (\emph{characteristic scale}) di ogni singola feature.
+
+% [IMMAGINE RIF INTERVALLO 1-31] Esempio di selezione della scala caratteristica evidenziata da cerchi concentrici sulla testa di un fagiano — Slide 28 / Pagina 28 del PDF
+
+La scala caratteristica di una feature dipende strettamente dalla sua estensione spaziale locale, definita dalla distribuzione dei pixel circostanti.
+
+\subsubsection{La Funzione Di Firma Spaziale}
+Il metodo formalizzato da T. Lindeberg \cite{Lindeberg98} si basa sulla progettazione di una opportuna funzione di misura locale $F(x, \sigma_n)$, calcolata sull'intorno di un punto al variare del parametro di scala $\sigma_n$. I punti e le relative scale di interesse vengono selezionati in corrispondenza dei massimi locali di tale funzione rispetto a $\sigma_n$:
+
+% [IMMAGINE RIF INTERVALLO 1-31] Grafici della risposta della firma spaziale F(x, sigma_n) con la localizzazione del massimo per dettagli di un campanile e di una montagna — Slide 29 / Pagina 29 del PDF
+
+Il valore di scala in cui si registra il massimo assoluto individua univocamente la scala caratteristica della struttura considerata:
+\[ \boxed{
+    \sigma_{\text{caratteristica}} = \argmax_{\sigma_n} F(x, \sigma_n)
+    }
+\]
+
+\subsubsection{Meccanismo Di Selezione Automatica Indipendente}
+La soluzione operativa risiede nella progettazione di una funzione d'area che sia intrinsecamente "scale-invariante", ovvero che mantenga lo stesso andamento qualitativo per regioni corrispondenti anche se acquisite a scale geometriche differenti.
+
+Ad esempio, consideriamo l'intensità media della regione: essa rimarrà costante per la stessa porzione fisica di scena indipendentemente dal suo ingrandimento. Analizzando l'andamento di una tale funzione in relazione alla dimensione della regione (larghezza della patch), otterremo due curve con andamento analogo ma traslate o riscalate lungo l'asse orizzontale:
+
+% [IMMAGINE RIF INTERVALLO 1-31] Grafico delle risposte della funzione f rispetto alla dimensione della regione per l'Immagine 1 e l'Immagine 2 — Slide 30 / Pagina 30 del PDF
+
+La selezione automatica si basa su due osservazioni fondamentali:
+\begin{enumerate}
+    \item Si calcola e si isola il punto di massimo locale della funzione per ciascun candidato.
+    \item La dimensione della regione in cui viene raggiunto il massimo risulta direttamente proporzionale alla scala geometrica dell'immagine. Se l'Immagine 2 presenta una scala ridotta della metà rispetto all'Immagine 1 ($\text{scale} = 1/2$), allora il massimo per la seconda immagine si verificherà a una dimensione della regione esattamente dimezzata rispetto alla prima ($s_2 = 1/2 \cdot s_1$).
+\end{enumerate}
+
+% [IMMAGINE RIF INTERVALLO 1-31] Corrispondenza e allineamento spaziale dei picchi di scala s1 e s2 sulle funzioni delle due immagini — Slide 31 / Pagina 31 del PDF
+
+La conseguenza pratica di maggiore rilievo consiste nel fatto che \textbf{questa dimensione di regione scale-invariante viene calcolata per ciascuna immagine in modo completamente indipendente}, eliminando la necessità di effettuare ricerche incrociate o confronti diretti tra le viste in fase di rilevamento.
+
+\section{Selezione Automatica Della Scala Spaziale}
+
+Nel contesto del rilevamento di punti di interesse (\emph{interest points}), una delle problematiche fondamentali riguarda l'individuazione della scala geometrica corretta a cui estrarre ciascuna feature. Le slide mostrano in dettaglio il funzionamento dinamico della \textbf{selezione automatica della scala} (\emph{automatic scale selection}) applicata a due regioni corrispondenti dello stesso soggetto (un murales con graffiti), ma acquisite a distanze differenti.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Esempio iniziale della firma di scala (scale signature) per scale molto piccole (\sigma = 2.0), con il punto di lavoro situato nella porzione iniziale della curva di risposta — Slide 1 / Pagina 1 del PDF
+
+\subsection{La Firma Di Scala E L'Individuazione Del Massimo}
+
+Il processo si basa sul calcolo della risposta di una specifica funzione d'area $f(I_{L_1\dots L_m}(x,\sigma))$ al variare del parametro di scala $\sigma$. Questa risposta definisce la cosiddetta \textbf{firma di scala} (\emph{scale signature}).
+
+% [IMMAGINE RIF INTERVALLO 32-62] Progressione della firma di scala al crescere di \sigma, in cui il punto si sposta lungo la salita della curva — Slide 2 / Pagina 2 del PDF
+
+% [IMMAGINE RIF INTERVALLO 32-62] Progressione ulteriore della firma di scala in cui la risposta si avvicina al picco della firma spaziale — Slide 3 / Pagina 3 del PDF
+
+% [IMMAGINE RIF INTERVALLO 32-62] Individuazione del punto di lavoro in prossimità del picco massimo della firma per entrambe le scale — Slide 4 / Pagina 4 del PDF
+
+% [IMMAGINE RIF INTERVALLO 32-62] Decadimento della risposta della firma di scala per valori di \sigma molto grandi, che superano la dimensione fisica della feature locale — Slide 5 / Pagina 5 del PDF
+
+% [IMMAGINE RIF INTERVALLO 32-62] Individuazione e allineamento dei massimi locali (picchi) per le due curve di risposta f(I(x,\sigma)) e f(I(x',\sigma)), che identificano le rispettive scale caratteristiche — Slide 6 / Pagina 6 del PDF
+
+Come mostrato nella sequenza temporale delle slide da 1 a 6, al variare di $\sigma$ la risposta della funzione traccia una curva a campana. Il picco massimo di questa curva corrisponde alla \textbf{scala caratteristica} della feature. Poiché la feature nella seconda immagine è fisicamente più grande (a causa dell'inquadratura ravvicinata), il suo picco si verificherà in corrispondenza di un valore di $\sigma$ proporzionalmente maggiore rispetto a quello della prima immagine.
+
+\subsection{Normalizzazione Della Patch}
+
+Una volta determinate in modo indipendente le scale caratteristiche per ciascuna delle due regioni di interesse, l'algoritmo procede alla fase di \textbf{normalizzazione} (\emph{normalization}).
+
+% [IMMAGINE RIF INTERVALLO 32-62] Processo di riscalamento (rescale to fixed size) delle due patch di dimensioni fisiche diverse a una dimensione standard fissa — Slide 7 / Pagina 7 del PDF
+
+Questo passaggio consiste nel riscalare (\emph{rescale}) le porzioni di immagine estratte a una dimensione standard fissa (ad esempio, una griglia standardizzata di pixel). Grazie a questa operazione, le due patch — originariamente di dimensioni diverse nell'immagine a causa della distanza della camera — diventano direttamente confrontabili pixel a pixel, annullando di fatto l'effetto delle variazioni di scala.
+
+\subsection{Criteri Di Scelta Per Le Misure Locali}
+
+Non tutte le funzioni matematiche sono idonee a fungere da misure locali per la selezione della scala. Una buona misura locale deve soddisfare due requisiti fondamentali:
+\begin{itemize}
+    \item Deve essere \textbf{invariante rispetto alla rotazione} dell'immagine.
+    \item Deve presentare un \textbf{singolo picco stabile e ben definito} (stretto e pronunciato) in corrispondenza della scala caratteristica.
+\end{itemize}
+
+% [IMMAGINE RIF INTERVALLO 32-62] Confronto tra firme di scala non idonee (piatte o multi-picco) e una firma ideale con un singolo picco stabile — Slide 8 / Pagina 8 del PDF
+
+Se la firma di scala si presenta quasi piatta o caratterizzata da molteplici picchi di ampiezza analoga (come illustrato negli andamenti definiti \emph{bad}), la selezione della scala risulterà instabile e altamente sensibile al rumore di misura.
+
+\newpage
+
+\section{Rilevamento Invariante Di Scala Tramite Filtri}
+
+Per determinare matematicamente la scala caratteristica in modo continuo e robusto, si utilizzano filtri basati sulla convoluzione dell'immagine con nuclei (\emph{kernels}) derivati dalla funzione Gaussiana. La formulazione generale prevede che la risposta di scala $f$ sia data dal prodotto di convoluzione:
+\[ f = \text{Kernel} * \text{Image} \]
+
+\subsection{La Formulazione Del Laplacian Of Gaussian (LoG)}
+
+Il nucleo di convoluzione d'elezione per questa operazione è il \textbf{Laplacian of Gaussian} (LoG), il quale agisce come un rilevatore di strutture circolari simmetriche, comunemente chiamate \textbf{blob}.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Confronto grafico tra la risposta del filtro Laplacian of Gaussian (LoG) e la sua approssimazione Difference of Gaussians (DoG) — Slide 9 / Pagina 9 del PDF
+
+I due filtri principali utilizzati per determinare la scala sono definiti come segue:
+\begin{itemize}
+    \item \textbf{Laplacian of Gaussian (LoG)}:
+    \[ L = \sigma^2 \left( G_{xx}(x, y, \sigma) + G_{yy}(x, y, \sigma) \right) \]
+    dove il termine $\sigma^2$ funge da fattore di normalizzazione necessario per rendere la risposta del filtro confrontabile a scale differenti.
+    \item \textbf{Difference of Gaussians (DoG)}:
+    \[ \text{DoG} = G(x, y, k\sigma) - G(x, y, \sigma) \]
+    Il filtro DoG rappresenta un'approssimazione efficiente del LoG ottenuta sottraendo due funzioni Gaussiane a scale leggermente diverse (regolate dal fattore moltiplicativo $k$).
+\end{itemize}
+
+La funzione Gaussiana bidimensionale $G(x, y, \sigma)$ utilizzata como base è definita dalla relazione:
+\[ \boxed{G(x, y, \sigma) = \frac{1}{\sqrt{2\pi}\sigma} e^{-\frac{x^2+y^2}{2\sigma^2}}} \]
+
+\subsection{Analisi Delle Derivate Della Gaussiana}
+
+Per comprendere appieno il funzionamento del LoG, occorre richiamare il comportamento delle derivate della Gaussiana applicate a segnali unidimensionali.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Convoluzione di un segnale a gradino rumoroso con la derivata prima della Gaussiana, che genera un picco in corrispondenza del gradino — Slide 10 / Pagina 10 del PDF
+
+La convoluzione di un segnale a gradino rumoroso $f$ con la derivata prima di una Gaussiana $\frac{d}{dx}g$ produce un picco ben definito in corrispondenza della transizione. Questo dimostra la robustezza del filtro Gaussiano nel calcolo delle derivate in presenza di rumore ad alta frequenza.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Convoluzione dello stesso segnale a gradino con la derivata seconda della Gaussiana, che evidenzia un passaggio per lo zero (zero-crossing) — Slide 11 / Pagina 11 del PDF
+
+Utilizzando invece la derivata seconda della Gaussiana $\frac{d^2}{dx^2}g$, l'operazione di convoluzione $f * \frac{d^2}{dx^2}g$ genera un punto di \textbf{passaggio per lo zero} (\emph{zero-crossing}) esattamente in corrispondenza della mezzeria del gradino.
+
+\subsubsection{Il Blob Come Superposizione Di Bordi}
+
+% [IMMAGINE RIF INTERVALLO 32-62] Risposta della convoluzione di impulsi rettangolari di larghezza decrescente con un operatore Laplaciano a scala fissa — Slide 12 / Pagina 12 del PDF
+
+Un \textbf{blob} (una struttura racchiusa, assimilabile a un impulso rettangolare) può essere modellato matematicamente come la sovrapposizione di due bordi consecutivi (un gradiente positivo e uno negativo). Quando questo segnale viene convoluto con il Laplaciano dell'immagine a scala fissa ($\sigma = 1$), la risposta varia sensibilmente in base alla larghezza dell'impulso. Si ottiene la risposta massima (\textbf{MAXIMUM}) quando la scala spaziale del filtro coincide esattamente con la larghezza fisica del blob, poiché i contributi dei due bordi si sovrappongono costruttivamente.
+
+\subsection{Il Laplacian Of Gaussian Come Rilevatore Di Blob}
+
+Estendendo il concetto al dominio bidimensionale, l'operatore Laplacian of Gaussian (LoG) assume la classica conformazione tridimensionale a ``cappello messicano'' (\emph{Mexican hat}).
+
+% [IMMAGINE RIF INTERVALLO 32-62] Rappresentazione 3D e 1D delle risposte del LoG applicato a blob di tre diametri differenti — Slide 13 / Pagina 13 del PDF
+
+L'operatore risponde con un picco di ampiezza massima quando la scala del filtro si adatta perfettamente alla dimensione fisica della struttura circolare sottostante.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Formulazione matematica analitica e rappresentazione geometrica 3D del nucleo LoG — Slide 14 / Pagina 14 del PDF
+
+Dal punto di vista differenziale, l'operatore Laplaciano $\nabla^2 g$ è la somma delle derivate parziali seconde spaziali:
+\[ \nabla^2 g = \frac{\partial^2 g}{\partial x^2} + \frac{\partial^2 g}{\partial y^2} \]
+
+\subsection{Determinazione Della Scala Caratteristica}
+
+In base a queste proprietà, definiamo la \textbf{scala caratteristica} come la scala specifica $\sigma$ che produce il picco assoluto nella risposta del Laplaciano normalizzato rispetto alla scala.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Individuazione della scala caratteristica tramite il picco di risposta del Laplaciano applicato al centro di un girasole — Slide 15 / Pagina 15 del PDF
+
+\newpage
+
+\section{L'Algoritmo Harris-Laplace}
+
+L'algoritmo \textbf{Harris-Laplace} combina le proprietà di localizzazione spaziale del rilevatore di Harris con le proprietà di selezione automatica della scala del Laplaciano. Questo consente di identificare punti di interesse che siano al contempo angoli robusti e stabili rispetto alle variazioni di scala.
+
+\subsection{Fase 1: Rilevamento Dei Punti Candidati Nel Multiscala}
+
+La prima fase prevede l'estrazione dei punti di interesse a molteplici scale distinte utilizzando il classico rilevatore di Harris.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Griglia di calcolo spaziale e formule per la selezione dei massimi locali di Harris a scale multiple — Slide 16 / Pagina 16 del PDF
+
+Le scale di lavoro vengono campionate discretamente ponendo la scala di differenziazione pari a:
+\[ \sigma_D = k\sigma \]
+A ciascuna scala, la scala di integrazione $\sigma_I$ è legata a quella di differenziazione tramite un fattore di proporzionalità costante $\gamma$:
+\[ \sigma_I = \gamma\sigma_D \]
+
+Si calcola quindi la funzione di risposta del d'angolo $R$ sulla base della matrice dei momenti secondi $C$:
+\[ R(C) = \det\left(C(x, y, \sigma_I, \sigma_D)\right) - k \operatorname{trace}^2\left(C(x, y, \sigma_I, \sigma_D)\right) \]
+
+Vengono selezionati come candidati solo i punti $(x, y)$ che rappresentano dei massimi locali all'interno di un intorno spaziale definita da una finestra di ricerca $W$:
+\[ R(x, y, \sigma_D) > R(x_w, y_w, \sigma_D) \quad \forall x_w \in W \]
+
+\subsection{Fase 2: Selezione Della Scala Caratteristica}
+
+Tra tutti i punti di interesse candidati estratti alla fase precedente, vengono mantenuti solo quelli per i quali la risposta del Laplaciano normalizzato (LoG) presenta un valore massimo locale lungo la dimensione della scala, a patto che tale valore superi una soglia minima di confidenza $t$.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Rappresentazione concettuale della selezione dei massimi del LoG lungo lo spazio delle scale per ciascun livello discretizzato — Slide 17 / Pagina 17 del PDF
+
+Le condizioni di massimo locale nello spazio delle scale si esprimono matematicamente come:
+\[ F(x, y, \sigma_D) > F(x, y, \sigma_{D-1}) \quad \text{and} \quad F(x, y, \sigma_D) > F(x, y, \sigma_{D+1}) \]
+con il vincolo di soglia:
+\[ F(x, y, \sigma_D) > t \]
+In questo contesto, la misura della firma spaziale normalizzata $F$ è data da:
+\[ F(x, y, \sigma_D) = \sigma_D^2 \left( L_{xx}(x, y, \sigma_D) + L_{yy}(x, y, \sigma_D) \right) \]
+
+\subsection{Pipeline Di Estrazione Nello Spazio Delle Scale}
+
+% [IMMAGINE RIF INTERVALLO 32-62] Diagramma completo della generazione dello spazio delle scale del LoG e l'estrazione della lista di coordinate tridimensionali (x, y, \sigma) — Slide 18 / Pagina 18 del PDF
+
+L'applicazione iterativa di questo processo su un'intera piramide di immagini a risoluzione decrescente genera una lista finale di punti di interesse descritti da coordinate tridimensionali complete:
+\[ \text{List of } (x, y, \sigma) \]
+dove $x, y$ indicano le coordinate spaziali del punto e $\sigma$ rappresenta la sua scala caratteristica ottimale.
+
+\newpage
+
+\section{Esempi Di Rilevamento Di Blob Nel Multiscala}
+
+Il funzionamento del Laplacian of Gaussian come rilevatore di blob spaziali trova una chiara applicazione pratica nell'elaborazione di immagini naturali, come quella di una farfalla.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Convoluzione dell'immagine di una farfalla con il nucleo LoG per evidenziare massimi e minimi locali corrispondenti alle macchie sulle ali — Slide 19 / Pagina 19 del PDF
+
+Eseguendo la convoluzione dell'immagine originale con un operatore LoG, le macchie chiare sulle ali della farfalla generano forti risposte negative (minimi locali), mentre le zone scure producono risposte positive (massimi locali).
+
+% [IMMAGINE RIF INTERVALLO 32-62] Immagine originale di test in scala di grigi raffigurante una farfalla monarca — Slide 20 / Pagina 20 del PDF
+
+% [IMMAGINE RIF INTERVALLO 32-62] Visualizzazione della risposta del filtro LoG a quattro scale crescenti di \sigma (11.99, 9.58, 7.66, 6.12) — Slide 21 / Pagina 21 del PDF
+
+A seconda del valore di $\sigma$ impostato, il filtro evidenzia in modo selettivo solo i blob la cui dimensione geometrica si adatta a quella specifica scala di filtraggio.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Risultato finale della sovrapposizione dei blob rilevati, rappresentati come cerchi rossi con raggio proporzionale alla scala caratteristica — Slide 22 / Pagina 22 del PDF
+
+Il risultato finale mostra come l'algoritmo sia in grado di mappare accuratamente tutte le strutture circolari dell'immagine, associando a ciascuna di esse un cerchio rosso il cui raggio corrisponde esattamente alla scala caratteristica rilevata nello spazio delle scale.
+
+\newpage
+
+\section{La Semplificazione Tramite Difference Of Gaussian (DoG)}
+
+Sebbene il Laplacian of Gaussian sia ottimale dal punto di vista teorico, il calcolo diretto delle derivate spaziali seconde su immagini a risoluzione elevata risulta computazionalmente oneroso.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Approssimazione del LoG tramite la differenza di due immagini Gaussiane sfocate (Difference of Gaussians) — Slide 23 / Pagina 23 del PDF
+
+Per risolvere questo problema, David Lowe ha introdotto nella pipeline SIFT l'approssimazione mediante la \textbf{Difference of Gaussians} (DoG). I vantaggi principali di questa scelta architetturale sono i seguenti:
+\begin{itemize}
+    \item \textbf{Efficienza computazionale}: Non è necessario calcolare esplicitamente le derivate seconde dell'immagine.
+    \item \textbf{Riutilizzo delle informazioni}: Le immagini sfocate con filtro Gaussiano vengono comunque calcolate all'interno della struttura della piramide Gaussiana (\emph{Gaussian pyramid}), necessaria per la rappresentazione multiscala. Di conseguenza, il calcolo della DoG si riduce a una semplice operazione di sottrazione aritmetica pixel a pixel tra livelli adiacenti della piramide.
+\end{itemize}
+
+\newpage
+
+\section{Progettazione Di Descrittori Di Feature Invarianti}
+
+Una volta rilevati i punti di interesse alle rispettive scale caratteristiche, la seconda fase della pipeline richiede la generazione di un descrittore associato che consenta di effettuare l'accoppiamento (\emph{matching}) tra le immagini.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Esempio di associazione di punti di interesse estratti da due immagini di una catena montuosa — Slide 24 / Pagina 24 del PDF
+
+L'obiettivo consiste nel costruire una rappresentazione vettoriale dell'intorno di ciascun punto che risulti robusta o invariante rispetto a rotazioni, cambiamenti di scala, traslazioni e variazioni fotometriche.
+
+\subsection{Approcci Semplici Alla Rappresentazione}
+
+Per comprendere l'esigenza di descrittori complessi, analizziamo i limiti delle soluzioni più elementari:
+
+% [IMMAGINE RIF INTERVALLO 32-62] Schema riassuntivo dei passaggi necessari per ottenere l'invarianza nei descrittori di feature — Slide 25 / Pagina 25 del PDF
+
+\begin{itemize}
+    \item \textbf{Descrittore a singolo pixel}: Consiste nell'utilizzare come descrittore il solo valore di intensità del pixel centrale. Questo approccio non possiede alcuna forma di invarianza ed è estremamente sensibile al rumore e a minime variazioni locali.
+    \item \textbf{Finestra quadrata di pixel}: Consiste nell'utilizzare come vettore descrittore l'insieme ordinato di tutti i pixel contenuti in una finestra centrata sul punto. Questa soluzione garantisce invarianza alla traslazione, ma fallisce completamente a fronte di rotazioni, variazioni di scala o modifiche dell'illuminazione della scena.
+\end{itemize}
+
+\subsection{Invarianza Alla Rotazione Nei Descrittori}
+
+Per rendere un descrittore invariante rispetto alla rotazione dell'immagine, si calcola l'orientamento dominante della patch locale e si ruota la patch stessa in modo da allinearla a una direzione di riferimento standard (tipicamente l'asse orizzontale).
+
+% [IMMAGINE RIF INTERVALLO 32-62] Allineamento di una patch di immagine lungo la sua direzione principale calcolata sul picco della montagna — Slide 26 / Pagina 26 del PDF
+
+La direzione dominante è definita dal vettore $\bm{x}_{\max}$, ovvero l'autovettore della matrice dei momenti secondi $\bm{C}$ associato all'autovalore maggiore $\sigma_{\max}$:
+\[ \bm{C} \bm{x}_{\max} = \sigma_{\max} \bm{x}_{\max} \]
+Una volta calcolato l'angolo di questo vettore, l'intera patch di supporto viene ruotata di un angolo opposto prima di procedere all'estrazione delle feature locali del descrittore.
+
+\subsection{Il Descrittore MOPS (Multiscale Oriented PatcheS)}
+
+Il descrittore \textbf{MOPS} (\emph{Multiscale Oriented PatcheS}) implementa questa sequenza di normalizzazioni per ottenere un vettore robusto e standardizzato.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Fasi di normalizzazione geometrica e fotometrica per la generazione del descrittore MOPS — Slide 27 / Pagina 27 del PDF
+
+L'algoritmo si articola nei seguenti passaggi sequenziali:
+\begin{enumerate}
+    \item Si definisce una finestra quadrata di dimensioni $40 \times 40$ pixel attorno al punto di interesse rilevato.
+    \item Si riduce la dimensione della patch a un fattore pari a $1/5$ (ottenendo una griglia $8 \times 8$ pixel) mediante l'applicazione di un filtro di pre-filtraggio anti-aliasing.
+    \item Si ruota la patch per allinearla orizzontalmente rispetto all'orientamento dominante calcolato.
+    \item Si campiona la finestra risultante $8 \times 8$ centrata sul punto di interesse.
+    \item Si effettua una normalizzazione fotometrica dell'intensità sottraendo il valor medio $\mu$ e dividendo per la deviazione standard $\sigma$ calcolati all'interno della finestra stessa:
+    \[ I_{\text{norm}}(x, y) = \frac{I(x, y) - \mu}{\sigma} \]
+\end{enumerate}
+
+% [IMMAGINE RIF INTERVALLO 32-62] Esempio di estrazione multi-scala del descrittore MOPS a cinque differenti livelli della piramide — Slide 28 / Pagina 28 del PDF
+
+L'applicazione del descrittore MOPS a diversi livelli della piramide permette di campionare vettori descrittori stabili, le cui orientazioni e scale corrispondono a quelle reali della struttura fisica del soggetto.
+
+\subsection{Introduzione Al Metodo SIFT}
+
+Lo \textbf{SIFT} (\emph{Scale Invariant Feature Transform}), sviluppato da David Lowe, rappresenta l'evoluzione di questi concetti in un algoritmo unificato ed estremamente robusto per il rilevamento e la descrizione di feature.
+
+\subsection{Motivazioni Dietro Alla Progettazione}
+
+% [IMMAGINE RIF INTERVALLO 32-62] Motivazioni storiche e teoriche che hanno portato alla formulazione di SIFT da parte di Lowe — Slide 29 / Pagina 29 del PDF
+
+La progettazione di SIFT nasce dall'esigenza di superare i limiti intrinseci degli approcci precedenti:
+\begin{itemize}
+    \item Il rilevatore di Harris classico non è invariante rispetto alla scala geometrica.
+    \item I primi descrittori associati ad Harris non offrivano proprietà di invarianza intrinseca alla rotazione (nonostante alcuni sviluppi successivi di altri autori).
+\end{itemize}
+Lowe ha integrato in un unico operatore sia la fase di rilevamento (\emph{detector}) che la fase di descrizione (\emph{descriptor}), ottenendo una rappresentazione che risulta robusta a rotazione, scala e variazioni fotometriche.
+
+\subsection{Principio Di Funzionamento Generale}
+
+L'idea cardine del metodo SIFT risiede nella trasformazione del contenuto dell'immagine in un sistema di coordinate locali di feature che risulti insensibile a traslazioni, rotazioni, variazioni di scala e ad altre distorsioni introdotte dal sensore fotografico.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Rappresentazione delle corrispondenze spaziali invarianti SIFT su un camioncino giocattolo — Slide 30 / Pagina 30 del PDF
+
+\subsection{Vantaggi Principali Di SIFT}
+
+Il successo dell'algoritmo SIFT è legato a un insieme di caratteristiche operative:
+
+% [IMMAGINE RIF INTERVALLO 32-62] Elenco dei vantaggi operativi offerti dal metodo SIFT — Slide 31 / Pagina 31 del PDF
+
+\begin{itemize}
+    \item \textbf{Località} (\emph{Locality}): Le feature estratte sono strettamente locali. Questa proprietà rende il metodo robusto a occlusioni parziali degli oggetti e alla presenza di elementi di disturbo sullo sfondo (\emph{clutter}), senza richiedere una segmentazione preventiva dell'immagine.
+    \item \textbf{Distintività} (\emph{Distinctiveness}): Le informazioni contenute nel descrittore sono altamente distintive, permettendo l'associazione corretta di singole feature all'interno di database di oggetti di grandi dimensioni.
+    \item \textbf{Quantità} (\emph{Quantity}): L'algoritmo è in grado di generare un numero elevato di feature anche a partire da oggetti di piccole dimensioni fisiche.
+    \item \textbf{Efficienza} (\emph{Efficiency}): Le prestazioni computazionali sono prossime ai requisiti per l'elaborazione in tempo reale.
+    \item \textbf{Estendibilità} (\emph{Extensibility}): L'architettura del descrittore può essere agevolmente estesa per integrare ulteriori tipologie di feature, aumentandone la robustezza complessiva.
+\end{itemize}
+
+\section{La Procedura Generale Di SIFT}
+
+Lo \textbf{SIFT} (\emph{Scale Invariant Feature Transform}) è un algoritmo integrato per il rilevamento e la descrizione di caratteristiche locali (\emph{features}) che risulta robusto a cambiamenti di scala, rotazioni e variazioni fotometriche. Il processo complessivo si articola in sei fasi sequenziali ben definite:
+
+\begin{enumerate}
+    \item \textbf{Costruzione di uno spazio di scala} (\emph{Constructing a scale space}): Viene generata una rappresentazione multiscala dell'immagine originale per garantire l'invarianza rispetto ai cambiamenti dimensionali degli oggetti nella scena.
+    \item \textbf{Approssimazione del LoG} (\emph{LoG Approximation}): Il filtro \emph{Laplacian of Gaussian} (LoG) è lo strumento teorico ottimale per identificare i punti di interesse (\emph{keypoints}) e la loro scala caratteristica. Poiché il suo calcolo diretto è estremamente oneroso, viene introdotta un'approssimazione numerica efficiente.
+    \item \textbf{Ricerca dei keypoint} (\emph{Finding keypoints}): I candidati punti di interesse vengono individuati ricercando i massimi e i minimi locali all'interno delle immagini elaborate tramite la differenza di Gaussiane.
+    \item \textbf{Eliminazione dei keypoint instabili} (\emph{Getting rid of bad keypoints}): Le regioni a basso contrasto e i punti disposti lungo i bordi rettilinei costituiscono caratteristiche instabili; questi punti vengono quindi analizzati e scartati.
+    \item \textbf{Assegnazione dell'orientamento} (\emph{Assigning an orientation to the keypoints}): Per ottenere l'invarianza rispetto alle rotazioni dell'immagine, viene calcolata una direzione dominante per ciascun punto di interesse. Tutte le successive computazioni verranno eseguite in riferimento a questo sistema di coordinate locale.
+    \item \textbf{Generazione del descrittore SIFT} (\emph{Generate SIFT features}): In quest'ultima fase viene costruito il descrittore vettoriale finale, in grado di identificare in modo univoco le caratteristiche locali estratte.
+\end{enumerate}
+
+\newpage
+
+\section{Costruzione Dello Spazio Di Scala}
+
+La percezione visiva degli oggetti nel mondo reale è strettamente legata alla scala d'osservazione. Per comprendere questo concetto, si pensi alla necessità di esaminare i dettagli di una singola foglia rispetto all'osservazione dell'albero nella sua interezza. Se l'obiettivo dell'analisi è lo studio dell'albero completo, risulta matematicamente necessario eliminare in modo intenzionale i dettagli a frequenza spaziale più elevata (quali foglie, piccoli rami e venature della corteccia).
+
+Nel dominio della computer vision, l'eliminazione dei dettagli fini deve avvenire garantendo di non introdurre artefatti o false informazioni geometriche nell'immagine. L'unico operatore di diffusione lineare che soddisfa rigorosamente questo vincolo è lo sfocamento Gaussiano (\textbf{Gaussian Blur}).
+
+\subsection{La Struttura Multiscala E Le Ottave}
+
+Per esplorare lo spazio di scala di un'immagine, l'algoritmo SIFT eleva la classica rappresentazione multiscala a un livello superiore. Il processo inizia applicando progressivamente filtri Gaussiani a scala crescente sull'immagine originale. Successivamente, l'immagine di partenza viene dimezzata nelle sue dimensioni spaziali (tramite sottocampionamento) e il processo di sfocamento viene ripetuto su questo nuovo livello di risoluzione.
+
+% [IMMAGINE RIF INTERVALLO 63-93] Esempio di progressivo sfocamento gaussiano su un'immagine di test di un gatto — Slide 3 / Pagina 3 del PDF
+
+% [IMMAGINE RIF INTERVALLO 63-93] Struttura del piramidale di scala suddiviso in ottave con immagini dimezzate spazialmente ad ogni passaggio — Slide 4 / Pagina 4 del PDF
+
+Le immagini che presentano le medesime dimensioni spaziali (disposte verticalmente nella rappresentazione piramidale) vanno a costituire un'**ottava** (\emph{octave}).
+
+% [IMMAGINE RIF INTERVALLO 63-93] Rappresentazione dettagliata della piramide di scala in cui sono visibili quattro ottave composte da cinque immagini ciascuna — Slide 5 / Pagina 5 del PDF
+
+Nell'implementazione standard illustrata nelle slide, la piramide è composta da quattro ottave distinte. All'interno di ciascuna ottava sono presenti cinque immagini, generate applicando quantità crescenti di sfocamento Gaussiano (ovvero aumentando il parametro di scala $\sigma$).
+
+Il numero complessivo di ottave e di scale da utilizzare dipende strettamente dalle dimensioni dell'immagine originale. In fase di programmazione e configurazione dell'algoritmo SIFT, l'utente deve definire autonomamente questi iperparametri in base ai requisiti dello scenario applicativo.
+
+\subsection{Campionamento Della Scala Per L'Efficienza}
+
+La determinazione del numero ottimale di scale $S$ da valutare per ciascuna ottava rappresenta un delicato compromesso tra accuratezza geometrica e costo computazionale.
+
+% [IMMAGINE RIF INTERVALLO 63-93] Grafici di stabilità (ripetibilità e corretto matching) e di spesa computazionale in relazione al numero di scale S campionate per ottava — Slide 7 / Pagina 7 del PDF
+
+Le analisi sperimentali svolte da David Lowe rivelano le seguenti proprietà:
+\begin{itemize}
+    \item All'aumentare del numero di scale valutate, cresce il numero complessivo di keypoint rilevati.
+    \item Per valori di $S < 3$, si registra un incremento del numero di punti di interesse stabili e ripetibili.
+    \item Per valori di $S > 3$, a causa della eccessiva densità del campionamento, il numero di punti di interesse stabili inizia a decrescere.
+    \item La scelta ottimale è rappresentata da $S = 3$, valore che massimizza il numero di keypoint stabili rilevati riducendo al minimo la spesa computazionale.
+\end{itemize}
+
+\subsection{Formulazione Matematica Del Blurring}
+
+La generazione di un'immagine sfocata $L(x, y, \sigma)$ avviene convolvendo l'immagine di ingresso $I(x, y)$ con l'operatore di sfocamento Gaussiano $G(x, y, \sigma)$:
+\[ L(x, y, \sigma) = G(x, y, \sigma) * I(x, y) \]
+
+In questa espressione:
+\begin{itemize}
+    \item $L(x, y, \sigma)$ rappresenta la risultante immagine sfocata alla scala $\sigma$.
+    \item $G(x, y, \sigma)$ indica l'operatore di convoluzione Gaussiana.
+    \item $I(x, y)$ rappresenta l'immagine originale in ingresso.
+    \item $x, y$ sono le coordinate spaziali dei pixel.
+    \item $\sigma$ indica il parametro di scala dello sfocamento: maggiore è il suo valore, maggiore sarà il raggio di sfocatura applicato e, di conseguenza, maggiore l'eliminazione dei dettagli ad alta frequenza.
+\end{itemize}
+
+L'operatore Gaussiano bidimensionale continuo è definito analiticamente dalla formula:
+\[ \boxed{G(x, y, \sigma) = \frac{1}{2\pi\sigma^2} e^{-\frac{x^2+y^2}{2\sigma^2}}} \]
+
+\subsection{Progressione Della Scala Nei Livelli}
+
+La spaziatura tra i livelli di sfocatura all'interno di ciascuna ottava deve seguire una progressione geometrica costante. Definito un livello di partenza caratterizzato da un parametro di scala $\sigma$, il livello di sfocatura dell'immagine immediatamente successiva sarà pari a:
+\[ \sigma_{\text{next}} = k \cdot \sigma \]
+dove $k$ rappresenta il fattore moltiplicativo costante di scala. Nelle slide viene mostrato un esempio numerico dettagliato di questa progressione spaziale su quattro ottave:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{cccccc}
+\toprule
+\textbf{Ottava} & \multicolumn{5}{c}{\textbf{Valori di Scala ($\sigma$) per livello}} \\
+\midrule
+1 & 0.707107 & 1.000000 & 1.414214 & 2.000000 & 2.828427 \\
+2 & 1.414214 & 2.000000 & 2.828427 & 4.000000 & 5.656854 \\
+3 & 2.828427 & 4.000000 & 5.656854 & 8.000000 & 11.313708 \\
+4 & 5.656854 & 8.000000 & 11.313708 & 16.000000 & 22.627417 \\
+\bottomrule
+\end{tabular}
+\caption{Progressione dei valori di sfocatura per ottava ($k = \sqrt{2} \approx 1.414214$).}
+\end{table}
+
+\newpage
+
+\section{Approssimazione Del Laplacian Of Gaussian}
+
+Una volta costruito lo spazio di scala dell'immagine mediante i diversi livelli di sfocamento Gaussiano, l'algoritmo deve individuare i punti candidati. Lo strumento matematico di riferimento per identificare le variazioni d'angolo e i punti di interesse è il \textbf{Laplacian of Gaussian} (LoG).
+
+\subsection{Proprietà E Limiti Del LoG}
+
+L'operatore LoG esegue uno sfocamento preventivo dell'immagine per poi calcolarne la derivata spaziale seconda (l'operatore Laplaciano). Questa operazione permette di localizzare con precisione la presenza di bordi e angoli.
+
+% [IMMAGINE RIF INTERVALLO 63-93] Rappresentazione grafica 3D e 2D del filtro Laplacian of Gaussian (LoG) — Slide 11 / Pagina 11 del PDF
+
+La formulazione matematica del LoG normalizzato alla scala è definita come:
+\[ \nabla^2 g = \frac{\partial^2 g}{\partial x^2} + \frac{\partial^2 g}{\partial y^2} \]
+
+Sebbene ottimale, l'operatore derivativo secondo è estremamente sensibile al rumore ad alta frequenza. Lo sfocamento Gaussiano preliminare ha lo scopo di stabilizzare il calcolo della derivata attenuando il rumore. Tuttavia, il calcolo analitico diretto delle derivate parziali seconde su tutte le scale dell'immagine richiede risorse computazionali proibitive.
+
+\subsection{La Differenza Di Gaussiane (DoG)}
+
+Per superare questo limite computazionale, si sfrutta la proprietà per cui la differenza tra due immagini sfocate a scale consecutive adiacenti approssima in modo estremamente preciso la risposta del Laplacian of Gaussian normalizzato.
+
+Questo operatore prende il nome di \textbf{Difference of Gaussians} (DoG). La funzione DoG associata a due scale $\sigma$ e $k\sigma$ si esprime matematicamente come:
+\begin{align*}
+D(x, y, \sigma) &= \left( G(x, y, k\sigma) - G(x, y, \sigma) \right) * I(x, y) \\
+&= L(x, y, k\sigma) - L(x, y, \sigma)
+\end{align*}
+
+\subsection{Generazione Delle Immagini DoG Nella Piramide}
+
+Il processo di generazione delle immagini DoG avviene in modo estremamente efficiente all'interno del piramidale di scala.
+
+% [IMMAGINE RIF INTERVALLO 63-93] Schema piramidale di convoluzione gaussiana e generazione delle immagini DoG tramite sottrazione pixel-a-pixel tra livelli adiacenti — Slide 13 / Pagina 13 del PDF
+
+Per ciascuna ottava, le immagini sfocate adiacenti vengono sottratte membro a membro. Se un'ottava contiene $s+3$ immagini Gaussiane sfocate, la sottrazione tra livelli consecutivi produrrà esattamente $s+2$ immagini DoG.
+
+Al termine dell'elaborazione di un'ottava, l'immagine Gaussiana sfocata corrispondente a un fattore di scala pari a $2\sigma$ viene sottocampionata di un fattore pari a $2$ (riducendone l'area a $1/4$ rispetto all'immagine di partenza dell'ottava corrente), fornendo l'immagine di avvio per l'ottava successiva.
+
+\newpage
+
+\section{Individuazione Dei Punti Di Interesse (Keypoints)}
+
+Avendo calcolato la rappresentazione piramidale delle immagini DoG, l'algoritmo deve localizzare la posizione spaziale e di scala dei punti di interesse. Questo processo si articola in due fasi principali:
+\begin{enumerate}
+    \item Localizzazione preliminare (grezza) di massimi e minimi locali nelle immagini DoG.
+    \item Affinamento matematico a risoluzione sub-pixel.
+\end{enumerate}
+
+\subsection{Fase 1: Localizzazione Preliminare Dei Massimi E Minimi Locali}
+
+I candidati punti di interesse vengono identificati ricercando gli estremi locali (sia massimi che minimi) all'interno dello spazio tridimensionale formato dalle coordinate spaziali e dalla scala delle immagini DoG.
+
+% [IMMAGINE RIF INTERVALLO 63-93] Schema di ricerca dei massimi/minimi in un intorno tridimensionale composto da 26 pixel vicini distribuiti su tre scale consecutive — Slide 16 / Pagina 16 del PDF
+
+Per stabilire se un pixel generico $X$ costituisce un estremo locale, l'algoritmo esegue un confronto con tutti i suoi vicini spaziali e di scala:
+\begin{itemize}
+    \item $8$ pixel vicini appartenenti allo stesso livello di scala dell'immagine DoG corrente.
+    \item $9$ pixel appartenenti al livello di scala immediatamente superiore.
+    \item $9$ pixel appartenenti al livello di scala immediatamente inferiore.
+\end{itemize}
+Vengono eseguiti complessivamente **26 confronti**. Il pixel $X$ viene classificato come candidato keypoint se e solo se il suo valore risulta strettamente maggiore (massimo) o strettamente minore (minimo) di tutti i 26 vicini analizzati.
+
+\subsubsection{Ottimizzazioni Computazionali Ed Esclusioni}
+Al fine di garantire l'efficienza di calcolo dell'algoritmo SIFT, vengono implementati due accorgimenti:
+\begin{itemize}
+    \item \textbf{Uscita anticipata}: Un pixel che non costituisce un estremo non deve completare tutti i 26 confronti; l'analisi viene interrotta non appena viene individuato un vicino con valore maggiore o minore, scartando immediatamente il punto.
+    \item \textbf{Esclusione dei livelli estremi}: I punti di interesse non possono essere rilevati nei livelli di scala posti alla base (inferiore) o alla sommità (superiore) di ciascuna ottava. Questi livelli non dispongono infatti dei piani adiacenti necessari per completare il set di 26 confronti spaziali e di scala, pertanto vengono sistematicamente ignorati dall'algoritmo di ricerca.
+\end{itemize}
+
+% [IMMAGINE RIF INTERVALLO 63-93] Visualizzazione dei keypoint candidati grezzi evidenziati in rosa sulla facciata di una cattedrale prima del filtraggio — Slide 17 / Pagina 17 del PDF
+
+\subsection{Fase 2: Affinamento A Risoluzione Sub-Pixel}
+
+I punti candidati identificati nella fase precedente giacciono sulla griglia discreta dei pixel dell'immagine DoG. Tuttavia, la posizione reale dell'estremo fisico della funzione quasi mai coincide esattamente con la coordinata intera di un pixel, trovandosi in uno spazio continuo compreso tra i pixel.
+
+% [IMMAGINE RIF INTERVALLO 63-93] Rappresentazione 3D della discretizzazione dei pixel (croci rosse) e della reale posizione sub-pixel dell'estremo (punto verde) — Slide 18 / Pagina 18 del PDF
+
+Per determinare con precisione infinitesima la posizione e la scala dell'estremo, si ricorre alla ricostruzione locale della funzione tramite lo sviluppo in serie di Taylor.
+
+\subsection{Formulazione Matematica Per La Localizzazione Sub-Pixel}
+
+Esprimiamo la funzione di Difference of Gaussians $D(x, y, \sigma)$ nell'intorno locale 3D del punto candidato $(x_i, y_i, \sigma_i)$ arrestata al secondo ordine della serie di Taylor:
+\[ D(x, y, \sigma) = D(x_i, y_i, \sigma_i) + \underbrace{\left( \frac{\partial D(x, y, \sigma)}{\partial (x, y, \sigma)} \right)^T}_{\text{Vettore Gradiente}} \bm{\Delta} + \frac{1}{2} \bm{\Delta}^T \underbrace{\left( \frac{\partial^2 D(x, y, \sigma)}{\partial (x, y, \sigma)^2} \right)}_{\text{Matrice Hessiana } 3 \times 3} \bm{\Delta} \]
+
+In questa espressione, il vettore di spostamento tridimensionale $\bm{\Delta}$ rappresenta la deviazione rispetto al pixel centrale candidato:
+\[ \bm{\Delta} = \begin{bmatrix} x - x_i \\ y - y_i \\ \sigma - \sigma_i \end{bmatrix} \]
+
+Il gradiente $\frac{\partial D}{\partial (x,y,\sigma)}$ e la matrice Hessiana $\frac{\partial^2 D}{\partial (x,y,\sigma)^2}$ vengono approssimati numericamente tramite le differenze finite dei pixel circostanti il keypoint.
+
+Per ricavare la posizione esatta dell'estremo continuo, calcoliamo la derivata dello sviluppo di Taylor rispetto a $\bm{\Delta}$ e la imponiamo pari a zero. Questo passaggio fornisce il vettore di spostamento ottimo $\bm{\hat{\Delta}}$ rispetto alle coordinate discrete del pixel:
+\[ \bm{\hat{\Delta}} = \begin{bmatrix} \hat{x} \\ \hat{y} \\ \hat{\sigma} \end{bmatrix} = - \left( \frac{\partial^2 D(x, y, \sigma)}{\partial (x, y, \sigma)^2} \right)^{-1} \left( \frac{\partial D(x, y, \sigma)}{\partial (x, y, \sigma)} \right) \]
+
+Sostituendo il vettore di spostamento ottimo $\bm{\hat{\Delta}}$ all'interno dello sviluppo di Taylor iniziale, otteniamo il valore di intensità interpolato assunto dalla funzione DoG in corrispondenza del reale estremo fisico sub-pixel:
+\[ \boxed{D_{\text{extremal}} = D(x_i, y_i, \sigma_i) + \frac{1}{2} \left( \frac{\partial D(x, y, \sigma)}{\partial (x, y, \sigma)} \right)^T \bm{\hat{\Delta}}} \]
+
+La posizione spaziale e di scala del keypoint viene aggiornata sommando il vettore di spostamento $\bm{\hat{\Delta}}$ alle coordinate intere di partenza.
+
+\newpage
+
+\section{Rimozione Dei Punti Di Interesse Instabili}
+
+Non tutti i candidati chiave individuati costituiscono punti stabili per il matching. Per garantire l'affidabilità delle feature, l'algoritmo deve analizzare ed eliminare due categorie di punti instabili:
+\begin{itemize}
+    \item Keypoint situati in regioni a basso contrasto (sensibili al rumore).
+    \item Keypoint disposti lungo i bordi rettilinei dell'immagine.
+\end{itemize}
+
+\subsection{Rimozione Delle Feature A Basso Contrasto}
+
+Le regioni a basso contrasto presentano una debole variazione di intensità luminosa nelle immagini DoG e sono facilmente alterabili dalle fluttuazioni di rumore del sensore.
+
+Per escluderle, si analizza l'intensità della funzione DoG valutata alla coordinata sub-pixel interpolata $D_{\text{extremal}}$. Un punto di interesse viene rimosso dal set dei candidati se la sua intensità risulta inferiore a una determinata soglia di contrasto:
+\[ \boxed{|D_{\text{extremal}}| < 0.03} \]
+
+% [IMMAGINE RIF INTERVALLO 63-93] Confronto prima e dopo l'applicazione del filtro di rimozione dei keypoint a basso contrasto sul soggetto della cattedrale — Slide 23 / Pagina 23 del PDF
+
+\subsection{Rimozione Dei Keypoint Lungo I Bordi}
+
+I bordi rettilinei presentano una forte variazione di intensità solo in direzione ortogonale al bordo stesso, mentre la variazione è minima o nulla lungo la direzione parallela. Questa asimmetria rende i punti instabili e difficili da localizzare con precisione lungo il profilo del bordo.
+
+Per isolare ed eliminare questi punti, si analizza il comportamento del gradiente locale attorno al keypoint, distinguendo tre casi geometrici:
+\begin{itemize}
+    \item \textbf{Regione piatta} (\emph{flat region}): Entrambe le componenti del gradiente spaziale presentano valori prossimi a zero.
+    \item \textbf{Bordo} (\emph{edge}): Una componente del gradiente presenta un'ampiezza molto elevata ($\gg 0$), mentre l'altra componente ortogonale presenta un'ampiezza trascurabile.
+    \item \textbf{Angolo} (\emph{corner}): Entrambe le componenti del gradiente spaziale assumono valori elevati ($\gg 0$).
+\end{itemize}
+
+Poiché solo gli angoli costituiscono feature stabili e ben localizzate in tutte le direzioni spaziali, l'algoritmo deve scartare i pixel che presentano risposte sbilanciate. Questo controllo viene eseguito matematicamente studiando la matrice Hessiana spaziale $2 \times 2$:
+\[ \bm{H} = \begin{bmatrix} D_{xx} & D_{xy} \\ D_{xy} & D_{yy} \end{bmatrix} \]
+
+Gli autovalori della matrice $\bm{H}$ descrivono le curvature principali principali della superficie DoG $D(x, y)$ in quel punto. Siano $\alpha$ e $\beta$ i due autovalori di $\bm{H}$, che rappresentano rispettivamente la curvatura principale massima e minima.
+\begin{itemize}
+    \item Un bordo presenta una curvatura massima molto elevata e una curvatura minima ridotta ($\alpha \gg \beta$).
+    \item Un angolo presenta curvature elevate in entrambe le direzioni principali ($\alpha \approx \beta$).
+\end{itemize}
+
+Definiamo $r$ come il rapporto costante tra i due autovalori:
+\[ \alpha = r\beta \]
+
+Per evitare l'onere computazionale dovuto al calcolo esplicito dei singoli autovalori, si sfruttano le relazioni che legano questi ultimi alla traccia (\emph{Trace}) e al determinante (\emph{Determinant}) della matrice $\bm{H}$:
+\[ \text{Tr}(\bm{H}) = D_{xx} + D_{yy} = \alpha + \beta \]
+\[ \text{Det}(\bm{H}) = D_{xx}D_{yy} - (D_{xy})^2 = \alpha\beta \]
+
+Mettendo in relazione il quadrato della traccia con il determinante, otteniamo la seguente espressione:
+\begin{align*}
+\frac{\text{Tr}(\bm{H})^2}{\text{Det}(\bm{H})} &= \frac{(\alpha + \beta)^2}{\alpha\beta} \\
+&= \frac{(r\beta + \beta)^2}{r\beta^2} \\
+&= \frac{(r+1)^2}{r}
+\end{align*}
+
+Questa grandezza funge da misura quantitativa dell'effetto bordo (\emph{edge-ness}). Essa assume il suo valore minimo quando i due autovalori sono perfettamente uguali (ovvero per $r=1$) e cresce rapidamente al crescere del rapporto di asimmetria $r$.
+
+Per eliminare i punti di interesse disposti lungo i bordi, l'algoritmo impone che il rapporto tra le curvature sia inferiore a una soglia prestabilita $r_{\text{threshold}}$, che nell'implementazione standard viene posta pari a $10$:
+\[ \boxed{\frac{\text{Tr}(\bm{H})^2}{\text{Det}(\bm{H})} < \frac{(r_{\text{threshold}} + 1)^2}{r_{\text{threshold}}}} \]
+Per $r_{\text{threshold}} = 10$, il vincolo di accettazione richiede che il rapporto sia strettamente inferiore a $12.1$. Tutti i punti che non soddisfano questa disequazione vengono scartati.
+
+% [IMMAGINE RIF INTERVALLO 63-93] Confronto prima e dopo l'applicazione del filtro di rimozione basato sulla curvatura Hessiana (rimozione dei bordi) — Slide 27 / Pagina 27 del PDF
+
+\newpage
+
+\section{Assegnazione Dell'Orientamento Ai Keypoint}
+
+Al termine della fase di filtraggio, disponiamo di un insieme di punti di interesse stabili e localizzati con precisione sia nello spazio bidimensionale dell'immagine che nello spazio delle scale (garantendo l'invarianza di scala). Per completare i requisiti geometrici e ottenere la piena \textbf{invarianza alla rotazione}, dobbiamo associare a ciascun keypoint una direzione di riferimento.
+
+% [IMMAGINE RIF INTERVALLO 63-93] Dettaglio pixel di un intorno locale di un keypoint e calcolo vettoriale delle direzioni dei gradienti circostanti — Slide 28 / Pagina 28 del PDF
+
+L'idea fondamentale consiste nel raccogliere le direzioni e le ampiezze dei gradienti dei pixel compresi in una regione locale circostante il punto di interesse. Si individua l'orientamento spaziale più prominente in quella porzione di immagine e lo si assegna al keypoint. Qualsiasi successiva operazione di calcolo per la costruzione del descrittore verrà eseguita ruotando il sistema di riferimento in accordo con questo orientamento.
+
+\subsection{Formulazione Matematica Per Magnitudo E Orientamento}
+
+Per ciascun pixel $(x, y)$ appartenente alla regione locale centrata sul keypoint, l'ampiezza del gradiente $m(x, y)$ e la sua direzione angolare $\theta(x, y)$ vengono calcolate utilizzando le formule alle differenze finite applicate all'immagine sfocata $L$ alla scala del keypoint:
+\[ m(x, y) = \sqrt{\left( L(x+1, y) - L(x-1, y) \right)^2 + \left( L(x, y+1) - L(x, y-1) \right)^2} \]
+\[ \boxed{\theta(x, y) = \tan^{-1} \left( \frac{L(x, y+1) - L(x, y-1)}{L(x+1, y) - L(x-1, y)} \right)} \]
+
+% [IMMAGINE RIF INTERVALLO 63-93] Visualizzazione grafica del calcolo delle magnitudo e degli orientamenti dei gradienti locali nell'intorno del keypoint — Slide 29 / Pagina 29 del PDF
+
+\subsection{Costruzione Dell'Istogramma Degli Orientamenti}
+
+Le informazioni di direzione e ampiezza calcolate per tutti i pixel dell'intorno vengono accumulate all'interno di un istogramma degli orientamenti.
+
+% [IMMAGINE RIF INTERVALLO 63-93] Rappresentazione del calcolo dell'istogramma pesato delle direzioni dei gradienti locali — Slide 30 / Pagina 30 del PDF
+
+La strutturazione dell'istogramma segue regole precise:
+\begin{itemize}
+    \item L'intero angolo giro di $360^{\circ}$ viene suddiviso in 36 intervalli (\emph{bins}), ciascuno dei quali copre un'ampiezza angolare di $10^{\circ}$.
+    \item Ciascun pixel dell'intorno contribuisce ad accumulare valore nel bin corrispondente alla propria direzione angolare $\theta(x, y)$. Ad esempio, un gradiente orientato a $18.759^{\circ}$ andrà ad incrementare il bin associato all'intervallo $10^{\circ}$–$19^{\circ}$.
+    \item L'entità del contributo sommata al bin non è unitaria, bensì proporzionale alla magnitudo del gradiente $m(x, y)$ calcolata in quel pixel. Inoltre, questo contributo viene pesato mediante una funzione di decadimento Gaussiana centrata sulla posizione spaziale del keypoint, attribuendo un'importanza maggiore ai gradienti fisicamente più vicini al punto di interesse.
+\end{itemize}
+
+Una volta completato l'accumulo per tutti i pixel della regione di supporto, l'istogramma mostrerà uno o più picchi in corrispondenza delle direzioni spaziali dominanti dell'immagine.
+
+\subsection{Gestione Dei Picchi Multipli}
+
+La direzione associata al picco più elevato dell'istogramma viene assegnata come orientamento dominante del keypoint.
+
+% [IMMAGINE RIF INTERVALLO 63-93] Visualizzazione di un istogramma degli orientamenti con la presenza di picchi multipli che superano la soglia del 80% — Slide 31 / Pagina 31 del PDF
+
+Nel caso in cui l'istogramma presenti altri picchi locali aventi un'altezza pari o superiore all'**$80\%$ del picco principale** ($> 0.8 \times \text{peak}$):
+\begin{itemize}
+    \item L'algoritmo provvede a duplicare il keypoint, creando un nuovo punto di interesse distinto.
+    \item Il nuovo punto condividerà le medesime coordinate spaziali $(x, y)$ e la stessa scala caratteristica $\sigma$ del punto originale, ma gli verrà assegnato l'orientamento corrispondente al secondo picco rilevato.
+    \item Verranno quindi generati descrittori indipendenti per ciascuno degli orientamenti dominanti individuati, garantendo la robustezza del matching anche in presenza di strutture geometriche complesse o simmetriche nell'intorno locale del punto.
+\end{itemize}
+
+\section{Generazione Del Descrittore SIFT}
+
+Nelle fasi precedenti della pipeline SIFT abbiamo ottenuto punti di interesse caratterizzati da una precisa localizzazione nello spazio delle immagini e da un'associata scala caratteristica e orientamento dominante. L'ultimo passaggio fondamentale consiste nella generazione del descrittore locale, comunemente denominato \textbf{descrittore} (\emph{descriptor}), che funge da vera e propria impronta digitale del punto di interesse. Questo vettore multidimensionale deve caratterizzare l'intorno locale in modo così specifico da consentire di distinguere un punto associato, per esempio, alla forma di un occhio da altri dettagli geometricamente diversi quali orecchie, nasi o dita.
+
+\subsection{Progettazione Di Un Descrittore Robusto}
+
+L'impronta digitale di un keypoint deve essere concepita per soddisfare contemporaneamente tre requisiti fondamentali:
+\begin{itemize}
+    \item Deve possedere un'elevata \textbf{distintività} (\emph{uniqueness}), per evitare ambiguità in fase di accoppiamento.
+    \item Deve presentare una notevole \textbf{semplicità di calcolo}, per poter essere estratta rapidamente in tempo reale.
+    \item Deve mostrare tolleranza rispetto alle imperfezioni e alle piccole deformazioni, poiché i dettagli di una stessa scena fisica acquisiti in due inquadrature diverse non risulteranno mai matematicamente identici.
+\end{itemize}
+
+Per raggiungere questo equilibrio, SIFT adotta una partizione spaziale dell'intorno del punto di interesse. Viene estratta una finestra quadrata di dimensioni $16 \times 16$ pixel centrata sul keypoint. Questa macro-regione viene successivamente suddivisa in una griglia regolare composta da sedici sotto-finestre di dimensioni $4 \times 4$ pixel ciascuna.
+
+% [IMMAGINE RIF INTERVALLO 94-121] Suddivisione della finestra macroscopica 16x16 in sotto-regioni di calcolo 4x4 e vettori risultanti a 128 dimensioni — Slide 3 / Pagina 3 del PDF
+
+\subsection{Calcolo Degli Istogrammi Dei Gradienti Locali}
+
+All'interno di ciascuna delle sedici sotto-finestre $4 \times 4$ pixel, l'algoritmo calcola l'ampiezza (magnitudo) e la direzione angolare del gradiente di intensità per ognuno dei 16 pixel costituenti.
+
+% [IMMAGINE RIF INTERVALLO 94-121] Mappatura degli orientamenti dei gradienti locali in sotto-finestre 4x4 all'interno di un istogramma a 8 canali angolari — Slide 4 / Pagina 4 del PDF
+
+Questi orientamenti locali non vengono memorizzati direttamente, bensì discretizzati e accumulati all'interno di un istogramma locale composto da **8 canali** (\emph{bins}). La partizione angolare dei $360^{\circ}$ dell'angolo giro si sviluppa in intervalli regolari di $45^{\circ}$:
+\begin{itemize}
+    \item Il primo canale raccoglie gli orientamenti compresi nell'intervallo spaziale $0^{\circ}$–$44^{\circ}$.
+    \item Il secondo canale raccoglie gli orientamenti compresi nell'intervallo $45^{\circ}$–$89^{\circ}$.
+    \item La medesima suddivisione si applica progressivamente per i restanti sei canali.
+\end{itemize}
+
+L'entità del contributo sommatica a ciascun canale dell'istogramma è direttamente proporzionale alla magnitudo del gradiente locale calcolata nel pixel d'interesse.
+
+\subsubsection{La Pesatura Spaziale Gaussiana}
+A differenza del calcolo dell'orientamento dominante del keypoint, l'accumulo del descrittore SIFT tiene conto anche della distanza geometrica di ciascun pixel rispetto al centro del punto di interesse. I gradienti fisicamente lontani dal centro devono avere un'influenza minore sul descrittore per ridurre la sensibilità alle variazioni di sfondo o alle occlusioni parziali.
+
+% [IMMAGINE RIF INTERVALLO 94-121] Applicazione della finestra di pesatura gaussiana bidimensionale (campana di Gauss) per scalare le magnitudo locali — Slide 5 / Pagina 5 del PDF
+
+Questo comportamento si ottiene moltiplicando l'ampiezza del gradiente di ciascun pixel per una \textbf{funzione di pesatura Gaussiana} bidimensionale (strutturata come una classica curva a campana 2D) centrata sul keypoint. All'aumentare della distanza spaziale dal centro, il fattore moltiplicativo decresce esponenzialmente, riducendo l'intensità del contributo apportato all'istogramma.
+
+\subsection{Compilazione E Normalizzazione Del Vettore SIFT}
+
+Completando il calcolo descritto per ciascuna delle sotto-regioni $4 \times 4$, otteniamo per ognuna di esse un istogramma locale a 8 canali. Concatenando linearmente i vettori dei 16 istogrammi locali, si ottiene un vettore di caratteristiche complessivo di dimensioni:
+\[ \boxed{d = 16 \times 8 = 128} \]
+
+Questo vettore di 128 elementi definisce il descrittore SIFT grezzo. Tuttavia, per poter essere utilizzato in modo affidabile, esso deve essere reso robusto rispetto alle variazioni di illuminazione e di saturazione del sensore.
+
+\subsubsection{Invarianza Fotometrica E Gestione Della Saturazione}
+Un descrittore appena generato non è intrinsecamente invariante rispetto ai cambiamenti di illuminazione spaziale dell'immagine. Per ottenere l'invarianza fotometrica e compensare le variazioni di contrasto lineare, il vettore a 128 dimensioni viene normalizzato a norma unitaria (L2):
+\[ \bm{f}_{\text{norm}} = \frac{\bm{f}}{\lVert\bm{f}\rVert_2} \]
+
+Inoltre, per ridurre gli effetti non lineari dovuti alla saturazione dei pixel della camera (situazione tipica nelle riprese reali in presenza di riflessi o superfici molto chiare), l'algoritmo applica una soglia massima (\emph{clipping}) impostando a un valore massimo di $0.2$ ciascun elemento del descrittore normalizzato. A seguito di questa operazione di taglio, il vettore a 128 dimensioni viene nuovamente normalizzato a norma L2 unitaria.
+
+\subsubsection{Invarianza Alla Rotazione Nel Descrittore}
+Il vettore descrittore si basa sugli orientamenti spaziali dei gradienti locali. Se l'immagine subisce una rotazione, l'orientamento di tutti i gradienti varia in modo solidale, alterando completamente la firma numerica del descrittore.
+
+Per garantire la completa invarianza rispetto alla rotazione, l'orientamento di ciascun gradiente locale viene calcolato in modo relativo rispetto all'orientamento dominante precedentemente associato al keypoint. Questo si traduce matematicamente nella sottrazione dell'angolo dominante del keypoint da ciascun orientamento locale, garantendo la costanza del descrittore indipendentemente dalla rotazione complessiva dell'immagine nella scena.
+
+% [IMMAGINE RIF INTERVALLO 94-121] Esempio visivo di corrispondenze di griglie orientate SIFT rilevate su inquadrature distinte di tetti urbani — Slide 7 / Pagina 7 del PDF
+
+\subsection{La Strategia SIFT Per L'Invarianza Di Scala Del Descrittore}
+
+Un aspetto cruciale riguarda la gestione dell'invarianza di scala per la regione di supporto del descrittore. Una prima soluzione intuitiva consisterebbe nell'estrarre una finestra di dimensioni variabili, con un raggio spaziale direttamente proporzionale alla scala caratteristica del punto di interesse rilevato.
+
+% [IMMAGINE RIF INTERVALLO 94-121] Schema di calcolo basato su una finestra di estrazione di dimensioni variabili proporzionale alla scala caratteristica — Slide 17 / Pagina 17 del PDF
+
+Tuttavia, SIFT implementa una strategia differente e più efficiente dal punto di vista dell'architettura computazionale:
+
+% [IMMAGINE RIF INTERVALLO 94-121] Schema piramidale SIFT basato sull'estrazione a finestra spaziale fissa 16x16 sui diversi livelli d'ottava — Slide 18 / Pagina 18 del PDF
+
+Anziché riscalare la finestra di calcolo sul livello di risoluzione originale, l'algoritmo opera direttamente sul livello d'ottava (ovvero la versione già opportunamente sottocampionata o riscalata dell'immagine all'interno dello spazio di scala) corrispondente alla scala in cui il keypoint è stato rilevato. Su questa immagine riscalata, l'intorno locale del descrittore viene calcolato impostando \textbf{sempre una finestra fissa di $16 \times 16$ pixel}, senza applicare ulteriori interpolazioni geometriche sulla patch. Questa uniformità consente di ottimizzare in modo significativo l'efficienza di calcolo del descrittore a qualsiasi livello di scala.
+
+\newpage
+
+\section{Riepilogo Sull'Invarianza Di Scala}
+
+Analizziamo ora in modo comparativo le soluzioni sviluppate nel corso delle lezioni per risolvere il problema del rilevamento ripetibile in presenza di cambiamenti di scala spaziale.
+
+\subsection{Il Limite Del Rilevatore Di Harris Classico}
+
+Nelle lezioni precedenti è stato introdotto il rilevatore di angoli di Harris come strumento robusto per l'individuazione di corner stabili, dimostrandone l'invarianza rispetto alle rotazioni e la parziale invarianza rispetto ai cambiamenti fotometrici affini. Tuttavia, questo rivelatore soffre di un limite strutturale di non-invarianza rispetto alla scala.
+
+% [IMMAGINE RIF INTERVALLO 94-121] Rappresentazione schematica del fallimento del rilevamento d'angolo di Harris a fronte di un forte ingrandimento spaziale — Slide 8 / Pagina 8 del PDF
+
+Se i parametri spaziali del rilevatore (la scala di integrazione $\sigma_I$ e la scala di differenziazione $\sigma_D$) vengono mantenuti fissi, la variazione della scala geometrica dell'immagine (ad esempio a causa dell'avvicinamento della fotocamera all'oggetto) altera il numero di punti rilevati, compromettendo la ripetibilità.
+
+% [IMMAGINE RIF INTERVALLO 94-121] Schema di scomposizione spaziale che mostra la necessità di definire una strategia di rilevamento coerente a scale differenti — Slide 9 / Pagina 9 del PDF
+
+Per preservare la ripetibilità spaziale, occorre implementare una strategia matematica strutturata che garantisca il rilevamento dello stesso punto di interesse a scale fisiche differenti.
+
+\subsection{Soluzione Esaustiva Multi-Parametrica E Suoi Limiti}
+
+Un primo tentativo di soluzione consiste nell'eseguire il rilevamento di Harris su entrambe le immagini variando in modo esaustivo i parametri dimensionali della finestra di integrazione.
+
+% [IMMAGINE RIF INTERVALLO 94-121] Tentativo di allineamento delle feature locali mediante variazione numerica della finestra di supporto — Slide 10 / Pagina 10 del PDF
+
+Se si individua una specifica coppia di parametri della finestra di calcolo che massimizza la similarità tra i descrittori estratti nei due intorni, si conclude di aver identificato lo stesso punto fisico della scena. Questo approccio, tuttavia, presenta gravi criticità:
+\begin{itemize}
+    \item Richiede l'estrazione di punti di Harris a molteplici livelli di scala, sollevando la questione di come definire a priori il numero di scale e la corretta spaziatura dell'intervallo spaziale.
+    \item Richiede l'esecuzione di una procedura di accoppiamento esaustiva tra tutte le combinazioni di parametri, risultando estremamente inefficiente in termini di calcolo.
+    \item La scala non è definita in modo intrinseco sulla base del solo contenuto informativo dell'immagine stessa, bensì in relazione all'accoppiamento relativo tra una coppia di immagini o rispetto a un'inquadratura di riferimento.
+\end{itemize}
+
+Risulta quindi di fondamentale importanza disporre di una strategia capace di calcolare la scala caratteristica di ciascun keypoint in modo **automatico e indipendente** all'interno di ciascuna immagine, senza dover ricorrere a costose procedure di matching incrociato.
+
+\subsection{La Soluzione Tramite Laplacian Of Gaussian: Harris-Laplace}
+
+La soluzione a questo problema prevede l'utilizzo di una funzione d'area robusta per analizzare la risposta al variare della scala, identificando la scala caratteristica in corrispondenza del massimo locale della risposta. L'operatore teorico ideale per questa ricerca è il Laplacian of Gaussian (LoG) o la sua approssimazione Difference of Gaussians (DoG).
+
+% [IMMAGINE RIF INTERVALLO 94-121] Confronto delle curve di risposta spettrale del LoG per l'individuazione indipendente delle scale caratteristiche s1 e s2 — Slide 12 / Pagina 12 del PDF
+
+Questo principio trova applicazione nell'estrattore di punti di interesse **Harris-Laplace**, che garantisce l'invarianza di scala per i punti d'angolo combinando due elaborazioni distinte:
+
+% [IMMAGINE RIF INTERVALLO 94-121] Struttura bidimensionale della griglia locale e calcolo dei massimi spaziali per il rilevatore Harris-Laplace — Slide 14 / Pagina 14 del PDF
+
+\begin{enumerate}
+    \item \textbf{Localizzazione spaziale}: Si determinano i punti di interesse candidati nello spazio bidimensionale applicando il rilevatore di Harris a scale multiple campionate geometricamente ($\sigma_n = k\sigma$). In ciascun livello, si selezionano i soli massimi locali della risposta spaziale $R$ all'interno di una finestra locale $W$:
+    \[ R(x, y, \sigma_D) > R(x_w, y_w, \sigma_D) \quad \forall x_w \in W \]
+    dove la risposta d'angolo $R$ è definita in funzione della matrice dei momenti secondi:
+    \[ R(C) = \det\left(C(x, y, \sigma_i, \sigma_d)\right) - k \operatorname{trace}^2\left(C(x, y, \sigma_i, \sigma_d)\right) \]
+
+    \item \textbf{Selezione della scala caratteristica}: Tra i punti candidati individuati, si selezionano solo quelli per i quali la risposta del Laplaciano normalizzato (LoG) presenta un massimo locale lungo la coordinata della scala $\sigma_D$ e supera una soglia minima $t$:
+    \[ F(x, y, \sigma_D) > F(x, y, \sigma_{D-1}) \quad \text{and} \quad F(x, y, \sigma_D) > F(x, y, \sigma_{D+1}) \]
+    con il vincolo di soglia $F(x, y, \sigma_D) > t$. La misura normalizzata è definita come:
+    \[ F(x, y, \sigma_D) = \sigma_D^2 \left( L_{xx}(x, y, \sigma_D) + L_{yy}(x, y, \sigma_D) \right) \]
+\end{enumerate}
+
+% [IMMAGINE RIF INTERVALLO 94-121] Selezione dei picchi spaziali del Laplacian of Gaussian su livelli discretizzati nello spazio delle scale — Slide 15 / Pagina 15 del PDF
+
+Si noti che l'algoritmo Harris-Laplace opera esclusivamente sul rilevamento geometrico, senza fare uso di descrittori locali; l'unico scopo di questa pipeline è la localizzazione ripetibile del punto e della sua scala caratteristica coerente.
+
+\newpage
+
+\section{Associazione E Corrispondenza Tra Feature (Feature Matching)}
+
+Una volta estratti i descrittori a 128 dimensioni per tutti i punti di interesse rilevati in due immagini distinte $I_1$ e $I_2$, l'algoritmo deve stabilire le corrispondenze corrette.
+
+\subsection{Strategia Di Accoppiamento E Distanza Tra Descrittori}
+
+La procedura generale per identificare l'associazione ottimale si articola nei seguenti passaggi:
+\begin{enumerate}
+    \item Si definisce una funzione di distanza matematica per confrontare numericamente la similarità tra due vettori descrittori.
+    \item Per ciascuna feature della prima immagine $I_1$, si calcola la distanza rispetto a tutte le feature estratte nella seconda immagine $I_2$, identificando come candidata l'associazione caratterizzata dalla distanza minima.
+\end{enumerate}
+
+La scelta più intuitiva per definire la differenza tra due vettori descrittori $\bm{f}_1$ e $\bm{f}_2$ è la classica distanza Euclidea (norma L2):
+\[ d(\bm{f}_1, \bm{f}_2) = \lVert \bm{f}_1 - \bm{f}_2 \rVert_2 \]
+
+Tuttavia, l'utilizzo esclusivo della distanza L2 presenta forti limiti applicativi negli scenari reali.
+
+% [IMMAGINE RIF INTERVALLO 94-121] Ambiguità dell'accoppiamento basato su semplice distanza L2 in presenza di strutture spaziali ripetitive (staccionata bianca) — Slide 20 / Pagina 20 del PDF
+
+Come evidenziato nell'esempio della staccionata bianca, la presenza di strutture geometriche ripetitive o di trame uniformi (\emph{textures}) fa sì che descrittori associati a posizioni spaziali diverse della scena presentino vettori quasi identici. In queste condizioni, la semplice minimizzazione della distanza Euclidea produce punteggi ottimi anche per accoppiamenti errati (ambigui), generando un elevato numero di falsi positivi.
+
+\subsection{Il Rapporto Del Secondo Vicino Più Prossimo (Ratio Test)}
+
+Per scartare le associazioni ambigue dovute alla presenza di trame ripetitive, David Lowe ha introdotto una metrica basata sul rapporto delle distanze dei primi due vicini più prossimi, comunemente nota come \textbf{Ratio Test}.
+
+Per ciascuna feature d'interesse estratta nella prima immagine, si individuano i due descrittori più simili nella seconda immagine, ordinandoli per distanza crescente:
+\begin{itemize}
+    \item Il vicino più prossimo (\emph{Nearest Neighbor}, NND), caratterizzato dalla distanza minima.
+    \item Il secondo vicino più prossimo (\emph{Second Nearest Neighbor}, SNND), caratterizzato dalla seconda distanza minima.
+\end{itemize}
+
+Un accoppiamento viene considerato valido se e solo se la distanza del secondo vicino più prossimo risulta essere significativamente maggiore della distanza del primo vicino più prossimo. Questa condizione indica che il primo vicino rappresenta un'associazione univoca e non ambigua. L'accoppiamento viene accettato se soddisfa la relazione:
+\[ \boxed{\frac{\text{SNND}}{\text{NND}} > 2.8} \]
+
+Qualora il rapporto risulti inferiore a tale soglia, significa che il primo e il secondo vicino presentano distanze simili (situazione tipica in presenza di pattern ripetitivi), di conseguenza l'accoppiamento viene scartato per prevenire ambiguità.
+
+% [IMMAGINE RIF INTERVALLO 94-121] Esempio pratico di matching corretto (51 corrispondenze stabili) sulla copertina di un fumetto — Slide 22 / Pagina 22 del PDF
+
+% [IMMAGINE RIF INTERVALLO 94-121] Esempio pratico di matching corretto (58 corrispondenze stabili) sulla copertina di un DVD — Slide 23 / Pagina 23 del PDF
+
+\newpage
+
+\section{Valutazione Delle Prestazioni Dei Rilevatori}
+
+La valutazione quantitativa della qualità di un algoritmo di feature matching richiede lo studio del comportamento del sistema al variare della soglia impostata per la distanza tra i descrittori.
+
+% [IMMAGINE RIF INTERVALLO 94-121] Relazione numerica tra la soglia di distanza dei descrittori (50, 75, 200) e la correttezza del matching — Slide 24 / Pagina 24 del PDF
+
+\subsection{Veri Positivi, Falsi Positivi E Scelta Della Soglia}
+
+La scelta del valore di soglia per la distanza dei descrittori influenza direttamente le prestazioni dell'accoppiamento:
+
+% [IMMAGINE RIF INTERVALLO 94-121] Grafico delle distribuzioni di probabilità per accoppiamenti corretti (veri positivi) ed errati (falsi positivi) — Slide 25 / Pagina 25 del PDF
+
+\begin{itemize}
+    \item \textbf{Veri Positivi} (\emph{True Positives}, TP): Rappresentano il numero di accoppiamenti rilevati dall'algoritmo che risultano geometricamente corretti nella scena reale. Se l'obiettivo è massimizzare questo valore, occorrerebbe impostare una soglia di distanza elevata (permettendo anche a descrittori meno simili di associarsi).
+    \item \textbf{Falsi Positivi} (\emph{False Positives}, FP): Rappresentano il numero di accoppiamenti rilevati dall'algoritmo che risultano errati dal punto di vista geometrico. Per ridurre al minimo i falsi positivi, occorrerebbe impostare una soglia di distanza estremamente restrittiva (bassa).
+\end{itemize}
+
+\subsection{Precisione, Recall E Curve ROC}
+
+Le metriche statistiche standard utilizzate per misurare le prestazioni di un feature matcher sono la **Precisione** (\emph{Precision}) e la **Recall**:
+\[ \boxed{\text{Precision} = \frac{\text{TP}}{\text{TP} + \text{FP}}} \]
+\[ \boxed{\text{Recall} = \frac{\text{TP}}{\text{TP} + \text{FN}}} \]
+
+In queste formulazioni:
+\begin{itemize}
+    \item $\text{TP}$ indica il numero di veri positivi (corrispondenze corrette rilevate).
+    \item $\text{FP}$ indica il numero di falsi positivi (corrispondenze errate rilevate).
+    \item $\text{FN}$ indica il numero di falsi negativi (corrispondenze corrette presenti ma non rilevate dal sistema).
+\end{itemize}
+
+\subsubsection{La Curva ROC}
+L'andamento complessivo del comportamento del rilevatore viene descritto mediante la curva \textbf{ROC} (\emph{Receiver Operating Characteristic}), che mette in relazione la sensibilità rispetto alla specificità spaziale del sistema.
+
+% [IMMAGINE RIF INTERVALLO 94-121] Curva ROC (Sensibilità rispetto a 1-Specificità) con l'evidenziazione dei diversi punti di lavoro A, B e C — Slide 27 / Pagina 27 del PDF
+
+La curva ROC traccia sull'asse delle ordinate la probabilità di rilevare i veri positivi (la \textbf{Sensibilità}, \emph{Sensitivity} o tasso di veri positivi):
+\[ \text{Sensitivity} = p(\text{True Positives are found}) \]
+Sull'asse delle ascisse viene invece tracciata la probabilità di generare falsi positivi (definita come **1-Specificità**, \emph{1-Specificity}):
+\[ \text{1-Specificity} = p(\text{False Positives are found}) \]
+
+I punti $A$, $B$ e $C$ disposti lungo la curva rappresentano differenti punti di lavoro del sistema ottenuti modificando la soglia di distanza dei descrittori. Una soglia molto restrittiva (punto $A$) riduce quasi a zero i falsi positivi ma limita fortemente la sensibilità; al contrario, una soglia molto permissiva (punto $C$) massimizza il rilevamento delle corrispondenze corrette accettando tuttavia un elevato tasso di falsi positivi.
+
+\subsection{Applicazioni Pratiche Delle Feature Locali}
+
+L'estrazione e il matching di caratteristiche locali robuste costituiscono la tecnologia abilitante per innumerevoli applicazioni nei campi della robotica e dell'elaborazione delle immagini:
+\begin{itemize}
+    \item Allineamento di immagini (\emph{image alignment}), utilizzato ad esempio per la creazione di mosaici di immagini e panorami (\emph{image stitching}).
+    \item Ricostruzione geometrica 3D di scene e oggetti a partire da immagini bidimensionali.
+    \item Tracciamento del movimento (\emph{motion tracking}) di elementi all'interno di sequenze video.
+    \item Riconoscimento di oggetti (\emph{object recognition}), alla base di sistemi storici di ricerca visiva come Google Goggles.
+    \item Indicizzazione e recupero di immagini all'interno di database di grandi dimensioni (\emph{image retrieval}).
+    \item Navigazione robotica autonoma e localizzazione e mappatura simultanea (\emph{SLAM}).
+\end{itemize}
+
+
+
+
+
+
+\newpage
+
+%---------------------------------------------------------
+% Referenze Bibliografiche (Risolve i warning delle citazioni)
+%---------------------------------------------------------
+\begin{thebibliography}{99}
+
+\bibitem{Beaudet78}
+P. R. Beaudet.
+\emph{Rotationally invariant image operators}.
+International Joint Conference on Pattern Recognition, 1978.
+
+\bibitem{Harris88}
+C. Harris and M. Stephens.
+\emph{A combined corner and edge detector}.
+Alvey Vision Conference, 1988.
+
+\bibitem{Lindeberg98}
+T. Lindeberg.
+\emph{Feature detection with automatic scale selection}.
+International Journal of Computer Vision, vol. 30, no. 2, pp. 77-116, 1998.
+
+\bibitem{Lowe99}
+D. G. Lowe.
+\emph{Object recognition from local scale-invariant features}.
+International Conference on Computer Vision, 1999.
+
+\bibitem{MikolajczykSchmid01}
+K. Mikolajczyk and C. Schmid.
+\emph{Indexing based on scale invariant interest points}.
+International Conference on Computer Vision, 2001.
+
+\bibitem{MikolajczykSchmid04}
+K. Mikolajczyk and C. Schmid.
+\emph{Scale \& affine invariant interest point detectors}.
+International Journal of Computer Vision, 2004.
+
+\bibitem{TuytelaarsVanGool04}
+T. Tuytelaars and L. Van Gool.
+\emph{Matching widely separated views based on affine invariant regions}.
+International Journal of Computer Vision, 2004.
+
+\bibitem{Matas02}
+J. Matas, O. Chum, M. Urban, and T. Pajdla.
+\emph{Robust wide baseline stereo from maximally stable extremal regions}.
+British Machine Vision Conference, 2002.
+
+\bibitem{KadirBrady01}
+T. Kadir and M. Brady.
+\emph{Saliency, scale and image description}.
+International Journal of Computer Vision, 2001.
+
+\end{thebibliography}
+\end{document}

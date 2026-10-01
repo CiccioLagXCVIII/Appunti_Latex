@@ -1,0 +1,962 @@
+﻿\documentclass[11pt, a4paper]{article}
+
+%---------------------------------------------------------
+% Lingua E Codifica
+%---------------------------------------------------------
+\usepackage[italian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+%---------------------------------------------------------
+% Layout Di Pagina E Tipografia
+%---------------------------------------------------------
+\usepackage[margin=2cm, top=1.5cm, bottom=1.5cm]{geometry}
+\usepackage{parskip}
+\usepackage{microtype}
+
+%---------------------------------------------------------
+% Gestione Dei Colori
+%---------------------------------------------------------
+\usepackage[table]{xcolor}
+\definecolor{darkgreen}{RGB}{0,100,0}
+
+%---------------------------------------------------------
+% Matematica E Simboli
+%---------------------------------------------------------
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{mathtools}
+\usepackage{siunitx}
+
+% BB OTTIMIZZAZIONE MATRICI LUNGHE PER LA STAMPA
+\setlength{\arraycolsep}{10pt}
+\usepackage{bm}
+\usepackage{arydshln}
+
+
+%---------------------------------------------------------
+% Grafica, Immagini E Tabelle
+%---------------------------------------------------------
+\usepackage{graphicx}
+\graphicspath{{./Images/Image Filtering/}}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, patterns, angles, quotes, calc}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+
+%---------------------------------------------------------
+% Link, Riferimenti Ed Elenchi
+%---------------------------------------------------------
+\usepackage[unicode]{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+    citecolor=blue,
+    pdftitle={Capitolo 2 - Image Filtering},
+    pdfauthor={Francesco Lo Verde},
+    pdfpagemode=FullScreen,
+}
+\usepackage{bookmark}
+\usepackage{enumitem}
+\setlist{noitemsep}
+
+%---------------------------------------------------------
+% Personalizzazione Titoli E Altri Pacchetti
+%---------------------------------------------------------
+\usepackage{titlesec}
+\titleformat{\section}{\normalfont\LARGE\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\Large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalfont\large\bfseries}{\thesubsubsection}{1em}{}
+
+\usepackage{comment}
+\newtheorem{theorem}{Definizione}
+
+% Pacchetto per gli algoritmi
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+
+\SetKwData{Dati}{Input}
+\SetKwData{Risultato}{Output}
+\SetKwFor{For}{for}{do}{endfor}
+\SetKwComment{Commento}{// }{}
+
+\author{Francesco Lo Verde}
+\begin{document}
+
+\microtypesetup{expansion=false}
+
+\section{Elaborazione E Filtraggio Delle Immagini}
+
+L'elaborazione delle immagini e, in particolare, il filtraggio rappresentano strumenti fondamentali sia per migliorare la qualità visiva dei dati bidimensionali sia per estrarre informazioni strutturali utili a compiti di percezione visiva complessi.
+
+% [IMMAGINE RIF INTERVALLO 1-31] Quattro versioni di una stessa fotografia (fiori blu in un vaso giallo e ciotole su un davanzale) che mostrano diversi effetti di filtraggio (sfocatura, nitidezza, ecc.) — Slide 1 / Pagina 1 del PDF
+
+Per uno studio approfondito degli argomenti trattati in questi appunti, si rimanda ai seguenti testi di riferimento accademici:
+\begin{itemize}
+    \item Richard Szeliski, \emph{Computer Vision: Algorithms and Applications}, Springer, Capitoli 3.1, 3.2, 3.3.
+    \item Ramesh Jain, Rangachar Kasturi, Brian G. Schunck, \emph{Machine Vision}, McGraw-Hill, Capitolo 4 (pp. 112-139) e Capitolo 5 (pp. 140-185).
+\end{itemize}
+
+\subsection{Che Cos'È Un'Immagine?}
+
+Da una prospettiva fisica, la formazione di un'immagine è il risultato di un processo in cui una sorgente di illuminazione (energia) emette radiazioni che colpiscono un elemento della scena. Quest'ultimo riflette una parte della luce verso un sistema di imaging — che può essere una fotocamera digitale o l'occhio umano — il quale focalizza i raggi luminosi proiettandoli su un piano dell'immagine interno (la retina o il sensore digitale).
+
+% [IMMAGINE RIF INTERVALLO 1-31] Schema del processo di formazione dell'immagine: sorgente di luce, elemento di scena, sistema ottico di messa a fuoco e piano dell'immagine — Slide 3 / Pagina 3 del PDF
+
+Nel dominio digitale, un'immagine viene rappresentata come una griglia o matrice bidimensionale di valori di intensità, denominati pixel (\emph{picture elements}).
+
+% [IMMAGINE RIF INTERVALLO 1-31] Griglia di pixel associata alla corrispondente matrice di valori numerici di intensità — Slide 4 / Pagina 4 del PDF
+
+È convenzione comune utilizzare un singolo byte per quantizzare l'intensità di ciascun pixel in un'immagine a toni di grigio, offrendo così $2^8 = 256$ livelli discreti:
+\begin{itemize}
+    \item Il valore $0$ rappresenta il colore nero (\emph{black}).
+    \item Il valore $255$ rappresenta il colore bianco (\emph{white}).
+\end{itemize}
+
+\subsection{Rappresentazione Matematica Di Un'Immagine}
+
+Matematicamente, possiamo interpretare un'immagine continua in toni di grigio come una funzione bidimensionale $f$ che mappa coppie di coordinate spaziali reali in un valore di intensità reale:
+\[ f: \mathbb{R}^2 \to \mathbb{R} \]
+dove il valore $f(x,y)$ esprime la luminosità o l'intensità dell'immagine nella posizione spaziale $(x,y)$. Un'immagine digitale non è altro che una versione discreta di questa funzione continua, ottenuta mediante i processi di \textbf{campionamento} (discretizzazione dello spazio geometrico) e \textbf{quantizzazione} (discretizzazione dei valori assunti dalla funzione).
+
+% [IMMAGINE RIF INTERVALLO 1-31] Ritratto in toni di grigio di Albert Einstein e sua corrispondente visualizzazione tridimensionale come superficie di intensità $f(x,y)$ — Slide 5 / Pagina 5 del PDF
+
+Più formalmente, è comune rappresentare un'immagine discreta bidimensionale limitando il dominio spaziale a intervalli finiti e definendo l'insieme dei possibili valori di intensità in un intervallo normalizzato $[0, 1]$ oppure nell'intervallo standard $[0, 255]$:
+\[ f: [a, b] \times [c, d] \to [0, 1] \quad \text{oppure} \quad [0, 255] \]
+
+Nel caso di un'immagine a colori, come una rappresentazione nello spazio colore RGB, la funzione assume un carattere vettoriale, associando a ciascuna coordinata discreta $[i, j]$ un vettore di tre elementi corrispondenti ai canali rosso ($r$), verde ($g$) e blu ($b$):
+\[ \bm{f}[i, j] = \begin{bmatrix} r[i, j] \\ g[i, j] \\ b[i, j] \end{bmatrix} \]
+
+\newpage
+
+\section{Operatori Puntuali E Trasformazioni Di Intensità}
+
+Sulle immagini è possibile applicare operatori matematici al fine di modificarne il contenuto. Le funzioni di elaborazione delle immagini si dividono principalmente in due categorie:
+\begin{itemize}
+    \item \textbf{Operatori puntuali} (\emph{point operators}): il valore di ciascun pixel nell'immagine di output dipende esclusivamente dal valore del pixel corrispondente nell'immagine di input (ed eventualmente da informazioni globali o parametri fissati).
+    \item \textbf{Operatori locali o di vicinato} (\emph{neighborhood or local operators}): utilizzano una collezione di valori dei pixel situati nel vicinato spaziale del pixel di interesse per determinarne il valore finale nell'immagine di output.
+\end{itemize}
+
+% [IMMAGINE RIF INTERVALLO 1-31] Esempi di operatori puntuali applicati all'immagine di un fiore (iris viola) con correzioni di contrasto, luminosità e colore — Slide 8 / Pagina 8 del PDF
+
+% [IMMAGINE RIF INTERVALLO 1-31] Esempi di operatori locali applicati all'immagine di Einstein (sfocatura gaussiana, filtro di Sobel, filtro di media) — Slide 9 / Pagina 9 del PDF
+
+\subsection{Definizione Matematica Di Trasformazione Di Immagine}
+
+In termini generali, un operatore di elaborazione delle immagini è una funzione che mappa una o più immagini di ingresso in un'immagine di uscita. Nel dominio continuo, indicando con $\bm{x}$ un punto nel dominio $D$-dimensionale delle funzioni (solitamente $D=2$ per le immagini), questa trasformazione può essere espressa come:
+\[ g(\bm{x}) = h(f(\bm{x})) \quad \text{oppure} \quad g(\bm{x}) = h(f_0(\bm{x}), \dots, f_n(\bm{x})) \]
+dove $f$ e $g$ possono essere funzioni scalari o vettoriali (ad esempio per rappresentare immagini a colori o flussi di moto bidimensionale). Nel caso di immagini discrete, in cui il dominio spaziale è composto da un numero finito di locazioni di pixel identificabili con le coordinate intere $\bm{x} = (i, j)$, la trasformazione puntuale si scrive semplicemente:
+\[ g(i, j) = h(f(i, j)) \]
+
+\subsection{Regolazione Di Contrasto E Luminosità}
+
+Due delle operazioni puntuali più diffuse sono la moltiplicazione e l'addizione con costanti. Questa trasformazione lineare assume la forma:
+\[ \boxed{g(\bm{x}) = a f(\bm{x}) + b} \]
+I parametri $a > 0$ e $b$ vengono definiti rispettivamente parametri di \textbf{guadagno} (\emph{gain}) e di \textbf{polarizzazione} (\emph{bias}). Essi controllano rispettivamente il \textbf{contrasto} e la \textbf{luminosità} dell'immagine. Il contrasto, in particolare, rappresenta la differenza di luminanza o colore che rende distinguibile un oggetto all'interno di un'immagine rispetto al suo sfondo.
+
+Il guadagno e la polarizzazione possono anche essere definiti in modo variabile nello spazio per modellare specifiche alterazioni locali:
+\[ g(\bm{x}) = a(\bm{x}) f(\bm{x}) + b(\bm{x}) \]
+Questo approccio è utile, ad esempio, per simulare l'effetto di un filtro fotografico a densità graduata (impiegato per scurire selettivamente il cielo) o per modellare il fenomeno fisico della \textbf{vignettatura} (\emph{vignetting}) all'interno di un sistema ottico.
+
+Se analizziamo l'istogramma delle intensità di un'immagine (ovvero la distribuzione di frequenza dei livelli di grigio), l'applicazione di questi parametri produce le seguenti modifiche geometriche:
+\begin{itemize}
+    \item La variazione di $b$ trasla l'intero istogramma: verso $0$ se $b < 0$ (scurendo l'immagine) o verso $255$ se $b > 0$ (rischiarandola).
+    \item La variazione di $a$ comprime ($a < 1$) o espande ($a > 1$) l'istogramma, traducendosi rispettivamente in una riduzione o in un aumento del contrasto complessivo.
+\end{itemize}
+
+% [IMMAGINE RIF INTERVALLO 1-31] Grafici che illustrano lo spostamento e la compressione/espansione dell'istogramma al variare dei parametri a e b — Slide 12 / Pagina 12 del PDF
+
+\subsection{Matting E Compositing}
+
+Un'applicazione pratica cruciale degli operatori puntuali risiede nei processi di fotoritocco e negli effetti visivi digitali:
+\begin{itemize}
+    \item Il \textbf{matting} consiste nell'estrarre un oggetto in primo piano da una determinata scena, isolandolo dallo sfondo originario.
+    \item Il \textbf{compositing} rappresenta il processo inverso, ovvero l'inserimento dell'oggetto precedentemente estratto sopra uno sfondo differente, minimizzando la presenza di artefatti visivi.
+\end{itemize}
+
+% [IMMAGINE RIF INTERVALLO 1-31] Fasi di matting e compositing applicate all'immagine di un cane su uno sfondo blu-screen per posizionarlo su un nuovo sfondo interno — Slide 13 / Pagina 13 del PDF
+
+\subsection{Istogrammi E Istogramma Di Equalizzazione}
+
+Mentre le regolazioni manuali di contrasto e luminosità permettono di migliorare l'aspetto visivo di un'immagine, sorge spontanea la necessità di automatizzare la ricerca dei parametri ottimali. Per fare ciò, è utile tracciare l'istogramma dei singoli canali colore e dei valori di luminanza.
+
+% [IMMAGINE RIF INTERVALLO 1-31] Istogramma e istogramma cumulativo dei canali R, G, B e della luminanza Y di un'immagine di un fiore — Slide 14 / Pagina 14 del PDF
+
+L'analisi dell'istogramma consente di ricavare statistiche fondamentali come il minimo, il massimo e l'intensità media. Tuttavia, per sfruttare al meglio l'intero intervallo dinamico disponibile, l'ideale sarebbe poter schiarire contemporaneamente i toni scuri e scurire quelli chiari.
+
+Questa operazione prende il nome di \textbf{equalizzazione dell'istogramma} (\emph{histogram equalization}) e si pone l'obiettivo di determinare una funzione di mappatura delle intensità $f(I)$ in modo che l'istogramma dell'immagine risultante sia piatto (ovvero che presenti una distribuzione uniforme delle intensità).
+
+% [IMMAGINE RIF INTERVALLO 1-31] Istogramma cumulativo e immagini a confronto prima e dopo l'equalizzazione dell'istogramma — Slide 16 / Pagina 16 del PDF
+
+Il principio teorico alla base di questa tecnica ricalca il metodo utilizzato per generare campioni casuali da una generica funzione di densità di probabilità, sfruttando la \textbf{funzione di distribuzione cumulativa} (\emph{cumulative distribution function}, CDF).
+
+Consideriamo le variabili di livello di grigio normalizzate nell'intervallo $[0,1]$. Indichiamo con $p(x)$ la distribuzione di probabilità dell'immagine di input (grigio $x$) e con $p(y)$ la distribuzione di probabilità dell'immagine trasformata tramite $y = f(x)$. Assumendo che il numero complessivo di pixel mappati rimanga invariato, la probabilità che un livello di grigio si trovi nell'intervallo infinitesimo $dx$ attorno a $x$ deve corrispondere alla probabilità di trovare l'intensità trasformata in $dy$ attorno a $y$:
+\[ p(y)dy = p(x)dx \]
+
+% [IMMAGINE RIF INTERVALLO 1-31] Schema del trasferimento di densità di probabilità tramite la trasformazione y = f(x) per ottenere un istogramma piatto — Slide 17 / Pagina 17 del PDF
+
+Per fare in modo che l'istogramma di output sia costante (equalizzato) sull'intervallo $[0,1]$, imponiamo che la densità di probabilità di output sia uniforme, ovvero $p(y) = 1$. Sotto questa ipotesi, l'equazione precedente si semplifica in:
+\[ dy = p(x)dx \quad \implies \quad \frac{dy}{dx} = p(x) \]
+
+Integrando entrambi i membri rispetto alla variabile di ingresso, si ottiene la funzione di trasformazione desiderata:
+\[ y = f(x) = \int_{0}^{x} p(u)du = P(x) - P(0) \]
+
+Poiché $P(x)$ rappresenta la distribuzione cumulativa di probabilità del segnale di ingresso, per definizione si ha $P(0) = 0$. Otteniamo quindi il risultato fondamentale:
+\[ \boxed{y = P(x)} \]
+
+La funzione di mappatura ottimale per equalizzare l'istogramma coincide esattamente con la funzione di distribuzione cumulativa dell'immagine di partenza, la quale è intrinsecamente una funzione monotonamente crescente.
+
+\textbf{Interpretazione intuitiva del processo:}
+\begin{itemize}
+    \item Nelle regioni in cui la densità dell'istogramma originale $p(x)$ è elevata, la distribuzione cumulativa $P(x)$ presenta una pendenza molto ripida. Di conseguenza, l'intervallo differenziale $dy$ risulterà ampio, espandendo i livelli di grigio vicini su un intervallo di uscita più vasto e riducendone la densità locale $p(y)$.
+    \item Al contrario, laddove $p(x)$ è basso, la pendenza di $P(x)$ sarà dolce. L'intervallo $dy$ risulterà quindi stretto, concentrando quelle intensità in un intervallo ridotto e aumentandone la densità.
+\end{itemize}
+
+% [IMMAGINE RIF INTERVALLO 1-31] Confronto visivo del paesaggio 'Hawkes Bay NZ' prima dell'equalizzazione (faded) e dopo l'equalizzazione dell'istogramma — Slide 20 / Pagina 20 del PDF
+
+\newpage
+
+\section{Operatori Locali E Riduzione Del Rumore}
+
+\subsection{Il Problema Della Riduzione Del Rumore}
+
+In uno scenario in cui si dispone di una telecamera fissa puntata su una scena statica, il metodo teoricamente più efficace per abbattere il rumore casuale consiste nell'acquisire un numero elevato di fotogrammi e calcolarne la media temporale. Poiché il rumore ha tipicamente valore medio nullo, la sommazione dei fotogrammi porta all'elisione reciproca delle fluttuazioni casuali dell'intensità.
+
+% [IMMAGINE RIF INTERVALLO 1-31] Esempio di tre immagini rumorose dello stesso soggetto statico che mostrano la riduzione del rumore per mediazione — Slide 21 / Pagina 21 del PDF
+
+Tuttavia, qualora si debba operare su un singolo fotogramma isolato, la strategia alternativa risiede nell'applicazione di un \textbf{operatore locale}. Gli operatori locali modificano il valore di ogni singolo pixel dell'immagine calcolando una determinata funzione matematica che riceve in input i valori dei pixel adiacenti (ovvero appartenenti a un vicinato definito).
+
+% [IMMAGINE RIF INTERVALLO 1-31] Schema di una matrice 3x3 locale trasformata in un singolo valore numerico (pari a 7) tramite una funzione locale — Slide 22 / Pagina 22 del PDF
+
+\subsection{Operatori Locali E Filtraggio Lineare}
+
+La tipologia di operatore locale più semplice e diffusa è il \textbf{filtraggio lineare} (noto anche come cross-correlazione o convoluzione). Nel filtraggio lineare, il valore di ciascun pixel dell'immagine di uscita viene calcolato come combinazione lineare (somma pesata) dei pixel del suo vicinato spaziale:
+\[ g(i,j) = \sum_{k,l} f(i+k, j+l)h(k,l) \]
+I coefficienti della combinazione lineare sono definiti all'interno di una matrice $h(k,l)$ denominata \textbf{kernel di filtraggio}, \textbf{maschera} o \textbf{filtro}.
+
+\textbf{Esempio numerico di applicazione:}
+
+Consideriamo una porzione locale di un'immagine $f$ di dimensioni $3 \times 3$ centrata sul pixel di coordinate $(i, j)$, e un filtro $h$:
+\[
+f = \begin{bmatrix} 10 & 5 & 3 \\ 4 & 6 & 1 \\ 1 & 1 & 8 \end{bmatrix}, \quad
+h = \begin{bmatrix} 0 & 0 & 0 \\ 0 & 0.5 & 0 \\ 0 & 1 & 0.5 \end{bmatrix}
+\]
+
+Il valore del pixel modificato $g(i,j)$ viene ricavato sommando i prodotti termine a termine tra le due matrici:
+\begin{align*}
+g(i,j) &= (10 \cdot 0) + (5 \cdot 0) + (3 \cdot 0) \\
+       &\quad + (4 \cdot 0) + (6 \cdot 0.5) + (1 \cdot 0) \\
+       &\quad + (1 \cdot 0) + (1 \cdot 1) + (8 \cdot 0.5) \\
+g(i,j) &= 0 + 0 + 0 + 0 + 3 + 0 + 0 + 1 + 4 = \boxed{8}
+\end{align*}
+
+% [IMMAGINE RIF INTERVALLO 1-31] Schema numerico che illustra l'operazione di combinazione lineare tra la porzione di immagine e la maschera per produrre il valore 8 — Slide 23 / Pagina 23 del PDF
+
+\newpage
+
+\section{Classificazione Dei Sistemi Nel Filtraggio Lineare}
+
+I sistemi di elaborazione delle immagini possono essere classificati rigorosamente in base ad alcune proprietà fondamentali.
+
+\textbf{Proprietà legate all'ampiezza:}
+\begin{itemize}
+    \item \textbf{Linearità} (\emph{Linearity})
+    \item \textbf{Stabilità} (\emph{Stability})
+    \item \textbf{Invertibilità} (\emph{Invertibility})
+\end{itemize}
+
+\textbf{Proprietà spaziali:}
+\begin{itemize}
+    \item \textbf{Causalità} (\emph{Causality})
+    \item \textbf{Separabilità} (\emph{Separability})
+    \item \textbf{Memoria} (\emph{Memory})
+    \item \textbf{Invarianza alla traslazione} (\emph{Shift invariance})
+    \item \textbf{Invarianza alla rotazione} (\emph{Rotation invariance})
+\end{itemize}
+
+\subsection{Linearità}
+
+Consideriamo un generico sistema rappresentabile mediante uno schema a blocchi in cui un segnale di ingresso $x(t)$ viene trasformato in un segnale di uscita $y(t)$ dall'azione del filtro $h(t)$:
+\[ x(t) \longrightarrow \boxed{\text{sistema } h(t)} \longrightarrow y(t) \]
+La risposta all'impulso del filtro $h(t)$ è definita come l'uscita generata dal sistema quando l'ingresso coincide con una funzione delta $\delta(t)$.
+
+Nel caso di segnali discreti bidimensionali (immagini), la relazione coinvolge l'immagine di ingresso $x[n, m]$, la risposta all'impulso $h[n, m]$ e l'immagine di uscita $y[n, m]$. Un sistema con risposta all'impulso $h[n, m]$ si definisce \textbf{lineare} se e solo se soddisfa il principio di sovrapposizione.
+
+Formalmente, se definiamo le uscite individuali associate a due ingressi distinti $x_1$ e $x_2$:
+\[ y_1 = h[x_1[n,m]] \quad \text{e} \quad y_2 = h[x_2[n,m]] \]
+allora il sistema è lineare se e solo se, per ogni coppia di costanti scalari $a$ e $b$, la risposta alla combinazione lineare degli ingressi è pari alla combinazione lineare delle uscite:
+\[ \boxed{h[a \, x_1[n,m] + b \, x_2[n,m]] = a \, y_1[n,m] + b \, y_2[n,m]} \]
+
+In termini pratici ed operativi, ciò equivale a poter distribuire l'applicazione del filtro rispetto alla somma di immagini regolate in ampiezza:
+\[ \text{filter}(f_1 + f_2) = \text{filter}(f_1) + \text{filter}(f_2) \]
+
+\subsection{Invarianza Alla Traslazione}
+
+Un sistema si definisce \textbf{invariante alla traslazione} (\emph{shift invariant}) se una traslazione spaziale operata sul segnale di ingresso determina una traslazione identica sul segnale di uscita.
+
+Formalmente, un sistema caratterizzato da una risposta all'impulso $h[n, m]$ è invariante alla traslazione se soddisfa l'eguaglianza:
+\[ \boxed{h[x[n - N, m - M]] = y(n - N, m - M)} \]
+Ciò implica che il filtro si comporta in modo del tutto identico a prescindere dalla posizione spaziale del pixel su cui viene applicato:
+\[ \text{filter}(\text{shift}(f)) = \text{shift}(\text{filter}(f)) \]
+
+Un importante \textbf{risultato teorico} sancisce che: qualsiasi sistema lineare e invariante alla traslazione (LTI) può essere interamente descritto come la convoluzione della sua risposta all'impulso con un ingresso arbitrario.
+
+\subsection{Derivazione Della Convoluzione 2D}
+
+Questo teorema può essere dimostrato formalmente sviluppando le proprietà di linearità e invarianza alla traslazione.
+Se $h[n,m]$ rappresenta la risposta all'impulso del sistema, allora per definizione di impulso unitario centrato nell'origine si ha:
+\[ h[\delta[n,m]] = h[n,m] \]
+
+Grazie alla proprietà di linearità, se moltiplichiamo l'impulso per una costante scalare generica $a$, quest'ultima può essere estratta dall'operatore di filtraggio:
+\[ h[a \, \delta[n,m]] = a \, h[n,m] \]
+
+Se poniamo questo scalare pari al valore assunto dal segnale di ingresso in una determinata coordinata spaziale, ossia $a = x[n,m]$, la relazione diventa:
+\[ h[x[n,m] \delta[n,m]] = x[n,m] h[n,m] \]
+
+Se assumiamo che il sistema sia anche invariante alla traslazione, la risposta a un impulso che sia stato precedentemente traslato di una quantità pari a $k$ e $l$ deve corrispondere alla risposta all'impulso traslata della medesima entità:
+\[ h[\delta[n-k, m-l]] = h[n-k, m-l] \]
+
+Combinando simultaneamente l'invarianza spaziale e la linearità (prodotto per il coefficiente scalare $x[n,m]$), possiamo scrivere:
+\[ h[x[n,m] \delta[n-k, m-l]] = x[n,m] h[n-k, m-l] \]
+
+Poiché qualsiasi segnale discreto bidimensionale può essere espresso formalmente come una combinazione lineare (somma) di impulsi discreti traslati e pesati dai rispettivi valori del segnale, possiamo sfruttare la linearità del sistema per sommare su tutte le possibili coordinate spaziali $n$ e $m$:
+\[ \sum_{n}\sum_{m} h[x[n,m] \delta[n-k, m-l]] = \sum_{n}\sum_{m} x[n,m] h[n-k, m-l] = y[k,l] \]
+
+Questa espressione definisce l'operazione di \textbf{convoluzione discreta 2D}, che viene indicata sinteticamente tramite il doppio asterisco:
+\[ \boxed{y[n,m] = x[n,m] ** h[n,m]} \]
+
+\subsection{Proprietà Della Convoluzione In Pratica}
+
+L'operazione di convoluzione possiede una serie di importanti proprietà algebriche:
+\begin{itemize}
+    \item \textbf{Commutativa}:
+    \[ a * b = b * a \]
+    Dal punto di vista del calcolo non sussiste alcuna differenza concettuale tra il ruolo del filtro e il ruolo del segnale.
+    \item \textbf{Associativa}:
+    \[ a * (b * c) = (a * b) * c \]
+    Questa proprietà risulta estremamente utile quando si applicano più filtri in sequenza temporale o spaziale. Invece di filtrare progressivamente l'immagine con diversi kernel in serie, ovvero $(((a * b_1) * b_2) * b_3)$, è possibile pre-calcolare un unico filtro equivalente tramite la convoluzione dei singoli filtri e applicarlo in un solo passaggio all'immagine d'ingresso:
+    \[ a * (b_1 * b_2 * b_3) \]
+    \item \textbf{Distributiva rispetto all'addizione}:
+    \[ a * (b + c) = (a * b) + (a * c) \]
+    \item \textbf{Fattorizzazione degli scalari}:
+    \[ k a * b = a * k b = k (a * b) \]
+    \item \textbf{Identità}: definendo l'impulso unitario come $e = [\dots, 0, 0, 1, 0, 0, \dots]$, l'applicazione della convoluzione restituisce l'immagine originale inalterata:
+    \[ a * e = a \]
+\end{itemize}
+
+\newpage
+
+\section{Cross-Correlazione E Convoluzione}
+
+Sebbene nel campo dell'apprendimento profondo i termini vengano talvolta impiegati in maniera equivalente, dal punto di vista dell'elaborazione dei segnali esiste una distinzione matematica netta tra cross-correlazione e convoluzione.
+
+\subsection{La Cross-Correlazione}
+
+Sia $F$ l'immagine discreta di ingresso, $H$ un kernel di filtraggio di dimensioni dispari pari a $(2k+1) \times (2k+1)$, e $G$ l'immagine risultante in uscita. L'operazione di \textbf{cross-correlazione} è definita matematicamente come:
+\[ \boxed{G[i, j] = \sum_{u=-k}^{k} \sum_{v=-k}^{k} H[u, v] F[i + u, j + v]} \]
+Tale operazione viene indicata formalmente tramite il simbolo $\otimes$:
+\[ G = H \otimes F \]
+
+\subsection{La Convoluzione}
+
+L'operazione di \textbf{convoluzione} condivide la stessa struttura della cross-correlazione, differendo unicamente per il fatto che il kernel di filtraggio viene preventivamente specchiato (ovvero "ruotato" o "flippato") sia in direzione orizzontale sia in direzione verticale prima di essere applicato:
+\[ \boxed{G[i, j] = \sum_{u=-k}^{k} \sum_{v=-k}^{k} H[u, v] F[i - u, j - v]} \]
+L'operazione viene rappresentata mediante l'asterisco:
+\[ G = H * F \]
+La convoluzione gode delle proprietà commutativa e associativa. In questo contesto, l'operatore $H$ assume il nome di \textbf{filtro}, \textbf{kernel} o \textbf{maschera}.
+
+\microtypesetup{expansion=false}
+
+\section{Calcolo Della Convoluzione Discreta}
+
+Per comprendere appresso l'applicazione dei filtri locali, è necessario formalizzare la procedura computazionale della convoluzione bidimensionale per segnali discreti. Data un'immagine discreta $f[i, j]$ e un filtro (o maschera) $h[i, j]$, il calcolo della convoluzione si articola in tre passaggi sequenziali fondamentali:
+
+\begin{enumerate}
+    \item \textbf{Inversione del filtro}: Si ruota la maschera del filtro $h[i, j]$ di $180^\circ$ rispetto al suo centro. Questo passaggio di ribaltamento speculare (sia orizzontale che verticale) è l'elemento che distingue matematicamente la convoluzione dalla cross-correlazione. Qualora la maschera sia simmetrica rispetto ai suoi assi, questa operazione non produce alcuna variazione e può essere omessa.
+    \item \textbf{Posizionamento della maschera}: Si fa scorrere la maschera invertita sopra l'immagine, allineando il centro del filtro con il pixel d'interesse $f[i, j]$.
+    \item \textbf{Calcolo del nuovo valore}: Si esegue la somma dei prodotti elemento per elemento (\emph{dot product} spaziale) tra i coefficienti del filtro e i valori di intensità dei pixel coperti dal filtro stesso.
+\end{enumerate}
+
+Nel caso specifico di una maschera di dimensioni $3\times3$, indichiamo i coefficienti del filtro invertito con le lettere da $A$ a $I$ e le intensità dei pixel nel vicinato locale con i simboli da $p_1$ a $p_9$:
+
+\[
+\text{Filtro invertito } h = \begin{bmatrix} A & B & C \\ D & E & F \\ G & H & I \end{bmatrix}, \quad \text{Vicinato spaziale } f = \begin{bmatrix} p_1 & p_2 & p_3 \\ p_4 & p_5 & p_6 \\ p_7 & p_8 & p_9 \end{bmatrix}
+\]
+
+Il valore del pixel risultante $g[i, j]$ nella medesima coordinata centrale è definito dalla combinazione lineare:
+\[ \boxed{g[i, j] = A p_1 + B p_2 + C p_3 + D p_4 + E p_5 + F p_6 + G p_7 + H p_8 + I p_9} \]
+
+% [IMMAGINE RIF INTERVALLO 32-62] Diagramma esplicativo che mostra la sovrapposizione di una maschera 3x3 (A-I) su un vicinato di pixel (p1-p9) per calcolare il valore convoluto g[i,j] — Slide 1 / Pagina 1 del PDF
+
+\newpage
+
+\section{Filtri Di Media Spaziale (Box Filter)}
+
+Un esempio classico e intuitivo di operatore locale lineare è la \textbf{media mobile} (\emph{moving average}), nota anche come \textbf{filtro di media} o \textbf{box filter}. Si tratta di un'operazione di smoothing locale in cui il valore di ciascun pixel dell'immagine di origine viene sostituito con il valore medio calcolato su tutti i pixel appartenenti a un vicinato definito.
+
+Matematicamente, per un generico vicinato $N$, la trasformazione si esprime come:
+\[ g[n, m] = \frac{1}{M} \sum_{(k, l) \in N} f[k, l] \]
+dove $M$ rappresenta il numero totale di pixel inclusi all'interno del vicinato $N$.
+
+Se consideriamo un vicinato quadrato di dimensioni $3\times3$ centrato attorno alla coordinata $(n, m)$, l'operazione raccoglie $M=9$ pixel. Possiamo dunque formalizzare l'equazione come:
+\[ g[n, m] = \frac{1}{9} \sum_{k=n-1}^{n+1} \sum_{l=m-1}^{m+1} f[k, l] \]
+
+Effettuando un cambio di variabili per ricondurre l'indice della sommatoria all'origine del filtro, l'espressione diventa:
+\[ g[n, m] = \frac{1}{9} \sum_{k=-1}^{1} \sum_{l=-1}^{1} f[n-k, m-l] \]
+
+Questa formulazione corrisponde esattamente alla convoluzione discreta dell'immagine con un kernel costante $h$, i cui coefficienti sono tutti pari a $\frac{1}{9}$:
+\[ (f * h)[m, n] = \frac{1}{9} \sum_{k, l} f[k, l] h[m-k, n-l] \]
+dove il kernel $h$ è definito da:
+\[ h = \frac{1}{9} \begin{bmatrix} 1 & 1 & 1 \\ 1 & 1 & 1 \\ 1 & 1 & 1 \end{bmatrix} \]
+
+\subsection{Analisi Passo-Passo Dell'Applicazione Di Un Box Filter}
+
+Per comprendere l'effetto pratico di questo filtro, analizziamo l'applicazione di un box filter $3\times3$ su una matrice d'ingresso $F[x,y]$ di dimensioni $10\times10$. L'immagine d'ingresso presenta una regione centrale ad alta intensità (valore $90$) circondata da uno sfondo a intensità nulla ($0$). Sono presenti due anomalie che simulano il rumore: un pixel scuro (valore $0$) all'interno della regione chiara in posizione $(5,4)$ e un pixel isolato molto chiaro (valore $90$) nello sfondo in posizione $(8,2)$.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Griglia iniziale dell'immagine F[x,y] con la maschera di media posizionata sull'angolo superiore sinistro — Slide 4 / Pagina 4 del PDF
+
+Durante lo scorrimento del filtro sulle diverse posizioni dell'immagine, si osservano i seguenti comportamenti:
+\begin{itemize}
+    \item \textbf{Regione di sfondo uniforme}: Quando la maschera copre esclusivamente pixel a intensità nulla, la somma pesata è ovviamente pari a zero, mantenendo il valore $0$ anche nell'immagine di output $G[x,y]$.
+    \item \textbf{Transizione sul bordo}: Quando la maschera si sposta parzialmente sopra la regione ad alta intensità, i pixel di valore $90$ iniziano a rientrare nel calcolo della media. Ad esempio, quando il filtro è centrato in $(1,2)$, rileva un solo pixel con valore $90$ nel suo vicinato. L'intensità di uscita sarà:
+    \[ G[1, 2] = \frac{90}{9} = 10 \]
+    % [IMMAGINE RIF INTERVALLO 32-62] Maschera di media centrata in (1,2) che rileva un singolo valore 90, producendo in output 10 — Slide 5 / Pagina 5 del PDF
+
+    Spostando ulteriormente la maschera verso destra, in posizione $(1,3)$, il vicinato conterrà due pixel con valore $90$, producendo:
+    \[ G[1, 3] = \frac{90 + 90}{9} = 20 \]
+    % [IMMAGINE RIF INTERVALLO 32-62] Maschera di media centrata in (1,3) che rileva due valori 90, producendo in output 20 — Slide 6 / Pagina 6 del PDF
+\end{itemize}
+
+Completando l'elaborazione su tutta la griglia, si ottiene la matrice finale filtrata $G[x,y]$:
+
+% [IMMAGINE RIF INTERVALLO 32-62] Matrice finale filtrata G[x,y] che mostra la diffusione spaziale delle intensità sui bordi — Slide 7 / Pagina 7 del PDF
+
+L'analisi di questo risultato evidenzia due effetti fondamentali dell'operatore di media mobile:
+\begin{enumerate}
+    \item \textbf{Smoothing dei bordi}: Le transizioni nette di intensità (da $0$ a $90$) vengono ammorbidite, trasformandosi in rampe di valori sfumati ($10, 20, 30, \dots$). Questo effetto rimuove i dettagli ad alta frequenza spaziale, agendo come un filtro passa-basso.
+    \item \textbf{Attenuazione del rumore}: Il pixel isolato ad alta intensità in $(8,2)$ viene smorzato e distribuito su un'area più ampia di pixel con intensità molto bassa ($10$), riducendone l'impatto visivo locale. Analogamente, il pixel scuro isolato in $(5,4)$ viene parzialmente colmato dal contributo dei pixel vicini.
+\end{enumerate}
+
+% [IMMAGINE RIF INTERVALLO 32-62] Confronto fotografico ravvicinato di un'immagine prima e dopo lo smoothing tramite filtro di media — Slide 9 / Pagina 9 del PDF
+
+\newpage
+
+\section{Filtro Mediano}
+
+Sebbene i filtri di media lineare siano efficaci nel ridurre il rumore diffuso, essi presentano lo svantaggio intrinseco di sfocare le transizioni nette e i bordi significativi dell'immagine. Per ovviare a questa limitazione, si introduce il \textbf{filtro mediano} (\emph{median filter}), un operatore non lineare estremamente efficace nel preservare la nitidezza dei contorni e nel rimuovere disturbi impulsivi come il rumore di tipo \textbf{salt and pepper} (pixel isolati completamente bianchi o neri).
+
+Il funzionamento del filtro mediano si articola nei seguenti passaggi:
+\begin{enumerate}
+    \item Si raccolgono i valori di intensità di tutti i pixel compresi all'interno del vicinato locale della coordinata d'interesse.
+    \item Si ordinano tali valori in ordine crescente.
+    \item Si seleziona il valore mediano (quello che si colloca esattamente al centro della sequenza ordinata) e lo si assegna come nuova intensità del pixel nell'immagine di output.
+\end{enumerate}
+
+\textbf{Esempio numerico di filtraggio mediano:}
+
+Consideriamo un vicinato di dimensioni $3\times3$ estratto da un'immagine:
+\[
+\text{Vicinato locale} = \begin{bmatrix} 75 & 99 & 36 \\ 38 & 49 & 10 \\ 19 & 98 & 22 \end{bmatrix}
+\]
+
+Eseguiamo l'ordinamento crescente dei $9$ valori di intensità raccolti:
+\[ 10, \quad 19, \quad 22, \quad 36, \quad \textcolor{blue}{\mathbf{38}}, \quad 49, \quad 75, \quad 98, \quad 99 \]
+
+Il valore centrale della sequenza (in quinta posizione) è $38$. Di conseguenza, il valore del pixel centrale originale (pari a $49$) viene sostituito con il valore mediano:
+\[ g(i, j) = \boxed{38} \]
+
+Grazie a questo meccanismo non lineare, un eventuale pixel rumoroso con intensità estrema (come $0$ o $255$) si collocherà inevitabilmente agli estremi della sequenza ordinata, venendo sistematicamente escluso dalla scelta del valore mediano. Ciò consente di eliminare completamente il rumore impulsivo senza alterare o sfocare i valori dei pixel che definiscono i contorni strutturali degli oggetti.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Schema grafico del processo di ordinamento e selezione del valore mediano 38 a partire da un vicinato 3x3 — Slide 11 / Pagina 11 del PDF
+
+\newpage
+
+\section{Analisi Di Altri Filtri Lineari}
+
+A seconda della configurazione dei coefficienti all'interno della maschera di convoluzione, è possibile progettare filtri con scopi ed effetti grafici radicalmente diversi. Analizziamo tre casi esemplari applicati al dettaglio dell'immagine di un occhio.
+
+\subsection{Filtro Identità}
+
+Il filtro identità è definito da una maschera in cui l'unico coefficiente non nullo è posizionato esattamente al centro ed è pari a $1$:
+\[ h_{\text{id}} = \begin{bmatrix} 0 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 0 \end{bmatrix} \]
+L'applicazione di questo filtro produce un'immagine di output perfettamente identica a quella di input, in quanto ciascun pixel viene semplicemente moltiplicato per l'unità e sommato a zero.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Esempio di applicazione del filtro identità su un'immagine di dettaglio che mostra l'assenza di variazioni — Slide 13 / Pagina 13 del PDF
+
+\subsection{Filtro Di Traslazione (Shift)}
+
+Se spostiamo il coefficiente unitario dal centro verso un'altra posizione all'interno della maschera, otteniamo un effetto di traslazione spaziale dell'immagine. Si consideri ad esempio il seguente kernel:
+\[ h_{\text{shift}} = \begin{bmatrix} 0 & 0 & 0 \\ 0 & 0 & 1 \\ 0 & 0 & 0 \end{bmatrix} \]
+Poiché l'unico valore attivo si trova a destra del centro del filtro, la convoluzione assegna al pixel corrente il valore del suo vicino di destra. Di conseguenza, l'intera immagine finale risulterà traslata verso sinistra di esattamente un pixel rispetto alla sua posizione originaria.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Effetto di traslazione verso sinistra di un pixel ottenuto con il posizionamento asimmetrico dell'unità nel kernel — Slide 15 / Pagina 15 del PDF
+
+\subsection{Filtro Di Nitidezza (Sharpening)}
+
+Il filtro di nitidezza (\emph{sharpening}) viene impiegato per accentuare i dettagli e i contorni sfocati di un'immagine. Dal punto di vista matematico, esso si ottiene sottraendo una componente di media locale (che rappresenta la parte sfocata a bassa frequenza dell'immagine) da una versione amplificata del pixel originale:
+\[ h_{\text{sharp}} = \begin{bmatrix} 0 & 0 & 0 \\ 0 & 2 & 0 \\ 0 & 0 & 0 \end{bmatrix} - \frac{1}{9} \begin{bmatrix} 1 & 1 & 1 \\ 1 & 1 & 1 \\ 1 & 1 & 1 \end{bmatrix} \]
+
+Risolvendo la sottrazione elemento per elemento, si ottiene il kernel equivalente:
+\[ h_{\text{sharp}} = \begin{bmatrix} -1/9 & -1/9 & -1/9 \\ -1/9 & 17/9 & -1/9 \\ -1/9 & -1/9 & -1/9 \end{bmatrix} \]
+
+Si noti che la somma di tutti i coefficienti di questo filtro è pari a $1$ ($2 - 1 = 1$). Questa proprietà è fondamentale poiché garantisce che la luminosità media complessiva dell'immagine rimanga inalterata dopo l'applicazione del filtro. Lo sharpening agisce accentuando localmente le differenze di intensità rispetto alla media del vicinato, rendendo i contorni visibilmente più marcati.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Risultato nitido e contrastato del filtro di sharpening applicato all'immagine dell'occhio — Slide 17 / Pagina 17 del PDF
+
+% [IMMAGINE RIF INTERVALLO 32-62] Ritratto di Albert Einstein prima (sfocato) e dopo (nitido) l'applicazione del filtro di sharpening — Slide 18 / Pagina 18 del PDF
+
+\newpage
+
+\section{Il Kernel Gaussiano E Le Sue Proprietà}
+
+Nell'ambito del filtraggio lineare, il \textbf{kernel gaussiano} rappresenta lo strumento più rigoroso e utilizzato per effettuare operazioni di smoothing e rimozione del rumore ad alta frequenza. La funzione gaussiana bidimensionale continua è definita dall'equazione:
+\[ \boxed{G_{\sigma}(x, y) = \frac{1}{2\pi\sigma^2} e^{-\frac{x^2 + y^2}{2\sigma^2}}} \]
+dove $\sigma$ rappresenta la deviazione standard della distribuzione, parametro che governa la larghezza della campana e, di conseguenza, l'estensione dell'effetto di sfocatura.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Visualizzazione tridimensionale a campana e mappa d'intensità bidimensionale di un kernel gaussiano — Slide 19 / Pagina 19 del PDF
+
+Il kernel gaussiano presenta proprietà matematiche uniche che lo rendono preferibile rispetto al box filter uniforme:
+\begin{itemize}
+    \item \textbf{Simmetria rotazionale}: In due dimensioni, la funzione gaussiana è isotropa, ovvero circolarmente simmetrica. Questo implica che l'effetto di sfocatura si propaga in modo identico in tutte le direzioni dello spazio, evitando di introdurre distorsioni geometriche o preferenze direzionali (particolarmente dannose in compiti successivi come l'edge detection).
+    \item \textbf{Lobo singolo}: La distribuzione presenta un unico picco centrale e decresce in modo strettamente monotono all'aumentare della distanza dal centro. Questo assicura che nel calcolo della media pesata i pixel più vicini abbiano un'influenza maggiore rispetto a quelli distanti, preservando la struttura geometrica globale degli oggetti.
+    \item \textbf{Conservazione della forma in frequenza}: La trasformata di Fourier di una funzione gaussiana è anch'essa una gaussiana. Questo comportamento garantisce una risposta in frequenza ottimale come filtro passa-basso, eliminando in modo estremamente pulito le alte frequenze di rumore senza introdurre le oscillazioni spurie tipiche dei filtri con transizioni nette (fenomeno di Gibbs).
+    \item \textbf{Parametrizzazione diretta}: L'intensità dello smoothing è interamente controllata dal parametro fisico $\sigma$. Una varianza maggiore si traduce in una sfocatura più marcata e viceversa.
+    \item \textbf{Separabilità}: Questa è una proprietà computazionale di fondamentale importanza. Una funzione gaussiana bidimensionale può essere scomposta nel prodotto di due funzioni gaussiane unidimensionali indipendenti rispetto alle variabili $x$ e $y$:
+    \[ G_{\sigma}(x, y) = \left( \frac{1}{\sqrt{2\pi}\sigma} e^{-\frac{x^2}{2\sigma^2}} \right) \cdot \left( \frac{1}{\sqrt{2\pi}\sigma} e^{-\frac{y^2}{2\sigma^2}} \right) \]
+\end{itemize}
+
+Un'ulteriore proprietà teorica di rilievo stabilisce che la convoluzione di una funzione gaussiana con se stessa produce come risultato un'altra funzione gaussiana. Specificamente, eseguire in cascata due operazioni di convoluzione con un kernel gaussiano di larghezza $\sigma$ equivale a eseguire un'unica convoluzione con un kernel gaussiano di larghezza pari a $\sigma\sqrt{2}$:
+\[ G_{\sigma} * G_{\sigma} = G_{\sigma\sqrt{2}} \]
+Questa proprietà consente di suddividere o combinare filtri in cascata in modo matematicamente coerente.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Schema grafico della convoluzione di un kernel gaussiano con se stesso che genera una gaussiana più ampia — Slide 25 / Pagina 25 del PDF
+
+\subsection{Implementazione Efficiente Tramite Separabilità}
+
+La dimensione del filtro gaussiano discreto $N$ (espressa in numero di pixel) è direttamente proporzionale alla deviazione standard $sigma$ ($N \propto \sigma$). Qualora si operi con valori di $\sigma$ elevati, la dimensione della maschera del filtro può diventare molto grande, richiedendo una opportuna troncata ai bordi esterni dove i valori della gaussiana diventano trascurabili.
+
+Se implementiamo la convoluzione bidimensionale classica direttamente tramite la formula discreta:
+\[ g(i,j) = \frac{1}{2\pi\sigma^2} \sum_{m=1}^{N} \sum_{n=1}^{N} e^{-\frac{m^2 + n^2}{2\sigma^2}} f(i-m, j-n) \]
+il numero di operazioni elementari (moltiplicazioni e somme) necessarie per ciascun pixel dell'immagine è proporzionale a $\mathcal{O}(N^2)$.
+
+Sfruttando la proprietà di separabilità della gaussiana, possiamo riscrivere la medesima operazione distribuendo i termini esponenziali:
+\[ g(i,j) = \frac{1}{2\pi\sigma^2} \sum_{m=1}^{N} e^{-\frac{m^2}{2\sigma^2}} \sum_{n=1}^{N} e^{-\frac{n^2}{2\sigma^2}} f(i-m, j-n) \]
+
+Questa formulazione ci consente di implementare il filtro bidimensionale applicando in sequenza due filtri unidimensionali (1D): prima una convoluzione lungo le righe (orizzontale) e successivamente una convoluzione lungo le colonne (verticale).
+
+In questo modo, il costo computazionale per singolo pixel si riduce drasticamente da $N^2$ a $2N$ operazioni:
+\[ \mathcal{O}(N^2) \quad \longrightarrow \quad \mathcal{O}(2N) \]
+Per filtri di grandi dimensioni, questo abbattimento della complessità algoritmica è determinante per consentire l'elaborazione di immagini in tempo reale.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Esempi di immagini con diversi livelli di rumore gaussiano (colonne) filtrate con gaussiane a diversa larghezza (righe) — Slide 24 / Pagina 24 del PDF
+
+\newpage
+
+\section{Rilevamento Dei Bordi (Edge Detection)}
+
+Il rilevamento dei bordi (\emph{edge detection}) è una delle operazioni di basso livello più importanti nella computer vision. Il suo obiettivo primario consiste nel convertire un'immagine bidimensionale densa di pixel in un insieme discreto di curve e contorni. Questo processo offre due vantaggi cruciali:
+\begin{itemize}
+    \item Consente di estrarre le caratteristiche salienti e le informazioni geometriche fondamentali della scena (come la forma e i limiti degli oggetti).
+    \item Fornisce una rappresentazione matematica dei dati estremamente più compatta e leggera rispetto alla matrice densa dei pixel di partenza.
+\end{itemize}
+
+% [IMMAGINE RIF INTERVALLO 32-62] Quattro esempi di immagini reali affiancate dai rispettivi contorni estratti sotto forma di curve — Slide 26 / Pagina 26 del PDF
+
+I bordi all'interno di un'immagine sono generati da una serie di discontinuità fisiche presenti nella scena tridimensionale, riconducibili a quattro fattori principali:
+\begin{itemize}
+    \item \textbf{Discontinuità della normale alla superficie}: Angoli o bruschi cambi di orientamento geometrico delle superfici dell'oggetto.
+    \item \textbf{Discontinuità di profondità}: Limiti fisici dell'oggetto in cui si verifica un salto di distanza rispetto allo sfondo o ad altri oggetti.
+    \item \textbf{Discontinuità del colore della superficie}: Variazioni intrinseche del colore del materiale (\emph{albedo}) o presenza di trame e pattern sulla superficie.
+    \item \textbf{Discontinuità di illuminazione}: Presenza di ombre nette o forti transizioni di luce dovute alla sorgente luminosa.
+\end{itemize}
+
+% [IMMAGINE RIF INTERVALLO 32-62] Immagine di una chiesa di montagna che illustra le diverse discontinuità fisiche che originano i bordi — Slide 27 / Pagina 27 del PDF
+
+\subsection{Caratterizzazione Matematica Dei Bordi}
+
+Da un punto di vista formale, un bordo si manifesta come una zona di rapida variazione spaziale nella funzione di intensità dell'immagine. Se analizziamo il profilo di intensità lungo una linea di scansione orizzontale che attraversa un bordo, la funzione assume la forma di una transizione ripida (un gradino smussato).
+
+Se calcoliamo la derivata prima di questa funzione d'intensità, la rapida variazione si traduce in un picco pronunciato. Di conseguenza, possiamo stabilire che \textbf{i bordi di un'immagine corrispondono ai punti di massimo locale (estremi) della derivata prima} della funzione d'intensità.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Profilo di transizione di un bordo, andamento della funzione d'intensità e corrispondenza del picco nella derivata prima — Slide 28 / Pagina 28 del PDF
+
+\subsection{Le Fasi Del Rilevamento Dei Bordi}
+
+Un algoritmo completo di edge detection si sviluppa tipicamente in quattro fasi sequenziali:
+\begin{enumerate}
+    \item \textbf{Filtraggio} (\emph{Filtering}): Il calcolo numerico dei gradienti è un'operazione intrinsecamente sensibile al rumore ad alta frequenza. Risulta pertanto indispensabile applicare preventivamente un filtro di smoothing per attenuare il rumore. Bisogna tuttavia calibrare con attenzione l'intensità del filtro: una sfocatura eccessiva rischia di indebolire o cancellare i bordi reali dell'immagine.
+    \item \textbf{Miglioramento} (\emph{Enhancement}): Si calcolano le variazioni locali di intensità spaziale per evidenziare i candidati bordi. Questo obiettivo si consegue determinando il modulo del gradiente dell'immagine.
+    \item \textbf{Rilevamento} (\emph{Detection}): Al fine di isolare unicamente i punti che appartengono a transizioni significative, si applica una soglia numerica sul modulo del gradiente (\emph{thresholding}).
+    \item \textbf{Localizzazione} (\emph{Localization}): In molte applicazioni industriali o robotiche è necessario determinare la posizione esatta del bordo con precisione sub-pixel, stimandone accuratamente anche l'orientamento spaziale.
+\end{enumerate}
+
+\subsection{L'Impatto Del Rumore Sulla Derivata}
+
+Per comprendere l'assoluta necessità della fase di filtraggio preliminare, analizziamo l'effetto del rumore sul calcolo della derivata. In presenza di un'immagine anche minimamente rumorosa, la funzione d'intensità reale $f(x)$ presenta microscopiche oscillazioni ad alta frequenza sovrapposte al segnale principale.
+
+Quando andiamo a calcolare la derivata prima $\frac{d}{dx} f(x)$, l'operazione di differenziazione amplifica enormemente queste variazioni ad alta frequenza. Il grafico della derivata risulterà completamente dominato da oscillazioni caotiche e rumorose, rendendo matematicamente impossibile individuare il picco corrispondente al vero bordo d'interesse.
+
+% [IMMAGINE RIF INTERVALLO 32-62] Segnale d'intensità con rumore e relativo grafico della derivata prima dominato da forti oscillazioni spurie — Slide 30 / Pagina 30 del PDF
+
+\subsection{La Soluzione: Regolarizzazione Tramite Smoothing}
+
+La soluzione a questo limite computazionale consiste nell'applicare un'operazione di smoothing prima di procedere alla derivazione. Convolvendo il segnale rumoroso $f$ con un kernel gaussiano $h$ di larghezza appropriata, si ottiene una funzione regolarizzata e priva di rumore ad alta frequenza, indicata con $f * h$.
+
+Successivamente, calcolando la derivata prima del segnale ammorbidito:
+\[ \frac{d}{dx} (f * h) \]
+si ottiene un andamento pulito in cui il picco associato alla transizione del bordo emerge in modo nitido e facilmente identificabile tramite algoritmi di ricerca dei massimi.
+
+In sintesi, per individuare i bordi in modo robusto in presenza di rumore, la regola operativa fondamentale è:
+\[ \boxed{\text{Ricercare i picchi nella funzione: } \frac{d}{dx}(f * h)} \]
+
+% [IMMAGINE RIF INTERVALLO 32-62] Sequenza di grafici (segnale rumoroso, kernel gaussiano, segnale filtrato e derivata del segnale filtrato con picco pulito) — Slide 31 / Pagina 31 del PDF
+
+\section{Proprietà Associativa Della Convoluzione}
+
+Nel contesto dell'elaborazione delle immagini e della visione artificiale, l'operazione di differenziazione spaziale gioca un ruolo fondamentale per l'estrazione delle caratteristiche geometriche di basso livello. Dal punto di vista matematico, l'operazione di derivazione può essere formulata come un'operazione di convoluzione. Grazie alle proprietà algebriche dell'operatore di convoluzione, in particolare alla sua \textbf{proprietà associativa}, è possibile dimostrare una relazione di notevole importanza computazionale.
+
+Data un'immagine (o segnale) $f$ e un filtro di smussamento o regolarizzazione $h$, la derivata della convoluzione tra il segnale e il filtro equivale alla convoluzione del segnale con la derivata del filtro stesso. Questa equivalenza formale si traduce nella seguente identità:
+
+\[ \frac{d}{dx}(f * h) = f * \frac{d}{dx}h \]
+
+Questo risultato teorico comporta un importante risvolto pratico: \textbf{ci permette di risparmiare un'operazione computazionale}. Invece di dover prima calcolare la convoluzione tra l'immagine e il filtro e successivamente derivare il risultato (operazione altamente sensibile al rumore numerico), o viceversa, è possibile calcolare analiticamente la derivata del filtro $\frac{d}{dx}h$ una sola volta e applicarla direttamente all'immagine tramite un'unica operazione di convoluzione.
+
+% [IMMAGINE RIF INTERVALLO 63-93] Grafici sovrapposti che mostrano il segnale rumoroso f, la derivata del filtro gaussiano d/dx h con Sigma = 50, e il risultato finale f * d/dx h che evidenzia la transizione netta — Slide 1 / Pagina 1 del PDF
+
+\newpage
+
+\section{Gradiente Dell'Immagine}
+
+\subsection{Definizione E Proprietà Geometriche}
+
+L'identificazione dei contorni (\emph{edges}) all'interno di un'immagine si basa sul rilevamento delle variazioni locali di intensità luminosa. Per analizzare quantitativamente queste variazioni spaziali, si introduce lo strumento matematico del \textbf{gradiente dell'immagine}. Nel caso monodimensionale, un contorno corrisponde idealmente a un picco locale della derivata prima del segnale. Estendendo questo concetto a uno spazio bidimensionale, il gradiente dell'immagine $f(x,y)$ è definito come un vettore colonna contenente le derivate parziali prime lungo le direzioni spaziali principali $x$ e $y$:
+
+\[ G[f(x,y)] = \begin{bmatrix} G_x \\ G_y \end{bmatrix} = \begin{bmatrix} \frac{\partial f}{\partial x} \\[0.8em] \frac{\partial f}{\partial y} \end{bmatrix} \]
+
+Il vettore gradiente possiede due proprietà geometriche fondamentali per la comprensione della struttura locale dell'immagine:
+\begin{enumerate}
+    \item \textbf{Direzione di massimo incremento}: Il vettore gradiente $G[f(x,y)]$ punta sempre nella direzione in cui si registra la massima rapidità di aumento dell'intensità luminosa dell'immagine.
+    \item \textbf{Modulo (o magnitudo)}: Il modulo del vettore gradiente esprime quantitativamente tale tasso massimo di incremento spaziale nella direzione individuata da $G$. La norma euclidea del gradiente è data da:
+    \[ |G[f(x,y)]| = \sqrt{G_x^2 + G_y^2} \]
+\end{enumerate}
+
+Poiché il calcolo della radice quadrata e dei quadrati delle componenti risulta computazionalmente oneroso, specialmente per applicazioni in tempo reale su sistemi robotici, la magnitudo del gradiente viene frequentemente approssimata mediante la somma dei valori assoluti delle singole componenti:
+
+\[ \boxed{|G[f(x,y)]| \approx |G_x| + |G_y|} \]
+
+\subsection{Derivata Discreta Tramite Differenze Finite}
+
+Le immagini digitali sono segnali discreti definiti su una griglia regolare di pixel, il che rende impossibile l'applicazione diretta della differenziazione analitica continua. Per ovviare a questo problema, si ricorre al calcolo delle \textbf{derivate discrete} sfruttando l'approssimazione alle differenze finite.
+
+Le derivate parziali prime lungo le direzioni $x$ e $y$ possono essere approssimate rispetto alle coordinate discrete $[i, j]$ (dove $i$ indica la riga e $j$ la colonna) come segue:
+
+\[ G_x = \frac{\partial f}{\partial x} \approx f[i, j+1] - f[i, j] \]
+\[ G_y = \frac{\partial f}{\partial y} \approx f[i, j] - f[i+1, j] \]
+
+\emph{Nota Bene}: Nella seconda relazione, l'approssimazione presenta i segni invertiti rispetto a quella lungo $x$. Questa inversione è dovuta alla convenzione standard adottata nei sistemi di riferimento delle immagini digitali, in cui l'origine del sistema di coordinate è collocata nell'angolo superiore sinistro. Di conseguenza, l'asse verticale delle ordinate $y$ cresce procedendo verso il basso, rendendo la coordinata $y$ matematicamente negativa rispetto alla convenzione cartesiana standard.
+
+Queste approssimazioni alle differenze finite possono essere implementate in modo estremamente efficiente applicando maschere di convoluzione monodimensionali di dimensione minima:
+
+\[ G_x = \begin{bmatrix} -1 & 1 \end{bmatrix}, \quad G_y = \begin{bmatrix} 1 \\ -1 \end{bmatrix} \]
+
+% [IMMAGINE RIF INTERVALLO 63-93] Maschere kernel per il calcolo del gradiente discreto G_x e G_y tramite differenze finite — Slide 3 / Pagina 3 del PDF
+
+\subsection{Analisi Geometrica Del Gradiente}
+
+Per comprendere la relazione tra il gradiente e l'orientamento spaziale di un contorno, si consideri la schematizzazione del vettore gradiente $\nabla f$ espresso come:
+
+\[ \nabla f = \left[ \frac{\partial f}{\partial x}, \frac{\partial f}{\partial y} \right] \]
+
+La forza o intensità del contorno (\emph{edge strength}) è rappresentata dalla magnitudo della norma del gradiente:
+
+\[ \|\nabla f\| = \sqrt{\left(\frac{\partial f}{\partial x}\right)^2 + \left(\frac{\partial f}{\partial y}\right)^2} \]
+
+L'orientamento del gradiente rispetto all'asse orizzontale è espresso dall'angolo $\theta$:
+
+\[ \theta = \tan^{-1}\left( \frac{\partial f}{\partial y} \Big/ \frac{\partial f}{\partial x} \right) \]
+
+Questa formulazione consente di distinguere tre casi geometrici fondamentali:
+\begin{itemize}
+    \item \textbf{Contorno verticale}: L'intensità varia unicamente lungo l'asse orizzontale $x$, determinando un gradiente orientato orizzontalmente con componente verticale nulla: $\nabla f = \left[ \frac{\partial f}{\partial x}, 0 \right]$.
+    \item \textbf{Contorno orizzontale}: La variazione di intensità si sviluppa unicamente lungo l'asse verticale $y$. Il gradiente punta in direzione verticale ed ha componente orizzontale nulla: $\nabla f = \left[ 0, \frac{\partial f}{\partial y} \right]$.
+    \item \textbf{Contorno diagonale}: Presenta variazioni significative lungo entrambe le direzioni spaziali, dando luogo a un vettore gradiente inclinato di un angolo $\theta$ rispetto all'orizzontale: $\nabla f = \left[ \frac{\partial f}{\partial x}, \frac{\partial f}{\partial y} \right]$.
+\end{itemize}
+
+L'analisi di queste proprietà evidenzia un concetto chiave: la direzione del vettore gradiente $\theta$ è sempre \textbf{ortogonale (perpendicolare)} alla direzione tangente del contorno fisico presente nell'immagine.
+
+% [IMMAGINE RIF INTERVALLO 63-93] Rappresentazione geometrica dei vettori gradiente per transizioni di intensità verticali, orizzontali e inclinate di un angolo theta — Slide 4 / Pagina 4 del PDF
+
+\subsection{Maschere Di Dimensione 2x2}
+
+Quando si calcola il gradiente di un'immagine, è di fondamentale importanza che le derivate parziali lungo le direzioni $x$ e $y$ vengano stimate esattamente nella stessa posizione spaziale dell'immagine. Analizzando le maschere monodimensionali precedentemente introdotte, si osserva che la componente $G_x$ calcola la derivata nel punto interpolato $[i, j + \frac{1}{2}]$, mentre la componente $G_y$ fa riferimento al punto $[i + \frac{1}{2}, j]$.
+
+Questa discrepanza spaziale introduce un disallineamento nei calcoli. Per risolverlo, si introducono maschere bidimensionali di dimensione $2 \times 2$:
+
+\[ G_x = \begin{bmatrix} -1 & 1 \\ -1 & 1 \end{bmatrix}, \quad G_y = \begin{bmatrix} 1 & 1 \\ -1 & -1 \end{bmatrix} \]
+
+Grazie a questa struttura bilanciata, entrambe le componenti del gradiente $G_x$ e $G_y$ fanno riferimento alla medesima posizione spaziale, localizzata esattamente nel centro geometrico della sottomatrice $2 \times 2$, ossia nel punto interpolato $[i + \frac{1}{2}, j + \frac{1}{2}]$.
+
+Tuttavia, il fatto che la stima del contorno avvenga in una posizione intermedia "tra" i pixel effettivi dell'immagine discreta può generare ambiguità e complicazioni nell'associazione spaziale dei contorni. Per evitare questa problematica, si rende necessario l'utilizzo di maschere di convoluzione di dimensione dispari $3 \times 3$, che permettono di centrare il calcolo del gradiente direttamente su un pixel reale dell'immagine.
+
+% [IMMAGINE RIF INTERVALLO 63-93] Maschere 2x2 per il calcolo di G_x e G_y con indicazione del punto centrale interpolato [i + 1/2, j + 1/2] — Slide 5 / Pagina 5 del PDF
+
+\newpage
+
+\section{Operatori Di Derivata Di Primo Ordine}
+
+Per evitare che il gradiente venga stimato in posizioni interpolate tra i pixel dell'immagine, si utilizzano filtri definiti su un intorno spaziale $3 \times 3$. Questo approccio consente di calcolare le derivate parziali facendo riferimento al pixel centrale della maschera.
+
+\subsection{Operatore Di Sobel}
+
+L'\textbf{operatore di Sobel} è uno dei filtri di derivazione di primo ordine più noti e impiegati nella visione artificiale. Le maschere spaziali $s_x$ (per la direzione orizzontale) e $s_y$ (per la direzione verticale) sono definite come:
+
+\[ s_x = \begin{bmatrix} -1 & 0 & 1 \\ -2 & 0 & 2 \\ -1 & 0 & 1 \end{bmatrix}, \quad s_y = \begin{bmatrix} 1 & 2 & 1 \\ 0 & 0 & 0 \\ -1 & -2 & -1 \end{bmatrix} \]
+
+L'operatore di Sobel combina intrinsecamente due operazioni fondamentali: una differenziazione discreta lungo la direzione di interesse e uno smussamento (\emph{smoothing}) gaussiano lungo la direzione ortogonale. L'assegnazione di un peso maggiore (pari a $2$ e $-2$) ai pixel centrali serve a conferire una maggiore robustezza al rumore ad alta frequenza rispetto alle semplici differenze finite.
+
+% [IMMAGINE RIF INTERVALLO 63-93] Rappresentazione matriciale delle maschere 3x3 del filtro di Sobel s_x e s_y — Slide 6 / Pagina 6 del PDF
+
+% [IMMAGINE RIF INTERVALLO 63-93] Esempio applicativo dell'operatore di Sobel su un'immagine reale: confronto tra l'immagine originale, le derivate spaziali parziali e la magnitudo del gradiente finale — Slide 7 / Pagina 7 del PDF
+
+\subsection{Operatore Di Prewitt}
+
+L'\textbf{operatore di Prewitt} rappresenta una variante semplificata rispetto a Sobel. Esso opera anch'esso su un intorno $3 \times 3$, ma assegna un peso uniforme a tutti i pixel della riga o colonna di interesse, senza privilegiare la posizione centrale. Le corrispondenti maschere sono definite da:
+
+\[ s_x = \begin{bmatrix} -1 & 0 & 1 \\ -1 & 0 & 1 \\ -1 & 0 & 1 \end{bmatrix}, \quad s_y = \begin{bmatrix} 1 & 1 & 1 \\ 0 & 0 & 0 \\ -1 & -1 & -1 \end{bmatrix} \]
+
+Pur essendo computazionalmente analogo a Sobel, l'operatore di Prewitt non fornisce lo stesso livello di attenuazione del rumore locale proprio a causa dell'assenza del fattore di ponderazione sulla riga o colonna centrale.
+
+% [IMMAGINE RIF INTERVALLO 63-93] Rappresentazione matriciale delle maschere 3x3 del filtro di Prewitt s_x e s_y — Slide 8 / Pagina 8 del PDF
+
+\newpage
+
+\section{Second Order Derivative Operators (Operatori Di Derivata Di Secondo Ordine)}
+
+\subsection{Motivazione Teorica}
+
+Gli operatori basati su derivate di primo ordine (como Sobel e Prewitt) rilevano la presenza di un contorno identificando i pixel in cui la magnitudo del gradiente supera una determinata soglia definita dall'utente. Questo metodo, tuttavia, risente fortemente della scelta della soglia: valori troppo bassi generano un numero eccessivo di falsi contorni dovuti al rumore, mentre valori troppo alti rischiano di frammentare o omettere contorni significativi. Inoltre, la sogliatura del gradiente produce contorni spessi, che non consentono una localizzazione spaziale univoca.
+
+Per superare queste limitazioni, l'approccio ideale consiste nell'individuare esclusivamente i punti che rappresentano i \textbf{massimi locali} della magnitudo del gradiente. Dal punto di vista matematico, trovare un punto di massimo (picco) nella derivata prima di un segnale equivale a identificare i punti di \textbf{passaggio per lo zero} ("zero crossing") nella sua derivata seconda.
+
+\subsection{Operatore Laplaciano}
+
+L'estensione bidimensionale della derivata seconda è rappresentata dall'\textbf{operatore Laplaciano} ($\nabla^2 f$). Esso è un operatore differenziale lineare definito come la somma delle derivate parziali seconde non miste lungo le direzioni spaziali principali dell'immagine:
+
+\[ \nabla^2 f = \frac{\partial^2 f}{\partial x^2} + \frac{\partial^2 f}{\partial y^2} \]
+
+Se si analizza l'andamento del profilo di intensità di un'immagine in prossimità di una transizione (contorno):
+\begin{itemize}
+    \item L'immagine originale $f(x,y)$ mostra una variazione graduale (rampa).
+    \item La derivata prima $f'(x,y)$ presenta una curva a campana simmetrica, il cui massimo locale corrisponde al punto di massima pendenza.
+    \item La derivata seconda $f"(x,y)$ mostra una transizione bipolare, caratterizzata da un picco positivo seguito da un picco negativo. Il punto esatto in cui la derivata seconda assume valore nullo nel passaggio tra il lobo positivo e quello negativo individua con precisione geometrica la posizione del contorno.
+\end{itemize}
+
+% [IMMAGINE RIF INTERVALLO 63-93] Grafici coordinati del segnale f(x,y), della sua derivata prima f'(x,y) soggetta a soglia, e della derivata seconda f"(x,y) che evidenzia lo zero crossing — Slide 10 / Pagina 10 del PDF
+
+\subsection{Approssimazione Discreta Del Laplaciano}
+
+Per implementare l'operatore Laplaciano su immagini discrete, è necessario ricavare le corrispondenti equazioni alle differenze finite. Riprendendo la definizione di derivata prima discreta lungo la direzione $x$ e applicando nuovamente l'operazione di differenziazione, si ha:
+
+\begin{align*}
+\frac{\partial^2 f}{\partial x^2} &= \frac{\partial G_x}{\partial x} \approx \frac{\partial (f[i, j+1] - f[i, j])}{\partial x} \\
+&= (f[i, j+2] - f[i, j+1]) - (f[i, j+1] - f[i, j]) \\
+&= f[i, j+2] - 2f[i, j+1] + f[i, j]
+\end{align*}
+
+Questa espressione non è simmetrica rispetto al pixel centrale $[i, j]$. Per ottenere una rappresentazione simmetrica e centrata sul pixel corrente $[i,j]$, si effettua una traslazione spaziale di un pixel, ottenendo:
+
+\[ \frac{\partial^2 f}{\partial x^2} \approx f[i, j+1] - 2f[i, j] + f[i, j-1] \]
+
+Applicando il medesimo ragionamento lungo la direzione spaziale verticale $y$, si ottiene la corrispondente derivata parziale seconda discreta:
+
+\[ \frac{\partial^2 f}{\partial y^2} \approx f[i+1, j] - 2f[i, j] + f[i-1, j] \]
+
+Sommando le due equazioni alle differenze finite per calcolare il Laplaciano $\nabla^2 f = \frac{\partial^2 f}{\partial x^2} + \frac{\partial^2 f}{\partial y^2}$, l'espressione risultante è:
+
+\[ \nabla^2 f \approx f[i, j+1] + f[i, j-1] + f[i+1, j] + f[i-1, j] - 4f[i, j] \]
+
+Questa equazione può essere implementata in modo efficiente mediante la convoluzione con la seguente maschera $3 \times 3$:
+
+\[ \nabla^2 \approx \begin{bmatrix} 0 & 1 & 0 \\ 1 & -4 & 1 \\ 0 & 1 & 0 \end{bmatrix} \]
+
+% [IMMAGINE RIF INTERVALLO 63-93] Maschera discreta 3x3 dell'operatore Laplaciano con peso centrale pari a -4 — Slide 11 / Pagina 11 del PDF
+
+\newpage
+
+\section{Laplacian of Gaussian (Laplaciano Della Gaussiana)}
+
+La rilevazione dei contorni basata sull'identificazione dei passaggi per lo zero della derivata seconda presenta una criticità fondamentale: le derivate di secondo ordine sono \textbf{estremamente sensibili al rumore}. Anche minime fluttuazioni ad alta frequenza nell'intensità dei pixel vengono fortemente amplificate dall'operatore Laplaciano, generando un numero elevato di falsi passaggi per lo zero.
+
+Per mitigare questo fenomeno, è indispensabile filtrare l'immagine con un filtro passa-basso prima di calcolare la derivata seconda. La soluzione ottimale è rappresentata dal filtro \textbf{Laplacian of Gaussian (LoG)}, che integra il filtraggio di smoothing Gaussiano con la rilevazione dei contorni del Laplaciano in un'unica operazione.
+
+Definendo $h(x,y)$ come la funzione di filtro Gaussiana e $f(x,y)$ come l'immagine di partenza, l'operazione combinata si esprime come:
+
+\[ g[x, y] = \nabla^2 [h(x,y) * f(x,y)] \]
+
+Sfruttando la proprietà associativa della convoluzione e la linearità dell'operatore differenziale, l'equazione può essere riscritta applicando l'operatore Laplaciano direttamente al filtro Gaussiano continuo $h(x,y)$ prima di eseguire la convoluzione con l'immagine:
+
+\[ g[x, y] = [\nabla^2 h(x,y)] * f(x,y) \]
+
+La funzione del filtro LoG risultante può essere calcolata analiticamente. Data la formulazione analitica della Gaussiana bidimensionale, la sua derivata seconda spaziale combinata ($\nabla^2 h$) assume la seguente espressione chiusa:
+
+\[ \nabla^2 h(x, y) = \boxed{\left( \frac{x^2 + y^2 - 2\sigma^2}{\sigma^4} \right) e^{-\left(\frac{x^2 + y^2}{2\sigma^2}\right)}} \]
+
+Questo filtro, noto in letteratura anche come filtro a "sombrero" o \emph{Mexican hat} per via del suo profilo geometrico tridimensionale, consente di eseguire simultaneamente la riduzione del rumore e il calcolo della derivata seconda con un'unica operazione di convoluzione bidimensionale, garantendo un'elevata efficienza computazionale.
+
+\newpage
+
+\section{Filtri Di Rilevamento Dei Contorni 2D}
+
+Per comprendere meglio il funzionamento spaziale di questi operatori, è utile esaminare la loro rappresentazione geometrica nello spazio tridimensionale.
+
+La funzione Gaussiana bidimensionale, definita come:
+
+\[ h_\sigma(u, v) = \frac{1}{2\pi\sigma^2} e^{-\frac{u^2+v^2}{2\sigma^2}} \]
+
+si presenta come una superficie a campana liscia e simmetrica rispetto all'origine. Essa agisce attenuando le alte frequenze spaziali e uniformando le transizioni di colore o intensità.
+
+% [IMMAGINE RIF INTERVALLO 63-93] Grafico 3D della campana gaussiana bidimensionale h_sigma(u,v) — Slide 13 / Pagina 13 del PDF
+
+Al contrario, la derivata parziale prima rispetto alla direzione $x$ della funzione Gaussiana, espressa como:
+
+\[ \frac{\partial}{\partial x} h_\sigma(u, v) \]
+
+mostra un profilo asimmetrico caratterizzato da un lobo di valore positivo affiancato da un lobo speculare di valore negativo. Questa conformazione geometrica agisce come un rilevatore di pendenze direzionali lungo l'asse orizzontale.
+
+% [IMMAGINE RIF INTERVALLO 63-93] Grafico 3D della derivata prima rispetto a x della funzione Gaussiana — Slide 13 / Pagina 13 del PDF
+
+La differenziazione della Gaussiana può essere orientata lungo i due assi cartesiani dell'immagine:
+\begin{enumerate}
+    \item \textbf{Direzione $x$}: Il filtro evidenzia le variazioni orizzontali di intensità. La sua rappresentazione 3D e il corrispondente kernel in scala di grigi presentano una transizione scuro-chiaro lungo l'asse orizzontale.
+    \item \textbf{Direzione $y$}: Il filtro rileva le variazioni verticali di intensità, mostrando una transizione scuro-chiaro orientata lungo l'asse verticale.
+\end{enumerate}
+
+% [IMMAGINE RIF INTERVALLO 63-93] Superfici 3D e rispettivi kernel discreti in scala di grigi per le derivate della Gaussiana lungo le direzioni x e y — Slide 14 / Pagina 14 del PDF
+
+\newpage
+
+\section{Algoritmo Di Rilevamento Dei Contorni Di Canny}
+
+L'\textbf{algoritmo di Canny} (\emph{Canny edge detector}), sviluppato da John F. Canny nel 1986, rappresenta tuttora uno degli standard di riferimento per l'estrazione dei contorni grazie alla sua ottimalità nel bilanciare tre criteri fondamentali: bassa frequenza di errore (rilevare tutti i contorni reali ed evitare falsi contorni), localizzazione accurata (i contorni rilevati devono essere il più vicino possibile ai contorni reali), e risposta singola per ciascun contorno.
+
+\subsection{Fasi Dell'Algoritmo}
+
+L'algoritmo si sviluppa in quattro fasi sequenziali:
+
+\begin{enumerate}
+    \item \textbf{Filtraggio dell'immagine}: Riduzione del rumore tramite convoluzione dell'immagine con la derivata di una funzione Gaussiana.
+    \item \textbf{Calcolo del modulo e dell'orientamento del gradiente}: Determinazione della forza e della direzione del gradiente locale.
+    \item \textbf{Soppressione dei non-massimi (\emph{Non-maximum suppression})}: Assottigliamento dei contorni per isolare esclusivamente i picchi locali di variazione.
+    \item \textbf{Collegamento e sogliatura con isteresi (\emph{Hysteresis thresholding})}: Applicazione di una doppia soglia (bassa e alta) per collegare i segmenti di contorno ed eliminare il rumore residuo.
+\end{enumerate}
+
+\subsection{Fase 1: Filtraggio Con Derivata Della Gaussiana}
+
+La prima fase prevede l'attenuazione del rumore ad alta frequenza tramite convoluzione con la derivata della funzione Gaussiana:
+
+\[ f[i, j] = G[i, j, \sigma] * I[i, j] \]
+
+dove $I[i, j]$ rappresenta l'immagine digitale di input e $G[i, j, \sigma]$ è la derivata prima spaziale del filtro Gaussiano con deviazione standard $\sigma$.
+
+\emph{Nota Bene}: \textbf{L'algoritmo di Canny non utilizza il Laplaciano della Gaussiana (LoG)}. La scelta di utilizzare le derivate prime parziali rispetto al Laplaciano (derivata seconda) è motivata dalla necessità di preservare l'informazione relativa alla direzione del gradiente, elemento fondamentale per le successive fasi di assottigliamento e collegamento dei contorni.
+
+% [IMMAGINE RIF INTERVALLO 63-93] Esempio dell'effetto di scala derivativo sul muso di una zebra: dettagli fini (sigma ridotto) versus contorni macroscopici (sigma elevato) — Slide 17 / Pagina 17 del PDF
+
+\subsection{Fase 2: Forza E Orientamento Del Gradiente}
+
+Utilizzando le risposte dei filtri derivativi lungo le direzioni spaziali $x$ e $y$, si procede al calcolo del modulo (forza del contorno) e dell'orientamento del vettore gradiente per ciascun pixel dell'immagine:
+
+\[ \|\nabla f\| = \sqrt{\left(\frac{\partial f}{\partial x}\right)^2 + \left(\frac{\partial f}{\partial y}\right)^2} \]
+
+\[ \theta = \tan^{-1}\left( \frac{\partial f}{\partial y} \Big/ \frac{\partial f}{\partial x} \right) \]
+
+% [IMMAGINE RIF INTERVALLO 63-93] Visualizzazione della sola magnitudo del gradiente di un edificio, che evidenzia contorni spessi e sfocati — Slide 19 / Pagina 19 del PDF
+
+% [IMMAGINE RIF INTERVALLO 63-93] Dettaglio ingrandito di un contorno spesso ottenuto dalla magnitudo del gradiente che pone il problema della localizzazione esatta — Slide 20 / Pagina 20 del PDF
+
+\subsection{Fase 3: Soppressione Dei Non-Massimi}
+
+Poiché l'algoritmo di Canny non impiega derivate di secondo ordine, i contorni ottenuti dal semplice calcolo della magnitudo del gradiente risultano spessi diversi pixel. Per ottenere contorni nitidi e di spessore unitario, viene applicata la \textbf{soppressione dei non-massimi}. Questo processo esamina la magnitudo del gradiente di ogni pixel e verifica se esso costituisca un massimo locale rispetto ai suoi vicini lungo la direzione del gradiente stesso.
+
+Per effettuare questa verifica in modo rigoroso, si dovrebbe confrontare il pixel centrale $q$ con i punti $p$ e $r$ situati lungo la retta del gradiente. Poiché la direzione del gradiente $\theta$ assume valori continui, i punti $p$ e $r$ non coincidono generalmente con i nodi della griglia dei pixel discreta. Pertanto, il calcolo accurato richiederebbe l'\textbf{interpolazione} dei valori dei pixel adiacenti.
+
+% [IMMAGINE RIF INTERVALLO 63-93] Schema geometrico dei punti p, q, r lungo la direzione continua del vettore gradiente in un intorno discreto di pixel — Slide 22 / Pagina 22 del PDF
+
+Al fine di ottimizzare il carico computazionale, la direzione continua del gradiente viene discretizzata in quattro macro-settori angolari all'interno di un intorno $3 \times 3$, associati alle quattro possibili direzioni dei contorni:
+\begin{enumerate}
+    \item \textbf{Direzione Nord-Sud} (pixel verdi): Indica una variazione di intensità verticale, associata a un contorno orizzontale.
+    \item \textbf{Direzione Est-Ovest} (pixel blu): Indica una variazione orizzontale, associata a un contorno verticale.
+    \item \textbf{Direzione Diagonale Nord-Ovest / Sud-Est} (pixel gialli).
+    \item \textbf{Direzione Diagonale Nord-Est / Sud-Ovest} (pixel rossi).
+\end{enumerate}
+
+% [IMMAGINE RIF INTERVALLO 63-93] Griglia colorata 3x3 che illustra le quattro direzioni di discretizzazione spaziale per la soppressione dei non-massimi — Slide 23 / Pagina 23 del PDF
+
+\subsubsection{Criterio Di Confronto E Sogliatura Dei Settori Angolari}
+
+Si analizza di seguito la logica di confronto per ciascun intervallo angolare discretizzato:
+
+\begin{itemize}
+    \item \textbf{Settore diagonale principale (intervallo $22.5^\circ - 67.5^\circ$)}: La variazione massima avviene lungo la diagonale dall'alto a sinistra in basso a destra. Di conseguenza, il contorno fisico si sviluppa lungo la diagonale opposta (indicata in rosso). Per verificare se il pixel centrale appartiene al contorno, la sua magnitudo viene confrontata con il pixel in alto a sinistra e quello in basso a destra. Se il pixel centrale ha magnitudo massima ed essa supera la soglia superiore definita dall'utente, viene marcato temporaneamente come contorno.
+
+    % [IMMAGINE RIF INTERVALLO 63-93] Diagramma geometrico del settore angolare tra 22.5 e 67.5 gradi con l'evidenziazione dei pixel di confronto diagonali — Slide 24 / Pagina 24 del PDF
+
+    \item \textbf{Settore verticale (intervallo $67.5^\circ - 112.5^\circ$)}: Il gradiente punta prevalentemente in verticale; il contorno è orizzontale. Il confronto viene eseguito con il pixel superiore e quello inferiore.
+    \item \textbf{Settore diagonale secondario (intervallo $112.5^\circ - 157.5^\circ$)}: Il gradiente si sviluppa lungo la diagonale dall'alto a destra al basso a sinistra; il contorno giace sulla diagonale opposta. Il confronto avviene con il pixel in alto a destra e quello in basso a sinistra.
+    \item \textbf{Settore orizzontale (intervalli $157.5^\circ - 180.0^\circ$ e $0^\circ - 22.5^\circ$)}: Il gradiente è orizzontale; il contorno è verticale. Il confronto avviene con il pixel adiacente destro e quello sinistro.
+\end{itemize}
+
+L'applicazione di questo filtro determina un processo di \textbf{assottigliamento} (\emph{thinning}), che riduce i contorni a linee continue di spessore pari a un singolo pixel.
+
+% [IMMAGINE RIF INTERVALLO 63-93] Diagrammi esplicativi per i settori angolari verticale, diagonale inverso e orizzontale con i rispettivi vettori di confronto — Slide 25 / Pagina 25 del PDF
+
+% [IMMAGINE RIF INTERVALLO 63-93] Risultato dell'assottigliamento (thinning) tramite non-maximum suppression applicato al contorno di una farfalla — Slide 26 / Pagina 26 del PDF
+
+\subsection{Fase 4: Sogliatura Con Isteresi E Collegamento}
+
+L'assottigliamento produce un insieme di pixel candidati a essere contorni. Tuttavia, a causa di variazioni di illuminazione o presenza di rumore residuo, la magnitudo del gradiente lungo un contorno reale può fluttuare, scendendo localmente sotto la soglia di rilevamento e generando contorni frammentati.
+
+Per risolvere questo problema, l'algoritmo di Canny utilizza la \textbf{sogliatura con isteresi}, definendo due diverse soglie di intensità del gradiente:
+\begin{itemize}
+    \item \textbf{Soglia alta ($T_{high}$)}: Utilizzata per identificare i pixel di contorno "forti" e sicuri, che fungono da punti di partenza (\emph{seed points}).
+    \item \textbf{Soglia bassa ($T_{low}$)}: Utilizzata per consentire il collegamento di pixel di contorno "deboli", a condizione che siano spazialmente connessi a un contorno forte.
+\end{itemize}
+
+Il processo iterativo di accrescimento e collegamento dei contorni si sviluppa secondo la seguente logica:
+\begin{enumerate}
+    \item Se il pixel corrente non è marcato come contorno forte, si passa ad analizzare il pixel successivo.
+    \item Se il pixel corrente è un contorno valido, si esaminano i suoi due pixel adiacenti situati lungo la direzione del contorno (direzione perpendicolare rispetto a quella del gradiente). Ciascuno di questi pixel viene promosso a pixel di contorno se soddisfa contemporaneamente tre requisiti:
+    \begin{itemize}
+        \item Presenta un orientamento del gradiente coerente con quello del pixel corrente (ovvero ricade nella stessa categoria angolare discretizzata).
+        \item Possiede una magnitudo del gradiente superiore alla soglia bassa $T_{low}$.
+        \item Risulta essere un massimo locale rispetto ai propri vicini (ha superato la fase di soppressione dei non-massimi).
+    \end{itemize}
+    \item Il processo viene ripetuto in modo iterativo finché lo stato dei pixel nell'immagine non presenta ulteriori variazioni.
+\end{enumerate}
+
+Questo approccio consente di escludere tutti i pixel deboli isolati generati dal rumore, mantenendo esclusivamente quelli che contribuiscono a preservare la continuità strutturale dei contorni principali.
+
+% [IMMAGINE RIF INTERVALLO 63-93] Confronto degli effetti della sogliatura con isteresi: contorni forti isolati, contorni deboli affetti da rumore e contorni uniti (senza interruzioni) — Slide 29 / Pagina 29 del PDF
+
+\subsection{Parametri Di Controllo E Scelta Di Sigma}
+
+L'efficacia e la tipologia di contorni estratti tramite l'algoritmo di Canny dipendono dalla scelta di tre parametri fondamentali definiti dall'utente:
+\begin{itemize}
+    \item \textbf{$\sigma$ (ampiezza dello smoothing Gaussiano)}: Determina la scala dei contorni rilevati nell'immagine.
+    \item \textbf{Soglia alta ($T_{high}$)}: Regola la selettività nell'individuazione dei punti di partenza dei contorni.
+    \item \textbf{Soglia bassa ($T_{low}$)}: Determina la tolleranza nel collegamento dei tratti di contorno deboli.
+\end{itemize}
+
+In particolare, la selezione del parametro di scala $\sigma$ determina il comportamento dell'algoritmo:
+\begin{itemize}
+    \item L'utilizzo di un valore di $\sigma$ \textbf{elevato} attenua i dettagli fini dell'immagine, portando alla rilevazione esclusiva dei contorni strutturali a grande scala ("large-scale edges"), come i profili degli oggetti macroscopici o i margini stradali.
+    \item L'utilizzo di un valore di $\sigma$ \textbf{ridotto} preserva le componenti ad alta frequenza, consentendo di catturare contorni molto fini e dettagliati ("fine edges"), come le trame o le ramificazioni complesse.
+\end{itemize}
+
+% [IMMAGINE RIF INTERVALLO 63-93] Immagine stradale reale e corrispondente mappa dei contorni estratti tramite Canny per evidenziare l'influenza del parametro di scala sigma — Slide 31 / Pagina 31 del PDF
+\end{document}

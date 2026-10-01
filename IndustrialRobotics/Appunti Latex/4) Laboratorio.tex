@@ -1,0 +1,1016 @@
+﻿\documentclass[11pt, a4paper]{article}
+
+%---------------------------------------------------------
+% Lingua E Codifica
+%---------------------------------------------------------
+\usepackage[italian]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+%---------------------------------------------------------
+% Layout Di Pagina E Tipografia
+%---------------------------------------------------------
+\usepackage[margin=2cm, top=1.5cm, bottom=1.5cm]{geometry}
+\usepackage{parskip}
+ \usepackage[expansion=false]{microtype}
+
+%---------------------------------------------------------
+% Gestione Dei Colori
+%---------------------------------------------------------
+\usepackage[table]{xcolor}
+
+%---------------------------------------------------------
+% Matematica E Simboli
+%---------------------------------------------------------
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{mathtools}
+\usepackage{siunitx}
+
+% BB OTTIMIZZAZIONE MATRICI LUNGHE PER LA STAMPA
+\setlength{\arraycolsep}{10pt}
+\usepackage{bm}
+
+%---------------------------------------------------------
+% Grafica, Immagini E Tabelle
+%---------------------------------------------------------
+\usepackage{graphicx}
+\graphicspath{{./Images/Lab}}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc, quotes}
+
+%---------------------------------------------------------
+% Link, Riferimenti Ed Elenchi
+%---------------------------------------------------------
+\usepackage[unicode]{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+    citecolor=blue,
+    pdftitle={Titolo Del Documento},
+    pdfauthor={Francesco Lo Verde},
+    pdfpagemode=FullScreen,
+}
+\usepackage{bookmark}
+\usepackage[italian,capitalize]{cleveref}
+\usepackage{enumitem}
+\setlist{noitemsep}
+
+%---------------------------------------------------------
+% Personalizzazione Titoli E Altri Pacchetti
+%---------------------------------------------------------
+\usepackage{titlesec}
+\titleformat{\section}{\normalfont\LARGE\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\Large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalfont\large\bfseries}{\thesubsubsection}{1em}{}
+
+\usepackage{comment}
+\newtheorem{theorem}{Definizione}
+
+
+\author{Francesco Lo Verde}
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PARTE I - SENSORI PER LA ROBOTICA
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Sensori}
+In natura, gli esseri viventi percepiscono l'ambiente circostante e il proprio stato interno attraverso i sensi. Questi meccanismi biologici si basano su segnali di natura elettrochimica, dove l'informazione viene codificata come trasporto di ioni lungo le fibre nervose. Un esempio lampante è il nervo ottico, che trasmette al cervello gli stimoli visivi catturati dalla retina.\\
+Nella robotica, si cerca di emulare questa capacità di percezione attraverso dispositivi artificiali: i \textbf{sensori}. Un robot necessita di "sensi" per interagire in modo intelligente e sicuro con il mondo. La domanda fondamentale che ci poniamo è: qual è l'equivalente dei sensi biologici (vista, udito, tatto, olfatto, gusto) per un dispositivo robotico?\\
+La risposta risiede in una vasta gamma di dispositivi di misura, progettati per percepire specifiche grandezze fisiche dell'ambiente circostante, come luce, suono, temperatura, forza e distanza.
+
+\section{Dispositivi Di Misura E Definizioni Fondamentali}
+\subsection{Esempio Pratico: La Misura della Temperatura}
+Per comprendere la varietà e le differenze tra i dispositivi di misura, consideriamo l'esempio della temperatura. Esistono molteplici strumenti per misurarla, ciascuno con principi di funzionamento e caratteristiche diverse.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Images/Lab/DispTemp.jpg}
+    \caption{Esempi di dispositivi per la misurazione della temperatura: (a) Termometro a mercurio, (b) Termometro di Galileo, una termocoppia PT100, un termistore NTC, un termometro digitale da cucina e un termoregolatore industriale (serie E5\_D OMRON).}
+    \label{fig:termometri}
+\end{figure}
+\newpage
+Questi dispositivi, pur avendo lo stesso scopo, non sono tutti uguali. Possiamo effettuare un'analisi qualitativa per raggrupparli in base alle loro caratteristiche.\\
+I termometri tradizionali, come quello a mercurio o galileiano, presentano le seguenti proprietà:
+\begin{itemize}
+    \item \textbf{Stima Diretta:} Forniscono una stima visiva e immediata del valore misurato.
+    \item \textbf{Autonomia:} Non necessitano di componenti aggiuntivi per funzionare.
+    \item \textbf{Reattività:} Reagiscono a un cambiamento preciso della temperatura ambientale.
+    \item \textbf{Scala di riferimento:} Possiedono una scala graduata che rende il valore di output comprensibile.
+\end{itemize}
+Componenti come le termocoppie (es. PT100) o i termistori (es. NTC) operano in modo diverso:
+\begin{itemize}
+    \item \textbf{Valore Non diretto:} Non è possibile visualizzare direttamente il valore misurato dal componente stesso.
+    \item \textbf{Componenti Ausiliari:} Necessitano di circuiti e dispositivi aggiuntivi (es. un microcontrollore con ADC) per interpretare il loro segnale.
+    \item \textbf{Natura Elettrica:} L'uscita è una grandezza elettrica (es. resistenza, tensione) che varia in funzione della temperatura.
+\end{itemize}
+I termometri digitali o i termoregolatori industriali sono sistemi complessi che integrano più componenti:
+\begin{itemize}
+    \item \textbf{Stima Diretta:} Forniscono una stima diretta e leggibile del valore misurato (es. su un display).
+    \item \textbf{Natura Dell'Uscita:} L'uscita principale (la lettura sul display) non è necessariamente di natura elettrica, sebbene il sistema si basi su principi elettrici interni.
+    \item \textbf{Scala E Riferimento:} Presentano una scala e un riferimento (le unità di misura, es. °C) per rendere l'output comprensibile.
+\end{itemize}
+\newpage
+\subsection{Definizione Sistema di Misura}
+In prima approssimazione, un sistema di misura può essere visto come una \textbf{Black Box} che riceve in ingresso la quantità da misurare (il \textbf{misurando}) e produce in uscita il valore misurato di tale quantità.\\
+Un modello più generico e completo di un sistema di misura è rappresentato dal seguente schema a blocchi:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{SisMis.jpg}
+    \caption{Schema a blocchi di un sistema di misura generico.}
+    \label{fig:schema_misura}
+\end{figure}
+
+I principali elementi costituenti sono:
+\begin{itemize}
+    \item \textbf{Unità di Misurazione (Sensing Element):} La parte del sistema che interagisce direttamente con il fenomeno fisico da misurare.
+    \item \textbf{Condizionatore di Segnale (Signal Conditioner):} Elabora il segnale proveniente dal sensing element per renderlo adatto alla fase successiva (es. amplificazione, filtraggio). Il suo funzionamento dipende strettamente dal fenomeno fisico.
+    \item \textbf{Elaborazione del Segnale (Signal Processing):} Esegue un'analisi del segnale condizionato per estrarre il valore finale. Questa fase può essere di tipo analogico o digitale.
+\end{itemize}
+
+\newpage
+\subsection{Sensore vs Trasduttore}
+Sebbene spesso usati come sinonimi, i termini "sensore" e "trasduttore" hanno definizioni tecniche distinte.
+\begin{description}
+    \item[Sensore] È un dispositivo che riceve e risponde a uno \textbf{stimolo} (il misurando), generando un'uscita processabile. Lo stimolo viene convertito in un segnale elettrico (sensore elettronico) o in un'informazione tangibile (es. la colonnina di mercurio in un termometro, dove il mercurio stesso è il sensore).
+
+    \item[Trasduttore] È un dispositivo che \textbf{converte una forma di energia in un'altra}. Questa definizione è più ampia e non implica necessariamente una misurazione.
+\end{description}
+Nella robotica, siamo particolarmente interessati a una sottoclasse di trasduttori: i \textbf{trasduttori elettrici}, che convertono una forma di energia (es. meccanica, luminosa) in un segnale elettrico.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{DiffTrasd.jpg} %%
+    \caption{Schema di funzionamento di un trasduttore generico e di un trasduttore elettrico.}
+    \label{fig:trasduttore}
+\end{figure}
+
+Un trasduttore può operare anche in direzione opposta, convertendo un segnale elettrico in un'altra forma di energia. Un esempio classico è un altoparlante, che trasforma l'energia elettrica in energia meccanica (onde sonore).
+Quando un trasduttore elettrico converte un segnale elettrico in un'azione fisica o in un moto, prende il nome di \textbf{attuatore}. Un motore elettrico, ad esempio, è un attuatore che converte energia elettrica in energia meccanica (rotazione).
+\newpage
+\subsection{Confine Tra Sensore E Trasduttore}
+Il confine tra sensore e trasduttore è molto sottile e dipende dal contesto e dal livello di astrazione. Nella pratica, spesso si usa il termine "sensore" in modo generico. Consideriamo i seguenti casi:
+\begin{enumerate}
+    \item \textbf{Un sensore può incorporare un trasduttore:} Un sensore di pressione (manometro di Bourdon) utilizza un trasduttore interno per convertire la pressione del fluido (energia potenziale) in un movimento meccanico (energia cinetica) dell'ago indicatore. L'intero dispositivo è un sensore.
+    \item \textbf{Non tutti i sensori necessitano di un trasduttore:} Una fotoresistenza è un sensore la cui resistenza elettrica cambia con l'intensità luminosa. Non c'è una conversione di energia, ma una modulazione di una proprietà elettrica.
+    \item \textbf{I trasduttori possono avere un sensore nel loro stadio iniziale:} Una cella di carico (un trasduttore di forza) utilizza estensimetri (sensori di deformazione) per rilevare la deformazione meccanica e convertirla in un segnale elettrico.
+\end{enumerate}
+\newpage
+\section{Caratteristiche dei Sensori}
+Le caratteristiche di un sensore si classificano in due gruppi principali: \textbf{statiche} e \textbf{dinamiche}.
+
+\subsection{Caratteristiche Statiche}
+Le caratteristiche statiche descrivono il comportamento di un sensore quando il misurando è costante o varia molto lentamente. Vengono valutate dopo che tutti gli effetti transitori si sono stabilizzati.
+
+\subsubsection{Accuratezza e Precisione}
+\begin{description}
+    \item[Accuratezza (Accuracy)] Rappresenta la bontà della misura rispetto al valore \textbf{vero} del misurando. Indica quanto la misura si avvicina al valore reale.
+    \item[Precisione (Precision)] Rappresenta la capacità di un sistema di fornire la stessa lettura quando si misura ripetutamente lo stesso misurando nelle stesse condizioni. È una misura della \textbf{dispersione} delle misure.
+\end{description}
+Un sensore può essere preciso ma non accurato, o viceversa. L'ideale è avere un sensore sia accurato che preciso.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{CaratStatiche.jpg}
+    \caption{Rappresentazione grafica di accuratezza e precisione. SENS. \#1: non accurato e non preciso. SENS. \#2: preciso ma non accurato. SENS. \#3: accurato e preciso.}
+    \label{fig:accuratezza_precisione}
+\end{figure}
+
+\subsubsection{Risoluzione e Sensitività}
+\begin{description}
+    \item[Risoluzione (Resolution)] È il più piccolo cambiamento del misurando che il sensore è in grado di apprezzare. Viene espressa come valore assoluto.
+    \item[Sensitività (Sensitivity)] È il rapporto tra la variazione incrementale dell'uscita (\(\Delta y\)) e la variazione incrementale dell'ingresso (\(\Delta x\)). Graficamente, è la pendenza della curva caratteristica ingresso-uscita del sensore.
+    \[
+        \text{Sensitività} = \frac{\Delta y}{\Delta x}
+    \]
+\end{description}
+Un sensore ideale dovrebbe avere una curva caratteristica lineare, e quindi una sensitività costante. In prossimità dei limiti del suo range, un sensore reale può entrare in \textbf{saturazione}, dove la sua sensitività si riduce drasticamente.
+
+\subsubsection{Intervallo di Misurazione (Range)}
+Il \textbf{range} (o \textit{span}) è l'intervallo di valori del misurando, tra un minimo e un massimo, entro cui il sensore è progettato per funzionare garantendo un'uscita significativa e accurata. Operare al di fuori di questo intervallo può portare a letture inaccurate o addirittura a un danneggiamento irreversibile del sensore.
+
+\subsubsection{Ripetibilità e Riproducibilità}
+\begin{description}
+    \item[Ripetibilità (Repeatability)] È la capacità del sistema di fornire la stessa risposta per misurazioni multiple dello stesso misurando, quando tutte le condizioni operative e ambientali rimangono costanti. È strettamente correlata alla precisione.
+    \item[Riproducibilità (Reproducibility)] È la capacità del sistema di fornire la stessa risposta quando le condizioni di misura (ma non il misurando) vengono alterate (es. in laboratori diversi, con operatori diversi, su robot diversi).
+\end{description}
+
+\subsubsection{Stabilità, Errore e Rumore}
+\begin{description}
+    \item[Stabilità (Stability)] È la capacità di un sensore di mantenere le sue prestazioni (accuratezza, precisione, etc.) costanti per un certo periodo di tempo. L'instabilità si manifesta come \textbf{deriva} (\textit{drift}).
+    \item[Errore (Error)] È la differenza tra il valore misurato e il valore vero del misurando. L'errore può essere \textbf{sistematico} (causato da fattori costanti, come una calibrazione errata o il drift) o \textbf{casuale} (causato da fluttuazioni imprevedibili, o \textbf{rumore}).
+    \[
+        \text{Errore Assoluto} = \text{Output} - \text{Valore Vero}
+    \]
+    \[
+        \text{Errore Relativo} = \frac{\text{Output} - \text{Valore Vero}}{\text{Valore Vero}}
+    \]
+    \item[Rumore (Noise)] Si definisce \textit{rumore} una qualsiasi fluttuazione indesiderata nel segnale di uscita di un sistema di rilevamento che non è causata da una variazione della grandezza fisica che si sta misurando (il misurando). Una metrica comune per quantificare l'impatto del rumore è il \textbf{Rapporto Segnale-Rumore (SNR o S/N)}, definito come il rapporto tra il valore medio del segnale e la deviazione standard del rumore:
+    \[
+        \frac{S}{N} = \frac{\text{Valor medio del segnale}}{\text{Deviazione standard del rumore}} = \frac{\mu_{\text{meas}}}{\sigma_{\text{noise}}}
+    \]
+    Le sorgenti di rumore possono essere classificate come esterne o interne al sensore.
+    \begin{itemize}
+        \item \textbf{Sorgenti Esterne:} Includono fattori che influenzano la misurazione ma non sono direttamente legati alla natura fisica del sensore, come ad esempio disturbi sull'alimentazione, vibrazioni meccaniche o fenomeni di cross-talk tra componenti elettroniche.
+        \newpage
+        \item \textbf{Sorgenti Interne:} Sono legate alla natura fisica stessa del dispositivo. Le principali tipologie sono:
+        \begin{itemize}
+            \item \textbf{Rumore Termico (o Elettronico):} È un fenomeno inevitabile presente in tutti i sistemi che operano a temperature superiori allo zero assoluto (0 K). L'energia termica eccita i portatori di carica (elettroni), che muovendosi in maniera casuale generano piccole variazioni di corrente e tensione.
+            \item \textbf{Shot Noise (Rumore Granulare):} Si manifesta quando un flusso di portatori di carica (elettroni, fotoni, ecc.) attraversa una barriera di potenziale, come una giunzione p-n. Questo rumore deriva dalla natura discreta della carica elettrica e dall'indipendenza statistica degli eventi di attraversamento, risultando in tempi di transito casuali. È un fenomeno molto comune nei sensori d'immagine.
+            \item \textbf{Rumore di Generazione-Ricombinazione:} È causato dalla ricombinazione casuale di elettroni e lacune nei materiali semiconduttori, in particolare in prossimità delle giunzioni p-n.
+            \item \textbf{Pink Noise (Rumore 1/f):} È un tipo di rumore la cui densità spettrale di potenza è inversamente proporzionale alla frequenza ($1/f$). Di conseguenza, il suo contributo è maggiore alle basse frequenze. L'origine di questo tipo di rumore non è ancora del tutto chiara.
+            \item \textbf{Rumore Bianco (White Noise):} Presenta una densità spettrale di potenza "piatta", il che significa che il segnale di disturbo ha la stessa potenza su ogni frequenza all'interno della banda di interesse.
+        \end{itemize}
+    \end{itemize}
+\end{description}
+
+\subsection{Caratteristiche Dinamiche}
+Le caratteristiche dinamiche descrivono come un sensore risponde a un misurando che \textbf{varia nel tempo}. La risposta dinamica dipende dalla presenza di elementi che immagazzinano energia (es. masse, capacità, induttanze).
+Per descrivere queste caratteristiche, i sensori vengono spesso modellati come \textbf{sistemi Lineari Tempo-Invarianti (LTI)}, descritti da equazioni differenziali lineari a coefficienti costanti.
+\[
+    a_n \frac{d^n y(t)}{dt^n} + \dots + a_1 \frac{dy(t)}{dt} + a_0 y(t) = b_m \frac{d^m x(t)}{dt^m} + \dots + b_1 \frac{dx(t)}{dt} + b_0 x(t)
+\]
+dove \(x(t)\) è l'ingresso (misurando) e \(y(t)\) è l'uscita (segnale del sensore).
+\newpage
+\subsubsection{Ordini dei Sistemi}
+\begin{description}
+    \item[Ordine Zero] Un sistema ideale di ordine zero ha una risposta istantanea e senza ritardo (\(y(t) = K \cdot x(t)\)). Nella realtà, nessun sistema è perfettamente a ordine zero.
+    \item[Sistemi del Primo Ordine] La loro risposta a un gradino in ingresso è un'esponenziale crescente che tende al valore finale. Sono caratterizzati da un singolo parametro, la \textbf{costante di tempo \(\tau\)}, che rappresenta il tempo necessario per raggiungere circa il 63\% del valore finale.
+    \[
+        \tau \frac{dy(t)}{dt} + y(t) = K \cdot x(t)
+    \]
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.7\textwidth]{SensPrimo.jpg}
+    \end{figure}
+    \item[Sistemi del Secondo Ordine] Sono caratterizzati da due parametri: la \textbf{pulsazione naturale \(\omega_n\)} e il \textbf{fattore di smorzamento \(\xi\)}. La loro risposta a un gradino può essere sovrasmorzata (\(\xi > 1\)), criticamente smorzata (\(\xi = 1\)) o sottosmorzata (\(\xi < 1\)), quest'ultima caratterizzata da oscillazioni.
+    \[
+        \frac{1}{\omega_n^2} \frac{d^2 y(t)}{dt^2} + \frac{2\xi}{\omega_n} \frac{dy(t)}{dt} + y(t) = K \cdot x(t)
+    \]
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.7\textwidth]{SensSecondo.jpg}
+    \end{figure}
+\end{description}
+
+\subsubsection{Banda Passante}
+La \textbf{banda passante} (\textit{bandwidth}) di un sensore è l'intervallo di frequenze entro cui il sensore è in grado di rispondere efficacemente a un segnale in ingresso senza attenuarlo significativamente. È un parametro dinamico cruciale per la misura di segnali che variano rapidamente.
+\newpage
+\section{Classificazione dei Sensori per Robot}
+I sensori utilizzati in robotica si dividono principalmente in due grandi categorie.
+
+\subsection{Sensori Propriocettivi}
+I sensori propriocettivi misurano lo \textbf{stato interno} del robot. Forniscono informazioni su variabili come posizione, velocità e coppia dei giunti, o accelerazione e deformazione dei link. Queste informazioni sono fondamentali per la cinematica, la dinamica e il controllo a basso livello del robot.
+
+\subsubsection{Sensori di Posizione: Encoders}
+Gli encoders sono sensori di posizione angolare (o lineare) estremamente comuni in robotica.
+\begin{description}
+    \item[Encoders Assoluti] Forniscono la posizione angolare \textbf{assoluta} dell'albero su cui sono montati. Il loro disco è codificato con un pattern unico per ogni posizione. Non perdono la posizione allo spegnimento e non richiedono una procedura di "homing". Per evitare errori di lettura durante la rotazione, spesso utilizzano una \textbf{codifica di Gray}, in cui codici adiacenti differiscono di un solo bit.
+
+    \item[Encoders Incrementali] Misurano la posizione in modo \textbf{relativo} rispetto a un punto di partenza. Il loro disco ha una serie di tacche uguali. Contano gli impulsi generati durante la rotazione per determinare lo spostamento. Utilizzano due canali sfasati di 90° (A e B) per determinare anche la direzione di rotazione e un canale di indice (Z) per un impulso di reset a ogni giro. Sono generalmente meno costosi e più veloci degli encoders assoluti, ma perdono la posizione allo spegnimento.
+\end{description}
+
+\subsubsection{Accelerometri (MEMS)}
+Gli accelerometri misurano l'accelerazione lineare (e, indirettamente, l'inclinazione rispetto alla gravità). Le soluzioni moderne si basano su tecnologia \textbf{MEMS} (Micro-Electro-Mechanical Systems). Il principio di funzionamento si basa su una \textbf{massa sismica} (o di prova) sospesa da molle. Quando il sensore accelera, la massa si sposta per inerzia, causando una variazione di capacità tra elettrodi fissi e mobili. Questa variazione capacitiva viene misurata e convertita in un valore di accelerazione.
+
+\subsection{Sensori Esterocettivi}
+I sensori esterocettivi misurano grandezze \textbf{esterne} al robot, relative all'ambiente in cui opera. Sono essenziali per compiti di alto livello come la navigazione, l'interazione con oggetti, l'obstacle avoidance e la localizzazione.
+
+\subsubsection{Estensimetri e Sensori di Forza/Coppia}
+Un \textbf{estensimetro} (\textit{strain gauge}) è un sensore che misura la deformazione meccanica di un oggetto. Il suo funzionamento si basa sulla variazione di resistenza elettrica di un conduttore quando viene allungato o compresso. Vengono spesso utilizzati in configurazioni a \textbf{ponte di Wheatstone} per misurare con precisione forze, pressioni e pesi.
+Sensori di \textbf{Forza/Coppia (F/T)} più complessi, come i sensori a Croce di Malta o i sensori commerciali ATI, sono montati tipicamente al polso del robot per misurare le forze e le coppie di interazione con l'ambiente durante compiti di manipolazione.
+
+\subsubsection{Sensori di Prossimità e Distanza}
+Questi sensori misurano la distanza tra il robot e gli oggetti circostanti.
+\begin{itemize}
+    \item \textbf{Sonar:} Si basano sulla propagazione di onde a ultrasuoni e misurano il "tempo di volo" dell'eco per calcolare la distanza.
+    \item \textbf{Sensori ottici:} Si basano sulla propagazione della luce. Includono sensori a infrarossi, \textbf{laser scanner} (LIDAR) e \textbf{camere RGB-D} (come il Microsoft Kinect), che forniscono sia un'immagine a colori (RGB) sia una mappa di profondità (Depth) della scena.
+\end{itemize}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PARTE II - ATTUATORI PER LA ROBOTICA
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Definizioni E Schema Di Un Sistema Robotico}
+Un sistema robotico è un'entità complessa che interagisce con un ambiente per eseguire un compito specifico. La sua architettura può essere descritta attraverso uno schema a blocchi che ne evidenzia le componenti funzionali principali.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{SchemaABlocchi.png}
+    \caption{Schema a blocchi completo di un sistema robotico, che illustra l'interazione tra \textit{Governor}, \textit{Robotic System} e \textit{Environment}.}
+    \label{fig:schema_robot}
+\end{figure}
+
+Le unità fondamentali che compongono il sistema sono:
+\begin{itemize}
+    \item \textbf{Control Unit}: È l'unità di calcolo principale del robot, spesso fisicamente dislocata rispetto alla struttura meccanica. Contiene il modello del robot, i pianificatori di traiettoria e di task, e gli algoritmi di controllo.
+
+    \item \textbf{Mechanical Unit}: Rappresenta lo "scheletro" del robot. È costituita da una serie di collegamenti (\textit{link}) uniti da giunzioni (\textit{joint}) prismatiche o rotazionali, che le conferiscono specifici \textbf{gradi di libertà (DOF - Degrees of Freedom)}. Comprende anche il polso, l'organo terminale (\textit{end-effector}) e la struttura di supporto.
+
+    \item \textbf{Actuation Unit}: Costituisce l'apparato "muscolare" del robot. Comprende i motori, le trasmissioni per il moto e i controllori a basso livello che gestiscono il movimento. Questa unità è responsabile dell'esecuzione delle azioni fisiche.
+
+    \item \textbf{Sensor Unit}: Rappresenta l'apparato "sensoriale" del robot, suddiviso in sensori \textbf{propriocettivi} (che misurano lo stato interno del robot) ed \textbf{esterocettivi} (che misurano grandezze relative all'ambiente esterno).
+
+    \item \textbf{Supervision Unit}: Fornisce al sistema capacità di ragionamento (\textit{Reasoning}). Può essere inglobata nella Control Unit e può consistere in una supervisione umana, moduli di intelligenza artificiale o sistemi di percezione avanzata.
+\end{itemize}
+\newpage
+\section{Mechanical Unit: Cinematica e Tipologie di Robot}
+La \textit{Mechanical Unit} definisce la struttura fisica e le capacità di movimento di un robot. Le principali tipologie di robot industriali si differenziano per cinematica e numero di gradi di libertà.
+
+Le quattro tipologie più diffuse nel settore industriale sono:
+\begin{enumerate}
+    \item \textbf{Articulated Robot (Robot Articolato o Antropomorfo)}: È la tipologia più comune, tipicamente con 6 DOF (ma in commercio se ne trovano da 4 a 7). La sua grande flessibilità, destrezza e portata lo rendono ideale per attività complesse che si estendono su piani non paralleli (es. saldatura, verniciatura, assemblaggio). La sua raffinatezza comporta un costo maggiore rispetto ad altre tipologie con carichi utili simili.
+
+    \item \textbf{SCARA (Selective Compliance Articulated Robot Arm)}: Ottimizzato per operazioni su piani paralleli, come l'assemblaggio verticale. È caratterizzato da alta velocità, ingombro ridotto e un costo contenuto (\textit{cost-effective}). Il suo movimento è vincolato da bracci oscillanti fissi.
+
+    \item \textbf{Delta Robot}: Detto anche "Spider Robot", utilizza tre motori montati sulla base fissa per azionare tre bracci leggeri che posizionano il polso. Questa configurazione permette velocità molto elevate. I principali svantaggi sono un'area di lavoro conica, un payload limitato e un'installazione più complessa.
+
+    \item \textbf{Robot Cartesiano}: Si muove lungo tre assi lineari ortogonali (X, Y, Z) e offre alta precisione e rigidità.
+\end{enumerate}
+
+\section{Tipologie di Attuatori}
+Se i collegamenti e i giunti rappresentano lo scheletro del robot, gli \textbf{attuatori} ne rappresentano i \textbf{muscoli}, permettendo movimenti e rotazioni. La scelta di un attuatore è condizionata da molteplici fattori legati alle specifiche del progetto e all'ambiente operativo:
+\begin{itemize}
+    \item \textbf{Task}: La natura del compito da svolgere (es. saldatura, pick and place).
+    \item \textbf{Payload}: Il carico massimo che il robot deve manipolare.
+    \item \textbf{Velocità Di Esecuzione}: Le specifiche di coppia e velocità richieste.
+    \item \textbf{Costo Complessivo} del sistema di attuazione.
+    \item \textbf{Cinematica Del Robot}.
+\end{itemize}
+\newpage
+\subsection{Il Sistema di Attuazione Completo}
+Un sistema di attuazione non è composto solo dal motore, ma da una catena di componenti che trasformano l'energia in ingresso in un'azione meccanica utile.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{AttuationSystem.png}
+    \caption{Schema a blocchi di un sistema di attuazione industriale. La linea rossa delimita l'Actuation Unit.}
+    \label{fig:attuazione_sistema}
+\end{figure}
+
+Il processo di conversione energetica è governato dal concetto di \textbf{potenza} \(P\), definita come l'energia trasferita nell'unità di tempo:
+\[
+    P = \frac{\Delta E_{sys}}{\Delta t}
+\]
+L'indicatore fondamentale che caratterizza l'efficienza di questa conversione è il \textbf{rendimento} \(\eta\):
+\[
+    \eta = \frac{P_{out}}{P_{in}}
+\]
+dove \(P_{out}\) è la potenza utile in uscita e \(P_{in}\) è la potenza assorbita in ingresso. Le differenze tra \(P_{in}\) e \(P_{out}\) sono dovute a perdite per effetti dissipativi (es. attrito, effetto Joule).
+
+\section{Servomotori: Classificazione e Caratteristiche}
+I \textbf{servomotori} sono il cuore del sistema di attuazione. Possono essere classificati in base al tipo di energia utilizzata per generare il movimento:
+\begin{itemize}
+    \item \textbf{Servomotori Pneumatici} \(\rightarrow\) utilizzano energia pneumatica (aria compressa).
+    \item \textbf{Servomotori Idraulici} \(\rightarrow\) utilizzano energia idraulica (fluidi in pressione).
+    \item \textbf{Servomotori Elettrici} \(\rightarrow\) utilizzano energia elettrica.
+\end{itemize}
+
+\subsection{Servomotori Pneumatici (Lineari)}
+L'attuazione avviene tramite la compressione/decompressione di un fluido (aria) in una camera.
+\begin{itemize}
+    \item \textbf{Vantaggi}: Semplicità costruttiva, costo contenuto, possibilità di utilizzo in ambienti pericolosi (dove elettricità è bandita). Trovano largo impiego come muscoli artificiali in soft robotics (es. \textit{McKibben actuators}) e come gripper.
+    \item \textbf{Svantaggi}: Difficoltà di controllo fine a causa della comprimibilità dell'aria e della possibile contaminazione del fluido; necessità di un compressore esterno.
+\end{itemize}
+\newpage
+\subsection{Servomotori Idraulici (Oleodinamici)}
+Utilizzano un fluido incomprimibile (olio) messo in pressione da una pompa.
+\begin{itemize}
+    \item \textbf{Vantaggi}: Alta coppia erogata, ottimo rapporto peso-potenza, capacità di erogare coppie elevate a basse velocità senza riduttori, auto-lubrificazione.
+    \item \textbf{Svantaggi}: Bassa efficienza, costo elevato (specialmente per motori bidirezionali), necessità di componenti ausiliari (pompa, serbatoio olio), manutenzione frequente (perdite, sostituzione filtri).
+\end{itemize}
+
+\subsection{Servomotori Elettrici}
+Sono la tipologia più diffusa in robotica. Un servomotore elettrico è, essenzialmente, un motore elettrico accoppiato a un \textbf{sistema di feedback} (tipicamente un encoder, un resolver o un sensore a effetto Hall) che fornisce informazione sulla posizione e velocità, permettendo un controllo preciso.
+\begin{itemize}
+    \item \textbf{Vantaggi}: Energia elettrica disponibile ovunque, basso costo di messa in opera, alta efficienza, facile manutenzione, vasta gamma di varianti, alta accelerazione, bassa inerzia, alta banda di controllabilità, precisione e ripetibilità eccellenti.
+    \item \textbf{Svantaggi}: Tendenza al surriscaldamento in condizioni statiche, necessità di freni di emergenza, necessità di protezioni in ambienti a rischio di esplosione, leggi di controllo complesse per modelli avanzati.
+\end{itemize}
+Quando si parla di servomotori si fa riferimento non ad un particolare tipo di motori,
+bensì ad un sistema più complesso di elementi tra cui è compreso un motore elettrico.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{SchemaServMot.jpg}
+    \caption{Schema a blocchi di un sistema di controllo per un servomotore elettrico.}
+    \label{fig:servo_controllo}
+\end{figure}
+\newpage
+\subsection{Motori DC vs Motori AC}
+I motori elettrici si suddividono in due macro-categorie in base al tipo di alimentazione:
+\begin{itemize}
+    \item \textbf{Motori DC (Direct Current - Corrente Continua)}: Tensione e verso della corrente sono costanti. Il controllo è relativamente semplice.
+    \item \textbf{Motori AC (Alternating Current - Corrente Alternata)}: Tensione e corrente variano sinusoidalmente nel tempo. La presenza di elementi con memoria (induttori, condensatori) nel circuito introduce sfasamenti tra corrente e tensione, dando origine a una \textbf{potenza reattiva}.
+\end{itemize}
+
+\begin{table}[H]
+    \centering
+    \resizebox{\textwidth}{!}{
+    \begin{tabular}{|l|p{8cm}|p{7.5cm}|}
+        \hline
+        \textbf{Caratteristica} & \textbf{MOTORI AC} & \textbf{MOTORI DC}\\ \hline
+        \textbf{Tipologie}    & Motore sincrono AC e Induzione AC.& Brushed DC motor e Brushless DC motor (con spazzole e senza spazzole).\\
+        \hline
+        \textbf{Fasi Input}   & Singola Fase o Trifase.& Singola fase.\\
+        \hline
+        \textbf{Commutazione} & Sono assenti elementi di commutazione o spazzole.& Presenza di circuiti di commutazione (Brushless) o spazzole.\\
+        \hline
+        \textbf{Motor Start}  & Motori trifase non necessitano di starter. Motori monofase necessitano di un circuito di starter. & Avviamento naturale senza circuiti di avviamento.\\
+        \hline
+        \textbf{Efficienza}   & A causa di fenomeni parassiti induttivi e capacitive (current loss) l'efficienza è più bassa rispetto ai DC. & Alta efficienza senza effetti parassiti.\\
+        \hline
+        \textbf{Applicazione} & Alta velocità e coppia variabile. & Velocità variabile e coppia alta\\
+        \hline
+        \textbf{Carico}       & Risposta lenta a variazioni nel carico. & Alta velocità di risposta a variazioni del carico.\\
+        \hline
+    \end{tabular}
+    }
+\end{table}
+Storicamente, i motori DC sono stati i più diffusi nei manipolatori robotici. Tuttavia, l'avanzamento tecnologico sta rendendo i motori AC (sincroni e a induzione) alternative sempre più valide e competitive.
+\newpage
+\section{Motore Elettrico DC Brushed (A Spazzole)}
+Un motore elettrico a corrente continua (DC) con spazzole, noto come \textbf{motore DC brushed}, rappresenta una delle tipologie più tradizionali e diffuse di attuatori elettromeccanici. La sua funzione è convertire l'energia elettrica in ingresso in energia meccanica in uscita, sotto forma di una coppia motrice che pone in rotazione un albero. La sua architettura, sebbene concettualmente semplice, si basa su principi elettromagnetici fondamentali che ne determinano il comportamento e le prestazioni.
+
+\subsection{Principi Costruttivi E Componenti Fondamentali}
+La struttura di un motore DC brushed si articola attorno a due componenti principali: una parte fissa, denominata \textbf{statore}, e una parte mobile, il \textbf{rotore}. L'interazione elettromagnetica tra queste due parti è alla base della generazione della coppia.
+
+\subsubsection{Lo Statore}
+Lo statore ha il compito primario di generare un campo magnetico stazionario e costante. È costituito da una carcassa ferromagnetica cilindrica e cava, che funge da giogo e supporto strutturale, al cui interno sono alloggiate le \textbf{espansioni polari}. Queste ultime sono responsabili della creazione del flusso magnetico.
+\begin{itemize}
+    \item \textbf{Magneti Permanenti}: Nei motori di piccola taglia o per applicazioni a basso costo, le espansioni polari sono realizzate con magneti permanenti (es. in ferrite o terre rare), che garantiscono un campo magnetico costante senza necessità di alimentazione esterna.
+    \item \textbf{Elettromagneti}: Nei motori di potenza superiore, il campo magnetico è generato da elettromagneti. Su ciascuna espansione polare è avvolta una bobina, detta \textbf{avvolgimento di eccitazione}, percorsa da una corrente specifica (corrente di eccitazione, \(I_{ecc}\)). Gli avvolgimenti di eccitazione di poli opposti sono collegati in serie per produrre un campo magnetico con la polarità desiderata.
+\end{itemize}
+
+\subsubsection{Circuito Magnetico Statore}
+Il numero di \textbf{coppie polari} viene definito con la lettera \(p\). Una macchina con una coppia polare (\(p=1\)) avrà due poli (Nord e Sud), mentre una macchina con due coppie polari (\(p=2\)) avrà quattro poli, e così via.
+\begin{itemize}
+    \item L'\textbf{asse neutro} individua il piano geometrico che interseca la macchina longitudinalmente, in corrispondenza del quale l'induzione magnetica radiale generata dallo statore è nulla.
+    \item Viene definita \textbf{passo polare (\(\tau\))} la distanza angolare tra gli assi di due poli consecutivi e di polarità opposta. Per una macchina a \(2p\) poli, il passo polare è dato da:
+    \[
+    \tau = \frac{360^\circ}{2p} = \frac{180^\circ}{p}
+    \]
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{StatorePoliDC.jpg}
+    \caption{Sezione trasversale di un motore DC a 2 poli (\(p=1\)) e a 4 poli (\(p=2\), a destra). Viene evidenziato il concetto di asse neutro e di passo polare \(\tau\).}
+\end{figure}
+\newpage
+\subsubsection{Il Rotore (o Armatura)}
+Il rotore, detto anche \textbf{armatura} o \textbf{indotto}, è la parte rotante del motore, coassiale allo statore e da esso separato da un sottile strato d'aria chiamato \textbf{traferro}. È composto da:
+\begin{itemize}
+    \item Un \textbf{pacco rotorico}, ovvero un cilindro di lamierini ferromagnetici isolati tra loro per ridurre le perdite per correnti parassite.
+    \item L'\textbf{avvolgimento di indotto}, costituito da un insieme di spire di rame alloggiate in apposite scanalature (cave) sulla superficie del pacco rotorico. Questo avvolgimento è il circuito elettrico in cui scorre la corrente di armatura (\(I_a\)) e su cui agiscono le forze elettromagnetiche.
+\end{itemize}
+Quando il rotore è immerso nel campo magnetico statorico e i suoi avvolgimenti sono percorsi da corrente, su di essi si genera una coppia motrice.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{Rotore.jpg}
+\end{figure}
+\subsubsection{Il Collettore e le Spazzole: Il Sistema di Commutazione Meccanica}
+Il componente distintivo del motore DC brushed è il sistema di commutazione meccanica, essenziale per garantire una rotazione continua.
+\begin{itemize}
+    \item \textbf{Collettore a Lamelle (Commutatore)}: Montato sull'albero del rotore, è un cilindro composto da segmenti conduttivi in rame (lamelle), isolati elettricamente l'uno dall'altro. Ciascuna lamella è collegata a una o più spire dell'avvolgimento di indotto.
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.4\textwidth]{Collettore.jpg}
+    \end{figure}
+    \item \textbf{Spazzole (Brushes)}: Sono contatti striscianti fissi, solitamente in grafite o carbone, premuti contro la superficie del collettore. Le spazzole trasferiscono la corrente dall'alimentazione esterna agli avvolgimenti rotorici.
+\end{itemize}
+Il ruolo del commutatore è invertire la direzione della corrente nelle spire dell'armatura ogni mezzo giro (per un motore a 2 poli). Se non ci fosse questo meccanismo, quando la spira si allinea con il campo magnetico statorico, la coppia motrice si annullerebbe e il motore si arresterebbe.\\
+Il processo di commutazione avviene come segue:
+\begin{enumerate}
+    \item Le spazzole fisse forniscono corrente a specifiche lamelle del commutatore.
+    \item Man mano che l'armatura ruota, le spazzole scorrono sulla superficie del collettore, cambiando contatto e passando da un segmento a quello successivo.
+    \item Questa transizione inverte la polarità della tensione applicata alle spire collegate a quei segmenti.
+    \item L'inversione della corrente assicura che la forza elettromagnetica generata continui a spingere il rotore sempre nella stessa direzione, garantendo una coppia motrice continua e superando i punti di coppia nulla.
+\end{enumerate}
+\newpage
+\subsection{Principio di Funzionamento}
+Il funzionamento del motore si basa sulla \textbf{Forza di Lorentz}. Un conduttore di lunghezza \(L\), immerso in un campo di induzione magnetica \(\bm{B}\) e percorso da una corrente \(I\), è soggetto a una forza \(\bm{F}\) data da:
+\[
+\bm{F} = I (\bm{L} \times \bm{B})
+\]
+dove \(\bm{L}\) è un vettore con modulo pari alla lunghezza del conduttore e direzione concorde a quella della corrente.
+
+Considerando una singola spira rettangolare nel rotore, i due lati attivi sono percorsi da correnti di verso opposto. Trovandosi in zone con campo magnetico di polarità opposta, le forze agenti sui due lati creano una coppia motrice \(\bm{\tau}\) che tende a far ruotare la spira:
+\[
+\tau = 2 \cdot r \cdot F \sin(\theta) = 2 \cdot r \cdot (I L B) \sin(\theta)
+\]
+dove \(r\) è il raggio del rotore e \(\theta\) è l'angolo tra il piano della spira e la direzione perpendicolare al campo magnetico.
+\begin{itemize}
+    \item La coppia è massima quando \(\theta = 90^\circ\), ovvero quando la spira è perpendicolare alle linee di flusso del campo magnetico.
+    \item La coppia è nulla quando \(\theta = 0^\circ\), cioè quando il piano della spira si trova sull'\textbf{asse neutro}. In questa posizione, il campo magnetico generato dai conduttori è allineato con quello dello statore, la coppia risultante è zero e il motore potrebbe bloccarsi.
+\end{itemize}
+È proprio in questa posizione di coppia nulla che interviene il sistema collettore-spazzole, il quale, come descritto, disconnette la spira appena allineata e ne alimenta un'altra che si trova in una posizione angolare più favorevole, innescando una successiva rotazione. Questo processo di commutazione sequenziale è la chiave per ottenere una rotazione continua.
+
+\subsubsection{Forza Contro-Elettromotrice (FCEM)}
+Quando gli avvolgimenti del rotore ruotano all'interno del campo magnetico statorico, per la legge di Faraday-Lenz dell'induzione elettromagnetica, in essi si induce una \textbf{forza contro-elettromotrice} (FCEM), indicata con \(E_a\). Questa tensione si oppone alla tensione di alimentazione \(V_a\) ed è direttamente proporzionale alla velocità angolare del rotore \(\omega_m\) e al flusso magnetico \(\Phi\):
+\[
+E_a = K_e \cdot \Phi \cdot \omega_m
+\]
+dove \(K_e\) è una costante costruttiva del motore. La FCEM è un meccanismo di autoregolazione: all'aumentare della velocità, \(E_a\) aumenta, riducendo la corrente di armatura \(I_a\) secondo la legge di Ohm applicata al circuito di armatura:
+\[
+I_a = \frac{V_a - E_a}{R_a}
+\]
+dove \(R_a\) è la resistenza dell'avvolgimento di indotto.
+
+\subsubsection{Coppia Motrice e Ripple di Coppia}
+La coppia totale generata dal motore (\textbf{coppia elettromagnetica}, \(\tau_m\)) è proporzionale alla corrente di armatura \(I_a\) e al flusso magnetico \(\Phi\):
+\[
+\tau_m = K_t \cdot \Phi \cdot I_a
+\]
+dove \(K_t\) è la \textbf{costante di coppia} del motore. Nei motori a magneti permanenti, \(\Phi\) è costante, quindi la coppia è direttamente proporzionale alla corrente di armatura.
+
+A causa della commutazione discreta tra le lamelle del collettore, la coppia generata non è perfettamente costante, ma presenta delle piccole oscillazioni periodiche note come \textbf{ripple di coppia}. L'ampiezza di questo ripple può essere ridotta aumentando il numero di lamelle del collettore e il numero di cave nel rotore, ottenendo una coppia erogata più fluida e uniforme.
+\newpage
+\subsection{Tipologie di Collegamento degli Avvolgimenti}
+Nei motori DC con avvolgimento di eccitazione (non a magneti permanenti), il modo in cui il circuito di statore (eccitazione) e quello di rotore (armatura) sono collegati tra loro definisce le caratteristiche operative del motore.
+
+\subsubsection{Motore a Eccitazione Separata e Shunt (in Parallelo)}
+Nel \textbf{motore a eccitazione separata}, gli avvolgimenti di eccitazione e di armatura sono alimentati da due sorgenti di tensione distinte. Questo permette un controllo indipendente del flusso magnetico e della corrente di armatura, offrendo grande flessibilità.
+
+Il \textbf{motore Shunt} (o in derivazione) è un caso particolare in cui i due avvolgimenti sono collegati in parallelo alla stessa sorgente di alimentazione.
+\begin{itemize}
+    \item \textbf{Caratteristiche}: L'avvolgimento di eccitazione ha un'alta resistenza (molte spire di filo sottile) per assorbire una piccola corrente. Il flusso \(\Phi\) è pressoché costante, il che conferisce al motore una caratteristica velocità-coppia relativamente piatta. La velocità diminuisce leggermente all'aumentare del carico. È noto per la sua buona regolazione della velocità.
+\end{itemize}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{DCShunt.jpg}
+\end{figure}
+
+\subsubsection{Motore Serie}
+Nel \textbf{motore Serie}, l'avvolgimento di eccitazione è collegato in serie con l'avvolgimento di armatura. La stessa corrente \(I_a\) attraversa entrambi i circuiti.
+\begin{itemize}
+    \item \textbf{Caratteristiche}: L'avvolgimento di eccitazione ha una bassa resistenza (poche spire di filo grosso) per sostenere l'intera corrente di armatura. Il flusso magnetico \(\Phi\) è proporzionale alla corrente \(I_a\). Questo implica che la coppia (\(\tau_m \propto \Phi I_a\)) è proporzionale al quadrato della corrente (\(\tau_m \propto I_a^2\)) a bassi regimi.
+    \item \textbf{Vantaggi}: Produce una coppia di spunto molto elevata, rendendolo ideale per applicazioni che richiedono grandi sforzi all'avviamento (es. trazione, avviatori).
+    \item \textbf{Svantaggi}: La velocità è inversamente proporzionale al carico. A vuoto (carico nullo), la corrente tende a zero, il flusso si riduce drasticamente e la velocità può aumentare a valori pericolosamente alti (\textit{fuga}). Per questo motivo, i motori serie non devono mai essere avviati senza un carico meccanico applicato.
+\end{itemize}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.3\linewidth]{DCSerie.jpg}
+\end{figure}
+\subsubsection{Motore Composto (Compound)}
+Il motore composto (o \textit{compound}) possiede sia un avvolgimento di eccitazione in serie sia uno in parallelo. Combina le caratteristiche dei motori serie e shunt, offrendo un'elevata coppia di spunto (come il serie) e una velocità a vuoto che non diventa eccessiva (come lo shunt).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{CurveCaratteristicheDC.jpg}
+    \caption{Confronto delle curve caratteristiche coppia-velocità per motori DC Shunt, Serie e Compound.}
+\end{figure}
+
+\begin{table}[H]
+    \centering
+    \resizebox{\textwidth}{!}{
+    \begin{tabular}{|l|l|l|l|}
+        \hline
+        \textbf{Tipologia} & \textbf{Coppia di Spunto} & \textbf{Regolazione Velocità} & \textbf{Applicazioni Tipiche} \\
+        \hline
+        Shunt & Media & Buona (velocità quasi costante al variare del carico) & Macchine utensili, ventilatori, pompe, nastri trasportatori. \\
+        \hline
+        Serie & Molto alta & Scarsa (velocità molto variabile con il carico) & Trazione (treni, tram), gru, argani, motorini di avviamento. \\
+        \hline
+        Compound & Alta & Discreta (compromesso tra le caratteristiche Serie e Shunt) & Presse, ascensori, compressori, applicazioni con carichi impulsivi. \\
+        \hline
+    \end{tabular}
+    }
+\end{table}
+\newpage
+\section{Servomotore Elettrico Brushless (BLDC)}
+\subsection{Principio di Funzionamento e Struttura}
+L'acronimo \textbf{BLDC} sta per \textbf{BrushLess Direct Current}, ovvero motore a corrente continua senza spazzole. Questi motori rappresentano un'evoluzione significativa rispetto ai motori a corrente continua con spazzole (brushed), poiché sostituiscono il sistema di commutazione meccanico, basato sul contatto tra spazzole e collettore, con una \textbf{commutazione elettronica} gestita da un circuito di controllo.
+
+La struttura costruttiva dei motori BLDC è tipicamente "invertita" rispetto a quella dei motori brushed:
+\begin{itemize}
+    \item \textbf{Statore}: È la parte fissa del motore e contiene gli avvolgimenti di fase, solitamente tre, che vengono alimentati in sequenza per generare un campo magnetico rotante.
+    \item \textbf{Rotore}: È la parte mobile e contiene i magneti permanenti. Viene trascinato in rotazione dal campo magnetico generato dallo statore.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{BLDCBrushedComparison.jpg}
+    \caption{Confronto strutturale tra un motore DC con spazzole (a sinistra) e un motore BLDC (a destra), dove si evidenzia l'inversione tra statore e rotore.}
+\end{figure}
+
+Il problema fondamentale nella gestione di un motore BLDC è determinare l'istante esatto in cui effettuare la commutazione, ovvero quale fase dello statore energizzare per garantire la continuità della rotazione. Per risolvere questa criticità, il sistema di controllo deve conoscere con precisione la posizione angolare del rotore in ogni istante.
+
+\newpage
+\subsection{Sensoristica per il Controllo di Posizione}
+La rilevazione della posizione del rotore è essenziale per la commutazione elettronica. A tale scopo, i motori BLDC sono equipaggiati con specifici sensori di posizione. La scelta del sensore dipende dal livello di precisione richiesto dall'applicazione.
+\begin{itemize}
+    \item \textbf{Sensori a effetto Hall}: Sono la soluzione più comune ed economica. Tipicamente, tre sensori sono disposti a 120 gradi elettrici l'uno dall'altro per fornire un'indicazione a bassa risoluzione della posizione del rotore, sufficiente per la commutazione a sei stati (six-step commutation).
+    \item \textbf{Encoder}: Forniscono un feedback digitale ad alta risoluzione sulla posizione angolare. Esistono encoder incrementali, che misurano variazioni di posizione, e assoluti, che forniscono la posizione angolare effettiva.
+    \item \textbf{Resolver}: Sono dispositivi analogici estremamente robusti e precisi, utilizzati in applicazioni critiche (es. aerospaziale, automazione industriale avanzata) dove sono richieste alta affidabilità e resistenza a condizioni ambientali severe.
+\end{itemize}
+
+\subsection{Caratteristiche Principali}
+I motori BLDC offrono un insieme di vantaggi e svantaggi che ne determinano il campo di applicazione.
+
+\subsubsection{Vantaggi}
+\begin{itemize}
+    \item \textbf{Elevata Efficienza}: L'assenza di spazzole elimina le perdite per attrito e le cadute di tensione associate al contatto spazzola-collettore, garantendo un'efficienza energetica superiore.
+    \item \textbf{Maggiore DurataE Minore Manutenzione}: L'eliminazione delle spazzole, componente soggetto a usura, si traduce in una vita operativa più lunga e in una manutenzione quasi nulla.
+    \item \textbf{Alta Velocità E Coppia Elevata}: I motori BLDC possono operare a velocità molto elevate e mantenere una coppia considerevole anche a regimi di rotazione alti.
+    \item \textbf{Silenziosità E Vibrazioni Ridotte}: La commutazione elettronica e l'assenza di contatti striscianti rendono il funzionamento più silenzioso e fluido.
+    \item \textbf{Controllo Preciso}: La gestione elettronica permette un controllo molto preciso di velocità, coppia e posizione, rendendoli ideali per applicazioni di servocontrollo.
+    \item \textbf{Rapporto Potenza/Peso Favorevole}: A parità di prestazioni, i motori BLDC sono generalmente più leggeri e compatti dei loro omologhi con spazzole.
+\end{itemize}
+
+\subsubsection{Svantaggi}
+\begin{itemize}
+    \item \textbf{Costo Più Elevato}: La complessità costruttiva, la necessità di magneti permanenti di alta qualità e l'elettronica di controllo rendono il costo iniziale superiore a quello dei motori DC con spazzole.
+    \item \textbf{Complessità Del Controllo}: Richiedono un'elettronica di pilotaggio (driver o inverter) e un sistema di controllo (tipicamente un microcontrollore) per gestire la sequenza di commutazione, oltre alla sensoristica per il feedback di posizione.
+\end{itemize}
+\newpage
+\subsection{Motore BLDC Trifase}
+Per applicazioni che richiedono elevata efficienza e fluidità di rotazione, la configurazione più diffusa è quella \textbf{trifase}. In questo schema, lo statore presenta tre avvolgimenti sfasati tra loro di 120 gradi elettrici. Ciascuna fase può essere costituita da più coppie polari, ma il numero di coppie polari deve essere identico per ogni fase.
+
+L'alimentazione delle tre fasi è gestita da un circuito di pilotaggio, tipicamente un \textbf{inverter a tre bracci (ponte H trifase)}, che permette di controllare la direzione e l'intensità della corrente in ciascun avvolgimento.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{BLDCHBridgeDriver.jpg}
+    \caption{Schema di principio di un circuito di pilotaggio a ponte H trifase per un motore BLDC. Ogni braccio del ponte è dedicato a una fase del motore.}
+\end{figure}
+
+La sequenza di attivazione dei transistor del ponte H è determinata dal segnale proveniente dai sensori di Hall, che viene interpretato da un circuito decoder o direttamente da un microcontrollore. Questo garantisce che il campo magnetico dello statore ruoti in sincronia con il rotore, massimizzando la coppia prodotta.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+
+\section{La Trasmissione Meccanica}
+La \textbf{trasmissione meccanica} è un sistema o un meccanismo interposto tra un motore attuatore e il corpo (o \textit{link}) da movimentare. L'adozione di una trasmissione è guidata da diverse necessità tecniche e prestazionali.
+
+Le motivazioni principali per l'utilizzo di un sistema di trasmissione in un'applicazione robotica o meccatronica sono:
+\begin{itemize}
+    \item \textbf{Ottimizzazione Del Trasferimento Di Momento Meccanico}: Adattare le caratteristiche di coppia e velocità del motore a quelle richieste dal carico. Tipicamente, i motori elettrici operano a basse coppie ed elevate velocità angolari. La trasmissione converte questa energia in un'uscita ad alta coppia e bassa velocità, necessaria per movimentare carichi inerziali significativi come i bracci di un robot. Il parametro che governa questa trasformazione è il \textbf{rapporto di trasmissione}.
+    \item \textbf{Trasformazione Della Natura Del Moto}: Un'altra funzione cruciale è la conversione del tipo di moto. Un esempio classico è la trasformazione di un moto puramente rotazionale, generato da un motore, in un moto lineare, necessario per attuare un giunto prismatico.
+    \item \textbf{Miglioramento Delle Prestazioni Statiche E Dinamiche}: La disposizione strategica dei motori permette di ottimizzare la dinamica del sistema. Posizionando gli attuatori in una posizione remota, più vicina alla base fissa del robot, è possibile ridurre significativamente l'inerzia e il peso effettivo della struttura in movimento. Questo porta a migliori prestazioni in termini di accelerazione e precisione.
+\end{itemize}
+Esistono numerose tecnologie per la trasmissione del moto, ciascuna con i propri vantaggi e svantaggi.
+
+% --- PRIMA RIGA DI MINIPAGE ---
+\noindent
+\begin{minipage}[t]{0.48\textwidth}
+    \textbf{Ingranaggi Dentati}
+    \par
+    Sono tra gli organi meccanici più diffusi. Permettono di modificare la velocità, la coppia, la direzione e l'asse di rotazione. Sono soggetti a deformazioni elastiche sotto carico e possono presentare \textbf{gioco meccanico} (\textit{backlash}), che influisce sulla precisione di posizionamento.
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.6\linewidth]{IngranaggiDentati.jpg}
+    \end{figure}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+    \textbf{Viti a Ricircolo di Sfere e Viti Senza Fine}
+    \par
+    Questi meccanismi sono ideali per convertire un moto rotazionale in uno lineare, trovando largo impiego negli attuatori per giunti prismatici. L'attrito è un fattore rilevante che ne riduce il rendimento, e anche in questo caso il gioco meccanico può essere un limite.
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.6\linewidth]{RicircoloViti.jpg}
+    \end{figure}
+\end{minipage}
+
+\vspace{0.5cm}
+
+\noindent
+\begin{minipage}[t]{0.48\textwidth}
+    \textbf{Cinghie Dentate e Catene}
+    \par
+    Consentono di trasmettere il moto tra assi distanti, offrendo flessibilità nel posizionamento del motore rispetto al giunto da attuare. Le cinghie introducono flessibilità ed elasticità nel sistema, mentre le catene, a causa della loro massa maggiore, possono indurre vibrazioni a velocità elevate.
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.6\linewidth]{CinghieCatene.jpg}
+    \end{figure}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+    \textbf{Riduttori Armonici (Harmonic Drives)}
+    \par
+    Sono una soluzione avanzata per ottenere elevatissimi rapporti di riduzione (fino a 200:1 e oltre) in un formato compatto, coassiale (\textit{in-line}) e con un'alta efficienza. La loro principale criticità è l'introduzione di una certa elasticità torsionale nel sistema.
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.6\linewidth]{HarmonicDrives.jpg}
+    \end{figure}
+\end{minipage}
+\newpage
+\section{Rotismi e Ingranaggi}
+Un \textbf{rotismo} è un meccanismo per la trasmissione del moto, tecnicamente definito come una catena cinematica composta da una combinazione di ruote dentate, dette comunemente \textbf{ingranaggi}.\\
+\underline{Una coppia di ruote dentate costituiscono un ingranaggio.}
+
+La loro funzione primaria è quella di trasmettere potenza e moto tra due assi, che possono avere diverse disposizioni relative nello spazio. A seconda di tale configurazione, si utilizzano specifiche tipologie di ingranaggi:
+\begin{enumerate}[label=(\alph*)]
+    \item \textbf{Assi Paralleli}: La trasmissione del moto è realizzata tramite \textbf{ingranaggi cilindrici}.
+    \item \textbf{Assi Concorrenti (O Incidenti)}: Si impiegano \textbf{ingranaggi conici}, i cui assi si intersecano in un unico punto.
+    \item \textbf{Assi Sghembi}: La trasmissione avviene mediante \textbf{ingranaggi elicoidali} o a \textbf{vite senza fine}.
+\end{enumerate}
+\begin{figure}[H]
+        \centering
+        \includegraphics[width=0.7\linewidth]{Ingranaggi.jpeg}
+\end{figure}
+Gli ingranaggi possono essere classificati in base a numerose caratteristiche geometriche. Le principali tipologie sono:
+\begin{figure}[H]
+        \centering
+        \includegraphics[width=0.7\linewidth]{SchemaIngranaggi.jpeg}
+\end{figure}
+\newpage
+\subsection{Classificazione Dei Rotismi}
+I rotismi sono a loro volta classificati in base alla configurazione degli assi della catena cinematica:
+\begin{description}
+    \item[Rotismo Piano] Tutti gli assi delle ruote sono paralleli tra loro.
+    \item[Rotismo Sferico] Tutti gli assi delle ruote sono incidenti in un unico punto.
+    \item[Rotismo Ordinario] Tutti gli assi delle ruote sono fissi nello spazio. Un rotismo ordinario può essere:
+    \begin{itemize}
+        \item \textbf{Semplice}: Se ogni albero porta una sola ruota dentata.
+        \item \textbf{Composto}: Se almeno un albero intermedio porta due o più ruote dentate.
+    \end{itemize}
+    \item[Rotismo Epicicloidale] Almeno uno degli assi delle ruote è mobile rispetto al telaio di riferimento.
+\end{description}
+
+\begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\linewidth]{EsempiRotismo.jpeg}
+\end{figure}
+
+\subsection{Rapporto Di Trasmissione (Analisi Statica)}
+Il \textbf{rapporto di trasmissione} \(\tau\) è una grandezza adimensionale che descrive la relazione tra le velocità angolari della ruota condotta (uscita) e della ruota motrice (ingresso).
+
+Considerando una singola coppia di ingranaggi, con la ruota motrice \(a\) e la ruota condotta \(b\), il rapporto di trasmissione è dato da:
+\[
+    \tau_{a,b} = \frac{\omega_b}{\omega_a} = - \frac{z_a}{z_b}
+\]
+dove \(\omega_i\) è la velocità angolare della ruota \(i\)-esima e \(z_i\) è il suo numero di denti. Il segno negativo indica che, per ingranaggi a dentatura esterna, le due ruote ruotano in versi opposti.
+
+In un \textbf{rotismo composto}, il rapporto di trasmissione totale è il prodotto dei rapporti delle singole coppie di ingranaggi. Se si ha una catena di \(n\) ruote, il rapporto di trasmissione complessivo \(\tau\) tra la prima e l'ultima ruota è:
+\[
+    \tau = (-1)^{n-1} \frac{\omega_n}{\omega_1} =  (-1)^{n-1} \biggl| \frac{\omega_n}{\omega_{n-1}} \biggr| \; \biggl| \frac{\omega_{n-1}}{\omega_{n-2}} \biggr| \; \cdots \; \biggl| \frac{\omega_{2}}{\omega_{1}} \biggr|
+\]
+
+\subsubsection*{Esempio: Rotismo Composto}
+Per il rotismo composto in figura con ruote \(a, b, c, d\), dove \(a\) è motrice, ingrana con \(b\), e \(c\) (solidale a \(b\)) ingrana con \(d\), si ha \(\omega_b = \omega_c\).
+
+\begin{minipage}{0.5\textwidth}
+    \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.6\linewidth]{EsempioAnalisi.jpg}
+    \end{figure}
+\end{minipage}
+\hfill
+\begin{minipage}{0.5\textwidth}
+    \[
+        \tau_{a,b} = \frac{\omega_b}{\omega_a} = - \frac{z_a}{z_b} \qquad\qquad \tau_{c,d} = \frac{\omega_d}{\omega_c} = \frac{\omega_d}{\omega_b} = - \frac{z_c}{z_d}
+    \]
+\end{minipage}
+
+Il rapporto totale è:
+\[
+    \tau_{a,d} = \frac{\omega_d}{\omega_a} = \frac{\omega_d}{\omega_c} \cdot \frac{\omega_b}{\omega_a} = \tau_{c,d} \cdot \tau_{a,b} = \left( - \frac{z_c}{z_d} \right) \cdot \left( - \frac{z_a}{z_b} \right) = \frac{z_a z_c}{z_b z_d}
+\]
+In questo caso, poiché ci sono due inversioni di moto, la ruota d'ingresso \(a\) e quella di uscita \(d\) ruotano nello stesso verso (\(\tau > 0\)).
+
+In condizioni ideali (moto uniforme e rendimento unitario, ovvero assenza di attriti e dispersioni), la potenza si conserva tra ingresso e uscita. La potenza \(P\) è data dal prodotto della coppia \(C\) per la velocità angolare \(\omega\).
+\[
+    P_{\text{in}} = P_{\text{out}} \implies C_m \omega_m = C_r \omega_r
+\]
+dove gli indici \(m\) e \(r\) si riferiscono rispettivamente all'albero motore (ingresso) e all'albero resistente (uscita).
+Da questa relazione si ricava il rapporto tra le coppie:
+\[
+    \frac{C_r}{C_m} = \frac{\omega_m}{\omega_r} = \frac{1}{\tau}
+\]
+Questo significa che un riduttore di velocità (\(|\tau| < 1\)) è un moltiplicatore di coppia, e viceversa.
+
+Nel caso reale, il modello si complica e deve tenere conto di dispersioni per attrito, momenti d'inerzia delle masse e coppie esterne.
+
+\subsection{La Ruota Oziosa}
+Una ruota "oziosa" è una ruota intermedia in un rotismo semplice che non altera il rapporto di trasmissione complessivo, ma ha il solo scopo di invertire il verso di rotazione o di collegare due alberi distanti.
+\begin{minipage}{0.5\textwidth}
+    \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.6\linewidth]{EsempioRuotaOziosa.jpg}
+    \end{figure}
+\end{minipage}
+\hfill
+\begin{minipage}{0.5\textwidth}
+    \[
+        \tau_{a,b} = \frac{\omega_b}{\omega_a} = - \frac{z_a}{z_b}
+    \]
+    \[
+        \tau_{b, c} = \frac{\omega_c}{\omega_b} = - \frac{z_b}{z_c}
+    \]
+\end{minipage}
+Considerando una ruota motrice \(a\), una oziosa \(b\) e una condotta \(c\), il rapporto di trasmissione totale è:
+\[
+    \tau_{a,c} = \tau_{a,b} \cdot \tau_{b,c} = \left( - \frac{z_a}{z_b} \right) \cdot \left( - \frac{z_b}{z_c} \right) = \frac{z_a}{z_c}
+\]
+Come si può notare, il numero di denti della ruota oziosa \(z_b\) si elide, e il rapporto finale dipende solo dalla prima e dall'ultima ruota. L'effetto netto è un'inversione del verso di rotazione rispetto a un ingranamento diretto tra \(a\) e \(c\).
+
+\subsection{Caso Particolare: Pignone e Cremagliera}
+Il sistema pignone e cremagliera rappresenta un caso limite di ingranaggio, dove una delle due ruote (la cremagliera) può essere vista come una ruota dentata "srotolata" con raggio infinito.
+Questo meccanismo agisce come un \textbf{attuatore lineare}, convertendo il moto rotatorio del pignone in moto lineare della cremagliera, e viceversa.
+\begin{itemize}
+    \item Se il pignone è fisso sul proprio asse, la sua rotazione provoca la traslazione lineare della cremagliera.
+    \item Se la cremagliera viene mossa linearmente, induce la rotazione del pignone.
+\end{itemize}
+Un'applicazione comune di questo meccanismo è il sistema sterzante delle automobili.
+
+\begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\linewidth]{CremaglieraPignone.jpeg}
+\end{figure}
+
+\newpage
+\section{Rotismi Epicicloidali (o Planetari)}
+Un \textbf{ingranaggio epicicloidale} (o planetario) è un rotismo complesso in cui almeno uno degli assi delle ruote è mobile. Questa configurazione permette di ottenere rapporti di trasmissione molto elevati in un formato compatto e coassiale.
+
+Il nome "planetario" deriva dall'analogia con il moto dei pianeti nel sistema solare. I componenti principali sono:
+\begin{itemize}
+    \item \textbf{Solare (Sun gear)}: La ruota dentata centrale, solitamente collegata all'albero motore.
+    \item \textbf{Satelliti (Planet Gears)}: Una serie di ruote intermedie che ingranano contemporaneamente con il solare e la corona.
+    \item \textbf{Planetario (Planet Carrier)}: Un supporto che tiene insieme i satelliti e ne permette la rotazione attorno al solare, oltre alla rotazione attorno ai propri assi.
+    \item \textbf{Corona (Ring Gear)}: Una ruota con dentatura interna che circonda l'intero sistema.
+\end{itemize}
+Durante il funzionamento, i satelliti ruotano tra il solare e la corona, montati sul planetario.
+
+\begin{figure}[H]
+        \centering
+        \includegraphics[width=0.6\linewidth]{Epicicloidale.jpeg}
+\end{figure}
+
+A seconda di quale degli elementi (solare, corona, planetario) viene tenuto fisso, si ottengono diverse configurazioni di funzionamento e differenti rapporti di trasmissione.
+\begin{description}
+    \item[Configurazione "Star" (Stella)] Il \textbf{planetario è fisso}. Il solare funge da ingresso e la corona da uscita (o viceversa). I satelliti ruotano sui loro perni fissi, agendo come ruote oziose.
+
+    \item[Configurazione "Planetary" (Planetario)] La \textbf{corona è fissa}. L'ingresso è il solare e l'uscita è il planetario. In questa configurazione, il moto dei satelliti ricorda quello dei pianeti che orbitano attorno al sole. È la configurazione più comune per ottenere alti rapporti di riduzione.
+
+    \item[Configurazione "Sun" (Solare)] Il \textbf{solare è fisso}. L'ingresso è applicato alla corona e l'uscita è prelevata dal planetario.
+\end{description}
+
+\begin{figure}[H]
+        \centering
+        \includegraphics[width=0.6\linewidth]{ConfigEpicicloidale.jpeg}
+\end{figure}
+\newpage
+\subsection{Riduttori Speciali: Harmonic Drive}
+I riduttori armonici, noti con il nome commerciale \textbf{Harmonic Drive}, sono un tipo speciale di riduttore ad ingranaggi che offre prestazioni eccezionali in termini di precisione e compattezza.
+
+\subsubsection{Principio di Funzionamento e Caratteristiche}
+Sono caratterizzati da:
+\begin{itemize}
+    \item \textbf{Altissimo Rapporto Dii Trasmissione} (fino a 200:1 e oltre) in un singolo stadio.
+    \item \textbf{Gioco Meccanico Nullo} (\textit{zero backlash}), che garantisce un'elevata precisione e ripetibilità di posizionamento.
+    \item \textbf{Elevata Compattezza} e peso ridotto.
+    \item \textbf{Alta Efficienza} in termini di potenza trasmessa.
+\end{itemize}
+Queste caratteristiche li rendono ideali per applicazioni robotiche e di automazione di alta precisione.
+
+Sono costituiti da tre componenti fondamentali:
+\begin{enumerate}
+    \item Il \textbf{Wave Generator}: Un cuscinetto a sfere ellittico, tipicamente montato sull'albero del motore.
+    \item Il \textbf{FlexSpline}: Una boccola cilindrica deformabile con dentatura esterna. Viene deformata dall'ellisse del Wave Generator.
+    \item La \textbf{Circular Spline}: Una corona circolare rigida con dentatura interna.
+\end{enumerate}
+Il FlexSpline ha un numero di denti leggermente inferiore (solitamente 2 in meno) rispetto alla Circular Spline. La rotazione del Wave Generator deforma il FlexSpline, facendolo ingranare progressivamente con i denti della Circular Spline lungo l'asse maggiore dell'ellisse. Ad ogni rotazione completa del Wave Generator, il FlexSpline ruota in direzione opposta di una piccola frazione, data dalla differenza del numero di denti. Questo piccolo moto relativo genera un rapporto di riduzione estremamente elevato.
+\begin{figure}[H]
+        \centering
+        \includegraphics[width=0.75\linewidth]{HarmonicDrive.jpeg}
+\end{figure}
+
+\newpage
+\section{Introduzione agli Attuatori per la Soft Robotics}
+La \textbf{Soft Robotics} rappresenta un cambio di paradigma rispetto alla robotica tradizionale, basata su attuatori e strutture rigide. L'obiettivo è la progettazione di sistemi deformabili e cedevoli, capaci di interagire in modo sicuro ed efficace con ambienti non strutturati e, in particolare, con gli esseri umani. In questo contesto, il ruolo degli attuatori è fondamentale, poiché essi determinano le capacità di movimento, interazione e adattamento del robot. Le motivazioni principali che guidano lo sviluppo di attuatori "soft" sono riconducibili a tre aree chiave.
+
+Un requisito fondamentale per i robot destinati a operare a stretto contatto con le persone è la \textbf{sicurezza intrinseca}. A differenza degli attuatori rigidi (motori elettrici accoppiati a riduttori ad alto rapporto), che mantengono una notevole impedenza meccanica anche da spenti, gli attuatori soft sono progettati per essere intrinsecamente cedevoli.
+
+Un robot dotato di tale attuazione rimane \textit{conforme} anche in caso di disattivazione o malfunzionamento. Ciò mitiga drasticamente i rischi per gli operatori umani e protegge al contempo la struttura stessa del robot da impatti esterni imprevisti, conferendogli una maggiore \textbf{resilienza agli shock}. La cedevolezza meccanica permette di assorbire l'energia di un'eventuale collisione, dissipandola attraverso la deformazione elastica anziché trasmetterla integralmente alla struttura.
+
+L'introduzione di elementi elastici all'interno della catena cinematica di un attuatore apre la porta a strategie di controllo e a comportamenti dinamici non ottenibili con attuatori rigidi. Un elemento elastico funge da meccanismo di accumulo e rilascio di energia potenziale elastica. Questo principio, ispirato alla biologia muscolo-tendinea, consente di:
+\begin{itemize}
+    \item Immagazzinare energia durante le fasi di un movimento in cui essa sarebbe altrimenti dissipata (decelerazione) per poi restituirla in fasi successive (accelerazione).
+    \item Ridurre il consumo energetico complessivo del sistema, specialmente in compiti ciclici o esplosivi come la deambulazione o il salto.
+    \item Sfruttare la risonanza naturale del sistema per generare movimenti efficienti a specifiche frequenze.
+\end{itemize}
+Questi vantaggi rendono l'attuazione elastica una scelta privilegiata per robot autonomi e sistemi in cui l'efficienza energetica è un vincolo critico.
+
+\subsection{Muscoli Pneumatici Artificiali (PAM)}
+Tra le tecnologie di attuazione più rappresentative della soft robotics, i \textbf{Muscoli Pneumatici Artificiali (PAM)}, e in particolare il \textbf{muscolo di McKibben}, occupano un posto di rilievo.
+\begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{McKibbenMuscle.jpg}
+    \end{figure}
+I PAM sono attuatori pneumatici la cui attrattiva risiede nel basso peso, nell'elevato rapporto forza/peso e, soprattutto, nella loro \textbf{cedevolezza intrinseca}. Tale cedevolezza deriva direttamente dalla comprimibilità dell'aria, il fluido di lavoro. A differenza dei cilindri pneumatici tradizionali, che generano un movimento lineare rigido, i PAM esibiscono un comportamento simile a quello di una molla la cui rigidezza può essere modulata controllando la pressione interna.
+
+Questa caratteristica li rende ideali per applicazioni che richiedono un'interazione sicura e delicata, come la manipolazione di oggetti fragili o la robotica collaborativa. Mentre gli attuatori idraulici ed elettrici sono caratterizzati da un'elevata rigidezza e richiedono complessi algoritmi di controllo in retroazione per emulare un comportamento cedevole, i PAM lo ottengono passivamente.
+\newpage
+Le principali caratteristiche operative sono:
+\begin{itemize}
+    \item \textbf{Funzionamento}: Contrariamente a un soffietto convenzionale, un PAM si contrae assialmente quando viene pressurizzato, generando una forza di trazione.
+    \item \textbf{Modulazione Della Forza}: La forza esercitata dipende da due variabili principali: la \textbf{pressione} dell'aria immessa e lo \textbf{stato di contrazione} (o allungamento) attuale del muscolo.
+    \item \textbf{Struttura Leggera}: Essendo costituiti principalmente da una membrana interna e da una treccia di fili non estensibili esterna, sono estremamente leggeri.
+    \item \textbf{Trasferimento Energetico}: A parità di intervalli di pressione e volume, possono trasferire una quantità di energia comparabile a quella di attuatori a cilindro molto più pesanti.
+\end{itemize}
+
+Il comportamento di un PAM può essere analizzato in due condizioni operative idealizzate.
+
+\noindent
+\begin{minipage}[t]{0.48\textwidth}
+    \subsubsection*{Operatività A Carico Costante}
+    \par
+    In questa modalità, un carico costante \(\bm{M}\) è applicato all'estremità del muscolo. All'aumentare della pressione pneumatica interna (da \(p=0\) a \(p_1\) e poi \(p_2\)), il volume del muscolo aumenta, causando un'espansione radiale e, di conseguenza, una contrazione assiale. La lunghezza del muscolo diminuisce da \(l_{\text{max}}\) a \(l_1\) e \(l_2\).
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.75\linewidth]{CaricoCostante.jpg}
+    \end{figure}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+    \subsubsection*{Operatività a Pressione Costante}
+    \par
+    Mantenendo la pressione interna \(p\) costante, il muscolo si accorcia se il carico esterno applicato viene diminuito (da \(\bm{M}_1\) a \(\bm{M}_2\)). La contrazione massima si ottiene a carico nullo, dove il volume interno è massimo e la lunghezza è minima (\(l_{\text{min}}\)). Esiste un limite superiore di contrazione oltre il quale il muscolo non è in grado di sviluppare ulteriore forza. Per ogni coppia di valori (pressione, carico), il PAM raggiunge una specifica lunghezza di equilibrio.
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.75\linewidth]{PressioneCostante.jpg}
+    \end{figure}
+\end{minipage}
+\subsubsection{Configurazioni Antagonistiche}
+Una limitazione intrinseca dei PAM è la loro capacità di generare forza solo in una direzione (trazione). Per ottenere un controllo bidirezionale di un giunto, è necessario impiegare una \textbf{configurazione antagonista}, simile a quella dei muscoli biologici (es. bicipite e tricipite nel braccio umano). Due PAM vengono montati in opposizione: la contrazione di uno provoca l'estensione dell'altro, permettendo di controllare la posizione e, simultaneamente, la rigidezza del giunto, co-attivando entrambi i muscoli.
+\begin{figure}[H]
+        \centering
+        \includegraphics[width=0.75\linewidth]{FunzAntag.jpeg}
+    \end{figure}
+\newpage
+\subsection{Configurazioni di Attuatori Bio-ispirati}
+L'ispirazione biologica non si limita alla singola componente (il muscolo), ma si estende all'architettura complessiva del sistema di attuazione. Sebbene gli attuatori rigidi standard non siano specializzati nel controllo di forza, l'osservazione dei sistemi biologici ha portato allo sviluppo di nuove architetture per superare questa limitazione. Già nel 1995, Williamson propose di sacrificare deliberatamente la larghezza di banda del controllo di posizione e la rigidezza massima per ottenere un controllo della forza più puntuale e robusto. Da questo filone di ricerca sono emerse due soluzioni tecnologiche dominanti: gli attuatori elastici seriali (SEA) e gli attuatori a rigidezza variabile (VSA).
+
+\subsubsection{Serial Elastic Actuators (SEA)}
+Gli \textbf{Attuatori Elastici Seriali (SEA)} rappresentano la prima e più semplice implementazione del concetto di attuazione cedevole.
+
+Un SEA è costituito da un attuatore rigido convenzionale ( un motore DC con riduttore) a cui viene interposto, in serie, un elemento elastico (tipicamente una molla). L'uscita dell'attuatore non è più il carico, ma l'elemento elastico stesso.
+\begin{figure}[H]
+        \centering
+        \includegraphics[width=0.85\textwidth]{SEA.jpeg}
+\end{figure}
+
+Questa configurazione introduce numerosi vantaggi:
+\begin{itemize}
+    \item \textbf{Migliore Controllo Di Forza}: La forza esercitata sul carico è proporzionale alla deformazione dell'elemento elastico (\(F = k \Delta x\)). Misurando questa deformazione, è possibile ottenere una stima affidabile e a basso rumore della forza all'interfaccia, trasformando un attuatore controllato in posizione in un'ideale sorgente di forza.
+    \item \textbf{Tolleranza Agli Impatti}: L'elemento elastico funge da filtro passa-basso meccanico, assorbendo gli shock e proteggendo il riduttore da carichi impulsivi.
+    \item \textbf{Immagazzinamento Di Energia}: Come già discusso, la molla può immagazzinare e rilasciare energia, migliorando l'efficienza in compiti dinamici.
+\end{itemize}
+L'elemento elastico può avere una caratteristica carico-deformazione non lineare, sebbene essa sia tipicamente costante nel tempo.
+
+Un'implementazione classica di un SEA, basata sul lavoro di Pratt e Williamson, mostra chiaramente i componenti chiave.
+
+\noindent
+\begin{minipage}[t]{0.48\textwidth}
+    La struttura include:
+    \begin{enumerate}
+        \item Un motore DC con riduttore (\textbf{DC motor with gearbox}).
+        \item Un sistema di trasmissione, come una vite a ricircolo di sfere (\textbf{ball screw}) e una chiocciola (\textbf{ball nut plate}), che converte il moto rotatorio in moto traslatorio.
+        \item Un elemento mobile (\textbf{moving sub assembly}) guidato da aste (\textbf{guide rod}).
+        \item Due molle (\textbf{springs}) posizionate in serie tra l'uscita della trasmissione e l'asta di uscita (\textbf{moving rod}) collegata al carico.
+        \item Un terminale di connessione al carico (\textbf{load connection terminal}).
+    \end{enumerate}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.99\linewidth]{SEAStruct.jpg}
+    \end{figure}
+\end{minipage}
+La deflessione delle molle viene misurata per controllare la forza applicata.
+
+\newpage
+\subsection{Variable Stiffness Actuators (VSA)}
+Un'evoluzione degli SEA sono gli \textbf{Attuatori a Cedevolezza Variabile (VSA)}, che superano il limite della rigidezza costante. I VSA possono variare la loro rigidezza naturale direttamente a livello fisico, indipendentemente dalla posizione.
+\begin{figure}[H]
+        \centering
+        \includegraphics[width=0.85\textwidth]{VSA.jpeg}
+\end{figure}
+La capacità di modulare la rigidezza è cruciale per adattarsi a compiti diversi: alta rigidezza per un posizionamento preciso, bassa rigidezza per un'interazione sicura o per l'accumulo di energia. Esistono diverse strategie per ottenere la variabilità della rigidezza. Due principi comuni sono:
+\begin{enumerate}
+    \item \textbf{Setup Antagonista}: Similmente ai PAM, due attuatori (o due elementi elastici pre-caricati da motori) agiscono su un giunto comune. La posizione del giunto è determinata dalla differenza di attivazione, mentre la rigidezza è una funzione della loro co-attivazione. Aumentando la pre-tensione di entrambi, la rigidezza del giunto aumenta.
+    \item \textbf{Setup con Motore Indipendente}: Un motore primario controlla la posizione di equilibrio del giunto (\textit{positioning motor}), mentre un secondo motore (\textit{stiffness adjusting motor}) agisce direttamente sulle proprietà meccaniche dell'elemento elastico. Ad esempio, può cambiare il punto di leva di una molla, alterarne il pre-carico o modificare la lunghezza libera di un elemento flessibile.
+\end{enumerate}
+
+\subsection{Panoramica su Altre Tecnologie di Attuazione}
+Oltre ai PAM, SEA e VSA, il campo della soft robotics impiega un'ampia gamma di tecnologie di attuazione, ciascuna con vantaggi e svantaggi specifici. Una lista non esaustiva include:
+\begin{itemize}
+    \item \textbf{Attuatori Elettrostatici E Elettromagnetici}: Basati su forze di campo, spesso utilizzati in applicazioni su micro-scala.
+    \item \textbf{Attuatori Piezoelettrici}: Materiali che si deformano in risposta a un campo elettrico, caratterizzati da alta frequenza e piccole deformazioni.
+    \item \textbf{Materiali Elettro- E Magneto-Strittivi}: Simili ai piezoelettrici, ma con meccanismi fisici differenti.
+    \item \textbf{Leghe A Memoria Di Forma (SMA) e Polimeri (SMP)}: Materiali che possono recuperare una forma pre-definita se sottoposti a uno stimolo termico.
+    \item \textbf{Attuatori Polimerici Elettroattivi (EAP)}: Polimeri che cambiano forma o dimensione in risposta a uno stimolo elettrico, noti anche come "muscoli artificiali".
+    \item \textbf{Nanorobotube Di Carbonio (CNT)}: Offrono potenziali prestazioni eccezionali su scale molto piccole.
+    \item \textbf{Sistemi Di Dissipazione Di Energia E Smorzatori (Dampers)}: Componenti cruciali per il controllo della dinamica e la dissipazione degli impatti.
+\end{itemize}
+
+\end{document}

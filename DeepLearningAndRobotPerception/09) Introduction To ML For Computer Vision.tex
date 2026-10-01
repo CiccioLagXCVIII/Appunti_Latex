@@ -1,0 +1,357 @@
+﻿\documentclass[11pt, a4paper]{article}
+
+%---------------------------------------------------------
+% Lingua E Codifica
+%---------------------------------------------------------
+\usepackage[italian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+%---------------------------------------------------------
+% Layout Di Pagina E Tipografia
+%---------------------------------------------------------
+\usepackage[margin=2cm, top=1.5cm, bottom=1.5cm]{geometry}
+\usepackage{parskip}
+\usepackage{microtype}
+
+%---------------------------------------------------------
+% Gestione Dei Colori
+%---------------------------------------------------------
+\usepackage[table]{xcolor}
+\definecolor{darkgreen}{RGB}{0,100,0}
+
+%---------------------------------------------------------
+% Matematica E Simboli
+%---------------------------------------------------------
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{mathtools}
+\usepackage{siunitx}
+
+% BB OTTIMIZZAZIONE MATRICI LUNGHE PER LA STAMPA
+\setlength{\arraycolsep}{10pt}
+\usepackage{bm}
+\usepackage{arydshln}
+
+
+%---------------------------------------------------------
+% Grafica, Immagini E Tabelle
+%---------------------------------------------------------
+\usepackage{graphicx}
+\graphicspath{{./Images/ML for Computer Vision/}}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, patterns, angles, quotes, calc}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+
+%---------------------------------------------------------
+% Link, Riferimenti Ed Elenchi
+%---------------------------------------------------------
+\usepackage[unicode]{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+    citecolor=blue,
+    pdftitle={Capitolo 9 - Introduction ML for Computer Vision},
+    pdfauthor={Francesco Lo Verde},
+    pdfpagemode=FullScreen,
+}
+\usepackage{bookmark}
+\usepackage{enumitem}
+\setlist{noitemsep}
+
+%---------------------------------------------------------
+% Personalizzazione Titoli E Altri Pacchetti
+%---------------------------------------------------------
+\usepackage{titlesec}
+\titleformat{\section}{\normalfont\LARGE\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\Large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalfont\large\bfseries}{\thesubsubsection}{1em}{}
+
+\usepackage{comment}
+\newtheorem{theorem}{Definizione}
+
+% Pacchetto per gli algoritmi
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+
+\SetKwData{Dati}{Input}
+\SetKwData{Risultato}{Output}
+\SetKw{Inizializza}{Inizializza}
+\SetKwFor{For}{for}{do}{endfor}
+\SetKwComment{Commento}{// }{}
+
+\author{Francesco Lo Verde}
+\begin{document}
+\section{Introduzione Al Machine Learning E Alla Computer Vision}
+
+Il cammino affrontato finora nell'ambito della visione artificiale e della percezione robotica si è concentrato principalmente sull'elaborazione geometrica e su operazioni di basso e medio livello. Prima di addentrarci nell'intersezione tra il \textbf{Machine Learning} e la \textbf{Computer Vision}, è opportuno richiamare brevemente gli strumenti fondamentali che sono stati consolidati e che costituiscono l'ossatura della visione artificiale classica.
+
+\subsection{Cosa Abbiamo Imparato Finora}
+
+Le metodologie fondamentali apprese nei moduli precedenti includono:
+\begin{itemize}
+    \item \textbf{Filtraggio delle immagini} (\emph{filtering}): operazioni locali sui pixel per la riduzione del rumore o l'estrazione di caratteristiche salienti.
+    \item \textbf{Estrazione di punti chiave} (\emph{keypoints}): individuazione di punti di interesse geometricamente stabili e ripetibili all'interno dell'immagine.
+    \item \textbf{Calcolo dei descrittori} associati ai punti chiave: rappresentazione matematica locale (come ad esempio l'algoritmo \textbf{SIFT}) per caratterizzare in modo univoco l'intorno di un punto chiave.
+    \item \textbf{Corrispondenza dei descrittori} (\emph{matching}) tra immagini diverse: associazione di punti omologhi appartenenti a viste diverse della stessa scena.
+    \item \textbf{Calcolo delle trasformazioni geometriche} tra immagini grazie ai punti corrispondenti (\emph{matched points}): stima di matrici di omografia o trasformazioni affini.
+    \item \textbf{Indicizzazione delle feature locali}: tecniche per velocizzare e rendere efficiente la ricerca e il matching su database di grandi dimensioni.
+    \item \textbf{Sfruttamento della geometria epipolare}: calcolo dei vincoli geometrici intrinseci tra due viste per effettuare la stima della posa della telecamera e la successiva ricostruzione 3D.
+\end{itemize}
+
+Sorge spontanea una domanda fondamentale: \emph{cosa possiamo fare concretamente con questi strumenti?} Di seguito vengono presentate alcune delle applicazioni classiche risolvibili mediante queste strategie geometriche.
+
+\newpage
+
+\section{Applicazioni Classiche Basate Su Feature Locali}
+
+Le metodologie basate sulle corrispondenze geometriche e sulle feature locali consentono di risolvere compiti complessi di ricerca, allineamento e stima del movimento.
+
+\subsection{Recupero Di Immagini (\emph{Image Retrieval})}
+
+Il problema dell'\textbf{Image Retrieval} consiste nel trovare, all'interno di un database contenente $N$ immagini e dato un vocabolario visivo $V$, le immagini più simili a una query fornita in input. La pipeline algoritmica si articola nei seguenti passi:
+
+\begin{enumerate}
+    \item \textbf{Estrazione dei punti chiave} dall'immagine query.
+    \item \textbf{Calcolo dei descrittori} associati a ciascun punto chiave (ad esempio, tramite descrittori SIFT).
+    \item \textbf{Calcolo del vettore Bag-of-Words} (BoW) associato all'immagine query sfruttando il vocabolario visivo $V$ per quantizzare i descrittori locali in ``parole visive''.
+    \item \textbf{Confronto del vettore BoW} dell'immagine query con i vettori BoW pre-calcolati di tutte le $N$ immagini presenti nel database.
+    \item \textbf{Selezione delle migliori $K$ immagini} aventi la massima similarità vettoriale con la query.
+    \item \textbf{Esecuzione della verifica spaziale} sulle immagini selezionate per verificare la consistenza geometrica delle corrispondenze ed eliminare i falsi positivi causati dalla perdita di informazione spaziale del modello BoW.
+\end{enumerate}
+
+% [IMMAGINE RIF FILE NOMIMATO "TUTTO"] Schema del processo di Image Retrieval con un'immagine di query raffigurante una tigre, la selezione da un database multi-immagine e la restituzione dell'immagine geometricamente consistente — Slide 3 / Pagina 3 del PDF
+
+\subsection{Riconoscimento Di Oggetti (\emph{Object Recognition})}
+
+È possibile estendere la medesima procedura utilizzata per l'image retrieval al compito di \textbf{Object Recognition}, a patto di disporre di un database di oggetti di cui sono note a priori le pose associate. La pipeline ricalca strettamente la precedente:
+
+\begin{enumerate}
+    \item \textbf{Estrazione dei punti chiave} dall'immagine contenente l'oggetto ignoto.
+    \item \textbf{Calcolo dei descrittori} associati (es. SIFT).
+    \item \textbf{Calcolo del vettore BoW} mediante il vocabolario visivo di riferimento.
+    \item \textbf{Confronto del vettore BoW} dell'oggetto query con i vettori BoW degli oggetti memorizzati nel database.
+    \item \textbf{Selezione dei migliori $K$ candidati}.
+    \item \textbf{Esecuzione della verifica spaziale} per validare la coerenza geometrica tridimensionale e stimare la posa dell'oggetto riconosciuto.
+\end{enumerate}
+
+% [IMMAGINE RIF FILE NOMIMATO "TUTTO"] Esempi di oggetti nel database (telefoni, scarpe, orsacchiotti) e corrispondenze di punti chiave per il riconoscimento geometrico in scene affollate — Slide 4 / Pagina 4 del PDF
+
+\subsection{Unione Di Immagini (\emph{Image Stitching})}
+
+L'allineamento e l'unione di più immagini per la creazione di panorami (\textbf{Image Stitching}) adotta un principio analogo. Anche in questo caso, si estraggono e si mettono in corrispondenza le feature locali per calcolare la trasformazione proiettiva (omografia) che lega i diversi punti di vista, permettendo la fusione coerente di più immagini.
+
+% [IMMAGINE RIF FILE NOMIMATO "TUTTO"] Esempio di Image Stitching in cui due fotografie adiacenti di montagne innevate vengono geometricamente allineate e sovrapposte — Slide 5 / Pagina 5 del PDF
+
+\subsection{Odometria Visuale (\emph{Visual Odometry})}
+
+In ambito robotico, la stima della traiettoria di un veicolo o di un robot manipolatore viene spesso effettuata tramite \textbf{Visual Odometry}. Il processo incrementale può essere formalizzato nel seguente algoritmo:
+
+\begin{algorithm}[H]
+\caption{Algoritmo Di Odometria Visuale}
+\label{alg:visual_odometry}
+\SetKwRepeat{Ripeti}{ripeti}{finché}
+\Dati{Sequenza di immagini acquisite da una telecamera mobile}
+\Risultato{Stima della posa della telecamera (rotazione $\bm{R}_k$ e traslazione $\bm{t}_k$) ad ogni istante $k$}
+\Inizializza{$k \leftarrow 1$}\;
+\Ripeti{tutte le immagini della sequenza sono state elaborate}{
+    Acquisire l'immagine corrente $I_k$\;
+    Calcolare le corrispondenze tra l'immagine precedente $I_{k-1}$ e l'immagine corrente $I_k$ (utilizzando \emph{feature matching} o algoritmi di \emph{tracking})\;
+    Identificare le corrispondenze corrette (\emph{inliers}) e calcolare la \textbf{matrice essenziale} $\bm{E}$\;
+    Decomporre la matrice essenziale $\bm{E}$ per ricavare la rotazione $\bm{R}_k$ e la direzione di traslazione $\bm{t}_k$\;
+    Ricostruire il modello 3D locale calcolando le coordinate dei punti spaziali $\bm{X}$\;
+    Riscalare la traslazione $\bm{t}_k$ basandosi sul fattore di scala relativo $r$ stimato\;
+    $k \leftarrow k + 1$\;
+}
+\end{algorithm}
+
+% [IMMAGINE RIF FILE NOMIMATO "TUTTO"] Schema geometrico della traiettoria stimata mediante odometria visuale, raffigurante le pose della telecamera C_k-1, C_k, C_k+1 e le relative trasformazioni T — Slide 6 / Pagina 6 del PDF
+
+\newpage
+
+\section{I Compiti Semantici Della Computer Vision}
+
+\subsection{I Limiti Dell'Approccio Geometrico}
+
+Sebbene l'estrazione e il matching di feature geometriche locali consentano di affrontare con successo problemi di localizzazione e ricostruzione tridimensionale, l'approccio puramente geometrico non è sufficiente a fornire una comprensione di alto livello del contenuto di un'immagine. Molti compiti complessi richiedono infatti una comprensione di tipo \textbf{semantico}:
+
+\begin{itemize}
+    \item Classificazione di immagini (\emph{Image classification})
+    \item Segmentazione di immagini (\emph{Image segmentation})
+    \item Tracciamento di oggetti generici (\emph{Object tracking})
+    \item Riconoscimento e rilevamento robusto di oggetti (\emph{Robust Object detection and recognition})
+    \item Stima della profondità da singola immagine (\emph{Depth estimation})
+    \item Descrizione automatica di video (\emph{Video description})
+    \item Riconoscimento delle attività (\emph{Activity recognition})
+\end{itemize}
+
+È evidente che questi compiti non possono essere risolti esclusivamente con le tecniche geometriche classiche studiate finora. Diventa quindi necessario sviluppare algoritmi in grado di interpretare semanticamente la scena.
+
+% [IMMAGINE RIF FILE NOMIMATO "TUTTO"] Fotografia di una complessa scena urbana con il Palazzo del Potala sullo sfondo, mercati all'aperto e passanti, utilizzata come esempio per i compiti semantici — Slide 8 / Pagina 8 del PDF
+
+\subsection{Esempi Di Compiti Semantici}
+
+Per comprendere la varietà di interrogazioni semantiche che un sistema di visione artificiale deve saper gestire, analizziamo i diversi compiti applicati alla medesima scena d'esempio:
+
+\begin{itemize}
+    \item \textbf{Verifica (\emph{Verification}):} Consiste nel rispondere a domande puntuali sulla presenza di una specifica categoria in una determinata area, ad esempio: \emph{``Quello è un lampione?''}
+
+    % [IMMAGINE RIF FILE NOMIMATO "TUTTO"] Dettaglio evidenziato in rosa che isola un lampione stradale per illustrare il compito di verifica — Slide 9 / Pagina 9 del PDF
+
+    \item \textbf{Rilevamento (\emph{Detection}):} Si occupa di individuare se e dove sono presenti istanze di una determinata categoria d'interesse, rispondendo a domande del tipo: \emph{``Ci sono persone?''}
+
+    % [IMMAGINE RIF FILE NOMIMATO "TUTTO"] Evidenziazione tramite cerchi rosa delle zone dell'immagine in cui sono presenti gruppi di persone per il compito di rilevamento — Slide 10 / Pagina 10 del PDF
+
+    \item \textbf{Identificazione (\emph{Identification}):} Si spinge oltre la semplice categorizzazione astratta, cercando di riconoscere una specifica e univoca istanza nota, ad esempio: \emph{``Quello è il Palazzo del Potala?''}
+
+    % [IMMAGINE RIF FILE NOMIMATO "TUTTO"] Cerchio rosa che evidenzia la struttura specifica del Palazzo del Potala per descrivere l'identificazione — Slide 11 / Pagina 11 del PDF
+
+    \item \textbf{Categorizzazione degli oggetti (\emph{Object categorization}):} Associa a ciascun elemento o regione visibile della scena la corrispondente etichetta semantica di appartenenza (es. \emph{mountain}, \emph{building}, \emph{tree}, \emph{banner}, \emph{people}, \emph{vendor}, \emph{street lamp}).
+
+    % [IMMAGINE RIF FILE NOMIMATO "TUTTO"] La stessa scena urbana con etichette semantiche sovrapposte sui vari elementi identificati — Slide 12 / Pagina 12 del PDF
+
+    \item \textbf{Categorizzazione della scena e del contesto (\emph{Scene and context categorization}):} Fornisce una classificazione globale dell'intero ambiente catturato dall'immagine, definendo il contesto generale (es. \emph{outdoor}, \emph{city}).
+
+    % [IMMAGINE RIF FILE NOMIMATO "TUTTO"] Etichettatura di livello globale che classifica l'intera scena come outdoor e city — Slide 13 / Pagina 13 del PDF
+\end{itemize}
+
+\newpage
+
+\section{Categorizzazione, Rilevamento E Segmentazione}
+
+\subsection{Riconoscimento A Livello Di Istanza Contro Categorizzazione Generica}
+
+Nel contesto dei problemi di classificazione, è fondamentale distinguere chiaramente tra due diverse formulazioni del problema:
+
+\begin{enumerate}
+    \item \textbf{Riconoscimento a livello di istanza} (\emph{Instance-level recognition} o classificazione specifica): L'obiettivo è identificare un singolo oggetto specifico e tracciabile in modo univoco (ad esempio, l'auto esatta di proprietà di John).
+
+    % [IMMAGINE RIF FILE NOMIMATO "TUTTO"] Fotografia di una singola vettura nera etichettata specificamente come "John's car" — Slide 14 / Pagina 14 del PDF
+
+    \item \textbf{Categorizzazione generica} (\emph{Generic categorization} o classificazione di categoria): L'obiettivo è riconoscere la classe semantica generale a cui appartiene l'oggetto (ad esempio, classificare come ``Auto'' qualsiasi veicolo a quattro ruote presente, a prescindere dal modello specifico, dal colore o dalle condizioni di illuminazione).
+
+    % [IMMAGINE RIF FILE NOMIMATO "TUTTO"] Quattro immagini differenti di autovetture diverse per modello, colore e sfondo, tutte ricondotte alla categoria generica 'Car' — Slide 15 / Pagina 15 del PDF
+\end{enumerate}
+
+La formalizzazione del compito di \textbf{Object Categorization} può essere espressa come segue:
+\begin{quote}
+\itshape
+«Date un piccolo numero di immagini di addestramento di una determinata categoria, l'obiettivo è riconoscere istanze a priori sconosciute appartenenti a tale categoria e assegnarvi la corretta etichetta semantica.»
+\end{quote}
+
+\subsection{Categorizzazione Degli Oggetti E Livelli Di Astrazione}
+
+Quando si progetta un sistema visivo, occorre stabilire quale livello di categorizzazione sia effettivamente fattibile da un punto di vista visivo. Si consideri lo spettro di astrazione esemplificato di seguito:
+
+\[
+\text{``Fido''} \quad \longrightarrow \quad \text{Pastore Tedesco} \quad \longrightarrow \quad \text{\textbf{Cane}} \quad \longrightarrow \quad \text{Animale} \quad \longrightarrow \quad \text{Essere Vivente}
+\]
+
+% [IMMAGINE RIF FILE NOMIMATO "TUTTO"] Spettro di astrazione visiva dal livello individuale ('Fido') a quello altamente astratto ('living being') applicato all'immagine di un cane — Slide 16 / Pagina 16 del PDF
+
+Negli esseri umani, le categorie denominate di \textbf{livello base} (\emph{basic-level categories}), come ad esempio ``cane'', ``gatto'' o ``mucca'', sembrano essere definite prevalentemente su criteri visivi. Esistono evidenze scientifiche secondo cui il sistema cognitivo umano solitamente effettua una categorizzazione a livello base prima ancora di procedere all'effettiva identificazione dell'istanza specifica.
+Di conseguenza:
+\begin{itemize}
+    \item La categorizzazione a livello base è significativamente più facile e veloce per gli esseri umani rispetto all'identificazione del singolo oggetto individuale.
+    \item La sfida scientifica risiede nel comprendere come trasferire questo principio biologico agli algoritmi di classificazione automatica.
+\end{itemize}
+
+La gerarchia dei livelli di astrazione può essere schematizzata in una struttura ad albero:
+
+% [IMMAGINE RIF FILE NOMIMATO "TUTTO"] Albero gerarchico di categorizzazione strutturato in Livelli Astratti (animal, quadruped), Livello Base (dog, cat, cow) e Livello Individuale (German shepherd, Doberman, "Fido") — Slide 17 / Pagina 17 del PDF
+
+\subsection{Rilevamento Contro Riconoscimento Di Oggetti}
+
+Sebbene i due termini vengano frequentemente confusi o usati in modo intercambiabile, essi fanno riferimento a due compiti ben distinti sotto l'aspetto computazionale:
+
+\subsubsection{Riconoscimento Di Oggetti (\emph{Object Recognition})}
+Consiste nel determinare quale oggetto o categoria di oggetti sia raffigurata nell'immagine. Esso fornisce la classe semantica dell'oggetto ma non ha la responsabilità di localizzarlo spazialmente all'interno della scena.
+\begin{itemize}
+    \item \textbf{Input:} Un'immagine contenente uno o più oggetti sconosciuti. La posizione dell'oggetto può essere pre-indicata, oppure l'input può essere un'immagine ravvicinata di un oggetto isolato e non occluso.
+    \item \textbf{Output:} Etichetta o etichette (nomi) degli oggetti rilevati.
+    \item \textbf{Caratteristiche:} Il sistema lavora su un insieme finito di categorie predefinite (es. cane, auto, cavallo, mucca, uccello) tra cui è in grado di discriminare.
+\end{itemize}
+
+\subsubsection{Rilevamento Di Oggetti (\emph{Object Detection})}
+Consiste nell'individuare la posizione spaziale di un oggetto specifico o di una categoria all'interno dell'immagine. Esso fornisce la localizzazione dell'oggetto, ma non si occupa direttamente di distinguerlo rispetto ad altre categorie generiche esterne a quella di addestramento.
+\begin{itemize}
+    \item \textbf{Input:} Un'immagine pulita o un modello dell'oggetto d'interesse (es. un'anatra) e un'immagine target in cui effettuare la ricerca.
+    \item \textbf{Output:} La posizione o, più comunemente, una \textbf{bounding box} (rettangolo di delimitazione) dell'oggetto d'interesse all'interno dell'immagine target.
+\end{itemize}
+
+\subsubsection{Confronto Pratico Dei Compiti}
+
+Per comprendere a fondo la differenza, analizziamo il comportamento di algoritmi distinti applicati a un'immagine stradale contenente dei taxi:
+
+\begin{enumerate}
+    \item \textbf{Solo Riconoscimento Visivo:}
+    Un algoritmo di solo riconoscimento identificherà le categorie presenti globalmente nell'immagine, senza fornire alcuna coordinata spaziale.
+    \[
+    \text{Output:} \quad \langle \text{``Car''}, \, \text{``Building''} \rangle
+    \]
+
+    % [IMMAGINE RIF FILE NOMIMATO "TUTTO"] Immagine stradale con taxi gialli utilizzata per mostrare il risultato del solo riconoscimento (output testuale ``Car'', ``Building'') — Slide 19 / Pagina 19 del PDF
+
+    \item \textbf{Solo Rilevamento Visivo (es. focalizzato sulla classe auto):}
+    Un rilevatore specifico per le auto individuerà la posizione spaziale della vettura. L'algoritmo non produce l'etichetta testuale ``car'' in senso discriminativo (poiché è addestrato solo per trovare auto e non possiede il concetto differenziale di altre classi), ma restituisce unicamente la bounding box geometrica.
+    \[
+    \text{Output:} \quad \bm{b} = [124, \, 150, \, 40, \, 30]
+    \]
+    dove i parametri rappresentano rispettivamente la coordinata $x$ e $y$ del vertice superiore sinistro, la larghezza e l'altezza del rettangolo in pixel.
+
+    % [IMMAGINE RIF FILE NOMIMATO "TUTTO"] Bounding box rossa sovrapposta a un taxi stradale per illustrare l'output puramente geometrico del rilevamento — Slide 20 / Pagina 20 del PDF
+
+    \item \textbf{Rilevamento E Riconoscimento Combinati (\emph{Object Detection + Recognition}):}
+    Rappresenta la fusione dei due compiti. L'algoritmo rileva le bounding box e assegna contestualmente l'etichetta semantica corretta a ciascuna di esse.
+    \[
+    \text{Output:} \quad \langle \text{``Car at } (124, 150, 40, 30)\text{''}, \, \text{``Building at } (14, 50, 50, 60)\text{''} \rangle
+    \]
+
+    % [IMMAGINE RIF FILE NOMIMATO "TUTTO"] Immagine stradale con bounding box verde etichettata "Building" e bounding box rossa etichettata "Car" — Slide 21 / Pagina 21 del PDF
+\end{enumerate}
+
+\subsection{Segmentazione Di Immagini (\emph{Image Segmentation})}
+
+La \textbf{segmentazione delle immagini} è il processo che consiste nel partizionare un'immagine digitale in più segmenti (insiemi di pixel, noti anche come \textbf{super-pixel}). L'obiettivo principale è semplificare e/o modificare la rappresentazione dell'immagine in una forma che sia più significativa e facile da analizzare dal punto di vista semantico.
+In termini formali, la segmentazione punta ad assegnare un'etichetta a \emph{ogni singolo pixel} dell'immagine, in modo tale che i pixel che condividono la stessa etichetta presentino caratteristiche visive o semantiche comuni.
+
+% [IMMAGINE RIF FILE NOMIMATO "TUTTO"] Griglia di immagini reali stradali e d'interni accoppiate con le rispettive mappe di segmentazione a livello di singolo pixel (pixel-wise semantic maps) prodotte da SegNet — Slide 22 / Pagina 22 del PDF
+
+\subsection{Riconoscimento Dell'Attività (\emph{Activity Recognition})}
+
+Il compito dell'\textbf{Activity Recognition} mira a identificare le azioni e gli obiettivi di uno o più agenti a partire da una sequenza temporale di osservazioni relative ai loro movimenti e alle condizioni ambientali circostanti. Questo settore della computer vision, attivo fin dagli anni '80, ha una rilevanza cruciale in applicazioni quali la medicina, l'interazione uomo-macchina (\emph{Human-Computer Interaction - HCI}) e la sociologia.
+
+% [IMMAGINE RIF FILE NOMIMATO "TUTTO"] Sequenza temporale di silhouette umane che illustrano lo svolgimento di due azioni distinte: (a) disegnare un segno di spunta (Draw tick) e (b) servizio da tennis (Tennis serve) — Slide 23 / Pagina 23 del PDF
+
+\subsection{Tracciamento Di Oggetti (\emph{Object Tracking})}
+
+L'\textbf{Object Tracking} definisce il processo di localizzazione e inseguimento di uno o più oggetti in movimento nel tempo all'interno di una sequenza video acquisita da una telecamera. In robotica, il tracking viene spesso associato alla stima in tempo reale delle velocità di movimento dell'oggetto o del robot stesso, come la velocità traslazionale $a_p$ (espressa in $\text{m/s}$) e la velocità angolare $a_{\theta}$ (espressa in $\text{deg/s}$).
+
+% [IMMAGINE RIF FILE NOMIMATO "TUTTO"] Frame sequenziali che mostrano un piccolo robot mobile cingolato tracciato all'interno di un ambiente virtuale, con l'indicazione vettoriale delle velocità traslazionali e angolari stimate — Slide 24 / Pagina 24 del PDF
+
+\subsection{Stima Della Profondità (\emph{Depth Estimation})}
+
+La \textbf{Depth Estimation} consiste nel calcolare la profondità degli elementi della scena (distanza rispetto al piano della telecamera) associata ad ogni singolo pixel dell'immagine, a partire da una o più viste della scena stessa. Questo compito viene comunemente visualizzato tramite mappe di calore, dove i colori caldi rappresentano oggetti vicini e i colori freddi oggetti distanti.
+
+% [IMMAGINE RIF FILE NOMIMATO "TUTTO"] Coppie di immagini in bianco e nero (una strada urbana e un sentiero boscoso) con le rispettive mappe di stima della profondità dense rappresentate in falsi colori — Slide 25 / Pagina 25 del PDF
+
+\newpage
+
+\section{Classificazione Di Immagini Contro Riconoscimento Di Oggetti}
+
+Per concludere la tassonomia dei compiti di visione semantica, è opportuno chiarire la relazione gerarchica che intercorre tra la classificazione di immagini e il riconoscimento di oggetti:
+
+\begin{itemize}
+    \item Il \textbf{riconoscimento di oggetti} deve essere inteso come un \textbf{caso speciale} della classificazione di immagini. In questo caso specifico, l'interesse è focalizzato sull'identificazione di una categoria d'oggetto ben definita all'interno dell'immagine.
+    \item La \textbf{classificazione di immagini} rappresenta un concetto più ampio e generale. Essa mira ad assegnare una proprietà semantica globale all'intera immagine. Tale proprietà può riguardare un'attività svolta (activity recognition), la natura dell'ambiente circostante (scene understanding), oppure l'identificazione di istanze o categorie.
+\end{itemize}
+
+Sulla base di questa classificazione gerarchica, lo studio dei sistemi di percezione robotica basati sull'apprendimento automatico partirà dalla formulazione teorica del problema più generale, ovvero la \textbf{classificazione delle immagini} basata su tecniche di \textbf{Machine Learning}, per poi analizzare in dettaglio le singole applicazioni specifiche d'interesse per la robotica.
+\end{document}

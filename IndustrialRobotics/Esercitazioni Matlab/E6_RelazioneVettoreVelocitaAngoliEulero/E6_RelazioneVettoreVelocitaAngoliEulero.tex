@@ -1,0 +1,883 @@
+﻿%!TEX program = xelatex
+\documentclass[11pt, a4paper]{article}
+
+% AA LINGUA E GESTIONE FONT (Specifica per XeLaTeX)
+\usepackage{fontspec}
+\setmainfont{Latin Modern Roman}
+\usepackage[italian]{babel}
+
+% AA LAYOUT DI PAGINA E TIPOGRAFIA (Ottimizzato per Rilegatura)
+\usepackage[left=2.4cm, right=1.6cm, top=2cm, bottom=2cm]{geometry}
+
+% AA Spaziatura tra paragrafi controllata (compatta ed evita salti enormi)
+\usepackage[skip=3pt plus 1pt minus 1pt]{parskip}
+\setlength{\parindent}{0pt}
+
+% AA Microtype per XeLaTeX
+\usepackage[protrusion=true]{microtype}
+\raggedbottom
+
+% AA GESTIONE DEI COLORI
+\usepackage{xcolor}
+
+% AA MATEMATICA E SIMBOLI
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{silence}
+\usepackage[warnings-off={mathtools-overbracket,mathtools-colon}]{unicode-math}
+\setmathfont{Latin Modern Math}
+
+% BB OTTIMIZZAZIONE MATRICI LUNGHE PER LA STAMPA
+\setlength{\arraycolsep}{10pt}
+
+% AA Spaziature verticali attorno alle formule matematiche
+\setlength{\abovedisplayskip}{3pt plus 1pt minus 1pt}
+\setlength{\belowdisplayskip}{3pt plus 1pt minus 1pt}
+\setlength{\abovedisplayshortskip}{0pt plus 1pt}
+\setlength{\belowdisplayshortskip}{2pt plus 1pt minus 1pt}
+
+% AA PERSONALIZZAZIONE TITOLI
+\usepackage{titlesec}
+\titleformat{\section}{\normalfont\Large\bfseries\color{blue!80!black}}{\thesection}{1em}{}
+\titleformat{name=\section,numberless}{\normalfont\Large\bfseries\color{blue!80!black}}{}{0pt}{}
+
+\titleformat{\subsection}{\normalfont\large\bfseries}{\thesubsection}{1em}{}
+\titleformat{name=\subsection,numberless}{\normalfont\large\bfseries}{}{0pt}{}
+
+\titleformat{\subsubsection}{\normalfont\normalsize\bfseries}{\thesubsubsection}{1em}{}
+\titleformat{name=\subsubsection,numberless}{\normalfont\normalsize\bfseries}{}{0pt}{}
+
+\titlespacing*{\section}{0pt}{1.2ex plus 0.4ex minus 0.2ex}{0.6ex plus 0.2ex}
+\titlespacing*{\subsection}{0pt}{1ex plus 0.3ex minus 0.2ex}{0.5ex plus 0.2ex}
+\titlespacing*{\subsubsection}{0pt}{0.8ex plus 0.2ex minus 0.1ex}{0.4ex plus 0.1ex}
+
+\titleformat{\paragraph}[block]{\normalfont\normalsize\bfseries\color{black!80!black}\raggedright}{}{0pt}{}
+\titlespacing*{\paragraph}{0pt}{1.2ex plus 0.3ex minus 0.2ex}{0.4ex}
+
+% AA INTEGRAZIONE CODICE MATLAB
+\usepackage{matlab}
+
+% BB Riconfigurazione Automatica Titoli Esportati da MATLAB
+\renewcommand{\matlabheading}[1]{\section*{#1}}
+\renewcommand{\matlabheadingtwo}[1]{\subsection*{#1}}
+\renewcommand{\matlabheadingthree}[1]{\subsubsection*{#1}}
+
+% BB Formule E Matrici Simboliche
+\renewenvironment{matlabsymbolicoutput}{%
+  \par\vspace{2pt}%
+  \begingroup
+  \centering
+}{%
+  \par\vspace{2pt}%
+  \endgroup
+}
+
+% BB Output Testuale Console
+\renewenvironment{matlaboutput}{%
+  \par\vspace{1pt}%
+  \Verbatim[xleftmargin=10pt, formatcom=\color{black!75}, fontsize=\footnotesize]%
+}{%
+  \endVerbatim
+  \vspace{1pt}%
+}
+
+% BB Box Codice (Stile Moderno con Barra Laterale Colorata)
+\lstset{
+  backgroundcolor={},
+  aboveskip=0pt,
+  belowskip=0pt,
+  basicstyle=\ttfamily\footnotesize,
+  xleftmargin=0pt
+}
+
+\mdfdefinestyle{matlabcode}{%
+  topline=false,
+  bottomline=false,
+  rightline=false,
+  leftline=true,
+  linewidth=2.5pt,
+  linecolor=blue!75!black,
+  backgroundcolor=black!3,
+  innertopmargin=4pt,
+  innerbottommargin=4pt,
+  innerleftmargin=9pt,
+  innerrightmargin=6pt,
+  skipabove=3pt,
+  skipbelow=3pt
+}
+
+\allowdisplaybreaks
+
+% AA LINK, METADATI ED ELENCHI
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!80!black,
+    urlcolor=blue!80!black,
+    citecolor=blue!80!black,
+    pdftitle={Relazione Tra Velocità Angolare E Angoli di Eulero RPY},
+    pdfauthor={Francesco Lo Verde},
+}
+\usepackage{bookmark}
+
+% BB Spaziatura Elenchi (Arieggiata per la Stampa)
+\usepackage{enumitem}
+\setlist{itemsep=3.5pt plus 1pt minus 1pt, topsep=4pt plus 1pt minus 1pt, partopsep=0pt, parsep=1pt}
+
+
+\author{Francesco Lo Verde}
+\begin{document}
+
+\matlabtitle{Relazione Tra Velocità Angolare E Angoli di Eulero RPY}
+
+\begin{par}
+\begin{flushleft}
+L'orientamento di un corpo rigido, viene spesso descritto tramite una sequenza di tre rotazioni elementari note come \textbf{angoli di Eulero}. La convenzione \textbf{Roll-Pitch-Yaw (RPY)} corrisponde a una sequenza di rotazioni \textit{ZYX}.
+\end{flushleft}
+\end{par}
+
+\begin{par}
+\begin{flushleft}
+La matrice di rotazione totale \textbf{R} che trasforma le coordinate da un sistema di riferimento solidale al corpo al sistema di riferimento fisso rappresenta una sequenza di rotazioni definite rispetto agli assi del sistema di riferimento fisso nell'ordine \textit{Z,Y,X}, oppure per la cinematica del corpo, da una sequenza di rotazioni rispetto agli assi del sistema solidale (\textit{\textbf{intrinseche}}) nell'ordine inverso:
+\end{flushleft}
+\end{par}
+
+\begin{par}
+\begin{flushleft}
+L'obiettivo è determinare la matrice di trasformazione, nota come \textbf{Jacobiano Analitico} o \textbf{Jacobiano Geometrico}, che lega le derivate temporali degli angoli di Eulero ${\bigl\lbrack \dot{\alpha} ,\dot{\beta} ,\dot{\gamma} \bigr\rbrack }^T$, al vettore velocità angolare istantanea del corpo $\mathbf{\omega }={\bigl\lbrack \omega_x ,\omega_y ,\omega_z \bigr\rbrack }^T$, espresso nel sistema di riferimento solidale al corpo stesso. Dove:
+\end{flushleft}
+\end{par}
+
+\begin{itemize}
+   \item{\begin{flushleft} Il vettore\textbf{ velocità angolare} $\omega$ è una \textit{grandezza} \textit{vettoriale} che descrive l'asse di rotazione istantaneo e il valore della velocità di rotazione del corpo rigido. Le sue componenti possono essere sommate vettorialmente. \end{flushleft}}
+   \item{\begin{flushleft} Il \textbf{vettore delle derivate degli angoli }di Eulero rappresenta la velocità di variazione dei parametri scelti per descrivere l'orientamento. Poiché ciascuna rotazione di Eulero avviene attorno a un asse che può essere differente dagli altri, le loro velocità \textit{\textbf{non}} possono essere sommate direttamente per ottenere $\omega$. \end{flushleft}}
+\end{itemize}
+
+\begin{par}
+\begin{flushleft}
+La relazione che si deve derivare simbolicamente ha la forma:
+\end{flushleft}
+\end{par}
+
+\[
+    \left(\begin{array}{c}
+    \omega_x \\
+    \omega_y \\
+    \omega_z
+    \end{array}\right)=\mathbf{M}(\alpha ,\beta ,\gamma )\;\cdot \;\left(\begin{array}{c}
+    \dot{\alpha} \\
+    \dot{\beta} \\
+    \dot{\gamma}
+    \end{array}\right)
+\]
+
+\begin{par}
+\begin{flushleft}
+dove \textbf{M} è la matrice $3\times 3$ che dipende dalla configurazione angolare corrente del corpo.Analizzando il determinante di \textbf{M} si possono identificare le configurazioni singolari in cui questa rappresentazione perde di validità.
+\end{flushleft}
+\end{par}
+
+\begin{par}
+\begin{flushleft}
+Si definiscono tutte le variabili simboliche che includono gli angoli di Eulero $(\alpha ,\beta ,\gamma )$ e le loro derivate $(\dot{\alpha} ,\dot{\beta} ,\dot{\gamma} )$
+\end{flushleft}
+\end{par}
+
+\begin{matlabcode}
+% Definizioni Angoli Eulero
+syms alpha beta gamma real;
+
+% Definizioni Detivate Angoli Eulero
+syms alpha_dot beta_dot gamma_dot real;
+\end{matlabcode}
+
+
+\vspace{1em}
+\begin{par}
+\begin{flushleft}
+La convenzione \textbf{RPY} (\textit{ZYX}) descrive una rotazione totale \textbf{R} come prodotto di tre rotazioni elementari attorno agli assi del sistema di riferimento corrente. La matrice di rotazione totale $R_{RPY}$ è:
+\end{flushleft}
+\end{par}
+
+\[
+    R_{RPY} (\alpha ,\beta ,\gamma )=R_z (\gamma )\cdot R_y (\beta )\cdot R_x (\alpha )
+\]
+
+\newpage
+\begin{matlabcode}
+% Matrice Rotazione Attorno X (Roll)
+Rx = [1, 0,          0;
+      0, cos(alpha), -sin(alpha);
+      0, sin(alpha), cos(alpha)];
+
+% Matrice Rotazione Attorno Y (Pitch)
+Ry = [cos(beta),  0, sin(beta);
+      0,          1, 0;
+      -sin(beta), 0, cos(beta)];
+
+% Matrice Rotazione Attorno Z (Yaw)
+Rz = [cos(gamma), -sin(gamma), 0;
+      sin(gamma), cos(gamma),  0;
+      0,          0,           1];
+
+% Matrice Rotazione Finale
+% L'Ordine È Importante: La Prima Rotazione Va Più A Destra
+R_RPY = Rz * Ry * Rx;
+R_RPY = simplify(R_RPY);
+
+fprintf('Matrice Rx (Roll):');
+disp(Rx);
+\end{matlabcode}
+\begin{matlaboutput}
+Matrice Rx (Roll):
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \left(\begin{array}{ccc}
+1 & 0 & 0\\
+0 & \cos \left(\alpha \right) & -\sin \left(\alpha \right)\\
+0 & \sin \left(\alpha \right) & \cos \left(\alpha \right)
+\end{array}\right)$
+\end{matlabsymbolicoutput}
+\begin{matlabcode}
+fprintf('Matrice Ry (Pitch):');
+
+disp(Ry);
+\end{matlabcode}
+\begin{matlaboutput}
+Matrice Ry (Pitch):
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \left(\begin{array}{ccc}
+\cos \left(\beta \right) & 0 & \sin \left(\beta \right)\\
+0 & 1 & 0\\
+-\sin \left(\beta \right) & 0 & \cos \left(\beta \right)
+\end{array}\right)$
+\end{matlabsymbolicoutput}
+\begin{matlabcode}
+fprintf('Matrice Rz (Yaw):');
+
+disp(Rz);
+\end{matlabcode}
+\begin{matlaboutput}
+Matrice Rz (Yaw):
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \left(\begin{array}{ccc}
+\cos \left(\gamma \right) & -\sin \left(\gamma \right) & 0\\
+\sin \left(\gamma \right) & \cos \left(\gamma \right) & 0\\
+0 & 0 & 1
+\end{array}\right)$
+\end{matlabsymbolicoutput}
+\begin{matlabcode}
+
+fprintf('Matrice di rotazione totale R_RPY (ZYX):');
+
+disp(R_RPY);
+\end{matlabcode}
+\begin{matlaboutput}
+Matrice di rotazione totale R_RPY (ZYX):
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\resizebox{\linewidth}{!}{%
+$
+    \begin{pmatrix}
+        \cos \left(\beta \right)\,\cos \left(\gamma \right) & \cos \left(\gamma \right)\,\sin \left(\alpha \right)\,\sin \left(\beta \right)-\cos \left(\alpha \right)\,\sin \left(\gamma \right) & \sin \left(\alpha \right)\,\sin \left(\gamma \right)+\cos \left(\alpha \right)\,\cos \left(\gamma \right)\,\sin \left(\beta \right)\\
+        \cos \left(\beta \right)\,\sin \left(\gamma \right) & \cos \left(\alpha \right)\,\cos \left(\gamma \right)+\sin \left(\alpha \right)\,\sin \left(\beta \right)\,\sin \left(\gamma \right) & \cos \left(\alpha \right)\,\sin \left(\beta \right)\,\sin \left(\gamma \right)-\cos \left(\gamma \right)\,\sin \left(\alpha \right)\\
+        -\sin \left(\beta \right) & \cos \left(\beta \right)\,\sin \left(\alpha \right) & \cos \left(\alpha \right)\,\cos \left(\beta \right)
+    \end{pmatrix}
+$}
+\end{matlabsymbolicoutput}
+
+\newpage
+\begin{par}
+\begin{flushleft}
+Ricordando la regola della catena e che $\alpha ,\beta ,\gamma$ dipendono da $t$ si avrà che, la derivata di una matrice di rotazione
+\end{flushleft}
+\end{par}
+
+\[
+    {\dot{R} }_x (\alpha )=\frac{dR_x }{d\phi }\;\frac{d\phi }{dt}
+\]
+\begin{matlabcode}
+% Derivata Rx
+dRx_dphi = diff(Rx, alpha);
+alpha_dt = alpha_dot;
+Rx_dot = dRx_dphi * alpha_dot;
+
+% Derivata Ry
+dRy_dbeta = diff(Ry, beta);
+dbeta_dt = beta_dot;
+Ry_dot = dRy_dbeta * beta_dot;
+
+% Derivata Rz
+dRz_dgamma = diff(Rz, gamma);
+dgamma_dt = gamma_dot;
+Rz_dot = dRz_dgamma * gamma_dot;
+
+fprintf('Derivata Temporale Di Rx (Rx_dot):');
+
+disp(Rx_dot);
+\end{matlabcode}
+\begin{matlaboutput}
+Derivata Temporale Di Rx (Rx_dot):
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \left(\begin{array}{ccc}
+0 & 0 & 0\\
+0 & -\dot{\alpha} \,\sin \left(\alpha \right) & -\dot{\alpha} \,\cos \left(\alpha \right)\\
+0 & \dot{\alpha} \,\cos \left(\alpha \right) & -\dot{\alpha} \,\sin \left(\alpha \right)
+\end{array}\right)$
+\end{matlabsymbolicoutput}
+\begin{matlabcode}
+fprintf('Derivata Temporale Di Ry (Ry_dot):');
+
+disp(Ry_dot);
+\end{matlabcode}
+\begin{matlaboutput}
+Derivata Temporale Di Ry (Ry_dot):
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \left(\begin{array}{ccc}
+-\dot{\beta} \,\sin \left(\beta \right) & 0 & \dot{\beta} \,\cos \left(\beta \right)\\
+0 & 0 & 0\\
+-\dot{\beta} \,\cos \left(\beta \right) & 0 & -\dot{\beta} \,\sin \left(\beta \right)
+\end{array}\right)$
+\end{matlabsymbolicoutput}
+\begin{matlabcode}
+fprintf('Derivata Temporale Di Ry (Rz_dot):');
+
+disp(Rz_dot);
+\end{matlabcode}
+\begin{matlaboutput}
+Derivata Temporale Di Ry (Rz_dot):
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \left(\begin{array}{ccc}
+-\dot{\gamma} \,\sin \left(\gamma \right) & -\dot{\gamma} \,\cos \left(\gamma \right) & 0\\
+\dot{\gamma} \,\cos \left(\gamma \right) & -\dot{\gamma} \,\sin \left(\gamma \right) & 0\\
+0 & 0 & 0
+\end{array}\right)$
+\end{matlabsymbolicoutput}
+
+
+
+\vspace{1em}
+\begin{par}
+\begin{flushleft}
+Si nota che
+\end{flushleft}
+\end{par}
+
+\matlabheadingthree{$\begin{array}{l}
+\dot{R_x (\alpha )} =\dot{\alpha} \;\dot{R_x } (\alpha )\\
+\dot{R_y (\beta )} =\dot{\beta} \;\dot{R_x } (\beta )\\
+\dot{R_z (\gamma )} =\dot{\gamma} \;\dot{R_z } (\gamma )
+\end{array}$}
+
+\begin{par}
+\newpage
+\begin{flushleft}
+Ricordando la derivata del prodotto, la derivata di $R_{RPY}$ sarà:
+\end{flushleft}
+\end{par}
+
+\matlabheadingtwo{ $\dot{R_{RPY} } =\dot{R_z (\gamma )} \cdot R_y (\beta )\cdot R_x (\alpha )+R_z (\gamma )\cdot \dot{R_y (\beta )} \cdot R_x (\alpha )+R_z (\gamma )\cdot R_y (\beta )\cdot \dot{R_x (\alpha )}$}
+
+\begin{par}
+\begin{flushleft}
+Sostituendo si ottiene
+\end{flushleft}
+\end{par}
+
+\[
+    \dot{R_{RPY} } =\dot{\gamma} \;\dot{R_z } (\gamma )\cdot R_y (\beta )\cdot R_x (\alpha )+R_z (\gamma )\cdot \dot{\beta} \;\dot{R_x } (\beta )\cdot R_x (\alpha )+R_z (\gamma )\cdot R_y (\beta )\cdot \dot{\alpha} \;\dot{R_x } (\alpha )
+\]
+\begin{par}
+\begin{flushleft}
+L'obiettivo è calcolare la \textbf{matrice di velocità angolare}
+\end{flushleft}
+\end{par}
+
+\matlabheadingthree{$\mathbf{S}(\mathbf{\omega })={\dot{R} }_{RPY} \;\;R_{RPY}^T$}
+
+\begin{par}
+\begin{flushleft}
+Ricordando che la trasposta di un prodotto di matrici è uguale al prodotto delle loro trasposte, \textbf{ma in ordine inverso}
+\end{flushleft}
+\end{par}
+
+\matlabheadingthree{$R_{RPY}^T =R_X^T (\alpha )\;R_Y^T (\beta )\;R_Z^T (\gamma )$}
+
+\begin{matlabcode}
+% Calcolo Trasposte
+Rx_Trasp = Rx.';
+Ry_Trasp = Ry.';
+Rz_Trasp = Rz.';
+
+% Calcolo Prodotto Trasposte
+R_RPY_Trasp = Rx_Trasp * Ry_Trasp * Rz_Trasp;
+fprintf('Trasposta Di R_RPY (RRPY_dot):');
+
+R_RPY_Trasp = simplify(R_RPY_Trasp);
+disp(R_RPY_Trasp);
+\end{matlabcode}
+\begin{matlaboutput}
+Trasposta Di R_RPY (RRPY_dot):
+\end{matlaboutput}
+
+\begin{matlabsymbolicoutput}
+\resizebox{\linewidth}{!}{%
+$
+    \begin{pmatrix}
+        c\left(\beta \right)\,c\left(\gamma \right) & c\left(\beta \right)\,s\left(\gamma \right) & -s\left(\beta \right)\\
+        c\left(\gamma \right)\,s\left(\alpha \right)\,s\left(\beta \right)-c\left(\alpha \right)\,s\left(\gamma \right) & c\left(\alpha \right)\,c\left(\gamma \right)+s\left(\alpha \right)\,s\left(\beta \right)\,s\left(\gamma \right) & c\left(\beta \right)\,s\left(\alpha \right)\\
+        s\left(\alpha \right)\,s\left(\gamma \right)+c\left(\alpha \right)\,c\left(\gamma \right)\,s\left(\beta \right) & c\left(\alpha \right)\,s\left(\beta \right)\,s\left(\gamma \right)-c\left(\gamma \right)\,s\left(\alpha \right) & c\left(\alpha \right)\,c\left(\beta \right)
+    \end{pmatrix}
+$}
+\end{matlabsymbolicoutput}
+
+\begin{matlabcode}
+R_RPY_dot = Rx_dot * Ry_dot * Rz_dot;
+fprintf('Derivata Temporale Di R_RPY (RRPY_dot):');
+
+disp(R_RPY_dot);
+\end{matlabcode}
+\begin{matlaboutput}
+Derivata Temporale Di R_RPY (RRPY_dot):
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \left(\begin{array}{ccc}
+0 & 0 & 0\\
+-\dot{\alpha} \,\dot{\beta} \,\dot{\gamma} \,\cos \left(\alpha \right)\,\cos \left(\beta \right)\,\sin \left(\gamma \right) & -\dot{\alpha} \,\dot{\beta} \,\dot{\gamma} \,\cos \left(\alpha \right)\,\cos \left(\beta \right)\,\cos \left(\gamma \right) & 0\\
+-\dot{\alpha} \,\dot{\beta} \,\dot{\gamma} \,\cos \left(\beta \right)\,\sin \left(\alpha \right)\,\sin \left(\gamma \right) & -\dot{\alpha} \,\dot{\beta} \,\dot{\gamma} \,\cos \left(\beta \right)\,\cos \left(\gamma \right)\,\sin \left(\alpha \right) & 0
+\end{array}\right)$
+\end{matlabsymbolicoutput}
+
+\begin{par}
+\begin{flushleft}
+Andando a moltiplicare ogni membro di $\dot{R_{RPY} }$ per $R_{RPY}^T$ e ricordando che $RR^T =R^T R=I$ si ottiene:
+\end{flushleft}
+\end{par}
+
+\[
+    \mathbf{S}(\omega)={\dot{R} }_{RPY} \;\;R_{RPY}^T =
+\]
+\[
+    =\dot{R_z } (\gamma )R_z (\gamma )^T +R_z (\gamma ){\dot{R} }_y (\beta )R_y (\beta )^T R_z (\gamma )^T +R_z (\gamma )R_y (\beta ){\dot{R} }_x (\alpha )R_x (\alpha )^T R_y (\beta )^T R_z (\gamma )^T
+\]
+
+\begin{par}
+\begin{flushleft}
+Ponendo:
+\end{flushleft}
+\end{par}
+$
+T_z =\dot{R_z } (\gamma )R_z (\gamma )^T \\
+T_y =R_z (\gamma ){\dot{R} }_y (\beta )R_y (\beta )^T R_z (\gamma )^T \\
+T_x =R_z (\gamma )R_y (\beta ){\dot{R} }_x (\alpha )R_x (\alpha )^T R_y (\beta )^T R_z (\gamma )^T
+$
+\newpage
+\begin{matlabcode}
+Tz = Rz_dot * Rz_Trasp;
+Ty = Rz * Ry_dot * Ry_Trasp * Rz_Trasp;
+Tx = Rz * Ry * Rx_dot * Rx_Trasp * Ry_Trasp * Rz_Trasp;
+
+fprintf('Matrice T_z:');
+
+Tz = simplify(Tz);
+disp(Tz);
+\end{matlabcode}
+\begin{matlaboutput}
+Matrice T_z:
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \left(\begin{array}{ccc}
+0 & -\dot{\gamma}  & 0\\
+\dot{\gamma}  & 0 & 0\\
+0 & 0 & 0
+\end{array}\right)$
+\end{matlabsymbolicoutput}
+\begin{matlabcode}
+
+fprintf('Matrice T_y:');
+\end{matlabcode}
+\begin{matlaboutput}
+Matrice T_y:
+\end{matlaboutput}
+\begin{matlabcode}
+Ty = simplify(Ty);
+disp(Ty);
+\end{matlabcode}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \left(\begin{array}{ccc}
+0 & 0 & \dot{\beta} \,\cos \left(\gamma \right)\\
+0 & 0 & \dot{\beta} \,\sin \left(\gamma \right)\\
+-\dot{\beta} \,\cos \left(\gamma \right) & -\dot{\beta} \,\sin \left(\gamma \right) & 0
+\end{array}\right)$
+\end{matlabsymbolicoutput}
+\begin{matlabcode}
+fprintf('Matrice T_x:');
+
+Tx = simplify(Tx);
+disp(Tx);
+\end{matlabcode}
+\begin{matlaboutput}
+Matrice T_x:
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \left(\begin{array}{ccc}
+0 & \dot{\alpha} \,\sin \left(\beta \right) & \dot{\alpha} \,\cos \left(\beta \right)\,\sin \left(\gamma \right)\\
+-\dot{\alpha} \,\sin \left(\beta \right) & 0 & -\dot{\alpha} \,\cos \left(\beta \right)\,\cos \left(\gamma \right)\\
+-\dot{\alpha} \,\cos \left(\beta \right)\,\sin \left(\gamma \right) & \dot{\alpha} \,\cos \left(\beta \right)\,\cos \left(\gamma \right) & 0
+\end{array}\right)$
+\end{matlabsymbolicoutput}
+\begin{matlabcode}
+
+Sw = Tz + Ty + Tx;
+Sw = simplify(Sw);
+fprintf('Matrice Velocità Angolare Totale (Sw):');
+
+disp(Sw);
+\end{matlabcode}
+\begin{matlaboutput}
+Matrice Velocità Angolare Totale (Sw):
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\resizebox{\linewidth}{!}{%
+$
+    \begin{pmatrix}
+        0 & \dot{\alpha} \,s\left(\beta \right)-\dot{\gamma}  & \dot{\beta} \,c\left(\gamma \right)+\dot{\alpha} \,c\left(\beta \right)\,s\left(\gamma \right)\\
+        \dot{\gamma} -\dot{\alpha} \,s\left(\beta \right) & 0 & \dot{\beta} \,s\left(\gamma \right)-\dot{\alpha} \,c\left(\beta \right)\,c\left(\gamma \right)\\
+        -\dot{\beta} \,c\left(\gamma \right)-\dot{\alpha} \,c\left(\beta \right)\,s\left(\gamma \right) & \dot{\alpha} \,c\left(\beta \right)\,c\left(\gamma \right)-\dot{\beta} \,s\left(\gamma \right) & 0
+    \end{pmatrix}
+$}
+\end{matlabsymbolicoutput}
+\newpage
+\begin{par}
+\begin{flushleft}
+La matrice di velocità angolare si può scrivere come
+\end{flushleft}
+\end{par}
+
+\matlabheadingthree{$\mathbf{S}(\mathbf{\omega })=\dot{\gamma} \;{\bar{T} }_z +\dot{\beta} \;{\bar{T} }_y (\gamma )+\dot{\alpha} \;{\bar{T} }_x (\beta ,\gamma )$}
+
+\begin{par}
+\begin{flushleft}
+si nota, quindi, che è lineare nelle derivate degli angoli di Eulero.
+\end{flushleft}
+\end{par}
+
+\begin{matlabcode}
+Tz_bar = diff(Tz, gamma_dot);
+Ty_bar = diff(Ty, beta_dot);
+Tx_bar = diff(Tx, alpha_dot);
+
+fprintf('Matrice Tz_bar:');
+
+disp(Tz_bar);
+\end{matlabcode}
+\begin{matlaboutput}
+Matrice Tz_bar:
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \left(\begin{array}{ccc}
+0 & -1 & 0\\
+1 & 0 & 0\\
+0 & 0 & 0
+\end{array}\right)$
+\end{matlabsymbolicoutput}
+\begin{matlabcode}
+fprintf('Matrice Ty_bar:');
+
+disp(Ty_bar);
+\end{matlabcode}
+\begin{matlaboutput}
+Matrice Ty_bar:
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \left(\begin{array}{ccc}
+0 & 0 & \cos \left(\gamma \right)\\
+0 & 0 & \sin \left(\gamma \right)\\
+-\cos \left(\gamma \right) & -\sin \left(\gamma \right) & 0
+\end{array}\right)$
+\end{matlabsymbolicoutput}
+\begin{matlabcode}
+fprintf('Matrice Tx_bar:');
+disp(Tx_bar);
+\end{matlabcode}
+\begin{matlaboutput}
+Matrice Tx_bar:
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \left(\begin{array}{ccc}
+0 & \sin \left(\beta \right) & \cos \left(\beta \right)\,\sin \left(\gamma \right)\\
+-\sin \left(\beta \right) & 0 & -\cos \left(\beta \right)\,\cos \left(\gamma \right)\\
+-\cos \left(\beta \right)\,\sin \left(\gamma \right) & \cos \left(\beta \right)\,\cos \left(\gamma \right) & 0
+\end{array}\right)$
+\end{matlabsymbolicoutput}
+
+\begin{par}
+\begin{flushleft}
+La matrice di velocità angolare $S(\omega )$ è una matrice antisimmetrica legata al vettore $\omega ={\bigl\lbrack \omega_x ,\omega_y ,\omega_z \bigr\rbrack }^T$ dalla relazione
+\end{flushleft}
+\end{par}
+
+\begin{par}
+$S(\omega )=\left(\begin{array}{ccc}
+0 & -\omega_z  & \omega_y \\
+\omega_z  & 0 & -\omega_x \\
+-\omega_y  & \omega_x  & 0
+\end{array}\right)$
+\end{par}
+
+\begin{par}
+\begin{flushleft}
+Quindi si possono estrarre i componenti di $\omega$ dalla matrice $S(\omega )$ calcolata, cioè
+\end{flushleft}
+\end{par}
+
+\matlabheadingthree{$\begin{array}{l}
+\omega_x =S(\omega )_{3,2} \\
+\omega_y =S(\omega )_{1,3} \\
+\omega_z =S(\omega )_{2,1}
+\end{array}$}
+
+\begin{par}
+\begin{flushleft}
+Come si nota dal vettore $\omega$ appena calcolato, ogni sua componente è una combinazione lineare delle derivate degli angoli di Eulero $\bigl\lbrack \dot{\alpha} ,\dot{\beta} ,\dot{\gamma} \bigr\rbrack$. L' obiettivo è ricavare la matrice \textbf{M} che lega il \textit{vettore} \textit{velocità angolare }$\omega$ alle \textit{derivate degli angoli}, secondo la relazione:
+\end{flushleft}
+\end{par}
+
+\matlabheadingthree{$\omega =M(\beta ,\gamma )\;\;\left(\begin{array}{c}
+\dot{\gamma} \\
+\dot{\beta} \\
+\dot{\alpha}
+\end{array}\right)$}
+
+
+\vspace{1em}
+\newpage
+\matlabheadingthree{Calcolo $\dot{\gamma}$}
+
+\begin{par}
+\begin{flushleft}
+Per trovare il contributo della velocità di Yaw $\bigl(\dot{\gamma} \bigr)$, si pongono le altre due velocità a zero: $\dot{\beta} =0$ e $\dot{\alpha} =0$.
+\end{flushleft}
+\end{par}
+
+\begin{matlabcode}
+Sw_gamma = subs(Sw, [beta_dot, alpha_dot], [0, 0]);
+Sw_gamma = simplify(Sw_gamma);
+
+% fprintf('Matrice Sw Solo Con Contributo gamma_dot:');
+% disp(Sw_gamma);
+
+% Estrazione Componenti Vettore omega
+omega_x_gamma = Sw_gamma(3,2);
+omega_y_gamma = Sw_gamma(1,3);
+omega_z_gamma = Sw_gamma(2,1);
+
+% Creazione Vettore Omega Simbolico
+vett_omega_gamma = [omega_x_gamma; omega_y_gamma; omega_z_gamma];
+vett_omega_gamma = simplify(vett_omega_gamma)/gamma_dot;
+
+fprintf('Prima Colonna di M (Contributo Di gamma_dot):\n');
+
+disp(vett_omega_gamma);
+\end{matlabcode}
+\begin{matlaboutput}
+Prima Colonna di M (Contributo Di gamma_dot):
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \left(\begin{array}{c}
+0\\
+0\\
+1
+\end{array}\right)$
+\end{matlabsymbolicoutput}
+
+
+\vspace{1em}
+
+\matlabheadingthree{Calcolo $\dot{\beta}$}
+
+\begin{par}
+\begin{flushleft}
+Per trovare il contributo della velocità di Pitch $\bigl(\dot{\beta} \bigr)$, si pongono le altre due velocità a zero: $\dot{\gamma} =0$ e $\dot{\alpha} =0$.
+\end{flushleft}
+\end{par}
+
+\begin{matlabcode}
+Sw_beta = subs(Sw, [gamma_dot, alpha_dot], [0, 0]);
+Sw_beta = simplify(Sw_beta);
+
+% fprintf('Matrice Sw Solo Con Contributo beta_dot:');
+% disp(Sw_beta);
+
+% Estrazione Componenti Vettore beta
+omega_x_beta = Sw_beta(3,2);
+omega_y_beta = Sw_beta(1,3);
+omega_z_beta = Sw_beta(2,1);
+
+% Creazione Vettore Omega Simbolico
+vett_omega_beta = [omega_x_beta; omega_y_beta; omega_z_beta];
+vett_omega_beta = simplify(vett_omega_beta)/beta_dot;
+
+fprintf('Seconda Colonna di M (Contributo Di beta_dot):\n');
+
+disp(vett_omega_beta);
+\end{matlabcode}
+\begin{matlaboutput}
+Seconda Colonna di M (Contributo Di beta_dot):
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \left(\begin{array}{c}
+-\sin \left(\gamma \right)\\
+\cos \left(\gamma \right)\\
+0
+\end{array}\right)$
+\end{matlabsymbolicoutput}
+
+\newpage
+
+\matlabheadingthree{Calcolo $\dot{\alpha}$}
+
+\begin{par}
+\begin{flushleft}
+Per trovare il contributo della velocità di Roll $\bigl(\dot{\alpha} \bigr)$, si pongono le altre due velocità a zero: $\dot{\gamma} =0$ e $\dot{\beta} =0$.
+\end{flushleft}
+\end{par}
+
+\begin{matlabcode}
+Sw_alpha = subs(Sw, [gamma_dot, beta_dot], [0, 0]);
+Sw_alpha = simplify(Sw_alpha);
+
+% Estrazione Componenti Vettore alpha
+omega_x_alpha = Sw_alpha(3,2);
+omega_y_alpha = Sw_alpha(1,3);
+omega_z_alpha = Sw_alpha(2,1);
+
+% Creazione Vettore Omega Simbolico
+vett_omega_alpha = [omega_x_alpha; omega_y_alpha; omega_z_alpha];
+vett_omega_alpha = simplify(vett_omega_alpha)/alpha_dot;
+
+fprintf('Terza Colonna di M (Contributo Di alpha_dot):\n');
+
+disp(vett_omega_alpha);
+\end{matlabcode}
+\begin{matlaboutput}
+Terza Colonna di M (Contributo Di alpha_dot):
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \left(\begin{array}{c}
+\cos \left(\beta \right)\,\cos \left(\gamma \right)\\
+\cos \left(\beta \right)\,\sin \left(\gamma \right)\\
+-\sin \left(\beta \right)
+\end{array}\right)$
+\end{matlabsymbolicoutput}
+
+
+\vspace{1em}
+
+\matlabheadingthree{Calcolo Matrice M}
+
+\begin{matlabcode}
+syms wx wy wz real;
+
+M = [vett_omega_gamma, vett_omega_beta, vett_omega_alpha];
+M = simplify(M);
+
+fprintf('Matrice M Completa:\n');
+
+disp(M);
+\end{matlabcode}
+\begin{matlaboutput}
+Matrice M Completa:
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \left(\begin{array}{ccc}
+0 & -\sin \left(\gamma \right) & \cos \left(\beta \right)\,\cos \left(\gamma \right)\\
+0 & \cos \left(\gamma \right) & \cos \left(\beta \right)\,\sin \left(\gamma \right)\\
+1 & 0 & -\sin \left(\beta \right)
+\end{array}\right)$
+\end{matlabsymbolicoutput}
+\begin{matlabcode}
+
+vettVel = [wx; wy; wz];
+vettDer = [gamma_dot; beta_dot; alpha_dot];
+eqSystem = vettVel == M * vettDer;
+
+fprintf('Sistema Da Risolvere:');
+disp(eqSystem);
+\end{matlabcode}
+\begin{matlaboutput}
+Sistema Da Risolvere:
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle \left(\begin{array}{c}
+\textrm{wx}=\dot{\alpha} \,\cos \left(\beta \right)\,\cos \left(\gamma \right)-\dot{\beta} \,\sin \left(\gamma \right)\\
+\textrm{wy}=\dot{\beta} \,\cos \left(\gamma \right)+\dot{\alpha} \,\cos \left(\beta \right)\,\sin \left(\gamma \right)\\
+\textrm{wz}=\dot{\gamma} -\dot{\alpha} \,\sin \left(\beta \right)
+\end{array}\right)$
+\end{matlabsymbolicoutput}
+\newpage
+\begin{matlabcode}
+detM = simplify(det(M));
+fprintf('Determinante Matrice M:');
+disp(detM);
+\end{matlabcode}
+\begin{matlaboutput}
+Determinante Matrice M:
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle -\cos \left(\beta \right)$
+\end{matlabsymbolicoutput}
+\begin{matlabcode}
+if detM == 0
+    fprintf('Determinante Nullo. Matrice M Non Invertibile');
+else
+    fprintf('Matrice M Invertibile!');
+end
+\end{matlabcode}
+\begin{matlaboutput}
+Matrice M Invertibile!
+\end{matlaboutput}
+
+\begin{par}
+\begin{flushleft}
+Questa matrice fornisce la relazione tra $\omega$ e gli angoli di Eulero. Se $det\bigl(\;M(\beta ,\gamma )\;\bigr)\not= 0$ allora a partire da $\omega$ è possibile conoscere la derivata degli angoli di Eulero $\dot{\alpha} ,\;\dot{\beta} ,\;\dot{\gamma}$ ed essendo essi integrabili si possono ricavare $\alpha ,\;\beta ,\;\gamma$
+\end{flushleft}
+\end{par}
+
+\vspace{1em}
+\matlabheadingtwo{Interpretazione Delle Singolarità}
+
+\begin{par}
+\begin{flushleft}
+Come calcolato, il determinante della matrice di trasformazione è $-\cos (\beta )$.
+\end{flushleft}
+\end{par}
+
+\begin{par}
+\begin{flushleft}
+La relazione $\omega =M(\beta ,\gamma )\;\;\left(\begin{array}{c}
+\dot{\gamma} \\
+\dot{\beta} \\
+\dot{\alpha}
+\end{array}\right)$ non può essere invertita quando la matrice M è \textit{\textbf{singolare}}, ovvero quando il suo determinante è nullo.
+\end{flushleft}
+\end{par}
+
+\begin{par}
+\begin{flushleft}
+Questa condizione si verifica quando l'angolo di \textit{Pitch}, $\beta$ , è uguale a $\pm \frac{\pi }{2}$ radianti (ovvero $\pm 90^{\circ }$) ed è nota come \textbf{singolarità di polso }e rappresenta un punto critico. Quando $\beta =\pm \frac{\pi }{2}$, l'asse di rotazione del \textit{Roll} (asse x del riferimento solidale) si allinea con l'asse di rotazione dello \textit{Yaw} (asse z del sistema di base). Quindi, una rotazione attorno all'asse di \textit{Roll} o una rotazione attorno all'asse di \textit{Yaw} producono lo stesso effetto sul corpo, rendendole indistinguibili. \textit{Il sistema perde un }\textit{\textbf{grado di libertà (DoF)}}.
+\end{flushleft}
+\end{par}
+
+\begin{par}
+\begin{flushleft}
+Di conseguenza, \underline{per una data velocità angolare }$\omega$\underline{, non esiste una soluzione unica per le velocità angolari }$\dot{\alpha}$\underline{ e }$\dot{\gamma}$. Questo rende la rappresentazione RPY inadeguata e instabile in prossimità di queste configurazioni singolari.
+\end{flushleft}
+\end{par}
+
+\end{document}
