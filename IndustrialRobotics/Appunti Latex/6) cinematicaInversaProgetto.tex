@@ -81,11 +81,11 @@
 \begin{document}
 
 \section*{Cinematica Inversa}
-Le coordinate target ovviamente sono espresse rispetto a $\text{RF}_{\text{world}}$, quindi si devono trasformare nel sistema di riferimento del primo giunto. Rispetto a $\text{RF}_{\text{world}}$, il primo giunto $\text{RF}_0$ si trova a $2\text{ m}$ e sulla base che è alta $6\text{ cm}$, e quindi avremo una traslazione di $2\text{ m}$ lungo $X$ e $-\text{baseHeight}$ lungo $Z$. Quindi:
+Le coordinate target ovviamente sono espresse rispetto a $\text{RF}_{\text{world}}$, quindi si devono trasformare nel sistema di riferimento del primo giunto. Rispetto a $\text{RF}_{\text{world}}$, il primo giunto $\text{RF}_0$ si trova a $2\text{ m}$ e sulla base che è alta $5\text{ cm}$, e quindi avremo una traslazione di $2\text{ m}$ lungo $X$ e $-\text{baseHeight}$ lungo $Z$. Quindi:
 \begin{align*}
 x &= x_{\text{Target}} - 2.0 \\
 y &= y_{\text{Target}} \\
-z &= z_{\text{Target}} - 0.06
+z &= z_{\text{Target}} - 0.05
 \end{align*}
 
 Dall'equazione ${}^{0}T_{\text{EE}} = {}^{0}T_{1} \cdot {}^{1}T_{2} \cdot {}^{2}T_{3} = {}^{0}T_{2} \cdot {}^{2}T_{3}$, svolgendo il prodotto matriciale a blocchi, si ottiene che ${}^{0}d_{\text{EE}}$ (la posizione dell'end-effector rispetto a $\text{RF}_0$, che è l'input traslato) è data da ${}^{0}R_{2} \cdot {}^{2}d_{\text{EE}} + {}^{0}d_{2}$.
@@ -490,7 +490,18 @@ E quindi, essendo tutti termini noti, si può calcolare $q_{2}$ usando l'arcotan
         q_2 = \text{atan2}\biggl(d_{3} (\pm \sqrt{x^2+y^2}) - a_{2} (z - d_1), \; a_{2} (\pm \sqrt{x^2+y^2}) + d_{3} (z - d_1)\biggr)
     $}
 \]
-Ovviamente si devono considerare tutte le soluzioni con $\sqrt{x^2+y^2}$ e con $-\sqrt{x^2+y^2}$, ovvero le configurazioni di gomito alto e gomito basso, e poi controllare quale rientra nei limiti dei giunti
+Nel calcolo di $r = \sqrt{x^2 + y^2}$, si devono considerare le due soluzioni possibili ($r$ e $-r$), che individuano due configurazioni per il secondo giunto:
+\begin{itemize}
+    \item \textbf{Configurazione Frontale ($q_{2,\text{Front}}$ con $+r$):} Si verifica quando il Giunto 1 orienta il Link 2 direttamente nella direzione del target. In questo caso il braccio lavora nel semispazio frontale e l'angolo $q_2$ viene calcolato come:
+    \[
+        q_{2,\text{Front}} = \text{atan2}\biggl(d_{3} \cdot r - a_{2} (z - d_1), \; a_{2} \cdot r + d_{3} (z - d_1)\biggr)
+    \]
+    \item \textbf{Configurazione All'Indietro ($q_{2,\text{Back}}$ con $-r$):} Si verifica quando il Giunto 1 orienta il Link 2 nella direzione opposta a quella del target. Per raggiungere comunque il punto alle proprie spalle, il Giunto 2 dovrebbe ruotare verso valori fortemente negativi (scavalcando la verticale a $-90^\circ$ e superando $-180^\circ$) per scendere verso il basso e agganciare il target ``da sotto'':
+    \[
+        q_{2,\text{Back}} = \text{atan2}\biggl(d_{3} (-r) - a_{2} (z - d_1), \; a_{2} (-r) + d_{3} (z - d_1)\biggr)
+    \]
+\end{itemize}
+Poiché per questo manipolatore il giunto 2 è limitato nell'intervallo $[-\frac{\pi}{2}, \; \frac{\pi}{4}]$, l'unico modo fisicamente possibile per raggiungere il target è orientare il Link 2 direttamente verso di esso, ovvero tramite la soluzione frontale $q_{2,\text{Front}}$. Di conseguenza, la soluzione $q_{2,\text{Back}}$ non rientra mai nei limiti fisici del giunto, ma viene mantenuta per completezza algebrica.
 \newpage
 
 \subsection*{Calcolo di $q_1$}
@@ -602,9 +613,9 @@ Dove l'angolo $\theta$ è il valore di $q_{2}$ calcolato in funzione dei paramet
   q_2 &= \text{atan2}\biggl(d_{3} (\pm \sqrt{x^2+y^2}) - a_{2} (z - d_1), \; a_{2} (\pm \sqrt{x^2+y^2}) + d_{3} (z - d_1)\biggr) =\\
   &= \text{atan2}\biggl(d_{3} (\pm r) - a_{2} (z - d_1), \; a_{2} (\pm r) + d_{3} (z - d_1)\biggr)\\
 \end{align*}
-Siccome, il raggio radiale $r$ è sempre positivo, si può semplificare la formula eliminando il segno $\pm$:
+Delle due soluzioni algebriche ammissibili per $q_2$, si seleziona esclusivamente la configurazione frontale ($q_{2,\text{Front}}$ con $+r$), in quanto l'unica compatibile con i limiti del secondo giunto (come visto sopra). La formula per l'angolo $\theta(r, z)$ nello spazio operativo si riduce quindi a:
 \[
-  \text{atan2}\biggl(d_{3} \cdot r - a_{2} (z - d_1), \; a_{2} \cdot r + d_{3} (z - d_1)\biggr)
+  q_2 = \text{atan2}\biggl(d_{3} \cdot r - a_{2} (z - d_1), \; a_{2} \cdot r + d_{3} (z - d_1)\biggr)
 \]
 
 \newpage
@@ -636,10 +647,11 @@ La variabile $q_{2}$ definisce l'angolo di rotazione del secondo giunto attorno 
 \[
     q_2 \in \left[-\frac{\pi}{2}, \; \frac{\pi}{4}\right] \quad\longrightarrow\quad q_{2} \in [-1.571, \; 0.785]
 \]
-Il limite inferiore $q_{2, min} = -\frac{\pi}{2}$ (pari a $-90^\circ$) corrisponde alla configurazione in cui il braccio orizzontale $l_2$ è orientato verticalmente verso l'alto (parallelo al Link 1). Questo vincolo è introdotto per escludere configurazioni ridondanti, poichè i punti alle "spalle" del robot possono essere raggiunti agendo sul giunto 1 (variando $q_1$). Il limite superiore $q_{2, max} = \frac{\pi}{4}$ (pari a $+45^\circ$) inclina invece il braccio ad un angolo di $45^\circ$ verso il basso rispetto all'orizzontale. Questo limite previene l'impatto tra il secondo link (incluso il box del giunto prismatico) e il primo link.
+Il limite inferiore $q_{2, \min} = -\frac{\pi}{2}$ (pari a $-90^\circ$) corrisponde alla configurazione in cui il braccio $l_2$ è orientato verticalmente verso l'alto (parallelo al Link 1). Questo vincolo esclude fisicamente la configurazione all'indietro $q_{2,\text{Back}}$ (la quale richiederebbe $q_2 < -90^\circ$ per andare all'indietro), eliminando ridondanze cinematiche, poiché qualsiasi punto situato "dietro" viene raggiunto orientando direttamente la base tramite il giunto 1 ($q_1$). Il limite superiore $q_{2, max} = \frac{\pi}{4}$ (pari a $+45^\circ$) inclina invece il braccio ad un angolo di $45^\circ$ verso il basso rispetto all'orizzontale. Questo limite previene l'impatto tra il secondo link (incluso il box del giunto prismatico) e il primo link.
 
 In conclusione, la variabile di giunto $q_2$ appartiene all'intervallo $[-1.571, \; 0.785]$ radianti. Questo intervallo asimmetrico garantisce che il manipolatore funzioni correttamente, e allo stesso tempo evita le collisioni il link $l_2$ e il link $l_1$.
 \newpage
+
 \subsubsection*{Soluzioni Ammissibili Per $q_1$}
 La variabile $q_{1}$ definisce l'angolo di rotazione del primo giunto (la base rotante) attorno all'asse verticale $Z_0$. Questo valore determina l'orientamento dell'intera catena cinematica rispetto al sistema di riferimento della base. L'intervallo di appartenenza di questa variabile di giunto risulta:
 \[
@@ -767,7 +779,7 @@ Tuttavia, analizzando i limiti fisici del secondo giunto introdotti per evitare 
 \[
     q_2 \in \left[-\frac{\pi}{2}, \; \frac{\pi}{4}\right] \quad\longrightarrow\quad q_2 \in [-90^\circ, \; 45^\circ]
 \]
-Poiché il valore massimo raggiungibile dal secondo giunto è di $45^\circ$ (pari a $0.785$ radianti), l'angolo minimo di singolarità di spalla ($53.97^\circ$) si trova al di fuori dell'intervallo devi valori ammessi é(e quindi anche il valore massimo)
+Poiché il valore massimo raggiungibile dal secondo giunto è di $45^\circ$ (pari a $0.785$ radianti), l'angolo minimo di singolarità di spalla ($53.97^\circ$) si trova al di fuori dell'intervallo dei valori ammessi (e quindi anche il valore massimo)
 
 In conclusione, si può dire che anche questa singolarita è \textbf{non raggiungibile}. La scelta di limitare i valori del giunto 2 ad un massimo di $45^\circ$ previene le collisioni fisiche, ma anche il verificarsi di singolarità cinematiche.
 

@@ -1,80 +1,47 @@
-﻿%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% PARTE 1: IMPOSTAZIONI GENERALI DEL DOCUMENTO
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+﻿% AA IMPOSTAZIONI DI BASE DEL DOCUMENTO E MOTORE TIPOGRAFICO
 
 \documentclass[11pt, a4paper]{report}
 
-% LINGUA E CODIFICA
+% BB Localizzazione e Codifica
 \usepackage[italian]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{lmodern}
 
-% LAYOUT DI PAGINA E TIPOGRAFIA
-\usepackage[margin=1.5cm, top=1.5cm, bottom=1.5cm]{geometry}
+% BB Famiglie Tipografiche
+\usepackage{newpxtext}
+\usepackage[scaled=0.92]{helvet}
+\usepackage[scaled=0.88]{zi4}
+
+% BB Microtipografia e Spaziatura Paragrafi
+\usepackage[protrusion=true, expansion=false]{microtype}
 \usepackage{parskip}
-\usepackage{microtype}
 
-% GESTIONE DEI COLORI
+% AA GEOMETRIA DI PAGINA E DISTRIBUZIONE SPAZI
+
+% BB Margini e Layout
+\usepackage{geometry}
+\geometry{
+    a4paper,
+    left=2.3cm,
+    right=2.3cm,
+    top=2.5cm,
+    bottom=2.5cm,
+    headheight=22pt,
+    footskip=30pt
+}
+
+% AA PALETTE COLORI E DESIGN SYSTEM
+
 \usepackage[table]{xcolor}
 
-% MATEMATICA E SIMBOLI
-\usepackage{amsmath, amssymb, amsfonts}
-\usepackage{mathtools}
-\usepackage{siunitx}
+% BB Colori del Documento (Identità Aziendale/Tecnica)
+\definecolor{primaryNavy}{RGB}{20, 52, 85}     % Colore Per Titoli
+\definecolor{accentBlue}{RGB}{41, 128, 185}    % Colore Secondario
+\definecolor{slateGray}{RGB}{108, 117, 125}    % Grigio Tecnico
+\definecolor{softBg}{RGB}{248, 249, 250}       % Sfondo Codice E Box
+\definecolor{borderGray}{RGB}{222, 226, 230}   % Bordo Separatori
 
-% BB OTTIMIZZAZIONE MATRICI LUNGHE PER LA STAMPA
-\setlength{\arraycolsep}{10pt}
-\usepackage{bm}
-
-% GRAFICA, IMMAGINI E TABELLE
-\usepackage{graphicx}
-\usepackage{subcaption}
-\graphicspath{{./Images/Tesina}}
-\usepackage{float}
-\usepackage{booktabs}
-\usepackage{array}
-\usepackage{multirow}
-\usepackage{tabularx}
-
-% DIAGRAMMI (TIKZ)
-\usepackage{tikz}
-\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc, quotes}
-\usepackage{dirtree}
-
-% LINK, RIFERIMENTI ED ELENCHI
-\usepackage[unicode]{hyperref}
-\hypersetup{
-    colorlinks=true,
-    linkcolor=black,
-    urlcolor=blue,
-    citecolor=blue,
-    pdftitle={Tesina Industrial Robotic},
-    pdfauthor={Francesco Lo Verde},
-    pdfpagemode=FullScreen,
-}
-\usepackage{bookmark}
-\usepackage[italian,capitalize]{cleveref}
-\usepackage{enumitem}
-\setlist{noitemsep}
-
-% PERSONALIZZAZIONE TITOLI, TEOREMI E ALTRI PACCHETTI
-\usepackage{titlesec}
-\titleformat{\chapter}{\normalfont\huge\bfseries}{\thechapter.}{20pt}{\huge}
-\titleformat{\section}{\normalfont\LARGE\bfseries}{\thesection}{1em}{}
-\titleformat{\subsection}{\normalfont\Large\bfseries}{\thesubsection}{1em}{}
-\titleformat{\subsubsection}{\normalfont\large\bfseries}{\thesubsubsection}{1em}{}
-\titlespacing*{\chapter}{0pt}{0pt}{10pt}
-
-\usepackage{comment}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% PARTE 2: DEFINIZIONE DEGLI STILI PER IL CODICE
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\usepackage{listings}
-
-% Definizione palette colori (ispirata a VS Code)
+% BB Palette Sintassi per il Codice (Stile VS Code)
 \definecolor{codepurple}{RGB}{204, 120, 220}
 \definecolor{codecyan}{RGB}{78, 201, 176}
 \definecolor{codeorange}{RGB}{206, 145, 120}
@@ -82,9 +49,100 @@
 \definecolor{codeblue}{RGB}{86, 156, 214}
 \definecolor{codegray}{rgb}{0.5, 0.5, 0.5}
 
-% Stile di base comune a tutti i linguaggi
+% AA Header E Footer
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}              % Reset Impostazioni
+
+% BB Testata Pagine
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{borderGray}\leaders\hrule height \headrulewidth\hfill}}
+\fancyhead[L]{\sffamily\footnotesize\color{slateGray}\leftmark}
+\fancyhead[R]{\sffamily\footnotesize\bfseries\color{primaryNavy}manipolatoreRRP}
+
+% BB Piè di Pagina Pagine
+\renewcommand{\footrulewidth}{0pt}
+\fancyfoot[C]{\sffamily\footnotesize\color{primaryNavy}\thepage}
+
+% BB Ridefinizione Stile Plain
+\fancypagestyle{plain}{
+    \fancyhf{}
+    \renewcommand{\headrulewidth}{0pt}
+    \fancyfoot[C]{\sffamily\footnotesize\color{primaryNavy}\thepage}
+}
+
+% AA Struttura Gerarchica Dei Titoli
+
+\usepackage{titlesec}
+
+% BB Formato Dei Capitoli
+\titleformat{\chapter}[display]
+  {\normalfont\sffamily}
+  {\flushright\fontsize{46}{46}\selectfont\bfseries\color{primaryNavy!25}\thechapter}
+  {-20pt}
+  {\huge\bfseries\color{primaryNavy}}
+  [\vspace{4pt}{\color{primaryNavy!40}\titlerule[1pt]}]
+
+\titlespacing*{\chapter}{0pt}{10pt}{25pt}
+
+% BB Formato Sezioni, Sottosezioni e Paragrafi
+\titleformat{\section}
+  {\normalfont\sffamily\LARGE\bfseries\color{primaryNavy}}{\thesection}{1em}{}
+
+\titleformat{\subsection}
+  {\normalfont\sffamily\Large\bfseries\color{primaryNavy!90}}{\thesubsection}{1em}{}
+
+\titleformat{\subsubsection}
+  {\normalfont\sffamily\large\bfseries\color{slateGray}}{\thesubsubsection}{1em}{}
+
+% AA Strumenti Matematici, Grafici E Tabelle
+
+% BB Pacchetti Matematici
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{mathtools}
+\usepackage{newpxmath}
+\usepackage{bm}
+\usepackage{siunitx}
+\setlength{\arraycolsep}{10pt}
+
+% BB Grafica E Diagrammi
+\usepackage{graphicx}
+\usepackage{float}
+\graphicspath{{./Images/Tesina}}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc, quotes}
+\usepackage{dirtree}
+
+% BB Stile Didascalie Immagini
+\usepackage{caption}
+\usepackage{subcaption}
+\captionsetup{
+    font={small},
+    labelfont={bf,sf,color=primaryNavy},
+    textfont={color=black!85},
+    labelsep=quad,
+    skip=8pt
+}
+\captionsetup[sub]{
+    font={footnotesize},
+    labelfont={bf,sf,color=primaryNavy}
+}
+
+% BB Tabelle
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{tabularx}
+\renewcommand{\arraystretch}{1.25}
+
+% AA Blocchi Di Codice
+
+\usepackage{listings}
+
+% BB Stile Di Base Per Tutti I Linguaggi
 \lstdefinestyle{baseStyle}{
-    backgroundcolor={},
+    backgroundcolor=\color{softBg},
     commentstyle=\color{codegreen}\itshape,
     stringstyle=\color{codeorange},
     basicstyle=\footnotesize\ttfamily,
@@ -92,7 +150,11 @@
     breakatwhitespace=false,
     keepspaces=true,
     numbers=none,
-    frame=none,
+    frame=leftline,
+    framerule=2pt,
+    rulecolor=\color{primaryNavy!40},
+    xleftmargin=10pt,
+    framexleftmargin=6pt,
     showspaces=false,
     showstringspaces=false,
     showtabs=false,
@@ -101,7 +163,7 @@
     keywordstyle=\bfseries,
 }
 
-% Stile per BASH
+% BB Stili Linguaggi Specifici (Bash, Python, XML)
 \lstdefinestyle{bashStyle}{
     style=baseStyle,
     language=bash,
@@ -109,7 +171,6 @@
     morekeywords={echo, ls, cd, mkdir, rm, cp, mv, sudo, apt-get, if, then, else, fi, for, in, do, done, while, case, esac, function},
 }
 
-% Stile per PYTHON
 \lstdefinestyle{pythonStyle}{
     style=baseStyle,
     language=Python,
@@ -131,7 +192,6 @@
     sensitive=true,
 }
 
-% Stile per XML
 \lstdefinestyle{XMLStyle}{
     style=baseStyle,
     language=XML,
@@ -144,56 +204,78 @@
     ndkeywordstyle=\color{codecyan},
 }
 
+% AA Collegamenti Riferimenti Ed Elenchi
+
+% BB Collegamenti Ipertestuali
+\usepackage[unicode]{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=primaryNavy,
+    urlcolor=accentBlue,
+    citecolor=accentBlue,
+    pdftitle={Tesina Industrial Robotics - Manipolatore RRP},
+    pdfauthor={Francesco Lo Verde},
+    pdfpagemode=UseOutlines,
+}
+\usepackage{bookmark}
+
+% BB Riferimenti Incrociati Ed Elenchi
+\usepackage[italian,capitalize]{cleveref}
+\usepackage{enumitem}
+\setlist{noitemsep, topsep=4pt, leftmargin=1.5em}
+
+% AA Macro Personalizzate E Comandi Aggiuntivi
+
+% BB Formattazione Commenti Dirtree
 \renewcommand{\DTcomment}[1]{%
   \dotfill\parbox[t]{7cm}{\raggedright\DTstylecomment{#1}}%
 }
 
-\author{Francesco Lo Verde}
+\usepackage{comment}
+
 \begin{document}
 % --- Pagina del Titolo ---
 \begin{titlepage}
     \centering
+    \sffamily % Coerenza con il font sans-serif dei titoli del nuovo preambolo
 
     % --- SEZIONE SUPERIORE: LOGO E UNIVERSITÀ ---
-    \includegraphics[width=0.35\textwidth]{Images/Tesina/LogoUnipg.png}\par\vspace{1.5cm}
+    \includegraphics[width=0.32\textwidth]{Images/Tesina/LogoUnipg.png}\par
+    \vspace{1cm}
 
-    {\scshape\Large Università degli Studi di Perugia\par}
+    {\scshape\Large\bfseries\color{slateGray} Università degli Studi di Perugia\par}
 
-    \vfill % Aggiunge spazio flessibile
+    \vfill % Distribuzione elastica dello spazio verticale
 
     % --- SEZIONE CENTRALE: TITOLI ---
-    % Il titolo è lungo, quindi \huge è una buona dimensione.
-    % Usiamo una minipage per controllare meglio la larghezza e prevenire una sillabazione sgradevole.
-    \begin{minipage}{0.9\textwidth}
+    \begin{minipage}{0.95\linewidth}
         \centering
-        {\Huge \bfseries Sviluppo Di Un Package ROS Per La Modellazione E L'Analisi Cinematica Di Un Manipolatore RRP (3 DOF)\par}
+        {\fontsize{22}{27}\selectfont \bfseries \color{primaryNavy} Sviluppo Di Un Package ROS Per La Modellazione E L'Analisi Cinematica Di Un Manipolatore RRP (3 DOF)\par}
     \end{minipage}
 
-    \vspace{1cm}
-    \rule{1\textwidth}{0.4pt} % Linea di separazione
-    \vspace{1cm}
+    \vspace{0.8cm}
+    {\color{primaryNavy!30}\rule{0.6\linewidth}{1.2pt}}\par % Linea di separazione proporzionata e colorata
+    \vspace{0.8cm}
 
-    {\LARGE \bfseries Corso di Industrial Robotics\par}
+    {\LARGE \bfseries \color{slateGray} Corso di Industrial Robotics\par}
 
-    \vfill % Aggiunge altro spazio flessibile
+    \vfill % Distribuzione elastica dello spazio verticale
 
     % --- SEZIONE INFERIORE: AUTORE ---
-    \begin{minipage}{0.7\textwidth}
-    \begin{flushleft}
+    \begin{minipage}{0.85\linewidth}
         \large
         \begin{tabular}{@{} l l}
-            \multicolumn{2}{l}{\textbf{Studente}} \\
-            \addlinespace[0.3em]
-            Nome: & \textbf{Francesco Lo Verde} \\
+            \multicolumn{2}{l}{\textbf{\color{primaryNavy}Studente}} \\
+            \addlinespace[0.4em]
+            Nome:  & \textbf{Francesco Lo Verde} \\
             Email: & \texttt{francesco.loverde@studenti.unipg.it} \\
         \end{tabular}
-    \end{flushleft}
     \end{minipage}
 
     \vspace{1.5cm}
 
     % --- PIÈ DI PAGINA: ANNO ACCADEMICO ---
-    {\large Anno Accademico 2025-2026\par}
+    {\large \bfseries \color{slateGray} Anno Accademico 2025-2026\par}
     %\vspace{0.5cm}
     %{\small Data ultimo aggiornamento: \today\par}
 
@@ -201,13 +283,11 @@
 
 \restoregeometry
 
-% --- Indice ---
 \tableofcontents
 \cleardoublepage
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % INIZIO CAPITOLO 1
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \chapter{Introduzione}
 \section{Obiettivi Del Progetto}
 Questo report documenta lo sviluppo di un pacchetto \textbf{Robot Operating System (ROS)} denominato \texttt{manipolatoreRRP}, mirato alla simulazione, al controllo e all'analisi cinematica di un manipolatore robotico antropomorfo seriale a tre gradi di libertà (RRP - Rotatorio, Rotatorio, Prismatico) con end-effector fisso orientato verso il basso.
@@ -246,9 +326,9 @@ La catena cinematica del manipolatore è definita da:
     \item \textbf{End-Effector (\texttt{endEffector}):} Pinza fissa solidale all'estremità inferiore dell'asta, ruotata di $180^\circ$ per operare sul piano del tavolo di lavoro ($Z=0$).
 \end{itemize}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % INIZIO CAPITOLO 2
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \chapter{Strumenti E Architettura Del Sistema}
 \label{chap:strumenti_tecnologie}
@@ -301,11 +381,10 @@ L'albero dei frame risultante (mostrato in Figura~\ref{fig:tf_tree}) descrive la
     % Dopo roslaunch manipolatoreRRP manipolatoreRRP.launch, in un'altro terminale, eseguire il comando:
     % source ~/catkin_ws/devel/setup.bash
     % rosrun tf2_tools view_frames.py
-    % \includegraphics[width=0.45\textwidth]{tf_tree_rrp.png}
+    \includegraphics[width=0.6\textwidth]{tfTree.png}
     \caption{Albero delle trasformazioni spaziali (TF Tree) del manipolatore RRP.}
     \label{fig:tf_tree}
 \end{figure}
-
 \newpage
 \section{Struttura del Package \texttt{manipolatoreRRP}}
 Il progetto è strutturato come un package ROS standard denominato \texttt{manipolatoreRRP}. Di seguito viene riportato l'albero effettivo dei file che compongono l'architettura:
@@ -344,7 +423,7 @@ Il file di lancio centralizza l'inizializzazione dell'intero workspace e impleme
 
     \item \textbf{Aggiornamento TF e RViz:} In entrambe le modalità, il nodo \texttt{robot\_state\_publisher} elabora i dati di giunto pubblicati su \texttt{/joint\_states} per aggiornare l'albero delle trasformazioni dinamiche, mentre \texttt{rviz} carica una configurazione preimpostata per mostrare il modello 3D in tempo reale.
 \end{enumerate}
-
+\newpage
 \subsection{Cartella Script Python (\texttt{scripts/})}
 La logica algoritmica e di controllo del manipolatore è suddivisa in cinque script specializzati:
 
@@ -352,7 +431,7 @@ La logica algoritmica e di controllo del manipolatore è suddivisa in cinque scr
     \item \textbf{\texttt{kinematicsUtils.py}:} Funge da libreria centrale di supporto. Gestisce il caricamento dei parametri fisici dal ROS Parameter Server, implementa le funzioni di saturazione (\textit{clamping}) dei giunti (\texttt{checkJointLimits}) in base alle specifiche di progetto, crea i messaggi di tipo \texttt{JointState} e calcola la vicinanza a singolarità strutturali (\texttt{checkSingularity}) restituendo il determinante Jacobiano associato.
 
     \item \textbf{\texttt{directKinematics.py}:} Implementa l'algoritmo di calcolo della cinematica diretta. Utilizza una tabella di Denavit-Hartenberg basata sui parametri dimensionali del robot per calcolare le matrici omogenee di giunto e ricavare la posa tridimensionale complessiva dell'end-effector rispetto al frame globale \texttt{world}.
-    \newpage
+
     \item \textbf{\texttt{inverseKinematics.py}:} Risolve per via geometrico-analitica il problema cinematico inverso. Ricevuto un target cartesiano $(x, y, z)$ in coordinate mondo, calcola le variabili di giunto $q_1, q_2, q_3$ discriminando le configurazioni a gomito alto (\textit{elbow up}) e gomito basso (\textit{elbow down}) ed escludendo le soluzioni matematiche che superano i limiti fisici del robot.
 
     \item \texttt{\textbf{jointController.py}} (Attivo con \texttt{gui:=False}): Costituisce l'interfaccia interattiva a riga di comando per l'utente. Permette di selezionare ciclicamente la modalità di inserimento (cinematica diretta per impostare i giunti, o cinematica inversa per digitare un target cartesiano), esegue i controlli preventivi del workspace tramite la libreria di utilità e aggiorna la visualizzazione in RViz pubblicando i nuovi valori sul topic \texttt{/joint\_states} ad una frequenza di $50$ Hz.
@@ -361,9 +440,9 @@ La logica algoritmica e di controllo del manipolatore è suddivisa in cinque scr
 \end{itemize}
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % INIZIO CAPITOLO 3
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \chapter{Modellazione Cinematica Del Manipolatore}
 \label{chap:modellazione_cinematica}
@@ -414,7 +493,7 @@ Applicando questa convenzione al manipolatore RRP in esame, si definisce la tabe
 
 \begin{itemize}
     \item \textbf{Giunto 1 e Link 1:} Rappresenta la rotazione azimutale attorno all'asse verticale \(Z_0\). L'offset verticale complessivo \(d_1 = 0.70\) m tiene conto dello sviluppo del cilindro (\(l_1 = 0.55\) m) e del raggio delle sfere di accoppiamento per eliminare discontinuità geometriche. La torsione \(\alpha_1 = -\pi/2\) orienta l'asse \(Z_1\) in direzione ortogonale per il giunto successivo.
-
+    \newpage
     \item \textbf{Giunto 2 e Link 2:} Costituisce idella spalla del robot. L'asse di rotazione è \(Y_1\) locale. L'estensione orizzontale del braccio \(a_2 = 0.55\) m comprende la lunghezza del link cilindrico (\(l_2 = 0.45\) m), il raggio della sfera di spalla e metà del lato del box prismatico (\(b/2 = 0.05\) m), posizionando l'origine del frame della guida all'estremità fisica del braccio.
 
     \item \textbf{Giunto 3 e Link 3:} Rappresenta lo stelo prismatico scorrevole. Poiché la guida lineare non ruota rispetto al braccio precedente, l'angolo \(\theta_3\) è nullo. L'offset \(d_3\) è guidato dalla coordinata lineare \(q_3\). Quando il giunto si trova a riposo (\(q_3 = 0\)), l'asse si estende completamente verso il basso con un offset negativo pari alla somma della lunghezza dell'asta (\(l_3 = 0.35\) m) e di metà del box di guida (\(b/2 = 0.05\) m), ovvero \(d_3 = -0.40\) m. La torsione \(\alpha_3 = -\pi\) ruota il frame finale di \(180^\circ\) attorno all'asse \(X\) per orientare l'end-effector verso il piano di lavoro.
@@ -425,7 +504,7 @@ La cinematica diretta del manipolatore esprime la posa del frame dell'end-effect
     ^{0}T_{EE} = {^{0}T_1}(q_1) \cdot {^{1}T_2}(q_2) \cdot {^{2}T_{EE}}(q_3)
 \]
 
-\newpage
+
 \section{Modello Nell'Ambiente ROS}
 \label{sec:implementazione_ros}
 
@@ -458,7 +537,7 @@ Per implementare fedelmente il meccanismo telescopico del giunto prismatico, la 
     </visual>
 </link>
 \end{lstlisting}
-
+\newpage
 \subsection{Visualizzazione Della Catena Cinematica}
 \label{subsec:catena_cinematica_world}
 
@@ -476,9 +555,9 @@ A differenza di una catena cinematica ancorata all'origine, in questo progetto s
 \end{enumerate}
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % INIZIO CAPITOLO 4
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \chapter{Analisi Della Trasformazione Cinematica}
 \label{chap:analisi_cinematica}
@@ -604,9 +683,9 @@ Il confronto tra il calcolo analitico e l'output dello script rivela un allineam
 \end{itemize}
 
 La perfetta corrispondenza tra la formulazione di Denavit-Hartenberg, lo sviluppo fisico in URDF e i valori letti in simulazione valida la correttezza geometrica e lo sviluppo software del manipolatore RRP.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % INIZIO CAPITOLO 4
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \chapter{Conclusioni}
 \label{chap:conclusioni}
