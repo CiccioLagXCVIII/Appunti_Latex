@@ -286,11 +286,11 @@
 \tableofcontents
 \cleardoublepage
 
-% INIZIO CAPITOLO 1
+% AA CAPITOLO 1
 
 \chapter{Introduzione}
 \section{Obiettivi Del Progetto}
-Questo report documenta lo sviluppo di un pacchetto \textbf{Robot Operating System (ROS)} denominato \texttt{manipolatoreRRP}, mirato alla simulazione, al controllo e all'analisi cinematica di un manipolatore robotico antropomorfo seriale a tre gradi di libertà (RRP - Rotatorio, Rotatorio, Prismatico) con end-effector fisso orientato verso il basso.
+Questo report documenta lo sviluppo di un pacchetto \textbf{Robot Operating System (ROS)} denominato \texttt{manipolatoreRRP}, mirato alla simulazione, al controllo e all'analisi cinematica di un manipolatore robotico a tre gradi di libertà (RRP - Rotatorio, Rotatorio, Prismatico) con end-effector fisso orientato verso il basso.
 
 L'obiettivo primario è la creazione di un ambiente virtuale integrato che permetta di validare la cinematica diretta (calcolata analiticamente tramite la convenzione di Denavit-Hartenberg) e di implementare la cinematica inversa, il controllo dei limiti fisici dei giunti e l'analisi delle singolarità geometriche.
 
@@ -306,7 +306,7 @@ Gli obiettivi specifici del progetto sono i seguenti:
 \end{itemize}
 
 \newpage
-\subsection{Il Manipolatore Antropomorfo RRP}
+\subsection{Il Manipolatore RRP}
 La struttura del manipolatore sviluppato si basa su una catena cinematica seriale a tre gradi di libertà principali più un End-Effector fisso, progettata per coniugare pulizia geometrica e realismo meccanico. Per evitare l'effetto visivo irrealistico dello scorrimento dell'intera guida lineare, la scatola del giunto prismatico è solidale al braccio precedente, consentendo solo allo stelo interno di scorrere fisicamente. Ciascun giunto rotatorio è inoltre protetto visivamente da sfere estetiche per eliminare vuoti d'aria o compenetrazioni geometriche.
 \begin{figure}[h!]
     \includegraphics[width=\linewidth]{isoViewNoBg.png}
@@ -323,11 +323,11 @@ La catena cinematica del manipolatore è definita da:
     \item \textbf{Link 2 (\texttt{RF1}):} Braccio cilindrico di lunghezza $l_2$ che si estende in direzione radiale e termina con il box cubico della guida prismatica.
     \item \textbf{Giunto 3 (\texttt{giunto3}):} Giunto prismatico lineare che scorre lungo l'asse verticale locale del braccio.
     \item \textbf{Link 3 (\texttt{RF2}):} Asta cilindrica interna di lunghezza $l_3$ che scorre dentro la scatola di guida.
-    \item \textbf{End-Effector (\texttt{endEffector}):} Pinza fissa solidale all'estremità inferiore dell'asta, ruotata di $180^\circ$ per operare sul piano del tavolo di lavoro ($Z=0$).
+    \item \textbf{End-Effector (\texttt{endEffector}):} Pinza fissa solidale all'estremità inferiore dell'asta, ruotata di $180^\circ$ attorno all'asse $X$ per operare verso il basso, in direzione del piano del tavolo di lavoro ($Z=0$).
 \end{itemize}
 
 
-% INIZIO CAPITOLO 2
+% AA CAPITOLO 2
 
 
 \chapter{Strumenti E Architettura Del Sistema}
@@ -338,12 +338,15 @@ L'infrastruttura software sfrutta le potenzialità di \textbf{ROS (Robot Operati
 
 L'interconnessione tra i nodi avviene dinamicamente mediante la pubblicazione e sottoscrizione sul topic \texttt{/joint\_states} e l'interrogazione dell'albero delle trasformazioni (\texttt{/tf}). A seconda dell'argomento di lancio impostato dall'utente, il sistema si adatta a due diverse topologie di comunicazione (Grafo ROS).
 
+% AA Comando Per Generare Queste Due Immagini
+% BB rqt_graph
+% BB rosrun rqt_graph rqt_graph
 \begin{figure}[htbp] % [htbp] offre in genere una gestione migliore del posizionamento rispetto a [h!]
     \centering
     \begin{subfigure}[b]{0.9\textwidth}
         \centering
         % Se necessario, ripristina il percorso completo: Images/Tesina/rqtGraphWithGUI.png
-        \includegraphics[width=\textwidth]{Images/Tesina/rqtGraphWithGUI.png}
+        \includegraphics[width=\textwidth]{rqtGraphWithGUI.png}
         \caption{Configurazione con interfaccia grafica abilitata (\texttt{gui:=True}).}
         \label{fig:graph_gui}
     \end{subfigure}
@@ -353,7 +356,7 @@ L'interconnessione tra i nodi avviene dinamicamente mediante la pubblicazione e 
     \begin{subfigure}[b]{0.9\textwidth}
         \centering
         % Se necessario, ripristina il percorso completo: Images/Tesina/rqtGraphNoGUI.png
-        \includegraphics[width=\textwidth]{Images/Tesina/rqtGraphNoGUI.png}
+        \includegraphics[width=\textwidth]{rqtGraphNoGUI.png}
         \caption{Configurazione con controllo da terminale (\texttt{gui:=False}).}
         \label{fig:graph_controller}
     \end{subfigure}
@@ -366,7 +369,7 @@ Il robot è descritto in formato \texttt{XACRO} all'interno del file \texttt{man
 
 L'albero cinematico strutturato nel file XML definisce la gerarchia dei corpi rigidi (\textit{Link}) e le limitazioni fisiche dei giunti (\textit{Joint}):
 \begin{itemize}
-    \item \textbf{Giunti Rotatori (\texttt{revolute}):} Definiti per il movimento azimutale della base e ddella spalla, con limiti in radianti.
+    \item \textbf{Giunti Rotatori (\texttt{revolute}):} Definiti per il movimento azimutale della base e di elevazione della spalla, con limiti in radianti.
     \item \textbf{Giunto Prismatico (\texttt{prismatic}):} Configurato per lo scorrimento lineare dell'asta, con limiti di corsa compresi tra $0$ e $l_3$.
     \item \textbf{Giunti Fissi (\texttt{fixed}):} Utilizzati per ancorare stabilmente il manipolatore al terreno (\texttt{world} $\rightarrow$ \texttt{base}) e per posizionare l'end-effector sulla punta dell'asta telescopica (\texttt{RF2} $\rightarrow$ \texttt{endEffector}).
 \end{itemize}
@@ -397,6 +400,8 @@ Il progetto è strutturato come un package ROS standard denominato \texttt{manip
 .3 robotParameters.yaml\DTcomment{Parametri fisici del robot}.
 .2 launch.
 .3 manipolatoreRRP.launch\DTcomment{File di avvio}.
+.2 rviz.
+.3 manipolatoreRRP.rviz\DTcomment{File di configurazione RViz}.
 .2 scripts.
 .3 directKinematics.py\DTcomment{Script per la cinematica diretta}.
 .3 inverseKinematics.py\DTcomment{Script per la cinematica inversa}.
@@ -432,16 +437,15 @@ La logica algoritmica e di controllo del manipolatore è suddivisa in cinque scr
 
     \item \textbf{\texttt{directKinematics.py}:} Implementa l'algoritmo di calcolo della cinematica diretta. Utilizza una tabella di Denavit-Hartenberg basata sui parametri dimensionali del robot per calcolare le matrici omogenee di giunto e ricavare la posa tridimensionale complessiva dell'end-effector rispetto al frame globale \texttt{world}.
 
-    \item \textbf{\texttt{inverseKinematics.py}:} Risolve per via geometrico-analitica il problema cinematico inverso. Ricevuto un target cartesiano $(x, y, z)$ in coordinate mondo, calcola le variabili di giunto $q_1, q_2, q_3$ discriminando le configurazioni a gomito alto (\textit{elbow up}) e gomito basso (\textit{elbow down}) ed escludendo le soluzioni matematiche che superano i limiti fisici del robot.
+    \item \textbf{\texttt{inverseKinematics.py}:} Risolve analiticamente la cinematica inversa. Ricevuto un target cartesiano $(x, y, z)$ in coordinate mondo, calcola le variabili di giunto: per il giunto prismatico seleziona la radice negativa $q_{3N}$, scartando quella positiva $q_{3P}$ poiché fuori dai limiti fisici del giunto. Per il secondo giunto determina le soluzioni corrispondenti alle configurazioni frontale e all'indietro ($q_{2\text{Front}}$ e $q_{2\text{Back}}$), selezionando quella compatibile con i limiti. Inoltre verifica il rispetto dei limiti fisici dei giunti e gestisce la singolarità di spalla (target sull'asse verticale e quindi denominatore vicino a zero), assegnando a $q_1$ il valore di $0$ rad.
 
-    \item \texttt{\textbf{jointController.py}} (Attivo con \texttt{gui:=False}): Costituisce l'interfaccia interattiva a riga di comando per l'utente. Permette di selezionare ciclicamente la modalità di inserimento (cinematica diretta per impostare i giunti, o cinematica inversa per digitare un target cartesiano), esegue i controlli preventivi del workspace tramite la libreria di utilità e aggiorna la visualizzazione in RViz pubblicando i nuovi valori sul topic \texttt{/joint\_states} ad una frequenza di $50$ Hz.
+    \item \texttt{\textbf{jointController.py}} (Attivo con \texttt{gui:=False}): Costituisce l'interfaccia interattiva a riga di comando per l'utente. Permette di selezionare ciclicamente la modalità di inserimento (cinematica diretta per impostare i giunti, o cinematica inversa per digitare un target cartesiano), esegue i controlli preventivi del workspace tramite la libreria di utilità e aggiorna la visualizzazione in RViz pubblicando i nuovi valori sul topic \texttt{/joint\_states} ad una frequenza di $20$ Hz.
 
     \item \texttt{\textbf{tfPrinter.py}} (Attivo con \texttt{gui:=True}): Implementa un TF Listener che interroga l'albero delle trasformazioni ad una frequenza costante di $1$ Hz. Estrae la traslazione e il quaternione di rotazione tra i frame \texttt{world} ed \texttt{endEffector}, li converte in una matrice omogenea di trasformazione $4 \times 4$ e la stampa formattata sul terminale.
 \end{itemize}
 
 
-
-% INIZIO CAPITOLO 3
+% AA CAPITOLO 3
 
 
 \chapter{Modellazione Cinematica Del Manipolatore}
@@ -463,7 +467,7 @@ Nel caso di giunti rotatori, la variabile di giunto è l'angolo \(\theta_i = q_i
     ^{i-1}T_i =
     \begin{pmatrix}
         \cos\theta_i & -\sin\theta_i\cos\alpha_i & \sin\theta_i\sin\alpha_i & a_i\cos\theta_i \\
-        \sin\theta_i & \cos\theta_i\cos\alpha_i & -cos\theta_i\sin\alpha_i & a_i\sin\theta_i \\
+        \sin\theta_i & \cos\theta_i\cos\alpha_i & -\cos\theta_i\sin\alpha_i & a_i\sin\theta_i \\
         0 & \sin\alpha_i & \cos\alpha_i & d_i \\
         0 & 0 & 0 & 1
     \end{pmatrix}
@@ -477,13 +481,13 @@ Applicando questa convenzione al manipolatore RRP in esame, si definisce la tabe
     \resizebox{0.6\textwidth}{!}{
         \begin{tabular}{|c|c|c|c|c|c|}
             \hline
-            \textbf{Trasformazione} & \textbf{\# Link} & \(\bm{\theta_i}\) & \(\bm{d_i}\) & \(\bm{\alpha_i}\) & \(\bm{a_i}\) \\
+            \textbf{Trasformazione} & \textbf{\# Link} & \(\bm{\theta_i}\) & \(\bm{d_i}\) & \(\bm{a_i}\) & \(\bm{\alpha_i}\) \\
             \hline
-            $RF_{0} \to RF_{1}$ & 1 & $q_{1}$ & $d_{1} = 3 r_{g} + l_1$ & $-\frac{\pi}{2}$ & 0 \\
+            $RF_{0} \to RF_{1}$ & 1 & $q_{1}$ & $d_{1} = 2r_g + l_1 + r_g$ & 0 & $-\frac{\pi}{2}$ \\
             \hline
-            $RF_{1} \to RF_{2}$ & 2 & $q_{2}$ & 0 & $\frac{\pi}{2}$ & $a_{2} = r_{g} + l_2 + \frac{b}{2}$ \\
+            $RF_{1} \to RF_{2}$ & 2 & $q_{2}$ & 0 & $a_{2} = r_g + l_2 + \frac{b}{2}$ & $\frac{\pi}{2}$ \\
             \hline
-            $RF_{2} \to RF_{EE}$ & 3 & 0 & $d_{3} = q_3 - \left(l_3 + \frac{b}{2}\right)$ & $-\pi$ & 0\\
+            $RF_{2} \to RF_{EE}$ & 3 & 0 & $d_{3} = q_3 - \left(l_3 + \frac{b}{2}\right)$ & 0 & $-\pi$ \\
             \hline
         \end{tabular}
     }
@@ -494,7 +498,8 @@ Applicando questa convenzione al manipolatore RRP in esame, si definisce la tabe
 \begin{itemize}
     \item \textbf{Giunto 1 e Link 1:} Rappresenta la rotazione azimutale attorno all'asse verticale \(Z_0\). L'offset verticale complessivo \(d_1 = 0.70\) m tiene conto dello sviluppo del cilindro (\(l_1 = 0.55\) m) e del raggio delle sfere di accoppiamento per eliminare discontinuità geometriche. La torsione \(\alpha_1 = -\pi/2\) orienta l'asse \(Z_1\) in direzione ortogonale per il giunto successivo.
     \newpage
-    \item \textbf{Giunto 2 e Link 2:} Costituisce idella spalla del robot. L'asse di rotazione è \(Y_1\) locale. L'estensione orizzontale del braccio \(a_2 = 0.55\) m comprende la lunghezza del link cilindrico (\(l_2 = 0.45\) m), il raggio della sfera di spalla e metà del lato del box prismatico (\(b/2 = 0.05\) m), posizionando l'origine del frame della guida all'estremità fisica del braccio.
+
+    \item \textbf{Giunto 2 e Link 2:} Costituisce il giunto di spalla del robot. Nella convenzione DH la rotazione avviene attorno all'asse \(Z_1\) (reso ortogonale a \(Z_0\) dalla torsione \(\alpha_1 = -\pi/2\)), realizzando il medesimo moto di elevazione/beccheggio che nel modello URDF è descritto attorno all'asse \(Y\) locale. L'estensione orizzontale del braccio \(a_2 = 0.55\) m comprende la lunghezza del link cilindrico (\(l_2 = 0.45\) m), il raggio della sfera di spalla e metà del lato del box prismatico (\(b/2 = 0.05\) m), posizionando l'origine del frame della guida all'estremità fisica del braccio.
 
     \item \textbf{Giunto 3 e Link 3:} Rappresenta lo stelo prismatico scorrevole. Poiché la guida lineare non ruota rispetto al braccio precedente, l'angolo \(\theta_3\) è nullo. L'offset \(d_3\) è guidato dalla coordinata lineare \(q_3\). Quando il giunto si trova a riposo (\(q_3 = 0\)), l'asse si estende completamente verso il basso con un offset negativo pari alla somma della lunghezza dell'asta (\(l_3 = 0.35\) m) e di metà del box di guida (\(b/2 = 0.05\) m), ovvero \(d_3 = -0.40\) m. La torsione \(\alpha_3 = -\pi\) ruota il frame finale di \(180^\circ\) attorno all'asse \(X\) per orientare l'end-effector verso il piano di lavoro.
 \end{itemize}
@@ -522,10 +527,10 @@ Per implementare fedelmente il meccanismo telescopico del giunto prismatico, la 
     <!-- Posizionamento sull'asse della guida cubica all'estremita del braccio -->
     <origin xyz="${jointRadius + l2 + (boxSize/2)} 0 0" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
-    <limit effort="100" velocity="1.0" lower="0" upper="${l3}"/>
+    <limit effort="100" velocity="1.0" lower="${limitMinQ3}" upper="${limitMaxQ3}"/>
 </joint>
 
-<!-- Link 2 (Asta cilindrica prismatica) -->
+<!-- Cilindro Di Scorrimento (Link 3) -->
 <link name="RF2">
     <visual>
         <!-- Spostato in basso di meta box + meta lunghezza link per lo scorrimento -->
@@ -549,14 +554,15 @@ A differenza di una catena cinematica ancorata all'origine, in questo progetto s
     \item \textbf{Base del manipolatore:} Un giunto fisso denominato \texttt{giuntoWorld} fissa il link \texttt{base} a una distanza di $2.0$ metri lungo l'asse $X$ rispetto al frame \texttt{world}, con un orientamento coincidente.
     \item \textbf{Origine della catena mobile (\texttt{RF0}):} Il giunto rotatorio principale \texttt{giunto1} connette la base al primo link mobile della colonna verticale. Esso presenta un offset costante lungo $Z$ pari all'altezza della base stessa (\texttt{baseHeight} = $0.05$ m). La sequenza di frame dinamici si sviluppa pertanto secondo lo schema:
     \[
-        \texttt{world} \xrightarrow{\text{Fisso (2.0, 0, 0)}} \texttt{base} \xrightarrow{\text{giunto1 (0, 0, 0.05)}} \texttt{RF0} \xrightarrow{\text{giunto2}} \texttt{RF1} \xrightarrow{\text{giunto3}} \texttt{RF2}
+        \scalebox{0.87}{$
+        \texttt{world} \xrightarrow[\text{(2.0, 0, 0)}]{\text{giuntoWorld}} \texttt{base} \xrightarrow[\text{(0, 0, 0.05)}]{\text{giunto1}} \texttt{RF0} \xrightarrow[\text{(0, 0, 0.70)}]{\text{giunto2}} \texttt{RF1} \xrightarrow[\text{(0.55, 0, 0)}]{\text{giunto3}} \texttt{RF2} \xrightarrow[\text{(0, 0, -0.40), } R_x(\pi)]{\text{giuntoEE}} \texttt{endEffector}
+        $}
     \]
-    \item \textbf{Frame \texttt{endEffector}:} All'estremità inferiore dell'asta scorrevole \texttt{RF2} è applicato il frame operativo finale tramite il giunto fisso \texttt{giuntoEE}. Questo frame descrive la posa del \textit{Tool Center Point} (TCP) della pinza bidito e ne imposta l'orientamento di $180^\circ$ attorno all'asse $X$, proiettandone l'azione verso il piano del tavolo di lavoro.
+    \item \textbf{Frame \texttt{endEffector}:} All'estremità inferiore dell'asta scorrevole \texttt{RF2} è applicato il frame operativo finale tramite il giunto fisso \texttt{giuntoEE}. Questo frame descrive la posa del centro dell'\textit{End Effector} e ne imposta l'orientamento di $180^\circ$ attorno all'asse $X$, in modo che la pinza sia rivolta verso il piano di lavoro.
 \end{enumerate}
 
 
-
-% INIZIO CAPITOLO 4
+% AA CAPITOLO 4
 
 
 \chapter{Analisi Della Trasformazione Cinematica}
@@ -569,9 +575,10 @@ La validazione analitica e numerica rappresenta una fase fondamentale per assicu
 
 L'acquisizione in tempo reale delle relazioni spaziali tra i frame è implementata nello script \texttt{tfPrinter.py}, il quale sfrutta le classi di comunicazione fornite dalla libreria \texttt{tf2\_ros}. All'interno del nodo viene istanziato un buffer di memoria (\texttt{tf2\_ros.Buffer}) e un listener (\texttt{tf2\_ros.TransformListener}) adibito alla ricezione delle trasformazioni.
 
-Il nodo esegue un loop periodico con una frequenza di aggiornamento pari a $1$ Hz. Ad ogni iterazione, lo script invoca la funzione:
+Il nodo esegue un loop periodico con una frequenza di aggiornamento pari a $1$ Hz. A ogni iterazione, lo script invoca la funzione:
 \begin{lstlisting}[language=Python]
-dataTF = tf_buffer.lookup_transform('world', 'endEffector', rospy.Time(0))
+# In tfPrinter.py: TARGET_FRAME = 'world', SOURCE_FRAME = 'endEffector'
+dataTF = tf_buffer.lookup_transform(TARGET_FRAME, SOURCE_FRAME, rospy.Time(0), rospy.Duration(1.0))
 \end{lstlisting}
 Questa istruzione interroga il sistema TF2 per ricavare la posa del frame \texttt{endEffector} rispetto al frame di riferimento globale \texttt{world}. L'oggetto restituito racchiude i dati geometrici in forma di coordinate cartesiane del vettore di traslazione \((x, y, z)\) e di quaternione unitario di rotazione \((q_x, q_y, q_z, q_w)\).
 
@@ -607,29 +614,17 @@ La validazione numerica del sistema è stata condotta ponendo il manipolatore ne
 All'avvio del sistema tramite il file \texttt{manipolatoreRRP.launch} con interfaccia grafica attiva, i giunti vengono posizionati di default a zero. In questa condizione, lo script \texttt{tfPrinter.py} intercetta la trasformazione spaziale e produce a terminale il seguente output:
 
 \begin{verbatim}
------------------------------------------------------
-Trasformazione Da 'endEffector' a 'world'
+[tfPrinter] -----------------------------------------------------
+[tfPrinter] Trasformazione Da 'endEffector' A 'world':
+[tfPrinter] Timestamp: 1791791903.3231
+[tfPrinter] Posizione End Effector (Traslazione X, Y, Z):  [ 2.5501, 0.0000, 0.3501 ]
+[tfPrinter] Quaternione (Orientamento X, Y, Z, W):  [ 1.0000, -0.0000, 0.0001, 0.0000 ]
 
-Timestamp: 1784553396.6524231
-
-Traslazione (x, y, z):
-         x: 2.5501
-         y: 0.0000
-         z: 0.3501
-
-Quaternione (Rotazione x, y, z, w) :
-         x: 1.0000
-         y: -0.0000
-         z: 0.0001
-         w: 0.0000
-
-Matrice Trasformazione Omogenea world - endEffector:
-
+[tfPrinter] Matrice Trasformazione Omogenea world - endEffector:
 [[ 1.   -0.    0.    2.55]
- [ 0.   -1.   -0.    0.  ]
+ [-0.   -1.   -0.    0.  ]
  [ 0.    0.   -1.    0.35]
  [ 0.    0.    0.    1.  ]]
------------------------------------------------------
 \end{verbatim}
 
 \subsection{Correlazione Analitica Con Il Modello Geometrico}
@@ -640,7 +635,7 @@ Per validare rigorosamente la correttezza della catena cinematica, si confrontan
     ^{world}T_{endEffector} = {^{world}T_{base}} \cdot {^{base}T_0} \cdot {^{0}T_1}(q_1) \cdot {^{1}T_2}(q_2) \cdot {^{2}T_{EE}}(q_3)
 \]
 
-Con i parametri geometrici estratti dal Parameter Server di ROS (\(worldBase = 2.0\) m, \(baseHeight = 0.05\) m, \(d_1 = 0.70\) m, \(a_2 = 0.55\) m, \(d_3 = q_3 - 0.40\) m), si impostano i valori della posa di Home (\(q_1 = q_2 = q_3 = 0\)).
+Utilizzando i parametri geometrici estratti dal Parameter Server di ROS (\(worldBase = 2.0\) m, \(baseHeight = 0.05\) m) e i corrispondenti parametri di Denavit-Hartenberg derivati (\(d_1 = 0.70\) m, \(a_2 = 0.55\) m, \(d_3 = q_3 - 0.40\) m), si impostano i valori della posa di Home (\(q_1 = q_2 = q_3 = 0\)).
 
 Le matrici omogenee elementari assumono la forma:
 \[
@@ -684,14 +679,15 @@ Il confronto tra il calcolo analitico e l'output dello script rivela un allineam
 
 La perfetta corrispondenza tra la formulazione di Denavit-Hartenberg, lo sviluppo fisico in URDF e i valori letti in simulazione valida la correttezza geometrica e lo sviluppo software del manipolatore RRP.
 
-% INIZIO CAPITOLO 4
+
+% AA CAPITOLO 5
 
 
 \chapter{Conclusioni}
 \label{chap:conclusioni}
 
 \section{Sintesi dei Risultati}
-Il lavoro svolto ha conseguito l'obiettivo di realizzare un ecosistema integrato per la modellazione, la simulazione e l'analisi cinematica di un manipolatore antropomorfo a tre gradi di libertà (RRP) con end-effector fisso. L'architettura software sviluppata nel pacchetto ROS \texttt{manipolatoreRRP} ha consentito di strutturare ed eseguire:
+Il lavoro svolto ha conseguito l'obiettivo di realizzare un ecosistema integrato per la modellazione, la simulazione e l'analisi cinematica di un manipolatore a tre gradi di libertà (RRP) con end-effector fisso. L'architettura software sviluppata nel pacchetto ROS \texttt{manipolatoreRRP} ha consentito di strutturare ed eseguire:
 \begin{itemize}
     \item Un \textbf{modello geometrico e visivo parametrico}, implementato in formato URDF tramite macro XACRO, i cui parametri dimensionali sono centralizzati in un file di configurazione YAML per facilitare modifiche strutturali.
     \item Un \textbf{ambiente di simulazione tridimensionale} in RViz, coordinato da un file di avvio condizionale che offre una duplice modalità operativa: un controllo manuale interattivo tramite cursori grafici (\texttt{joint\_state\_publisher\_gui}) oppure un'interfaccia a riga di comando (\texttt{jointController.py}).
@@ -705,30 +701,31 @@ Un contributo significativo in termini di robustezza del codice è rappresentato
 
 A riprova di tale affidabilità, i test eseguiti su coordinate geometricamente non ammissibili (come il punto cartesiano target \([2.4, 0.1, 0.4]^T\) espresso in metri) hanno confermato l'attivazione immediata delle routine di salvaguardia. Nel caso specifico, il sistema ha correttamente intercettato e segnalato una violazione del workspace interno, rilevando che la distanza dal giunto di spalla (\(0.5408\) m) risultava inferiore al limite fisico minimo consentito (\(0.5523\) m), bloccando di conseguenza il calcolo numerico ed evitando l'insorgenza di output indeterminati.
 
-L'integrazione dell'analisi delle singolarità geometriche tramite lo studio in tempo reale del determinante Jacobiano (\(J\)) completa lo spettro di sicurezza del controllore, allertando l'operatore in caso di allineamento critico dei giunti o di corsa lineare in prossimità dello zero (\(d_3 \to 0\)).
+L'integrazione dell'analisi delle singolarità geometriche tramite lo studio in tempo reale del determinante Jacobiano (\(\det(J)\)) completa lo spettro di sicurezza del controllore, allertando l'utente in caso di singolarità di spalla (raggio orizzontale nullo, \(d_3 \sin(q_2) + a_2 \cos(q_2) \to 0\)) o di singolarità prismatica (\(d_3 \to 0\)).
 \newpage
 \section{Prospettive di Sviluppo Futuro}
 L'infrastruttura cinematico-funzionale realizzata costituisce un punto di partenza consolidato per futuri ampliamenti e sviluppi del manipolatore robotico. Le attività di ricerca e implementazione successive potranno focalizzarsi su:
 \begin{itemize}
-    \item \textbf{Generazione e Interpolazione di Traiettorie:} Sviluppo di algoritmi di pianificazione del moto nello spazio dei giunti (ad esempio tramite splines cubiche o quintiche) per garantire transizioni di velocità e accelerazione continue, riducendo le sollecitazioni dinamiche sugli attuatori durante il passaggio tra punti cartesiani target.
+    \item \textbf{Generazione e Interpolazione di Traiettorie:} Sviluppo di algoritmi di pianificazione del moto nello spazio dei giunti per garantire transizioni di velocità e accelerazione continue, riducendo le sollecitazioni dinamiche sugli attuatori durante il passaggio tra punti cartesiani target.
 
-    \item \textbf{Simulazione Fisica Dinamica:} Integrazione del modello parametrico all'interno del simulatore \texttt{Gazebo}. Questo passo consentirà di estendere l'analisi oltre la pura geometria, abilitando lo studio delle equazioni della dinamica, l'applicazione di forze esterne e la calibrazione di controllori industriali ad anello chiuso (come i regolatori PID) per la gestione della coppia ai giunti.
+    \item \textbf{Simulazione Fisica Dinamica:} Integrazione del modello parametrico all'interno del simulatore \texttt{Gazebo}. Questo passo consentirà di estendere l'analisi oltre la pura geometria, abilitando lo studio delle equazioni della dinamica, l'applicazione di forze esterne e la calibrazione di controllori industriali ad anello chiuso per la gestione della coppia ai giunti.
 \end{itemize}
 
 \appendix
+
 
 \chapter{Appendice}
 \section{Guida Per L'Avvio Del Pacchetto}
 \label{sec:guida_avvio}
 
-Prima di procedere con l'installazione e l'esecuzione del pacchetto, è necessario assicurarsi che all'interno dell'ambiente del container Docker siano soddisfatti i seguenti requisiti:
+Prima di procedere con l'esecuzione del pacchetto, è necessario disporre di un ambiente Linux (installazione nativa, macchina virtuale, sottosistema WSL2 o container) con i seguenti requisiti soddisfatti:
 \begin{itemize}
-    \item Una distribuzione Linux attiva con installazione funzionante di \textbf{ROS Noetic}.
+    \item Una distribuzione Linux (consigliata Ubuntu 20.04 LTS) con installazione funzionante di \textbf{ROS Noetic}.
     \item Un \textbf{Catkin Workspace} inizializzato nella home directory (\texttt{\textasciitilde/catkin\_ws/}). Qualora non fosse presente, è possibile crearlo tramite la sequenza di comandi:
     \begin{lstlisting}[language=bash]
-mkdir -p ~/catkin_ws/src
-cd ~/catkin_ws/
-catkin_make
+    mkdir -p ~/catkin_ws/src
+    cd ~/catkin_ws/
+    catkin_make
     \end{lstlisting}
 \end{itemize}
 
@@ -740,20 +737,23 @@ La procedura per integrare e compilare il pacchetto \texttt{manipolatoreRRP} si 
 
     \item \textbf{Configurazione dei Permessi:} Per garantire che gli script Python dedicati alla cinematica e al controllo vengano identificati ed eseguiti correttamente dai nodi di ROS, è necessario concedere i permessi di esecuzione digitando:
     \begin{lstlisting}[language=bash]
-chmod +x ~/catkin_ws/src/manipolatoreRRP/scripts/*.py
+    chmod +x ~/catkin_ws/src/manipolatoreRRP/scripts/*.py
     \end{lstlisting}
 
     \item \textbf{Compilazione del Workspace:} Posizionarsi alla radice del workspace e avviare il processo di compilazione tramite \texttt{catkin\_make}:
     \begin{lstlisting}[language=bash]
-cd ~/catkin_ws
-catkin_make
+    cd ~/catkin_ws
+    catkin_make
     \end{lstlisting}
 
     \item \textbf{Sourcing dell'Ambiente:} Registrare le variabili d'ambiente del workspace per rendere il nuovo pacchetto rintracciabile dal sistema ROS:
     \begin{lstlisting}[language=bash]
-source ~/catkin_ws/devel/setup.bash
+    source ~/catkin_ws/devel/setup.bash
     \end{lstlisting}
-    \textit{Nota: Per rendere permanente questa associazione ad ogni apertura di un nuovo terminale, è possibile accodare il comando al file \texttt{.bashrc} tramite l'istruzione \texttt{echo "source \textasciitilde/catkin\_ws/devel/setup.bash" >> \textasciitilde/.bashrc}.}
+    Per rendere permanente questa associazione ad ogni apertura di un nuovo terminale, è possibile utilizzare il comando
+    \begin{lstlisting}[language=bash]
+    echo "source ~/catkin_ws/devel/setup.bash" >> ~/.bashrc
+    \end{lstlisting}
 \end{enumerate}
 
 \newpage
@@ -779,9 +779,9 @@ roslaunch manipolatoreRRP manipolatoreRRP.launch gui:=False
 
 In questa configurazione, la finestra degli slider e lo script \texttt{tfPrinter.py} non verranno caricati. Al loro posto, all'interno del terminale, si avvierà il nodo interattivo \texttt{jointController.py}, il quale guiderà l'utente attraverso un menu a scelta multipla:
 \begin{enumerate}
-    \item \textbf{Cinematica Diretta (\texttt{diretta}):} Permette di inserire manualmente i valori desiderati per i giunti (\(q_1\) in radianti, \(q_2\) in radianti, \(q_3\) in metri). Il programma applicherà i controlli di saturazione geometrica, aggiornerà istantaneamente la posa del manipolatore 3D in RViz e stamperà a schermo la matrice omogenea globale risultante.
+    \item \textbf{Cinematica Diretta (\texttt{diretta}):} Permette di inserire manualmente i valori desiderati per i giunti (\(q_1\) in radianti, \(q_2\) in radianti, \(q_3\) in metri). Il programma controlla che i valori inseriti siano validi e rientrino nei limiti consentiti, aggiorna la posa del manipolatore in RViz tramite interpolazione lineare a 20 Hz e stampa a schermo le coordinate cartesiane $(X, Y, Z)$, la matrice di trasformazione omogenea e il valore del determinante Jacobiano (con un messaggio che indica se la configurazione è sicura oppure vicina a una singolarità).
 
-    \item \textbf{Cinematica Inversa (\texttt{inversa}):} Consente di digitare le coordinate cartesiane target \((X, Y, Z)\) in metri per l'end-effector. Lo script verificherà preventivamente se il punto si trova all'interno del workspace operativo. In caso positivo, calcolerà la terna di valori di giunto associata (discriminando la soluzione di gomito idonea), verificherà la vicinanza a singolarità calcolando il determinante Jacobiano e aggiornerà la posa del modello in RViz.
+    \item \textbf{Cinematica Inversa (\texttt{inversa}):} Consente di digitare le coordinate cartesiane target \((X, Y, Z)\) in metri per l'end-effector. Lo script verifica preventivamente se il punto si trova all'interno del workspace operativo ammissibile. In caso positivo, calcola la terna di valori di giunto associata, aggiorna la posa del modello in RViz tramite interpolazione a 20 Hz e stampa a schermo i valori angolari e lineari ricavati, la matrice di trasformazione omogenea e il determinante Jacobiano con il relativo stato di singolarità.
 
     \item \textbf{Uscita (\texttt{esci}):} Interrompe in sicurezza l'esecuzione dei nodi ROS e chiude l'applicazione.
 \end{enumerate}
