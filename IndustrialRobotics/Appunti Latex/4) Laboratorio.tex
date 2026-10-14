@@ -63,23 +63,25 @@
 
 \author{Francesco Lo Verde}
 \begin{document}
-\section{Introduzione alla Percezione nei Sistemi Robotici}
 
-In natura, ogni organismo vivente adatta il proprio comportamento e garantisce la propria sopravvivenza grazie alla continua percezione dell'ambiente circostante e del proprio stato interno. Tale flusso percettivo è mediato da organi sensoriali altamente specializzati (occhi, orecchie, terminazioni tattili, recettori chimici olfattivi e gustativi, oltre ai fusi neuromuscolari responsabili della propriocezione biologica). Da una prospettiva biofisica, gli stimoli fisici esterni (fotoni, gradienti di pressione acustica, forze meccaniche, concentrazioni chimiche) vengono convertiti in segnali elettrochimici. L'informazione viene codificata sotto forma di treni di impulsi elettrici (potenziali d'azione) guidati dal trasporto di ioni lungo le membrane degli assoni. Un esempio paradigmatico è il nervo ottico umano, il quale trasferisce alla corteccia visiva, con una frequenza di scarica opportunamente modulata, l'energia luminosa catturata e trasdotta dai fotorecettori retinici.
+% AA Parte 1 - Sistemi Di Misura E Sensori Per La Robotica
+\section{Introduzione Alla Percezione Nei Sistemi Robotici}
 
-Nell'ambito della robotica industriale e avanzata, l'obiettivo tecnologico è replicare tale architettura percettiva mediante dispositivi artificiali: i \textbf{sensori}. Un manipolatore robotico operante in una cella di lavoro industriale non può limitarsi all'esecuzione cieca (\textit{open-loop}) di sequenze preprogrammate: per operare in sicurezza, compensare tolleranze geometriche, interagire elasticamente con gli elementi circostanti e correggere derive cinematiche e dinamiche, esso necessita di ``sensi artificiali''.
+In natura, ogni organismo vivente adatta il proprio comportamento e garantisce la propria sopravvivenza grazie alla continua percezione dell'ambiente circostante e del proprio stato interno. Tale flusso percettivo è mediato da organi sensoriali altamente specializzati (occhi, orecchie e terminazioni tattili responsabili della propriocezione). Biologicamente, gli stimoli fisici esterni (ad esempio luce o forze meccaniche) vengono convertiti in segnali. L'informazione viene codificata sotto forma di impulsi elettrici guidati dal trasporto. Un esempio è il nervo ottico umano, il quale trasferisce alla corteccia visiva, con una frequenza di scarica opportunamente modulata, l'energia luminosa catturata e trasdotta dai recettori.
 
-Sorge dunque spontaneo il parallelo formale: qual è la controparte robotica dei sensi biologici? La risposta tecnologica risiede in una vasta ed eterogenea gamma di sistemi e dispositivi di misura progettati per rilevare, quantificare e convertire grandezze fisiche cardinali:
+Nell'ambito della robotica, l'obiettivo tecnologico è replicare tale architettura percettiva mediante dispositivi artificiali: i \textbf{sensori}. Un manipolatore robotico operante in una cella di lavoro industriale non può limitarsi all'esecuzione cieca (\textit{open-loop}) di sequenze preprogrammate: per operare in sicurezza, compensare tolleranze geometriche, interagire con gli elementi circostanti e correggere derive cinematiche e dinamiche, esso necessita di "sensi artificiali".
+
+La controparte robotica dei sensi biologici sono vari sistemi e dispositivi di misura progettati per rilevare, quantificare e convertire grandezze fisiche cardinali:
 \begin{itemize}
-    \item la visione biologica trova corrispondenza in camere ottiche matriciali, stereoscopiche e sensori di profondità (LIDAR, camere RGB-D);
-    \item il tatto e la propriocezione articolare trovano corrispondenza negli encoder ottici montati sugli assi, nelle celle di carico, nelle matrici tattili e nei sensori di coppia ai giunti;
-    \item l'udito e la percezione ad ultrasuoni sono emulati mediante trasduttori piezoelettrici (sonar) e microfoni dedicati al monitoraggio acustico predittivo;
+    \item la visione biologica trova corrispondenza in camere ottiche, stereoscopiche e sensori di profondità (LIDAR o camere RGB-D);
+    \item il tatto e la propriocezione articolare trovano corrispondenza negli encoder ottici montati sugli assi e nei sensori di coppia ai giunti;
+    \item l'udito e la percezione sono emulati mediante trasduttori piezoelettrici (sonar) e microfoni dedicati al monitoraggio acustico predittivo;
     \item parametri ambientali e di processo (temperatura degli avvolgimenti dei motori, gradienti termici dell'ambiente operativo) sono monitorati tramite dispositivi a variazione di resistenza o a potenziale termoelettrico.
 \end{itemize}
 
-\section{Dispositivi di Misura e Definizioni Fondamentali}
+\section{Dispositivi Di Misura E Definizioni Fondamentali}
 
-\subsection{Esempio Pratico: La Misura della Temperatura}
+\subsection{Esempio Pratico: La Misura Della Temperatura}
 \label{subsec:misura_temperatura}
 
 Per comprendere a fondo la diversità tecnologica, i livelli di astrazione e le peculiarità dei sistemi di misura, è utile esaminare una grandezza scalare fondamentale: la \textbf{temperatura}. Essa rappresenta la misura dell'energia cinetica media associata al moto microscopico disordinato delle particelle di un corpo. Nonostante l'unicità concettuale della grandezza fisica da stimare (il \textit{misurando}), esistono molteplici strumenti ingegneristici per quantificarla, ciascuno basato su differenti leggi fisiche di accoppiamento.
@@ -102,7 +104,7 @@ Osservando la Figura~\ref{fig:termometri}, notiamo dispositivi radicalmente diss
 
 Questi dispositivi possono essere raggruppati in tre classi tassonomiche principali:
 
-\subsubsection*{1. Dispositivi Tradizionali Meccanico-Fluido-Dinamici (Termometri a dilatazione e galileiani)}
+\subsubsection*{Dispositivi Tradizionali Meccanico-Fluido-Dinamici (Termometri A Dilatazione E Galileiani)}
 \begin{itemize}
     \item \textbf{Stima Diretta:} Forniscono una lettura visiva immediata della grandezza fisica tramite lo spostamento di un indice o il menisco di un liquido.
     \item \textbf{Autonomia Energetica:} Non necessitano di alimentatori elettrici esterni per compiere la conversione; l'energia necessaria allo spostamento meccanico viene interamente estratta dal gradiente termico tra l'ambiente e il sensore.
@@ -110,21 +112,21 @@ Questi dispositivi possono essere raggruppati in tre classi tassonomiche princip
     \item \textbf{Scala di Riferimento Incorporata:} La conversione in unità metrologica è garantita geometricamente dalla serigrafia di una scala graduata (es. in $\si{\celsius}$ o $\si{\kelvin}$).
 \end{itemize}
 
-\subsubsection*{2. Sensori Discreti a Uscita Elettrica (PT100, NTC, Termocoppie)}
+\subsubsection*{Sensori Discreti A Uscita Elettrica (PT100, NTC, Termocoppie)}
 \begin{itemize}
     \item \textbf{Uscita non Direttamente Fruibile:} Il componente isolato non offre all'operatore alcuna indicazione visiva dello stato termico.
     \item \textbf{Necessità di Circuiti Ausiliari:} Per estrarre l'informazione occorre polarizzare il componente tramite circuiti appositi (ad esempio ponti di Wheatstone per la PT100 o partitori di tensione resistivi per gli NTC), seguiti da stadi di amplificazione differenziale e convertitori analogico-digitali (ADC).
     \item \textbf{Natura Elettrica del Segnale:} La variazione termica viene codificata in una modulazione di impedenza ($\Delta R(T)$) o di tensione termoelettrica ($\Delta V(T)$, come accade nelle giunzioni bimetalliche delle termocoppie per effetto Seebeck). Tale formato è ideale per l'interfacciamento con microcontrollori e PLC industriali.
 \end{itemize}
 
-\subsubsection*{3. Strumenti e Sistemi di Controllo Integrati (Termometri digitali e termoregolatori)}
+\subsubsection*{Strumenti E Sistemi Di Controllo Integrati (Termometri Digitali E Termoregolatori)}
 \begin{itemize}
     \item \textbf{Stima Diretta ed Elaborata:} Presentano l'informazione in chiaro su un'interfaccia numerica (display a 7 segmenti o LCD) già convertita nell'unità di misura selezionata.
     \item \textbf{Architettura a Più Livelli:} Pur basando il rilievo primario su un elemento trasduttore interno o esterno (es. sonda PT100 cablata sul retro del regolatore OMRON), il dispositivo esegue calcoli di compensazione, linearizzazione matematica e filtraggio digitale.
     \item \textbf{Attuazione Integrata:} Come nel caso del termoregolatore industriale, lo strumento non si limita alla misura, ma calcola l'azione di controllo (es. tramite un anello PID digitale) per pilotare relè statici (SSR) o valvole regolatrici.
 \end{itemize}
 
-\subsection{Definizione Formale di Sistema di Misura}
+\subsection{Definizione Formale Di Sistema Di Misura}
 
 In prima approssimazione, un sistema di misura può essere concettualizzato come una \textbf{scatola nera} (\textit{Black Box}) che accetta in ingresso una quantità fisica da quantificare, definita \textbf{misurando} $x(t)$, e restituisce all'uscita un valore quantificato $y(t)$ che rappresenta la miglior stima possibile del valore assunto da $x(t)$.
 
@@ -149,7 +151,7 @@ L'architettura funzionale comprende tre blocchi sequenziali fondamentali:
     \item \textbf{Elaborazione del Segnale (\textit{Signal Processing}):} Riceve il segnale condizionato e ne estrae il valore informativo finale. Nei sistemi industriali moderni, questo stadio è dominato dalla conversione Analogico/Digitale (ADC), che campiona nel tempo e quantizza in ampiezza il segnale analogico, inviando il dato al processore di bordo (DSP, FPGA, scheda di controllo del robot) per la stima numerica dello stato.
 \end{enumerate}
 
-\subsection{Distinzione Concettuale: Sensore vs Trasduttore vs Attuatore}
+\subsection{Distinzione Concettuale: Sensore Vs Trasduttore Vs Attuatore}
 
 Nel gergo tecnico i termini ``sensore'' e ``trasduttore'' vengono talvolta impiegati in modo intercambiabile. Tuttavia, in metrologia e robotica industriale essi rivestono significati rigorosi e differenziati:
 
@@ -171,7 +173,7 @@ Il principio di reversibilità energetica stabilisce che la trasduzione può rea
 
 Quando un trasduttore opera in questo verso per produrre una forza, una coppia o un moto cinematico controllato, esso assume la denominazione fondamentale di \textbf{attuatore}. In un braccio robotico, un servomotore sincrono a magneti permanenti (\textit{brushless} DC) è a tutti gli effetti un trasduttore elettromeccanico: trasforma la potenza elettrica modulata da un inverter in potenza meccanica di rotazione ($\tau \cdot \omega$) sull'albero del giunto.
 
-\subsection{Il Confine tra Sensore e Trasduttore nella Pratica Meccatronica}
+\subsection{Il Confine Tra Sensore E Trasduttore Nella Pratica Meccatronica}
 
 La linea di demarcazione tra sensore e trasduttore è talvolta sottile e dipende dalla scala di osservazione del componente all'interno del sottosistema:
 \begin{enumerate}
@@ -180,7 +182,7 @@ La linea di demarcazione tra sensore e trasduttore è talvolta sottile e dipende
     \item \textbf{I trasduttori possono poggiare su sensori elementari nella loro catena interna:} Una moderna \textbf{cella di carico} per la misura di forza in un polso robotico è classificata funzionalmente come un trasduttore di forza in tensione. Al suo interno, il corpo elastico di prova si deforma sotto carico; su di esso sono incollati estensimetri a resistenza elettrica, che agiscono da sensori microscopici di deformazione elastica superficiale ($\Delta L / L$). Il segnale viene poi convertito dal ponte circuitale in una tensione leggibile.
 \end{enumerate}
 
-\section{Caratteristiche Fondamentali dei Sensori}
+\section{Caratteristiche Fondamentali Dei Sensori}
 
 Le prestazioni e i limiti operativi di qualsiasi dispositivo di misura impiegato in ambito robotico vengono riassunti attraverso due categorie essenziali: le \textbf{caratteristiche statiche} e le \textbf{caratteristiche dinamiche}.
 
@@ -188,7 +190,7 @@ Le prestazioni e i limiti operativi di qualsiasi dispositivo di misura impiegato
 
 Le caratteristiche statiche descrivono il comportamento del sensore quando il misurando è costante nel tempo oppure evolve con dinamiche talmente lente da poter trascurare qualsiasi fenomeno transitorio derivante dall'inerzia del sistema. Tali parametri si ricavano dopo che l'uscita ha raggiunto la condizione di regime stazionario.
 
-\subsubsection{Accuratezza e Precisione}
+\subsubsection{Accuratezza E Precisione}
 
 I termini accuratezza e precisione non sono sinonimi; la loro netta distinzione concettuale è alla base della metrologia moderna:
 \begin{description}
@@ -210,7 +212,7 @@ Facendo riferimento all'analogia del bersaglio di Figura~\ref{fig:accuratezza_pr
     \item Il sensore \#3 concentra tutte le misurazioni esattamente nel cerchio centrale: il sistema è simultaneamente preciso e accurato, configurandosi come la soluzione ideale per anelli di controllo chiusi.
 \end{itemize}
 
-\subsubsection{Risoluzione e Sensitività}
+\subsubsection{Risoluzione E Sensitività}
 
 \begin{description}
     \item[Risoluzione (\textit{Resolution}):] Rappresenta il minimo incremento rilevabile $\Delta x_{\min}$ della grandezza d'ingresso in grado di provocare una variazione percettibile e misurabile nel segnale di uscita del sensore. In un encoder digitale a 12 bit su un asse rotativo continuo ($2\pi$), la risoluzione angolare teorica è pari a:
@@ -225,7 +227,7 @@ Facendo riferimento all'analogia del bersaglio di Figura~\ref{fig:accuratezza_pr
 \end{description}
 Qualora il sensore possieda una curva caratteristica perfettamente rettilinea ($y = K x + y_0$), la sensitività è costante sull'intero campo di lavoro e coincide con il coefficiente angolare $K$. In sensori reali, superata una certa soglia dell'ingresso, il dispositivo esibisce fenomeni di non linearità marcata fino alla \textbf{saturazione}, zona in cui la derivata $df/dx \to 0$, annullando la capacità del dispositivo di apprezzare ulteriori incrementi del misurando.
 
-\subsubsection{Intervallo di Misurazione (\textit{Range} e \textit{Span})}
+\subsubsection{Intervallo Di Misurazione (\textit{Range} E \textit{Span})}
 
 Il \textbf{range} (o intervallo di lavoro) specifica l'intervallo compreso tra il valore minimo $x_{\min}$ e il valore massimo $x_{\max}$ del misurando entro cui il sensore opera rispettando le specifiche metrologiche dichiarate dal costruttore:
 \[
@@ -237,7 +239,7 @@ Lo \textbf{span} (o fondo scala, \textit{Full Scale Output} - FSO) rappresenta l
 \end{equation}
 Applicare al sensore sollecitazioni superiori a $x_{\max}$ può generare anomalie reversibili di non linearità oppure, nel caso di sensori di forza o deformazione, provocare deformazioni plastiche o rotture distruttive del trasduttore interno.
 
-\subsubsection{Ripetibilità e Riproducibilità}
+\subsubsection{Ripetibilità E Riproducibilità}
 
 Entrambi i parametri valutano la consistenza statistica del dispositivo nel riprodurre il medesimo output a fronte dello stesso ingresso, ma divergono per le condizioni operative al contorno:
 \begin{description}
@@ -245,7 +247,7 @@ Entrambi i parametri valutano la consistenza statistica del dispositivo nel ripr
     \item[Riproducibilità (\textit{Reproducibility}):] Grado di concordanza tra i risultati delle misure della medesima quantità fisica quando la stima viene condotta introducendo deliberatamente elementi di variabilità nelle condizioni ambientali e strumentali (laboratori diversi, operatori differenti, cicli di montaggio/smontaggio meccanico su manipolatori differenti, fluttuazioni termiche stagionali).
 \end{description}
 
-\subsubsection{Stabilità, Deriva ed Errore di Misura}
+\subsubsection{Stabilità, Deriva Ed Errore Di Misura}
 
 \begin{description}
     \item[Stabilità (\textit{Stability}):] Attitudine di un sensore a mantenere inalterate le proprie caratteristiche metrologiche (sensitività, guadagno, offset di zero) su un orizzonte temporale esteso (mesi o anni di servizio continuativo in linea di produzione).
@@ -264,7 +266,7 @@ Gli errori si scompongono tassonomicamente in:
     \item \textbf{Errori Casuali:} Fluttuazioni ad andamento stocastico, provocate da micro-fenomeni ambientali o quantistici non prevedibili singolarmente, trattabili esclusivamente con tecniche di inferenza statistica (media, filtraggio di Kalman).
 \end{itemize}
 
-\subsubsection{Rumore nei Sistemi di Misura e Rapporto Segnale-Rumore (SNR)}
+\subsubsection{Rumore Nei Sistemi Di Misura E Rapporto Segnale-Rumore (SNR)}
 
 Si definisce \textbf{rumore} (\textit{noise}) qualsiasi segnale spuriamente sommato o moltiplicato all'uscita utile, generato da cause indipendenti dalla variazione del misurando. Per quantificare la purezza di una misura si impiega il \textbf{Rapporto Segnale-Rumore} (\textit{Signal-to-Noise Ratio}, SNR):
 \begin{equation}
@@ -316,7 +318,7 @@ dove solitamente, per garantire la causalità fisica, si ha $n \ge m$. Applicand
     G(s) = \frac{Y(s)}{X(s)} = \frac{\sum_{j=0}^m b_j s^j}{\sum_{i=0}^n a_i s^i}
 \end{equation}
 
-\subsubsection{Classificazione per Ordini Dinamici}
+\subsubsection{Classificazione Per Ordini Dinamici}
 
 \paragraph{1. Sensori di Ordine Zero}
 Rappresentano sistemi privi di elementi di accumulo energetico (oppure operanti a frequenze tali per cui l'effetto dinamico è completamente trascurabile). L'equazione differenziale degenera in una pura relazione algebrica:
@@ -399,7 +401,7 @@ In un sensore del primo ordine, la banda passante è legata biunivocamente alla 
 \end{equation}
 Nel controllo dei robot, la banda passante dei sensori articolari (es. encoder) deve superare di almeno un ordine di grandezza la frequenza naturale della cinematica meccanica e la frequenza di taglio degli anelli di controllo in corrente/coppia, onde scongiurare pericolosi sfasamenti che potrebbero instabilizzare la catena chiusa di retroazione.
 
-\section{Classificazione dei Sensori per la Robotica Industriale}
+\section{Classificazione Dei Sensori Per La Robotica Industriale}
 
 Nell'architettura meccatronica di un manipolatore o di un veicolo a guida autonoma (AGV/AMR), i sensori si articolano in due macro-categorie funzionali distinte: sensori \textbf{propriocettivi} e sensori \textbf{esterocettivi}.
 
@@ -429,7 +431,7 @@ I sensori propriocettivi forniscono le variabili di stato interne del manipolato
     \item l'implementazione del controllo di posizione e degli algoritmi dinamici a coppia calcolata (\textit{computed torque control}).
 \end{itemize}
 
-\subsubsection{Sensori di Posizione Angolare: Gli Encoder Ottici}
+\subsubsection{Sensori Di Posizione Angolare: Gli Encoder Ottici}
 
 L'encoder ottico è il trasduttore primario montato sull'asse dei servomotori o a valle dei riduttori articolari. Esso trasforma il moto angolare dell'albero in una sequenza temporizzata di treni di impulsi digitali.
 
@@ -508,7 +510,7 @@ I sensori esterocettivi acquisiscono grandezze fisiche generate dall'interazione
     \item gestire lavorazioni di precisione a contatto vincolato (sbavatura, lucidatura, assemblaggio) che richiedono il controllo dell'adattanza meccanica (\textit{compliance}) o dell'impedenza.
 \end{itemize}
 
-\subsubsection{Estensimetri e Sensori di Forza/Coppia (\texorpdfstring{$F/T$}{F/T})}
+\subsubsection{Estensimetri E Sensori Di Forza/Coppia (\texorpdfstring{$F/T$}{F/T})}
 
 L'\textbf{estensimetro a resistenza elettrica} (\textit{strain gauge}) è il trasduttore cardine per la misura delle deformazioni meccaniche elastiche. È costituito da una sottile griglia a serpentina in lega metallica (es. Costantana, $\text{Cu}_{55}\text{Ni}_{45}$) incollata su un film di supporto isolante (poliammide).
 
@@ -544,7 +546,7 @@ Più ponti estensimetrici montati su flangie calibrate rilevano contemporaneamen
 \end{equation}
 Questa informazione vettoriale consente l'applicazione delle leggi di controllo ibrido forza/posizione e degli algoritmi di assemblaggio compliant (es. montaggio albero-foro senza impuntamenti).
 
-\subsubsection{Sensori di Prossimità e Misura di Distanza}
+\subsubsection{Sensori Di Prossimità E Misura Di Distanza}
 
 Questi apparati stimano la distanza geometrica euclidea $d$ o segnalano l'ingresso di un oggetto estraneo entro una determinata zona d'azione:
 \begin{itemize}
@@ -560,9 +562,9 @@ Questi apparati stimano la distanza geometrica euclidea $d$ o segnalano l'ingres
 
 \newpage
 
-% AA PARTE II - ARCHITETTURA DEL SISTEMA ROBOTICO
+% AA Parte 2 -Architettura Dei Sistemi Robotici E Unità Meccaniche
 
-\section{Architettura e Schematizzazione Funzionale di un Sistema Robotico Industriale}
+\section{Architettura E Schematizzazione Funzionale Di Un Sistema Robotico Industriale}
 
 Un manipolatore robotico industriale o una piattaforma mobile avanzata costituisce un sistema meccatronico cibernetico complesso, orientato all'esecuzione affidabile, rapida e ripetibile di compiti assegnati all'interno di un ambiente operativo parzialmente o totalmente strutturato.
 
@@ -592,7 +594,7 @@ Il numero totale di coordinate articolari indipendenti definisce il numero di \t
     \item l'organo terminale (\textit{end-effector}), costituito da pinze di presa pneumatiche o elettromeccaniche, torce di saldatura, mandrini di fresatura o teste laser.
 \end{itemize}
 
-\subsection{Unità di Attuazione (\textit{Actuation Unit})}
+\subsection{Unità Di Attuazione (\textit{Actuation Unit})}
 Rappresenta l'apparato muscolare del sistema, responsabile della generazione dell'energia cinetica e delle coppie articolari $\boldsymbol{\tau}$ atte a vincere le forze gravitazionali, d'inerzia, centrifughe e di Coriolis descritte dall'equazione della dinamica del robot:
 \begin{equation}
     \boldsymbol{M}(\boldsymbol{q})\ddot{\boldsymbol{q}} + \boldsymbol{C}(\boldsymbol{q},\dot{\boldsymbol{q}})\dot{\boldsymbol{q}} + \boldsymbol{g}(\boldsymbol{q}) = \boldsymbol{\tau} - \boldsymbol{\tau}_{\text{ext}}
@@ -612,7 +614,7 @@ Rappresenta il sistema periferico afferente del robot, integrando le due famigli
     \item i sensori \textbf{esterocettivi} (camere stereoscopiche industriali, profilometri laser, sensori F/T a 6 assi montati sulla flangia) forniscono informazioni sull'interazione del robot con l'ambiente esterno e sulla posizione relativa dei pezzi da manipolare.
 \end{itemize}
 
-\subsection{Unità di Controllo (\textit{Control Unit})}
+\subsection{Unità Di Controllo (\textit{Control Unit})}
 È il cervello computazionale del sistema robotico, tipicamente allocato all'interno di un armadio elettrico industriale cablato a bordo isola. L'hardware è strutturato su architetture a microprocessore real-time (IPC industriali o DSP ad elevate prestazioni) che eseguono sistemi operativi ad alta determinazione temporale (RTOS, con jitter dell'ordine del microsecondo).
 
 I task fondamentali eseguiti al suo interno sono:
@@ -626,7 +628,7 @@ I task fondamentali eseguiti al suo interno sono:
     \item \textbf{Algoritmi di Controllo in Anello Chiuso:} Moduli PID digitali decentralizzati o schemi a dinamica inversa non lineare che calcolano le tensioni/coppie di comando da inviare all'Unità di Attuazione per minimizzare l'errore di inseguimento $\boldsymbol{e}(t) = \boldsymbol{q}_d(t) - \boldsymbol{q}(t)$.
 \end{enumerate}
 
-\subsection{Unità di Supervisione (\textit{Supervision Unit})}
+\subsection{Unità Di Supervisione (\textit{Supervision Unit})}
 Rappresenta il livello gerarchico superiore di decisione, monitoraggio e pianificazione del compito (\textit{Task Planning}). Può risiedere interamente all'interno della Control Unit o trovarsi dislocata su un server centrale di fabbrica collegato tramite bus di campo deterministici (EtherCAT, PROFINET) o reti wireless industriali.
 
 Essa espleta le seguenti funzioni:
@@ -636,7 +638,7 @@ Essa espleta le seguenti funzioni:
     \item \textbf{Gestione della Sicurezza e Interblocchi di Cella:} Sorveglianza hardware integrata (\textit{Safety Controller} certificato SIL3/PLe) che monitora costantemente barriere ottiche immateriali, funghi d'emergenza ed arresti di categoria 0, 1 o 2 secondo le normative ISO 10218 e ISO/TS 15066 per la robotica cooperativa.
 \end{itemize}
 
-\section{L'Unità Meccanica: Cinematica e Tipologie di Robot Industriali}
+\section{L'Unità Meccanica: Cinematica E Tipologie Di Robot Industriali}
 
 L'Unità Meccanica (\textit{Mechanical Unit}) costituisce lo scheletro fisico del sistema robotico. Essa è deputata a sostenere i carichi operativi, a guidare il moto dell'organo terminale (\textit{end-effector}) nello spazio cartesiano e a garantire la rigidezza strutturale e la precisione di posizionamento richieste dal ciclo di lavoro.
 
@@ -650,7 +652,7 @@ La sequenza ordinata e la disposizione geometrica reciproca degli assi dei giunt
 
 Nel panorama industriale odierno, quattro architetture cinematiche coprono la quasi totalità delle applicazioni operative: i robot articolati (antropomorfi), i robot SCARA, i robot paralleli (Delta) e i robot cartesiani.
 
-\subsection{Robot Articolato o Antropomorfo (\textit{Articulated Robot})}
+\subsection{Robot Articolato O Antropomorfo (\textit{Articulated Robot})}
 
 Il robot articolato è l'architettura più versatile e largamente impiegata nella produzione industriale. La configurazione standard è una catena cinematica aperta di tipo interamente rotoidale (solitamente indicata come sequenza $6\text{R}$), progettata per emulare le capacità motorie del braccio umano:
 \begin{itemize}
@@ -660,7 +662,7 @@ Il robot articolato è l'architettura più versatile e largamente impiegata nell
 
 I manipolatori antropomorfi commerciali presentano tipicamente $6$ DOF, che rappresentano il numero minimo per garantire la completa destrezza spaziale (assegnazione arbitraria di $3$ coordinate di posizione e $3$ angoli di orientamento all'utensile). Esistono tuttavia varianti da $4$ a $5$ DOF per operazioni vincolate (come la pallettizzazione su piani orizzontali) oppure strutture a $7$ DOF, definite \textbf{cinematicamente ridondanti}. Il grado di libertà addizionale consente al robot di modificare la propria configurazione interna a posa dell'utensile invariata (movimento dell'angolo di gomito sul cerchio di auto-moto), facilitando l'evitamento di ostacoli (\textit{obstacle avoidance}) e la riconfigurazione lontana da singolarità cinematiche.
 
-\subsubsection*{Caratteristiche Applicative ed Economiche}
+\subsubsection*{Caratteristiche Applicative Ed Economiche}
 Grazie all'ampio raggio di sbraccio e alla capacità di intervenire su piani obliqui o superfici a doppia curvatura, il robot antropomorfo domina applicazioni complesse quali:
 \begin{itemize}
     \item saldatura ad arco (MIG/MAG, TIG) e saldatura a punti (\textit{spot welding});
@@ -679,7 +681,7 @@ La peculiarità architetturale risiede nell'orientamento degli assi di rotazione
     \item una rotazione (rollio o \textit{yaw}) attorno all'asse $Z$ per orientare il pezzo durante la presa.
 \end{itemize}
 
-\subsubsection*{Il Concetto di Cedevolezza Selettiva (\textit{Selective Compliance})}
+\subsubsection*{Il Concetto Di Cedevolezza Selettiva (\textit{Selective Compliance})}
 Il nome SCARA deriva dalla proprietà elastica intrinseca conferita da questa cinematica:
 \begin{itemize}
     \item Nel piano orizzontale $XY$, la catena articolata esibisce una naturale \textbf{cedevolezza elastica} (\textit{high compliance}). Se durante l'inserimento di un perno metallico in un foro (\textit{peg-in-hole}) è presente un lieve errore di allineamento geometrico, la reazione di contatto flette leggermente i bracci sul piano orizzontale, consentendo all'utensile di autocentrarsi senza bloccaggi meccanici o danneggiamenti dei componenti.
@@ -688,7 +690,7 @@ Il nome SCARA deriva dalla proprietà elastica intrinseca conferita da questa ci
 
 I robot SCARA offrono eccellente velocità ciclica (\textit{cycle time} ridotto), dimensioni di ingombro compatte, footprint minimo ed elevata ripetibilità centesimale (spesso inferiore a $\pm \SI{0.01}{\milli\meter}$), configurandosi come la soluzione dal miglior rapporto costo-prestazioni (\textit{cost-effective}) per compiti di pick-and-place ad alta cadenza, dispensazione di collanti e montaggio di componentistica elettronica e meccanica su piani paralleli.
 
-\subsection{Robot Delta (Robot a Cinematica Parallela)}
+\subsection{Robot Delta (Robot A Cinematica Parallela)}
 
 Conosciuto nel gergo industriale anche come \textit{Spider Robot} (per la caratteristica morfologia a zampe di ragno), il robot Delta appartiene alla classe delle \textbf{catene cinematiche parallele} (PKM, \textit{Parallel Kinematic Machines}). Brevettato dal Prof. Reymond Clavel al Politecnico di Losanna (EPFL), esso si compone di:
 \begin{itemize}
@@ -703,7 +705,7 @@ I tre parallelogrammi deformabili impongono un vincolo geometrico rigido: essi m
 \end{equation}
 Qualora l'applicazione richieda l'orientamento del componente manipolato, si inserisce un quarto asse telescopico centrale a giunto cardanico, collegato a un motore ausiliario sulla base, per conferire la rotazione di rollio alla pinza.
 
-\subsubsection*{Vantaggi Dinamici e Limitazioni Operative}
+\subsubsection*{Vantaggi Dinamici E Limitazioni Operative}
 Il beneficio cardine di questa cinematica risiede nella collocazione stazionaria degli attuatori: a differenza dei robot seriali, in cui ciascun motore è montato a sbalzo sulla struttura del link precedente e deve muoverne la massa, nel Delta i motori pesanti risiedono sulla base fissa.
 
 I link mobili sono realizzati con tubolari sottili in fibra di carbonio o leghe leggere di alluminio a bassissima inerzia. Ciò permette accelerazioni estreme, che superano frequentemente i $15g$--$20g$ ($\approx \SI{150}{}$--$\SI{200}{\meter\per\second\squared}$) e velocità di punta superiori a $\SI{10}{\meter\per\second}$, consentendo cadenze di smistamento fino a $200$--$300$ prelievi al minuto.
@@ -723,7 +725,7 @@ Il robot cartesiano adotta una configurazione cinematica seriale costituita da t
 \end{equation}
 Quando la struttura adotta configurazioni a portale aperto o chiuso sorrette da montanti perimetrali, il manipolatore assume la denominazione di \textbf{Robot a Portale} (\textit{Gantry Robot}).
 
-\subsubsection*{Proprietà Cinetiche e Metrologiche}
+\subsubsection*{Proprietà Cinetiche E Metrologiche}
 L'architettura cartesiana offre proprietà matematiche e costruttive uniche:
 \begin{itemize}
     \item \textbf{Disaccoppiamento Cinematico Perfetto:} La matrice jacobiana geometrica $\boldsymbol{J}$ che lega la velocità dei giunti $\dot{\boldsymbol{q}} = [\dot{x}, \dot{y}, \dot{z}]^T$ alla velocità di traslazione della flangia $\boldsymbol{v}_e = [\dot{x}_e, \dot{y}_e, \dot{z}_e]^T$ è la matrice identità:
@@ -735,7 +737,7 @@ L'architettura cartesiana offre proprietà matematiche e costruttive uniche:
     \item \textbf{Elevata Rigidità e Capacità di Carico:} Le guide meccaniche sostenute lungo l'intera lunghezza minimizzano i momenti flettenti tipici dei bracci a sbalzo. Questa caratteristica permette di movimentare carichi pesanti (da centinaia di chilogrammi a diverse tonnellate) con precisioni dimensionali sub-millimetriche su corse longitudinali che possono estendersi per decine di metri (es. asservimento di grandi macchine utensili CNC, deposizione automatica di fibre composite o taglio laser/plasma di grandi lamiere).
 \end{itemize}
 
-\subsection{Quadro Sinottico Comparativo delle Architetture Meccaniche}
+\subsection{Quadro Sinottico Comparativo Delle Architetture Meccaniche}
 
 La Tabella~\ref{tab:confronto_robot} riassume sinteticamente il profilo prestazionale delle quattro architetture esaminate, offrendo una guida comparativa per la scelta strutturale del manipolatore in funzione del contesto di fabbrica.
 
@@ -761,7 +763,9 @@ La Tabella~\ref{tab:confronto_robot} riassume sinteticamente il profilo prestazi
 
 \newpage
 
-\section{Tipologie di Attuatori E Criteri Di Selezione}
+% AA Parte 3 - Sistemi Di Attuazione E Servomotori
+
+\section{Tipologie Di Attuatori E Criteri Di Selezione}
 
 Se i collegamenti rigidi e le coppie cinematiche dell'Unità Meccanica costituiscono l'apparato scheletrico del robot, gli \textbf{attuatori} ne rappresentano il \textbf{tessuto muscolare}. Il loro compito funzionale è trasformare flussi di potenza elettrica, fluidica o chimica in potenza meccanica regolata, generando le forze lineari $F(t)$ o le coppie rotative $\tau(t)$ richieste per azionare i giunti lungo traiettorie programmate.
 
@@ -809,7 +813,7 @@ Come evidenziato dal perimetro della linea rossa in Figura~\ref{fig:attuazione_s
 
 Il blocco \textit{Sensing Element} acquisisce in retroazione le correnti di fase, le tensioni, e la posizione angolare del rotore tramite encoder integrati, chiudendo i loop di regolazione ad alta dinamica coordinati con la Control Unit principale.
 
-\subsection{Fondamenti Termodinamici: Potenza Meccanica, Potenza Elettrica e Rendimento}
+\subsection{Fondamenti Termodinamici: Potenza Meccanica, Potenza Elettrica E Rendimento}
 
 Il processo di attuazione è retto dai principi della termodinamica e della conservazione dell'energia. La grandezza fisica istantanea che governa il dimensionamento di ogni elemento della catena è la \textbf{potenza} $P(t)$, definita come la quantità di energia trasferita o trasformata nell'unità di tempo:
 \begin{equation}
@@ -838,7 +842,7 @@ A seconda della natura fisica del sottosistema attraversato, la potenza assume f
     \end{equation}
 \end{itemize}
 
-\subsection{Efficienza della Conversione Energetica e Meccanismi Dissipativi}
+\subsection{Efficienza Della Conversione Energetica E Meccanismi Dissipativi}
 
 In qualsiasi macchina reale, la conversione energetica non avviene in modo ideale. Una quota dell'energia in ingresso viene irrevocabilmente degradata in energia termica a causa di fenomeni dissipativi microscopici e macroscopici.
 
@@ -885,7 +889,7 @@ Nel computo del bilancio energetico globale di un asse robotico, le perdite $P_{
 
 La comprensione analitica di questi termini è alla base del corretto dimensionamento termico degli attuatori e della progettazione di traiettorie ottime capaci di minimizzare il consumo di energia primaria nelle moderne fabbriche digitali.
 
-\section{Servomotori per la Robotica Industriale: Classificazione e Tecnologie}
+\section{Servomotori Per La Robotica Industriale: Classificazione E Tecnologie}
 
 Nell'architettura meccatronica di un manipolatore o di un robot industriale, se i collegamenti rigidi (\textit{links}) e i giunti articolari (\textit{joints}) costituiscono l'apparato scheletrico, i \textbf{servomotori} ne rappresentano il vero e proprio apparato muscolare.
 
@@ -903,7 +907,6 @@ I servomotori industriali si classificano primariamente in base alla sorgente di
     \item \textbf{Servomotori Elettrici:} trasformano energia elettrica (fornita in corrente continua o alternata) in energia meccanica per mezzo delle forze elettromagnetiche originate nei conduttori immersi in un campo magnetico.
 \end{itemize}
 
-% -----------------------------------------------------------------------------
 \subsection{Servomotori Pneumatici}
 
 Nei sistemi pneumatici, l'attuazione avviene tramite l'espansione e la compressione dell'aria all'interno di camere a tenuta, muovendo solitamente steli di pistoni lineari o palette rotative.
@@ -913,12 +916,11 @@ I principali punti di forza della tecnologia pneumatica risiedono nella notevole
 
 Un secondo filone applicativo di grande interesse è la robotica morbida (\textit{soft robotics}), dove si impiegano attuatori pneumatici deformabili denominati \textbf{muscoli artificiali di McKibben}: questi dispositivi sono composti da una camera elastica interna racchiusa in una calza a maglia intrecciata che, gonfiandosi con aria compressa, si espande radialmente e si contrae longitudinalmente, replicando il comportamento viscoelastico dei fasci muscolari biologici. Nella robotica rigida convenzionale, gli attuatori pneumatici rimangono la soluzione standard per gli organi di presa terminali (\textit{grippers}), dove sono richieste semplici corse di apertura/chiusura con transizione tra due stati discreti.
 
-\subsubsection*{Limiti e Criticità}
+\subsubsection*{Limiti E Criticità}
 Il limite strutturale insito nell'aria compressa è la sua \textbf{elevata comprimibilità}: la variazione volumetrica del gas al variare del carico segue le leggi termodinamiche dei gas ideali o reali ($P \cdot V = n \cdot R \cdot T$). Di conseguenza, la rigidezza meccanica dinamica (\textit{dynamic stiffness}) dell'attuatore risulta modesta. Ne deriva una spiccata complessità nell'eseguire controlli fini di posizione e traiettoria continua lungo corse intermedie, poiché le variazioni di carico meccanico esterno generano oscillazioni elastiche incontrollate della camera d'aria.
 
 A ciò si aggiunge la necessità di infrastrutture pesanti (compressori industriali, essiccatori a ciclo frigorifero, sistemi di scarico condensa e lubrificatori di linea) per evitare che impurità particellari e tracce di umidità corrodano le guarnizioni interne o intasino le servovalvole a cassetto.
 
-% -----------------------------------------------------------------------------
 \subsection{Servomotori Idraulici (Oleodinamici)}
 
 I sistemi idraulici sfruttano il principio di Pascal applicato a un fluido ad elevato modulo di compressibilità volumetrica (\textit{bulk modulus}), solitamente olio idraulico a pressioni di esercizio dell'ordine di $100 \div 350\,\si{\bar}$ ($10 \div 35\,\si{\mega\pascal}$).
@@ -926,12 +928,11 @@ I sistemi idraulici sfruttano il principio di Pascal applicato a un fluido ad el
 \subsubsection*{Vantaggi Operativi}
 Il vantaggio insuperato dell'oleodinamica è la straordinaria \textbf{densità di potenza e coppia} per unità di volume e peso. A parità di ingombro geometrico, un cilindro o un motore idraulico è in grado di erogare forze e coppie di ordini di grandezza superiori a qualsiasi equivalente elettrico. Questa proprietà consente la movimentazione diretta di carichi pesantissimi a bassissime velocità senza l'interposizione di riduttori meccanici, eliminando i problemi di giochi angolari (\textit{backlash}) e cedevolezze torsionali tipici dei treni di ingranaggi. Il fluido di lavoro, inoltre, funge costantemente da refrigerante per lo smaltimento termico e garantisce un'autolubrificazione continua di tutte le parti in strisciamento meccanico.
 
-\subsubsection*{Limiti e Criticità}
+\subsubsection*{Limiti E Criticità}
 L'efficienza complessiva di una catena idraulica è tipicamente bassa a causa delle perdite di carico per attrito viscoso lungo le condotte e, soprattutto, a causa delle strozzature laminate attraverso le luci delle servovalvole proporzionali. L'impianto ausiliario risulta gravoso in termini di ingombro e costi: richiede centraline dedicate con serbatoi per l'olio, pompe a portata variabile, filtri ad alta ritenzione e scambiatori di calore per il raffreddamento forzato.
 
 Nel contesto della robotica industriale manifatturiera, il rischio concreto di perdite di fluido oleoso attraverso le guarnizioni dinamiche costituisce una grave minaccia di contaminazione sia per l'ambiente di lavoro sia per i semilavorati (rendendoli inapplicabili nell'industria alimentare, farmaceutica e delle camere bianche), imponendo interventi di manutenzione programmata frequenti per la sostituzione di filtri e tenute idrauliche.
 
-% -----------------------------------------------------------------------------
 \subsection{Servomotori Elettrici}
 
 I servomotori elettrici costituiscono lo standard dominante nell'automazione e nella robotica moderna, coprendo oltre il 90\% delle articolazioni dei manipolatori industriali.
@@ -939,12 +940,12 @@ I servomotori elettrici costituiscono lo standard dominante nell'automazione e n
 \subsubsection*{Vantaggi Operativi}
 L'energia elettrica è prontamente distribuibile in qualunque stabilimento mediante linee trifase standardizzate. I servomotori elettrici offrono un rendimento energetico globale elevato (frequentemente compreso tra l'85\% e il 95\%), una manutenzione ordinaria ridotta e un'eccellente affidabilità temporale. Sotto il profilo dinamico, essi presentano rotori ad elevato rapporto coppia/inerzia: ciò si traduce in capacità di accelerazione eccezionali, unite a una larghezza di banda di controllo molto elevata. Tali doti consentono di raggiungere precisioni di posizionamento sub-millimetriche e ripetibilità dell'ordine dei centesimi di millimetro sui movimenti articolari del robot.
 
-\subsubsection*{Limiti e Criticità}
+\subsubsection*{Limiti E Criticità}
 In condizioni operative di stazionamento prolungato a velocità nulla con coppia applicata (\textit{coppia di stallo}), i motori elettrici tendono a surriscaldarsi rapidamente: in assenza di rotazione non vi è ventilazione forzata e tutta l'energia assorbita dall'armatura viene dissipata per effetto Joule, rischiando di danneggiare termicamente gli isolamenti delle spire. Per questo motivo, nei robot industriali si installano \textbf{freni di stazionamento elettromeccanici} che bloccano i giunti a rotore fermo.
 
 L'impiego in ambienti con rischio di deflagrazione impone l'adozione di ingombranti custodie pressurizzate o a prova di esplosione (\textit{flameproof enclosures}). Infine, per trarre il massimo rendimento dalle architetture avanzate (come i motori sincroni a magneti permanenti), si richiede l'implementazione di algoritmi di controllo a orientamento di campo (\textit{Field-Oriented Control}, FOC) su microprocessori DSP/FPGA veloci.
 
-\subsubsection*{Architettura di Controllo in Anello Chiuso}
+\subsubsection*{Architettura Di Controllo In Anello Chiuso}
 La Figura~\ref{fig:servo_controllo} illustra l'architettura gerarchica tipica di un azionamento industriale a servomotore elettrico.
 
 \begin{figure}[H]
@@ -961,8 +962,7 @@ Il sistema opera su una classica \textbf{architettura di controllo in cascata a 
     \item \textbf{Anello di Posizione:} È l'anello più esterno (frequenza di campionamento di $1\,\si{\kilo\hertz}$, coordinata con il pianificatore di traiettoria del robot). In base all'errore di posizione articolare $e(t) = \theta_d(t) - \theta_m(t)$, calcola il profilo di velocità ottimale imponendo il rispetto dei limiti cinematici del giunto.
 \end{enumerate}
 
-% -----------------------------------------------------------------------------
-\subsection{Confronto Tecnologico: Motori DC vs Motori AC}
+\subsection{Confronto Tecnologico: Motori DC Vs Motori AC}
 
 I motori elettrici destinati all'azionamento robotico si ripartiscono in due grandi famiglie in virtù della forma d'onda della tensione e della corrente di alimentazione:
 \begin{itemize}
@@ -996,16 +996,15 @@ Nella storia della robotica industriale, i motori DC con spazzole sono stati i p
 
 % =============================================================================
 
-\section{Il Motore Elettrico DC con Spazzole (Brushed)}
+\section{Il Motore Elettrico DC Con Spazzole (Brushed)}
 
 Il motore elettrico a corrente continua con spazzole (\textit{DC Brushed Motor}) rappresenta la tecnologia storica di conversione elettromeccanica. Sebbene oggi sia stato ampiamente rimpiazzato nelle articolazioni robotiche principali da soluzioni prive di spazzole, lo studio dettagliato del motore DC brushed riveste un'importanza didattica cruciale: le sue equazioni costitutive sono interamente lineari e definiscono i concetti cardine di forza contro-elettromotrice, costante di coppia e reazione d'armatura, che costituiscono la base analitica per comprendere ogni altra tipologia di azionamento industriale.
 
-% -----------------------------------------------------------------------------
-\subsection{Principi Costruttivi e Componenti Fondamentali}
+\subsection{Principi Costruttivi E Componenti Fondamentali}
 
 Il motore si compone geometricamente di due sottosistemi coassiali: una struttura esterna cava e fissa, lo \textbf{statore}, e una parte rotante interna imperniata su cuscinetti volventi, il \textbf{rotore}.
 
-\subsubsection{Lo Statore e il Circuito di Campo}
+\subsubsection{Lo Statore E Il Circuito Di Campo}
 Lo statore svolge la funzione essenziale di generare un \textbf{campo magnetico stazionario e costante nel tempo}. È costituito da una carcassa metallica di forma cilindrica, realizzata in acciaio ad alta permeabilità magnetica, denominata \textbf{giogo} (\textit{yoke}): oltre a svolgere un ruolo di supporto meccanico, il giogo funge da chiusura a bassa riluttanza per le linee di flusso magnetico.
 
 All'interno del giogo sporgono radialmente verso l'asse della macchina le \textbf{espansioni polari}. La generazione del flusso d'induzione magnetica $\bm{B}$ può avvenire secondo due modalità costruttive distinte:
@@ -1014,7 +1013,7 @@ All'interno del giogo sporgono radialmente verso l'asse della macchina le \textb
     \item \textbf{A Elettromagneti (Eccitazione Indipendente):} Sulle espansioni polari, realizzate in ferro dolce a bassissima isteresi, sono avvolte bobine di filo conduttore di rame isolate, dette \textbf{avvolgimenti di eccitazione} o di campo. Iniettando in queste spire una corrente continua specifica, denominata corrente di eccitazione $I_{\text{ecc}}$, si instaura per la legge di Amp\`ere una forza magnetomotrice che induce il flusso di eccitazione. Le bobine collocate su poli geometricamente opposti sono interconnesse in serie in modo tale da alternare rigidamente la sequenza delle polarità (Nord, Sud, Nord, Sud\dots).
 \end{itemize}
 
-\subsubsection{Topologia del Circuito Magnetico di Statore}
+\subsubsection{Topologia Del Circuito Magnetico Di Statore}
 Per formalizzare la geometria magnetica della macchina, si introduce il parametro adimensionale $p$, che indica il \textbf{numero di coppie polari}. Una macchina avente $p=1$ presenterà due poli fisici complessivi ($2p = 2$, un polo Nord e un polo Sud); una macchina con $p=2$ avrà quattro poli fisici ($2p = 4$, due poli Nord e due poli Sud disposti a croce alternata), come illustrato in Figura~\ref{fig:statore_poli}.
 
 \begin{figure}[H]
@@ -1035,8 +1034,7 @@ Due entità geometriche definiscono il comportamento dell'induzione al traferro:
     Nel caso elementare a due poli ($p=1$), il passo polare è pari a $\tau_p = 180^\circ$; in una macchina quadripolare ($p=2$), esso si riduce a $\tau_p = 90^\circ$ meccanici.
 \end{itemize}
 
-% -----------------------------------------------------------------------------
-\subsubsection{Il Rotore (o Armatura)}
+\subsubsection{Il Rotore (O Armatura)}
 
 La struttura rotante, coassiale allo statore e da esso separata da un meato d'aria di spessore millimetrico denominato \textbf{traferro} (\textit{air gap}), prende il nome di \textbf{indotto} o \textbf{armatura}.
 
@@ -1053,8 +1051,7 @@ Come mostrato in Figura~\ref{fig:rotore}, il rotore si compone di due elementi c
     \item \textbf{Avvolgimento d'Indotto:} Costituito da matasse di conduttori di rame isolati con smalto poliuretanico, alloggiate entro le scanalature perimetrali (\textbf{cave}) ricavate sulla superficie esterna del pacco lamellare. È all'interno di questo avvolgimento che scorre la corrente d'armatura $I_a$, responsabile diretta della generazione dello sforzo motrice.
 \end{itemize}
 
-% -----------------------------------------------------------------------------
-\subsubsection{Il Collettore a Lamelle e le Spazzole: La Commutazione Meccanica}
+\subsubsection{Il Collettore A Lamelle E Le Spazzole: La Commutazione Meccanica}
 
 Il sistema collettore-spazzole costituisce il cuore meccatronico del motore DC brushed ed assolve a una duplice funzione: alimentare elettricamente un circuito in moto rotatorio continuo e invertire periodicamente il verso della corrente circolante nelle singole spire rotoriche.
 
@@ -1082,8 +1079,7 @@ Il commutatore a lamelle impedisce questo stallo attraverso una sequenza di comm
     \item Il passaggio alla nuova lamella inverte rigidamente il verso con cui la corrente esterna attraversa i conduttori della spira. Invertendosi sia il verso della corrente sia il segno del vettore induzione magnetica sotto cui entra la spira (transito da Nord a Sud), il prodotto vettoriale che esprime la forza mantiene inalterato il proprio verso tangenziale, assicurando una \textbf{coppia motrice unidirezionale continua} lungo tutti i $360^\circ$ di rotazione.
 \end{enumerate}
 
-% -----------------------------------------------------------------------------
-\subsection{Principio Fisico di Funzionamento ed Equazioni Elettromeccaniche}
+\subsection{Principio Fisico Di Funzionamento Ed Equazioni Elettromeccaniche}
 
 La generazione della coppia nel motore a corrente continua è retta in modo rigoroso dall'azione elettrodinamica della \textbf{Forza di Lorentz}.
 
@@ -1103,7 +1099,7 @@ dove $\alpha = \angle(d\bm{\ell}, \bm{B})$ rappresenta l'angolo compreso tra il 
     \label{eq:forza_conduttore}
 \end{equation}
 
-\subsubsection{Genesi della Coppia Meccanica nella Spira}
+\subsubsection{Genesi Della Coppia Meccanica Nella Spira}
 Si consideri una singola spira d'indotto di forma rettangolare avente raggio rotorico $r$ (distanza tra l'asse di rotazione dell'albero e i conduttori attivi periferici) e lunghezza assiale utile $L$. La spira è formata da due lati attivi longitudinali immersi nel campo di statore e da due testate d'estremità (che chiudono il circuito ma non producono coppia utile, fungendo solo da resistenze parassite).
 
 \begin{figure}[H]
@@ -1153,7 +1149,6 @@ L'equazione~\eqref{eq:coppia_angolo} evidenzia come una singola spira alimentata
 
 Per convertire tale pulsazione in una coppia continua e levigata, i motori reali adottano un rotore multi-cava associato a un collettore a elevato numero di lamelle di rame (tipicamente da 12 ad oltre 48 lamelle). Le spire d'indotto sono distribuite uniformemente lungo l'intera circonferenza della periferia rotorica, ciascuna saldata alla propria coppia di lamelle coniugate. In qualunque istante angolare, le spazzole alimentano esclusivamente le spire che transitano nella fascia di massimo rendimento elettrodinamico ($\theta \approx 90^\circ$). La coppia elettromagnetica complessiva $\tau_m$ risulta così pari alla sommatoria dei contributi quasi costanti delle spire attive, abbattendo drasticamente l'ondulazione residua denominata \textbf{ripple di coppia}.
 
-% -----------------------------------------------------------------------------
 \subsubsection{La Forza Contro-Elettromotrice (FCEM)}
 
 Il moto relativo tra gli avvolgimenti rotorici e il campo magnetico di statore innesca un secondo fenomeno elettromagnetico di fondamentale rilievo, governato dalla \textbf{Legge di Faraday-Neumann-Lenz}.
@@ -1200,8 +1195,7 @@ L'equazione~\eqref{eq:corrente_armatura} svela il sofisticato anello di retroazi
     \item \textbf{Applicazione di un Carico Esterno:} Se un asse del robot incontra un incremento di sforzo resistente, la velocità $\omega_m$ subisce un istantaneo rallentamento cinematico; questo fa diminuire immediatamente $E_a$, determinando un automatico aumento della corrente $I_a$. Il motore eroga spontaneamente una maggiore coppia per controbilanciare il disturbo, stabilizzandosi su un nuovo punto di lavoro.
 \end{itemize}
 
-% -----------------------------------------------------------------------------
-\subsubsection{Coppia Elettromagnetica e Equivalenza delle Costanti}
+\subsubsection{Coppia Elettromagnetica E Equivalenza Delle Costanti}
 
 In perfetta analogia con la formulazione della FCEM, la coppia motrice totale generata dalla macchina $\tau_m$ (espressa in Newton per metro, $\si{\newton\meter}$) risulta direttamente proporzionale alla densità di flusso polare $\Phi$ e all'intensità della corrente d'armatura $I_a$:
 \begin{equation}
@@ -1237,13 +1231,11 @@ Nei servomotori industriali a \textbf{magneti permanenti}, il flusso statorico $
 \end{align}
 Queste due equazioni esibiscono una linearità ideale: la coppia è rigorosamente proporzionale alla corrente e la velocità è vincolata dalla tensione di armatura.
 
-% -----------------------------------------------------------------------------
-\subsection{Configurazioni Circuitali e Curve Caratteristiche Esterne}
+\subsection{Configurazioni Circuitali E Curve Caratteristiche Esterne}
 
 Nei motori a corrente continua in cui il flusso di statore non è imposto da magneti permanenti ma da elettromagneti di eccitazione, le prestazioni operative variano radicalmente a seconda della topologia circuitale adottata per collegare il circuito di eccitazione (statore) al circuito di armatura (rotore).
 
-% -----------------------------------------------------------------------------
-\subsubsection{Motore a Eccitazione Separata e Motore Shunt (Derivazione)}
+\subsubsection{Motore A Eccitazione Separata E Motore Shunt (Derivazione)}
 
 Nel \textbf{motore a eccitazione separata}, l'avvolgimento statorico e l'avvolgimento rotorico sono fisicamente disaccoppiati e alimentati da due generatori indipendenti a tensione rispettivamente $V_{\text{ecc}}$ e $V_a$. Questa soluzione conferisce il massimo grado di flessibilità di controllo, consentendo di variare la velocità sia agendo sulla tensione d'armatura $V_a$ sia diminuendo la corrente di campo $I_{\text{ecc}}$ per operare in regime di \textit{deflussaggio} (\textit{field weakening}) a velocità elevatissime al di sopra di quella nominale.
 
@@ -1281,7 +1273,6 @@ Questa espressione descrive analiticamente l'equazione di una retta decrescente 
 \end{itemize}
 La caratteristica meccanica del motore Shunt è definita \textbf{rigida}: all'aumentare della coppia resistente dal valore nullo fino a quello nominale, la velocità operativa subisce un calo piccolissimo (tipicamente compreso tra il $3\%$ e il $6\%$). Tale stabilità naturale della velocità rende il motore Shunt ideale per l'asservimento di nastri trasportatori, macchine utensili e pompe centrifughe industriali.
 
-% -----------------------------------------------------------------------------
 \subsubsection{Motore Serie}
 
 Nel \textbf{motore Serie}, l'avvolgimento di eccitazione dello statore è collegato elettricamente in serie con l'avvolgimento di armatura del rotore. Di conseguenza, un'unica identica corrente attraversa l'intero circuito:
@@ -1335,7 +1326,6 @@ Questa equazione modella una curva a profilo \textbf{iperbolico}:
     A carico nullo, la corrente assorbita crolla, provocando la contestuale scomparsa del flusso magnetico di eccitazione ($\Phi \to 0$). Per generare la FCEM necessaria a bilanciare la tensione $V$, il rotore è forzato ad accelerare asintoticamente verso regimi di rotazione vertiginosi. Questo fenomeno è noto come \textbf{fuga del motore}: le forze centrifughe agenti sui conduttori d'indotto possono provocare il disancoraggio delle matasse dalle cave, la rottura delle legature in fibra e l'esplosione meccanica del collettore. Pertanto, \textbf{i motori serie non devono mai essere avviati o operati a vuoto o con trasmissioni a cinghia soggette a sfilamento}, richiedendo connessioni meccaniche rigide irreversibili (riduttori a vite senza fine o giunti flessibili a calettamento forzato).
 \end{itemize}
 
-% -----------------------------------------------------------------------------
 \subsubsection{Motore Composto (Compound)}
 
 Il \textbf{motore composto} (o \textit{compound}) adotta una soluzione ibrida sulle espansioni polari: ogni polo ospita sia un avvolgimento in derivazione (Shunt) ad alta resistenza, sia una bobina di eccitazione in serie a bassa impedenza percorsa dalla corrente di carico.
@@ -1346,7 +1336,7 @@ A seconda del verso con cui i due campi magnetici si compongono al traferro, il 
     \item in condizioni di funzionamento a vuoto o rilascio del carico, l'avvolgimento shunt mantiene un flusso minimo indipendente garantito, fissando un tetto massimo finito alla velocità angolare ed eliminando completamente il pericolo della fuga meccanica.
 \end{itemize}
 
-\subsubsection{Confronto Sintetico tra le Configurazioni DC}
+\subsubsection{Confronto Sintetico Tra Le Configurazioni DC}
 
 La Figura~\ref{fig:curve_dc} illustra graficamente le curve caratteristiche coppia-velocità analiticamente discusse, mentre la Tabella~\ref{tab:confronto_config_dc} ne sintetizza i parametri operativi cardine.
 
@@ -1379,8 +1369,7 @@ La Figura~\ref{fig:curve_dc} illustra graficamente le curve caratteristiche copp
 
 I servomotori a corrente continua senza spazzole, indicati internazionalmente con l'acronimo \textbf{BLDC} (\textit{BrushLess Direct Current}), rappresentano l'evoluzione tecnologica fondamentale che ha soppiantato il motore a spazzole nelle catene cinematiche dei robot industriali moderni. L'idea innovativa alla base di questa macchina risiede nell'\textbf{eliminazione completa di ogni contatto meccanico strisciante}, affidando il compito dell'inversione delle correnti di fase a un ponte di commutazione elettronico a semiconduttori coordinato da un microprocessore in tempo reale.
 
-% -----------------------------------------------------------------------------
-\subsection{Architettura Invertita e Principio Costruttivo}
+\subsection{Architettura Invertita E Principio Costruttivo}
 
 Rispetto alla topologia del motore DC tradizionale, il motore BLDC presenta un'architettura costruttiva concettualmente \textbf{invertita}:
 \begin{itemize}
@@ -1399,8 +1388,7 @@ Come si evince visivamente dal confronto in Figura~\ref{fig:bldc_brushed_comp}, 
 
 Nel motore BLDC, invece, la dissipazione termica avviene direttamente sullo statore esterno, facilitando l'estrazione del calore per conduzione verso la carcassa del manipolatore, supportata da alettature o circuiti di raffreddamento a liquido. Il rotore, contenendo unicamente magneti freddi, presenta dimensioni radiali compatte ed esibisce un \textbf{momento di inerzia meccanica $J_m$ bassissimo}, consentendo accelerazioni angolari estreme ($> 10^4\,\si{\radian\per\second\squared}$) indispensabili nei cicli di \textit{pick-and-place} ad elevata produttività.
 
-% -----------------------------------------------------------------------------
-\subsection{Sensoristica di Feedback per la Commutazione Elettronica}
+\subsection{Sensoristica Di Feedback Per La Commutazione Elettronica}
 
 L'assenza del collettore meccanico elimina l'accoppiamento cinematico spontaneo tra l'angolo di rotazione e l'istante di commutazione della corrente. In un motore BLDC, il controllore elettronico deve \textbf{conoscere con precisione la posizione angolare istantanea del rotore} $\theta_m$, in modo da eccitare la coppia di fasi corretta per mantenere il vettore del campo magnetico statorico ortogonale al flusso dei magneti rotorici, massimizzando il rendimento di coppia.
 
@@ -1411,8 +1399,7 @@ A seconda delle specifiche di controllo dell'asse robotico, si impiegano differe
     \item \textbf{Resolver:} Trasformatori rotativi analogici costituiti da uno statore a due avvolgimenti ortogonali alimentati in alta frequenza e da un rotore eccitato. Essi restituiscono due segnali modulati in ampiezza pari al seno e coseno dell'angolo meccanico. I resolver sono dispositivi privi di elettronica integrata a bordo, intrinsecamente immuni a disturbi elettromagnetici violenti, temperature estreme ($> 150\,\si{\celsius}$), polveri e forti vibrazioni d'urto, trovando impiego ideale in robot per fonderia o applicazioni aerospaziali critiche.
 \end{itemize}
 
-% -----------------------------------------------------------------------------
-\subsection{Analisi Comparativa: Vantaggi e Svantaggi dei Motori BLDC}
+\subsection{Analisi Comparativa: Vantaggi E Svantaggi Dei Motori BLDC}
 
 \subsubsection{Vantaggi Operativi}
 \begin{enumerate}
@@ -1423,14 +1410,13 @@ A seconda delle specifiche di controllo dell'asse robotico, si impiegano differe
     \item \textbf{Eccellente Dinamica di Risposta:} Il rapporto tra coppia motrice erogabile e inerzia rotorica ($\tau_m / J_m$) è tra i più alti tra tutti i convertitori elettromeccanici esistenti.
 \end{enumerate}
 
-\subsubsection{Svantaggi e Sfide Progettuali}
+\subsubsection{Svantaggi E Sfide Progettuali}
 \begin{enumerate}
     \item \textbf{Costo Economico dell'Hardware:} La fabbricazione del rotore a magneti permanenti in terre rare sinterizzate ad altissimo prodotto d'energia $(BH)_{\max}$ incide pesantemente sui costi della materia prima.
     \item \textbf{Complessità dell'Elettronica di Pilotaggio:} Il motore non può essere avviato semplicemente allacciandolo a una linea di alimentazione; esso esige un convertitore elettronico dedicato composto da microprocessore DSP, sensori di corrente a effetto Hall, stadi di isolamento a fotoaccoppiatore e un inverter a ponte trifase a transistor di potenza.
 \end{enumerate}
 
-% -----------------------------------------------------------------------------
-\subsection{Il Motore BLDC Trifase e il Circuito di Pilotaggio ad Inverter}
+\subsection{Il Motore BLDC Trifase E Il Circuito Di Pilotaggio Ad Inverter}
 
 La quasi totalità dei servomotori BLDC utilizzati nella cinematica robotica adotta la configurazione \textbf{trifase sincrona}.
 
@@ -1483,7 +1469,9 @@ I tre sensori di Hall rilevano la transizione tra un settore e il successivo. Il
 
 Questo ciclo produce un vettore di campo magnetico statorico rotante a scatti di $60^\circ$, che trascina in rotazione sincrona i magneti del rotore. Modulando la tensione media tramite una tecnica a larghezza d'impulso (\textit{Pulse Width Modulation}, PWM) applicata agli interruttori High-Side ad alta frequenza ($10 \div 20\,\si{\kilo\hertz}$), l'anello di controllo regola con precisione assoluta l'intensità della corrente $I_a$ e, conseguentemente, la coppia e la traiettoria articolare del robot industriale.
 
-\section{La Trasmissione Meccanica nei Sistemi Robotici}
+% AA Parte 4 -Trasmissioni Meccaniche E Riduttori Di Precisione
+
+\section{La Trasmissione Meccanica Nei Sistemi Robotici}
 
 Nell'architettura elettromeccanica di un robot industriale, la \textbf{trasmissione meccanica} è il sottosistema interposto tra l'albero di uscita dell'attuatore (tipicamente un servomotore elettrico rotativo) e il giunto (\textit{joint}) che movimenta il rispettivo braccio rigido (\textit{link}). L'attuatore non è quasi mai accoppiato in presa diretta con il carico: tale scelta progettuale, nota come azionamento diretto (\textit{direct-drive}), è circoscritta ad applicazioni di nicchia a causa dei severi limiti fisici dei motori elettrici commerciali in termini di densità di coppia e di riscaldamento per effetto Joule a basse velocità.
 
@@ -1497,7 +1485,7 @@ L'interposizione di una catena cinematica di trasmissione risponde a tre esigenz
     \item \textbf{Ottimizzazione della Distribuzione delle Masse e delle Prestazioni Dinamiche}: In una catena cinematica seriale a sbalzo, montare ciascun motore direttamente sull'asse del giunto che movimenta significa appesantire i membri successivi della catena. La massa e l'inerzia di quel motore graveranno su tutti i giunti a monte, incrementando esponenzialmente il momento flettente e le coppie richieste. Sistemi di trasmissione remoti (come cinghie dentate, alberi di trasmissione coassiali o catene) consentono di alloggiare i motori pesanti vicino al basamento rigido del robot, riducendo le inerzie mobili a vantaggio delle accelerazioni massime, del tempo di ciclo e della precisione di inseguimento della traiettoria.
 \end{enumerate}
 
-\subsection{Panoramica delle Principali Tecnologie di Trasmissione}
+\subsection{Panoramica Delle Principali Tecnologie Di Trasmissione}
 
 Le trasmissioni impiegate nella robotica industriale differiscono per principio di accoppiamento, rendimento, rigidezza elastica e accuratezza cinematico-posizionale. Le quattro tecnologie dominanti sono riassunte di seguito.
 
@@ -1555,11 +1543,11 @@ Le trasmissioni impiegate nella robotica industriale differiscono per principio 
 
 \newpage
 
-\section{Teoria Meccanica dei Rotismi e delle Ruote Dentate}
+\section{Teoria Meccanica Dei Rotismi E Delle Ruote Dentate}
 
 Un \textbf{ingranaggio} è un meccanismo rigido formato da una coppia di elementi dentati sagomati che trasmettono moto e potenza per contatto diretto di forma (senza slittamento macroscopico). Una sequenza di due o più ruote dentate cinematicamente vincolate prende il nome rigoroso di \textbf{rotismo} o treno di ingranaggi.
 
-\subsection{Accoppiamento Cinematica e Geometria degli Assi}
+\subsection{Accoppiamento Cinematica E Geometria Degli Assi}
 
 La conformazione geometrica e costruttiva delle ruote dentate è dettata dalla disposizione reciproca nello spazio tridimensionale degli assi di rotazione tra l'albero d'ingresso e l'albero d'uscita:
 
@@ -1587,7 +1575,7 @@ La Figura~\ref{fig:ingranaggi_overview} e la Figura~\ref{fig:schema_ingranaggi} 
 
 \newpage
 
-\subsection{Classificazione Meccanica dei Rotismi}
+\subsection{Classificazione Meccanica Dei Rotismi}
 
 In base alla cinematica dei supporti degli assi di rotazione e alla topologia dell'alberaggio, i rotismi si distinguono in:
 
@@ -1609,7 +1597,7 @@ In base alla cinematica dei supporti degli assi di rotazione e alla topologia de
     \label{fig:esempi_rotismo}
 \end{figure}
 
-\subsection{Rapporto di Trasmissione: Analisi Cinematica e Statica}
+\subsection{Rapporto Di Trasmissione: Analisi Cinematica E Statica}
 
 Si definisce \textbf{rapporto di trasmissione} (o rapporto di velocità, convenzionalmente indicato con il simbolo adimensionale $\tau$) il rapporto algebrico tra la velocità angolare dell'albero condotto in uscita ($\omega_{\text{out}}$) e la velocità angolare dell'albero motore in ingresso ($\omega_{\text{in}}$):
 \begin{equation}
@@ -1618,7 +1606,7 @@ Si definisce \textbf{rapporto di trasmissione} (o rapporto di velocità, convenz
 \end{equation}
 \textit{Nota terminologica}: In letteratura tecnica si definisce frequentemente il rapporto di riduzione $i$ come il reciproco di $\tau$, ovvero $i = 1/\tau = \omega_{\text{in}}/\omega_{\text{out}}$. In questo testo si adotterà coerentemente la definizione $\tau = \omega_{\text{out}}/\omega_{\text{in}}$, per cui un riduttore di velocità è caratterizzato da una grandezza in modulo strettamente inferiore all'unità ($|\tau| < 1$).
 
-\subsubsection{Ingranaggio Singolo Elementare ad Assi Paralleli}
+\subsubsection{Ingranaggio Singolo Elementare Ad Assi Paralleli}
 Si consideri una coppia di ruote dentate $a$ e $b$ montate su perni fissi paralleli, aventi rispettivamente numero di denti $z_a$ e $z_b$, e raggi primitivi $r_a$ e $r_b$. Affinché due ruote possano ingranare senza interferenza o impuntamento, esse devono condividere lo stesso \textbf{modulo normale} $m$ (espresso in $\si{\milli\meter}$), definito come il rapporto tra il diametro primitivo $d = 2r$ e il numero di denti $z$:
 \begin{equation}
     m = \frac{d_a}{z_a} = \frac{d_b}{z_b} \implies r_a = \frac{m z_a}{2}, \quad r_b = \frac{m z_b}{2}
@@ -1635,7 +1623,7 @@ dove il segno meno tiene conto del fatto che, per dentature esterne convenzional
 \end{equation}
 Se l'ingranamento avviene tra una dentatura esterna e una dentatura interna (in cui il centro della ruota condotta racchiude il pignone), i due membri ruotano nello stesso verso e il segno risulta positivo: $\tau = +z_a/z_b$.
 
-\subsubsection{Rotismo Composto a Cascata}
+\subsubsection{Rotismo Composto A Cascata}
 Quando si desidera realizzare un rapporto di riduzione marcatamente ridotto (es. $\tau \ll 1$) tramite un rotismo ordinario, l'utilizzo di una singola coppia imporrebbe dimensioni radiali della ruota condotta inaccettabili in una struttura robotica snella ($z_b = z_a / |\tau|$). Si ricorre pertanto a un \textbf{rotismo composto}, in cui la trasmissione è ripartita su più salti di riduzione in serie.
 
 Si consideri una catena ordinaria formata da $k$ coppie di ruote in cascata, dove l'albero $1$ è il movente e l'albero $n$ è il cedente. Ciascuna coppia trasmette il moto con un fattore di riduzione locale. Il rapporto di trasmissione globale $\tau$ è pari al prodotto algebrico dei rapporti di trasmissione delle singole coppie contigue:
@@ -1645,7 +1633,7 @@ Si consideri una catena ordinaria formata da $k$ coppie di ruote in cascata, dov
 \end{equation}
 dove $p_{\text{est}}$ indica il numero totale di contatti tra ruote a dentatura esterna presenti lungo la catena, responsabile del numero di inversioni del verso di rotazione.
 
-\subsubsection*{Esempio Analitico Svolto: Rotismo Composto a Due Stadi}
+\subsubsection*{Esempio Analitico Svolto: Rotismo Composto A Due Stadi}
 
 Si analizzi il rotismo composto riportato nello schema cinematico sottostante: la ruota motrice d'ingresso $a$ aziona la ruota $b$; coassialmente e rigidamente solidale alla ruota $b$ è montata la ruota $c$ (formando un albero intermedio mobile comune tale che $\omega_c \equiv \omega_b$); infine, la ruota $c$ aziona la ruota condotta d'uscita $d$.
 
@@ -1680,7 +1668,7 @@ Sostituendo punto per punto le equazioni~\eqref{eq:passaggio_ab} e \eqref{eq:pas
 \end{equation}
 Il risultato algebrico dimostra che, essendovi due accoppiamenti esterni consecutivi (ciascuno apportatore di un'inversione di polarità di moto), il segno complessivo è positivo ($\tau_{a,d} > 0$): l'albero d'uscita $d$ ruota nello stesso senso orario o antiorario dell'albero motore $a$.
 
-\subsubsection{Bilancio di Potenza ed Equilibrio delle Coppie}
+\subsubsection{Bilancio Di Potenza Ed Equilibrio Delle Coppie}
 Si consideri il sistema in condizioni stazionarie (velocità angolari costanti, per cui le forze d'inerzia $J \dot{\omega}$ sono nulle). Si ipotizzi in prima istanza un comportamento ideale a \textbf{rendimento unitario} ($\eta = 1$), in assenza di perdite per attrito di strisciamento lungo i profili dei denti e dissipazioni sui cuscinetti di supporto.
 
 Per il principio di conservazione dell'energia, la potenza meccanica d'ingresso $P_{\text{in}}$ (fornita dall'albero motore) deve eguagliare la potenza meccanica d'uscita $P_{\text{out}}$ (erogata al carico resistente):
@@ -1754,7 +1742,7 @@ La ruota oziosa assolve a due compiti primari:
     \item \textbf{Superamento di Distanze Meccaniche}: Consente di collegare due alberi distanziati senza dover ricorrere a ruote motrici o condotte dal diametro primitivo eccessivo, riducendo gli ingombri trasversali della carcassa.
 \end{enumerate}
 
-\subsection{Caso Particolare: Meccanismo Pignone e Cremagliera}
+\subsection{Caso Particolare: Meccanismo Pignone E Cremagliera}
 
 Il sistema \textbf{pignone e cremagliera} (\textit{rack and pinion}) costituisce la configurazione cinematica limite di una coppia di ruote dentate cilindriche in cui il raggio primitivo di uno dei due elementi tende all'infinito ($r_c \to \infty$). In tale limite, la circonferenza primitiva della ruota si distende in una retta geometrica: la ruota a raggio infinito prende il nome di \textbf{cremagliera} o asta dentata.
 
@@ -1778,7 +1766,7 @@ In ambito industriale meccatronico, la cremagliera trova vasto impiego nei setto
 
 \newpage
 
-\section{Rotismi Epicicloidali (o Planetari)}
+\section{Rotismi Epicicloidali (O Planetari)}
 
 Un \textbf{rotismo epicicloidale} (noto internazionalmente come riduttore planetario, \textit{planetary gear}) è una catena cinematica di ruote dentate in cui gli assi geometrici di una o più ruote non sono statici nel sistema di riferimento inerziale solidale al telaio, ma \textbf{orbitano nello spazio} attorno all'asse principale della macchina.
 
@@ -1789,7 +1777,7 @@ Questa topologia offre vantaggi decisivi nell'ingegneria dei robot:
     \item Bilanciamento intrinseco delle forze radiali sull'albero centrale, con annullamento delle reazioni vincolari flettenti sui cuscinetti del motore.
 \end{itemize}
 
-\subsection{Componenti Funzionali dell'Architettura Epicicloidale}
+\subsection{Componenti Funzionali Dell'Architettura Epicicloidale}
 
 Facendo riferimento allo spaccato cinematico di Figura~\ref{fig:epicicloidale}, un rotismo epicicloidale elementare a un grado di libertà si articola su quattro sottosistemi coassiali:
 
@@ -1813,7 +1801,7 @@ Affinché la corona, i satelliti e il solare possano chiudersi geometricamente r
     \label{eq:vincolo_denti_epicicloidale}
 \end{equation}
 
-\subsection{Formalizzazione Analitica: La Formula di Willis}
+\subsection{Formalizzazione Analitica: La Formula Di Willis}
 
 Poiché gli assi dei satelliti sono in moto, non è possibile applicare direttamente la formula dei rotismi ordinari. Si ricorre al \textbf{metodo di inversione cinematica di Willis}: si impone all'intero sistema una velocità angolare virtuale $-\omega_c$, pari e contraria a quella del portasatelliti. In questo sistema di riferimento relativo solidale al portasatelliti, quest'ultimo appare fermo ($\omega_c' = \omega_c - \omega_c = 0$), e il rotismo epicicloidale degenera in un comune rotismo ordinario ad assi fissi.
 
@@ -1834,7 +1822,7 @@ Uguagliando le equazioni~\eqref{eq:willis_fondamentale} e \eqref{eq:rapporto_wil
 \end{equation}
 La relazione~\eqref{eq:formula_willis_risolta} dimostra che il rotismo epicicloidale possiede intrinsecamente \textbf{due gradi di libertà cinematici}. Per operare come riduttore a un singolo ingresso e una singola uscita, uno dei tre elementi ($s, c, r$) deve essere rigidamente vincolato al telaio ($\omega = 0$).
 
-\subsection{Configurazioni Operative dei Rotismi Epicicloidali}
+\subsection{Configurazioni Operative Dei Rotismi Epicicloidali}
 
 A seconda dell'organo vincolato a terra e delle scelte dell'albero di ingresso e di uscita, si configurano tre regimi di funzionamento standard, illustrati in Figura~\ref{fig:config_epicicloidale}:
 
@@ -1871,11 +1859,11 @@ A seconda dell'organo vincolato a terra e delle scelte dell'albero di ingresso e
 
 \newpage
 
-\subsection{Riduttori Speciali ad Alta Precisione: L'Harmonic Drive}
+\subsection{Riduttori Speciali Ad Alta Precisione: L'Harmonic Drive}
 
 I riduttori ad onda di deformazione elastica, internazionalmente commercializzati con il marchio registrato \textbf{Harmonic Drive} (o \textit{strain wave gears}), sono stati inventati dall'ingegnere americano C. Walton Musser nel 1955. Essi costituiscono la tecnologia dominante assoluta per l'attuazione dei giunti rotoidali dei robot antropomorfi moderni, dei bracci collaborativi (cobot) e dei sistemi avionici e aerospaziali.
 
-\subsubsection{Costituzione Meccanica ed Elementi Costitutivi}
+\subsubsection{Costituzione Meccanica Ed Elementi Costitutivi}
 
 L'Harmonic Drive è un meccanismo coassiale compatto formato da soli tre componenti concentrici (Figura~\ref{fig:harmonic_drive_detail}):
 
@@ -1892,7 +1880,7 @@ L'Harmonic Drive è un meccanismo coassiale compatto formato da soli tre compone
     \item \textbf{Circular Spline (Corona Circolare Rigida, CS)}: È un solido anello circolare rigido in acciaio, bloccato a terra sulla carcassa del manipolatore, provvisto di una \textbf{dentatura interna} avente lo stesso modulo e passo dentario del FlexSpline.
 \end{enumerate}
 
-\subsubsection{Principio Cinematico di Funzionamento e Derivazione del Rapporto di Riduzione}
+\subsubsection{Principio Cinematico Di Funzionamento E Derivazione Del Rapporto Di Riduzione}
 
 Il principio di trasmissione poggia su una fondamentale asimmetria nel numero di denti tra il membro deformabile e la corona rigida:
 \begin{equation}
@@ -1925,7 +1913,7 @@ Si consideri un attuatore robotico da polso con un FlexSpline avente $z_{\text{F
 \end{equation}
 Il riduttore garantisce una riduzione di velocità di $100:1$ in un solo stadio, moltiplicando la coppia dell'albero motore per $100$ (al netto delle perdite di rendimento).
 
-\subsubsection{Pregi Metrologici e Limiti Progettuali}
+\subsubsection{Pregi Metrologici E Limiti Progettuali}
 
 I riduttori Harmonic Drive presentano caratteristiche funzionali irraggiungibili da altri rotismi:
 \begin{itemize}
@@ -1936,7 +1924,9 @@ I riduttori Harmonic Drive presentano caratteristiche funzionali irraggiungibili
 
 \newpage
 
-\section{Attuazione Cedevole e Tecnologie per la Soft Robotics}
+% AA Parte 5 - Attuazione Cedevole E Soft Robotics
+
+\section{Attuazione Cedevole E Tecnologie Per La Soft Robotics}
 
 La robotica industriale convenzionale si fonda sul paradigma della \textbf{massima rigidezza strutturale}: per garantire precisioni di traiettoria centesimali a carichi massimi, i robot tradizionali sono costruiti con spesse leghe di alluminio o ghisa, azionati da servomotori elettrici collegati a riduttori irreversibili ad altissima impedenza meccanica riflessa. Tuttavia, quando il robot è chiamato a operare al di fuori di gabbie protettive segregate, interagendo fisicamente a stretto contatto con operatori umani (\textit{physical Human-Robot Interaction}, pHRI) o manipolando oggetti fragili a geometria incognita in ambienti non strutturati, il paradigma rigido manifesta limiti intrinseci di sicurezza.
 
@@ -1959,7 +1949,7 @@ Tra i trasduttori più rappresentativi della robotica morbida figurano i \textbf
     \label{fig:mckibben_muscle}
 \end{figure}
 
-\subsubsection{Costruzione e Cinematica di Contrazione}
+\subsubsection{Costruzione E Cinematica Di Contrazione}
 Come illustrato in Figura~\ref{fig:mckibben_muscle}, il muscolo di McKibben è costituito da due elementi concentrici:
 \begin{itemize}
     \item Una \textbf{membrana tubolare interna} a tenuta pneumatica, realizzata in elastomero siliconico o lattice altamente deformabile;
@@ -2004,7 +1994,7 @@ Il comportamento elastico e termodinamico di un muscolo di McKibben può essere 
     \end{figure}
 \end{minipage}
 
-\subsubsection{Attuazione Antagonistica e Controllo Disaccoppiato di Rigidità}
+\subsubsection{Attuazione Antagonistica E Controllo Disaccoppiato Di Rigidità}
 
 Essendo i muscoli pneumatici attuatori \textbf{monodirezionali di sola trazione}, essi non possono spingere. Per azionare un giunto rotante in entrambe le direzioni (oraria e antioraria), è necessario ricorrere a un'architettura bio-ispirata a \textbf{coppia antagonista}, replicando la funzionalità biomeccanica del bicipite e tricipite nell'arto umano.
 
@@ -2023,7 +2013,7 @@ Due muscoli PAM ($M_1$ e $M_2$) sono montati a rinvio su una puleggia calettata 
 
 \newpage
 
-\subsection{Attuatori con Elementi Elastici Intenzionali: SEA e VSA}
+\subsection{Attuatori Con Elementi Elastici Intenzionali: SEA E VSA}
 
 L'introduzione della cedevolezza passiva nella robotica motorizzata con attuatori convenzionali rigidi ha condotto all'evoluzione delle architetture meccatroniche bio-ispirate. Storicamente, il controllo di forza nei robot tradizionali veniva demandato esclusivamente al software tramite algoritmi di controllo di impedenza attiva basati sulle letture di celle di carico multiasse a flangia; tuttavia, la larghezza di banda finita dei convertitori e i ritardi di attuazione limitavano la sicurezza contro impatti rapidi ad alta frequenza. Nel 1995, Gill Pratt e Matthew Williamson (MIT) proposero l'introduzione deliberata di \textbf{elementi elastici calibrati all'interno della catena cinematica dell'attuatore}.
 
@@ -2076,7 +2066,7 @@ La Figura~\ref{fig:sea_struct} documenta la realizzazione costruttiva prototipal
 
 \newpage
 
-\subsubsection{Attuatori a Rigidità Variabile (VSA - Variable Stiffness Actuators)}
+\subsubsection{Attuatori A Rigidità Variabile (VSA - Variable Stiffness Actuators)}
 
 Sebbene i SEA offrano indubbi vantaggi di sicurezza ed elasticità, essi presentano una grave limitazione operativa: la loro rigidezza $k$ è una costante fisica fissata in fase di fabbricazione della molla. L'ingegneria robotica ha dunque sviluppato gli \textbf{Attuatori a Rigidità Variabile} (\textit{VSA}), meccanismi meccatronici evoluti capaci di variare la propria rigidezza naturale passiva $k_{\text{var}}$ istante per istante mediante un'azione di comando indipendente dalla posizione del giunto.
 
@@ -2099,7 +2089,7 @@ Le due strategie costruttive fondamentali per realizzare la variazione di rigide
     \item \textbf{Architettura a Modulazione Meccanica Parametrica}: Un motore primario (\textit{positioning motor}) aziona la catena cinematica principale. Un motore ausiliario di regolazione (\textit{stiffness motor}), a fronte di un dispendio energetico modesto, agisce direttamente sulla geometria vincolare interna della molla: esso può traslare il fulcro di una leva flessibile (variandone il braccio di momento), alterare il precarico assiale di una molla a spirale o modificare la lunghezza libera di una lamina a flessione.
 \end{itemize}
 
-\subsection{Panoramica Tassonomica su Altre Tecnologie di Attuazione Morbida}
+\subsection{Panoramica Tassonomica Su Altre Tecnologie Di Attuazione Morbida}
 
 Accanto alle tecnologie basate su fluidi compressi (PAM) e molle metalliche meccatroniche (SEA/VSA), il panorama scientifico della Soft Robotics e della microrobotica impiega un ventaglio eterogeneo di \textbf{materiali attivi intelligenti} (\textit{smart materials}):
 
