@@ -1,4 +1,3 @@
-
 # AA CONFIGURAZIONE PERCORSO BASE
 $baseDir = ".\"
 
@@ -39,7 +38,7 @@ if ($folderChoice -match '^[Aa]$') {
 
 # AA SELEZIONE DELL'OPERAZIONE
 Write-Host "`n=== SELEZIONA L'OPERAZIONE DA ESEGUIRE ===" -ForegroundColor Cyan
-Write-Host "[1] Cancella Solo I PDF Generati Da LaTeX"
+Write-Host "[1] Cancella I PDF E I File Ausiliari Generati Da LaTeX"
 Write-Host "[2] Ricompila Solo I File .tex"
 Write-Host "[3] Entrambi (Cancella E Poi Ricompila)"
 
@@ -53,25 +52,40 @@ if (-not $doClean -and -not $doCompile) {
     exit
 }
 
-# 3. PULIZIA DEI FILE PDF GENERATI DA .TEX
+# 3. PULIZIA DEI FILE (PDF E AUSILIARI) GENERATI DA .TEX
 if ($doClean) {
-    Write-Host "`n--- Ricerca Dei PDF Generati Da LaTeX In Corso... ---" -ForegroundColor Magenta
+    Write-Host "`n--- Ricerca Dei File Generati Da LaTeX In Corso... ---" -ForegroundColor Magenta
 
-    # Cerca tutti i .pdf e filtra solo quelli che hanno un .tex corrispondente nella stessa cartella
-    $pdfsToDelete = Get-ChildItem -Path $selectedPath -Filter "*.pdf" -Recurse | Where-Object {
-        $texCounterpart = Join-Path $_.DirectoryName "$($_.BaseName).tex"
-        Test-Path $texCounterpart
+    # Estensioni dei file generati da LaTeX da rimuovere
+    $targetExtensions = @(
+        ".pdf", ".aux", ".log", ".synctex.gz", ".synctex",
+        ".out", ".toc", ".lof", ".lot", ".bbl", ".blg",
+        ".fls", ".fdb_latexmk", ".nav", ".snm", ".vrb",
+        ".bcf", ".run.xml", ".xdv"
+    )
+
+    # Cerca tutti i file con tali estensioni e filtra solo quelli che hanno un .tex corrispondente nella stessa cartella
+    $filesToDelete = Get-ChildItem -Path $selectedPath -File -Recurse | Where-Object {
+        $file = $_
+        foreach ($ext in $targetExtensions) {
+            if ($file.Name.EndsWith($ext, [System.StringComparison]::OrdinalIgnoreCase)) {
+                $baseName = $file.Name.Substring(0, $file.Name.Length - $ext.Length)
+                $texCounterpart = Join-Path $file.DirectoryName "$baseName.tex"
+                return (Test-Path $texCounterpart)
+            }
+        }
+        return $false
     }
 
-    if ($pdfsToDelete) {
-        Write-Host "Trovati $($pdfsToDelete.Count) PDF Generati Da .tex. Eliminazione In Corso..." -ForegroundColor Magenta
-        foreach ($pdf in $pdfsToDelete) {
-            Remove-Item -Path $pdf.FullName -Force
-            Write-Host "  Rimosso: $($pdf.Name)" -ForegroundColor DarkGray
+    if ($filesToDelete) {
+        Write-Host "Trovati $($filesToDelete.Count) File Generati Da .tex. Eliminazione In Corso..." -ForegroundColor Magenta
+        foreach ($file in $filesToDelete) {
+            Remove-Item -Path $file.FullName -Force
+            Write-Host "  Rimosso: $($file.Name)" -ForegroundColor DarkGray
         }
         Write-Host "Pulizia Completata Con Successo!`n" -ForegroundColor Green
     } else {
-        Write-Host "Nessun PDF Generato Da .tex Trovato Da Rimuovere.`n" -ForegroundColor Gray
+        Write-Host "Nessun File Generato Da .tex Trovato Da Rimuovere.`n" -ForegroundColor Gray
     }
 }
 
