@@ -91,10 +91,8 @@
 
 % AA Parte 1 - Sistemi Di Misura E Sensori Per La Robotica
 \section{Introduzione Alla Percezione Nei Sistemi Robotici}
-
-Negli organismi viventi, l'adattamento dipende dalla percezione dell'ambiente e del proprio stato interno tramite organi sensoriali specializzati (occhi, orecchie, terminazioni propriocettive). Gli stimoli fisici esterni (luce, forze meccaniche) vengono trasdotti in impulsi elettrici. Ad esempio, il nervo ottico trasferisce alla corteccia visiva l'energia luminosa catturata dai fotorecettori modulando la frequenza di scarica.
-
-In robotica, questa architettura è replicata mediante i \textbf{sensori}. Per operare in sicurezza, compensare tolleranze, interagire con l'ambiente e correggere derive cinematiche e dinamiche, un manipolatore non può limitarsi al controllo ad anello aperto (\textit{open-loop}), ma richiede sensori dedicati.
+Negli organismi viventi, la percezione dipende da organi sensoriali come occhi o orecchie, mentre gli stimoli fisici vengono convertiti in impulsi elettrici tramite il sistema nervoso.\\
+In robotica, questa struttura viene replicata tramite i \textbf{sensori}, che permettono al robot di interagire con l'ambiente e correggere eventuali errori di posizione o orientamento e i \textbf{traduttori} che convertono grandezze fisiche in segnali elettrici. I sensori e i trasduttori sono fondamentali per il controllo in anello chiuso, poiché forniscono informazioni sullo stato del sistema e sull'ambiente circostante.
 
 I dispositivi di misura impiegati nei sistemi robotici quantificano grandezze fisiche analoghe a quelle biologiche:
 \begin{itemize}
@@ -109,7 +107,7 @@ I dispositivi di misura impiegati nei sistemi robotici quantificano grandezze fi
 \subsection{Esempio Pratico: La Misura Della Temperatura}
 \label{subsec:misura_temperatura}
 
-La \textbf{temperatura} è grandezza scalare che indica l'energia cinetica media del mot delle particelle. Esistono molti strumenti che permettono di stimare la temperatura di un corpo (\textit{misurando}) attraverso differenti principi fisici:
+La \textbf{temperatura} è grandezza scalare che indica l'energia cinetica media del moto delle particelle. Esistono molti strumenti che permettono di stimare la temperatura di un corpo (\textit{misurando}) attraverso differenti principi fisici:
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{Images/Lab/DispTemp.jpg}
@@ -118,7 +116,7 @@ La \textbf{temperatura} è grandezza scalare che indica l'energia cinetica media
 \begin{itemize}
     \item[(a)] Il \textbf{Termometro A Mercurio} sfrutta il coefficiente di dilatazione del liquido dentro un capillare di vetro
     \item[(b)] Il \textbf{Termometro Di Galileo} sfrutta la variazione di densità di un fluido idrocarburico con la temperatura, inducendo galleggiamento o affondamento per spinta di Archimede di ampolle tarate
-    \item[(c)] La \textbf{Termoresistenza PT100} (RTD \textit{Resistance Temperature Detector}) opera sull'incremento di resistività elettrica del platino con la temperatura ($R_0 = \SI{100}{\ohm}$ a $\SI{0}{\celsius}$);
+    \item[(c)] La \textbf{Termoresistenza PT100} (RTD \textit{Resistance Temperature Detector}) che permette di misurare la temperatura in base alla variazione della resistività del platino ($R_0 = \SI{100}{\ohm}$ a $\SI{0}{\celsius}$);
     \item[(d)] Il \textbf{Termistore NTC} (\textit{Negative Temperature Coefficient}) è un semiconduttore ceramico la cui resistenza decresce in modo non lineare con la temperatura;
     \item[(e)] Il \textbf{Termometro Digitale Da Cucina} e il \textbf{Termoregolatore Industriale} (es. serie OMRON E5\_D) sono sistemi integrati provvisti di alimentazione, stadi di condizionamento, convertitore analogico-digitale, microcontrollore e interfaccia utente.
 \end{itemize}
@@ -130,7 +128,6 @@ Si possono dividere questi dispositivi in tre classi principali
     \begin{itemize}
         \item \textbf{Stima Diretta:} forniscono lettura visiva immediata tramite lo spostamento di un indice graduato solidale al fluido o alla galleggiabilità di un corpo immerso.
         \item \textbf{Autonomia Energetica:} non richiedono alimentazione esterna e l'energia per lo spostamento meccanico è ricavata dalla differenza termica tra ambiente e sensore.
-        \item \textbf{Reattività Intrinseca:} risposta limitata dall'inerzia termica del fluido e dal coefficiente di scambio conduttivo/convettivo con l'ambiente.
         \item \textbf{Scala Di Riferimento Incorporata:} la conversione è garantita geometricamente da una scala graduata solidale (es. in $\si{\celsius}$ o $\si{\kelvin}$).
     \end{itemize}
     \item \textbf{Sensori Discreti A Uscita Elettrica} come la PT100 o le Termocoppie:
@@ -143,18 +140,16 @@ Si possono dividere questi dispositivi in tre classi principali
     \begin{itemize}
         \item \textbf{Stima Diretta Ed Elaborata:} visualizzano il valore numerico su display nell'unità di misura selezionata.
         \item \textbf{Architettura A Più Livelli:} integrano l'elemento primario con elaborazioni di linearizzazione matematica e filtraggio digitale.
-        \item \textbf{Attuazione Integrata:} oltre alla misura, calcolano l'azione di controllo per pilotare relè statici (SSR) o valvole regolatrici.
     \end{itemize}
 \end{itemize}
 
 
 \subsection{Definizione Formale Di Sistema Di Misura}
-
-Un sistema di misura può essere schematizzato come una \textit{Black Box} che riceve in ingresso il \textbf{misurando} $x(t)$ e produce in uscita la stima quantificata $y(t)$ del suo valore. Nei sistemi per robotica, questa architettura si articola nella catena di acquisizione:
+Un sistema di misura può essere schematizzato come una \textit{Black Box} che riceve in ingresso il \textbf{misurando} $x(t)$ e produce in uscita una stima $y(t)$ del suo valore. Nei sistemi per la robotica, questa architettura può essere rappresentata una catena di acquisizione composta da tre stadi funzionali:
 
 \begin{center}
     \begin{tikzpicture}[
-        scale=0.8,
+        scale=0.75,
         transform shape,
         font=\sffamily,
         >=Stealth,
@@ -207,9 +202,9 @@ Un sistema di misura può essere schematizzato come una \textit{Black Box} che r
         \node[ambiente] (env) {Ambiente};
 
         % 2. Blocchi della catena di misura
-        \node[blocco, right=2.8cm of env] (sense) {Sensore/\\Trasduttore};
-        \node[blocco, right=1.0cm of sense] (cond) {Condizionamento\\Del Segnale};
-        \node[blocco, right=1.0cm of cond] (proc) {Elaborazione\\Del Segnale};
+        \node[blocco, right=2.8cm of env] (sense) {Sensore/Trasduttore};
+        \node[blocco, right=1.0cm of sense] (cond) {Condizionamento \\Del Segnale};
+        \node[blocco, right=1.0cm of cond] (proc) {Elaborazione \\Del Segnale};
 
         % 3. Frecce interne tra i blocchi
         \draw[flusso] (sense) -- (cond);
@@ -234,16 +229,18 @@ Un sistema di misura può essere schematizzato come una \textit{Black Box} che r
 \end{center}
 
 L'architettura funzionale è costituita da tre stadi sequenziali:
+
 \begin{enumerate}
-    \item \textbf{Sensore/Trasduttore (\textit{Sensing Element}):} a contatto diretto o accoppiato con il fenomeno fisico, subisce una variazione reversibile di stato generando un segnale grezzo (meccanico, elettrico o ottico).
-    \item \textbf{Condizionamento Del Segnale (\textit{Signal Conditioner}):} adatta il segnale primario, caratterizzato da bassi livelli energetici ($\si{\micro\volt}$ o $\si{\milli\volt}$) e vulnerabilità al rumore, provvedendo a:
-    \begin{itemize}
-        \item amplificare il segnale verso intervalli standard (es. $0$-$\SI{10}{\volt}$ o $4$-$\SI{20}{\milli\ampere}$);
-        \item applicare un filtro passa-basso per attenuare il rumore ad alta frequenza e prevenire l'\textit{aliasing};
-        \item linearizzare e compensare grandezze d'influenza ambientali
-    \end{itemize}
-    \item \textbf{Elaborazione Del Segnale (\textit{Signal Processing}):} estrae l'informazione finale mediante conversione Analogico/Digitale (ADC), per poi trasferire il dato al processore di bordo (DSP, FPGA o controller del robot).
+    \item \textbf{Sensore/Trasduttore (\textit{Sensing Element}):}
+    È l'elemento che interagisce con la grandezza fisica da misurare e, in risposta alle sue variazioni, genera un segnale in uscita correlato al misurando che può essere di meccanico, elettrico oppure otticao, a seconda della tipologia di sensore utilizzato.
+
+    \item \textbf{Condizionamento Del Segnale (\textit{Signal Conditioner}):}
+    Si occupa di adattare il segnale proveniente dal sensore alle caratteristiche richieste dagli stadi successivi. In particolare, può amplificare segnali di basso livello, come quelli dell'ordine dei microvolt ($\si{\micro\volt}$) o dei millivolt ($\si{\milli\volt}$), portarli in intervalli standard, come $0$--$\SI{10}{\volt}$ o $\SI{4}{\milli\ampere}$--$\SI{20}{\milli\ampere}$, filtrare il rumore e correggere eventuali non linearità del sensore.
+
+    \item \textbf{Elaborazione Del Segnale (\textit{Signal Processing}):}
+    Si occupa dell'acquisizione e dell'elaborazione del segnale, effettuando, quando necessario, la conversione analogico-digitale (ADC). Il dato può quindi essere elaborato ulteriormente, e convertito nell'unità di misura desiderata, per poi essere inviato a un sistema esterno (come un controller o una FPGA)
 \end{enumerate}
+
 \newpage
 \subsection{Distinzione Tra Concettuale Sensore E Trasduttore}
 
