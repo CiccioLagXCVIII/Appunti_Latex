@@ -247,8 +247,8 @@ L'architettura funzionale è costituita da tre stadi sequenziali:
 In robotica, \textit{sensore}, \textit{trasduttore} e \textit{attuatore} assumono delle definizioni rigorose
 
 \begin{description}
-    \item[Sensore:] dispositivo che \textbf{rileva}  un misurando fisico e genera un segnale informativo correlato, interpretabile da un sistema di controllo o da un operatore. La sua funzione principale è \textit{acquisire l'informazione}.
-    \item[Trasduttore:] dispositivo che \textbf{converte} una forma di energia in un'altra. La sua funzione riguarda l'energia e non implica necessariamente una misurazione
+    \item[Sensore:] dispositivo che \textbf{rileva} una grandezza fisica e genera un segnale informativo correlato, interpretabile da un sistema di acquisizione e elaborazione. La sua funzione principale è \textit{acquisire l'informazione}.
+    \item[Trasduttore:] dispositivo che \textbf{converte} una forma di energia in un'altra. La sua funzione principale riguarda la conversione, non necessariamente finalizzata alla misurazione
 \end{description}
 
 In robotica si impiegano principalmente \textbf{trasduttori elettrici}, progettati per convertire forme di energia non elettrica (meccanica, termica, ottica, magnetica) in energia elettrica (tensione, corrente, carica), come mostrato in figura:
@@ -328,23 +328,36 @@ Grazie alla \textbf{Reversibilità Energetica}, la conversione può realizzarsi 
 
 La classificazione tra sensore e trasduttore dipende dalla scala di osservazione:
 \begin{enumerate}
-    \item \textbf{Sensori Che Incorporano Trasduttori:} nel manometro a tubo di Bourdon, la pressione del fluido deforma elasticamente un condotto metallico a C convertendo energia di pressione in energia elastica e cinematica per ruotare un ago. L'intero assieme funge da sensore di pressione, mentre il tubo interno opera come trasduttore
-    \item \textbf{Sensori Modulatori Privi Di Conversione Diretta Di Potenza:} in una fotoresistenza (LDR, \textit{Light Dependent Resistor}), i fotoni modulano la densità dei portatori liberi di carica variando la resistenza $R$, senza generare potenza elettrica (diversamente da una cella fotovoltaica) e quindi la misura richiede una sorgente di eccitazione esterna.
-    \item \textbf{Trasduttori Costituiti Da Catene Di Sensori Elementari:} una \textbf{cella di carico} converte forze in tensioni. Al suo interno un corpo elastico si deforma sotto carico e gli estensimetri agiscono da sensori di deformazione relativa ($\Delta L / L$), la cui variazione d'impedenza è trasdotta in tensione tramite un circuito a ponte.
+    \item \textbf{Sensori Che Incorporano Trasduttori:} nel manometro a tubo, la pressione del fluido agisce su un condotto metallico curvo a forma di C, chiuso a un'estremità. Quando la pressione aumenta, il tubo tende a deformarsi, provocando lo spostamento della sua estremità chiusa. Questo movimento meccanico viene trasmesso, attraverso un apposito meccanismo, a un ago che ruota su una scala graduata, permettendo così di visualizzare il valore della pressione. In questo modo, il manometro converte una grandezza fisica, la pressione, in uno spostamento meccanico facilmente leggibile.
+
+    \item \textbf{Sensori Modulatori Privi Di Conversione Diretta:} nella fotoresistenza (LDR, \textit{Light Dependent Resistor}), che modifica la propria resistenza in base alla luce modifica ma non genera direttamente energia elettrica, quindi è necessario utilizzare una sorgente di alimentazione esterna per misurare la variazione di resistenza.
+
+    \item \textbf{Trasduttori Costituiti Da Catene Di Sensori:} una cella di carico permette di misurare una forza trasformandola in una tensione elettrica. Quando viene applicata una forza, il corpo elastico al suo interno si deforma e questa deformazione viene rilevata attraverso la variazione di una resistenza elettrica. Poi attraverso uno specifico circuito, questa variazione viene convertita in una tensione proporzionale alla forza applicata.
 \end{enumerate}
 \newpage
 
-\section{Caratteristiche Fondamentali Dei Sensori}
+\section{Caratteristiche Dei Sensori}
 
-Le prestazioni dei sensori si articolano in:
+Le caratteristiche dei sensori si dividono in:
 
 \begin{itemize}
-    \item \textbf{Caratteristiche Statiche:} descrivono la risposta del sensore a regime stazionario, ossia quando il misurando è costante o varia con dinamiche sufficientemente lente da rendere trascurabili i fenomeni transitori.
-    \item \textbf{Caratteristiche Dinamiche:} si distinguono secondo le definizioni metrologiche:
-    \begin{itemize}
-        \item Accuratezza (\textit{Accuracy}): grado di concordanza (\textit{closeness of agreement}) tra la media delle misure e il \textbf{valore vero} (o convenzionale) del misurando. In pratica, un elevata accuratezza è sinonimo di assenza di errori sistematici (offset o derive non compensate).
-        \item Precisione (\textit{Precision}): grado di concordanza tra misure indipendenti ottenute applicando ripetutamente lo stesso procedimento sullo stesso misurando. Descrive l'ampiezza della \textbf{dispersione statistica} indotta da errori casuali.
-    \end{itemize}
+    \item \textbf{Caratteristiche Statiche:} Descrivono la risposta del sensore a regime stazionario, ossia quando il misurando è costante o varia con dinamiche sufficientemente lente da rendere trascurabili i fenomeni transitori.
+    \item \textbf{Caratteristiche Dinamiche:} Descrivono la risposta del sensore quando il misurando varia nel tempo e quindi non è possibile trascurare gli effetti transitori
+\end{itemize}
+
+\subsection{Caratteristiche Statiche}
+\begin{itemize}
+    \item \textbf{Accuratezza} (\textit{Accuracy}): Indica la vicinanza (\textit{closeness of agreement}) tra la media delle misure e il \textbf{valore vero} del misurando. In pratica, un elevata accuratezza è sinonimo di assenza di errori sistematici (offset o derive non compensate).
+    \item \textbf{Precisione} (\textit{Precision}): Indica la vicinanza tra misure indipendenti ottenute applicando ripetutamente lo stesso procedimento sullo stesso misurando. Descrive l'ampiezza della \textbf{dispersione statistica} indotta da errori casuali.
+    \item \textbf{Risoluzione} (\textit{Resolution}): Indica la più piccola variazione dell'ingresso $\Delta x_{min}$ che produce un'uscita osservabile. Per un encoder assoluto a 12 bit su un giro completo si ha:
+    \[
+        \Delta \theta_{\min} = \frac{2\pi}{2^{12}} = \frac{2\pi}{4096} \approx \SI{1.53e-3}{\radian} \approx 0.088^{\circ}
+    \]
+    \item \textbf{Sensitività} (\textit{Sensitivity}): Indica di quanto varia l'uscita al variare dell'ingresso ed è rappresentata dal rapporto tra l'uscita $\Delta y$ e l'ingresso $\Delta x$. La sensitività locale $S(x)$, data la caratteristica del sensore $f(x)$, è data dal limite dalla derivata prima della caratteristica del sensore
+    \[
+        S(x) = \frac{f(x)}{dx}
+    \]
+    Nel caso di un sensore con caratteristica lineare ($f(x) = Kx + c$) la sensitività è costante e pari alla pendenza $K$ della caratteristica. Nei sensori non lineari (sensori reali) varia in funzione dell'ingresso fino alla regione di \textbf{\underline{saturazione}}, ovvero quando piccole variazioni dell'ingresso non producono variazioni dell'uscita, ovvero si annulla la sensibilità per determinate variazioni dell'ingresso
 \end{itemize}
 
 \begin{center}
@@ -455,107 +468,97 @@ Le prestazioni dei sensori si articolano in:
     \end{tikzpicture}
 \end{center}
 
-\begin{itemize}
-    \item \textit{Il Sensore \#1} (Bassa Accuratezza, Bassa Precisione) presenta dispersione elevata e scostamento dal centro. Nelle misure c'è sia rumore casuale sia da errori sistematici.
-    \item \textit{Il Sensore \#2} (Alta Precisione, Bassa Accuratezza) presenta misure concentrate (alta ripetibilità) ma traslate rispetto al centro. In pratica, il dispositivo è preciso ma affetto da errore sistematico (bias o offset);
-    \item \textit{Il Sensore \#3} (Alta Precisione E Alta Accuratezza) presenta misure attorno al centro. Quindi il sistema è simultaneamente preciso e accurato, configurazione necessaria per il controllo in anello chiuso.
+\begin{itemize}[label=$\triangleright$]
+    \item \textbf{\textit{Il Sensore \#1}} (Bassa Accuratezza, Bassa Precisione) presenta dispersione elevata e scostamento dal centro. Nelle misure c'è sia rumore casuale sia da errori sistematici.
+    \item \textbf{\textit{Il Sensore \#2}} (Alta Precisione, Bassa Accuratezza) presenta misure concentrate (alta ripetibilità) ma traslate rispetto al centro. In pratica, il dispositivo è preciso ma affetto da errore sistematico (bias o offset);
+    \item \textbf{\textit{Il Sensore \#3}} (Alta Precisione E Alta Accuratezza) presenta misure attorno al centro. Quindi il sistema è simultaneamente preciso e accurato, configurazione necessaria per il controllo in anello chiuso.
 \end{itemize}
 
-\subsection{Risoluzione E Sensitività}
-
-\begin{itemize}
-    \item \textbf{Risoluzione (\textit{Resolution}):}  Una minima variazione d'ingresso $\Delta x_{\min}$ produce una variazione apprezzabile e misurabile nel segnale di uscita. Per un encoder assoluto a 12 bit su un giro ($2\pi$):
-    \[
-        \Delta \theta_{\min} = \frac{2\pi}{2^{12}} = \frac{2\pi}{4096} \approx \SI{1.53e-3}{\radian} \approx 0.088^{\circ}
-    \]
-    \item \textbf{Sensitività Statica (\textit{Sensitivity}):} rapporto tra la variazione dell'uscita $\Delta y$ e la variazione d'ingresso $\Delta x$. Data la caratteristica statica $y = f(x)$, la sensitività locale $S(x)$ è pari alla derivata prima:
-    \[
-        S(x) = \lim_{\Delta x \to 0} \frac{\Delta y}{\Delta x} = \frac{df(x)}{dx}
-        \label{eq:sensitivita}
-    \]
-\end{itemize}
-Per caratteristiche rettilinee ($y = K x + y_0$), la sensitività è costante ed è pari alla pendenza $K$. Nei dispositivi reali si manifestano non linearità fino alla \textbf{saturazione}, zona in cui $df/dx \to 0$, annullando la sensibilità a ulteriori incrementi d'ingresso.
 \newpage
-\subsubsection{Intervallo Di Misurazione (\textit{Range} E \textit{Span})}
-
 \begin{itemize}
-    \item \textbf{Range:} intervallo tra il valore minimo $x_{\min}$ e massimo $x_{\max}$ del misurando entro cui il sensore garantisce le specifiche metrologiche:
-    \[
-        \text{Range} = [x_{\min}, \, x_{\max}]
-    \]
-    \item \textbf{Span} (Fondo Scala, \textit{Full Scale Output} - FSO): rappresenta l'estensione dell' intervallo:
-    \[
-        \text{Span} = x_{\max} - x_{\min}
-    \]
-\end{itemize}
-Sollecitazioni oltre $x_{\max}$ possono indurre non linearità reversibili oppure deformazioni e rottura meccanica del trasduttore interno.
-
-\subsubsection{Ripetibilità E Riproducibilità}
-
-Entrambi i parametri descrivono la concordanza tra letture a fronte del medesimo ingresso, ma sotto differenti condizioni operative:
-\begin{itemize}
-    \item \textbf{Ripetibilità (\textit{Repeatability}):} concordanza tra misure consecutive eseguite mantenendo invariate \textbf{tutte} le condizioni sperimentali (operatore, algoritmo di campionamento, montaggio meccanico, condizioni ambientali e tensione di alimentazione a breve termine).
-    \item \textbf{Riproducibilità (\textit{Reproducibility}):} concordanza tra misure della medesima grandezza ottenute introducendo variazioni sistematiche nelle condizioni operative (operatori, laboratori, supporti meccanici su manipolatori differenti, fluttuazioni termiche stagionali).
-\end{itemize}
-
-\subsubsection{Stabilità, Deriva Ed Errore Di Misura}
-
-\begin{itemize}
-    \item \textbf{Stabilità (\textit{Stability}):}  capacità del sensore di conservare costanti le caratteristiche metrologiche (sensitività, guadagno, offset) su orizzonti temporali prolungati.
-    \item \textbf{Deriva (\textit{Drift}):} variazione progressiva nel tempo dell'uscita non associata a variazioni del misurando. Include la deriva di zero (\textit{zero drift}, traslazione rigida della caratteristica) e la deriva di sensibilità (\textit{gain drift}, variazione di pendenza).
+    \item \textbf{Range}: Intervallo tra il valore minimo $x_{\min}$ e massimo $x_{\max}$ del misurando entro cui il sensore garantisce le specifiche tecniche, ovvero $\text{Range} = [x_{\min}, \, x_{\max}]$
+    \item \textbf{Span} (Fondo Scala, \textit{Full Scale Output} - FSO): Rappresenta l'estensione dell' intervallo, ovvero $\text{Span} = x_{\max} - x_{\min}$.   Sollecitazioni oltre $x_{\max}$ possono indurre non linearità reversibili oppure deformazioni e rottura meccanica del trasduttore interno.
+    \item \textbf{Ripetibilità (\textit{Repeatability}):} Concordanza tra misure consecutive eseguite mantenendo invariate \textbf{tutte} le condizioni (operatore, condizioni ambientali, tensione di alimentazione, ecc).
+    \item \textbf{Riproducibilità (\textit{Reproducibility}):} Concordanza tra misure della stessa grandezza ottenute introducendo variazioni sistematiche nelle condizioni operative (operatori, supporti meccanici su manipolatori differenti, fluttuazioni termiche stagionali). \\
+    Sia la \underline{ripetibilità} che la \underline{riproducibilità} descrivono la vicinanza tra letture dell'uscita allo stesso ingresso, però sotto condizioni differenti
+    \item \textbf{Stabilità (\textit{Stability}):}  Capacità del sensore di conservare le caratteristiche (sensitività, guadagno, offset) su orizzonti temporali prolungati.
+    \item \textbf{Deriva (\textit{Drift}):} variazione dell'uscita nel tempo non associata a variazioni del misurando. Include la deriva di zero (\textit{zero drift}, traslazione rigida della caratteristica) e la deriva di sensibilità (\textit{gain drift}, variazione di pendenza).
     \item \textbf{Errore Di Misura:}  scostamento quantitativo tra il valore indicato $y$ (espresso nell'unità del misurando tramite curva di taratura) e il valore convenzionalmente vero $x_v$:
         \begin{align*}
             e_{\text{assoluto}} &= y - x_v\\
-            e_{\text{relativo}} &= \frac{y - x_v}{x_v}
+            e_{\text{relativo}} &= \frac{y - x_v}{x_v}\\
+            e_{\text{percentuale}} &= \frac{y - x_v}{x_v} \times 100
         \end{align*}
-    L'errore percentuale si ottiene moltiplicando l'errore relativo per 100.
 \end{itemize}
 
-Gli errori si classificano in:
+
+\subsubsection{Errori di Misura e Caratterizzazione del Rumore}
+
+In un sistema di misura, il valore acquisito può differire da quello reale del misurando a causa di diversi fattori, riconducibili principalmente a due categorie: gli errori sistematici e gli errori casuali.
+
 \begin{itemize}
-    \item \textbf{Errori Sistematici:} Costanti in modulo e segno per misure ripetute (bias, errori di calibrazione, effetti di carico termico). Possono essere stimati e rimossi tramite procedura di taratura (\textit{Calibration}).
-    \item \textbf{Errori Casuali:} Fluttuazioni stocastiche provocate da disturbi non determinabili singolarmente, quantificabili e riducibili solo mediante inferenza statistica (media, filtraggio di Kalman).
+    \item \textbf{Errori Sistematici:} Sono deviazioni che si ripresentano nelle misure ripetute, mantenendo generalmente lo stesso segno e un valore simile. Possono essere causati, ad esempio, da errori di calibrazione, bias o effetti termici. Quando identificabili, possono essere stimati e compensati mediante procedure di taratura (\textit{calibration}) e correzione.
+
+    \item \textbf{Errori Casuali:} Sono variazioni imprevedibili del risultato di misura, dovute a fenomeni stocastici e a disturbi non controllabili singolarmente. Non possono essere eliminati, ma il loro effetto può essere ridotto mediante tecniche statistiche, come il calcolo della media su misure ripetute e l'impiego di filtri.
 \end{itemize}
 
-\newpage
-\subsubsection{Rumore Nei Sistemi Di Misura E Rapporto Segnale-Rumore (SNR)}
+Una delle principali cause di variabilità nelle misure è il \textbf{rumore} (\textit{noise}), ovvero una componente indesiderata che si sovrappone al segnale utile o ne modifica il valore. Il rumore può essere generato sia da sorgenti esterne al sistema di misura, sia da fenomeni fisici intrinseci ai suoi componenti elettronici.
 
-Il \textbf{rumore} (\textit{noise}) è qualsiasi segnale spurio sommato o moltiplicato all'uscita, originato indipendentemente dal misurando. La purezza della misura è quantificata dal \textbf{Rapporto Segnale-Rumore} (\textit{Signal-to-Noise Ratio}, SNR):
+La qualità di una misura può essere caratterizzata attraverso il \textbf{Rapporto Segnale-Rumore} (\textit{Signal-to-Noise Ratio}, SNR), che esprime il rapporto tra l'ampiezza del segnale utile e quella del rumore. Assumendo di utilizzare valori efficaci (RMS), oppure valori medi coerenti con la definizione adottata, il rapporto può essere espresso come:
 \[
     \text{SNR} = \frac{\mu_{\text{meas}}}{\sigma_{\text{noise}}}
 \]
-in cui $\mu_{\text{meas}}$ è il valore medio (o RMS) del segnale e $\sigma_{\text{noise}}$ la deviazione standard del disturbo.\\
-In decibel ($\si{\decibel}$):
+Dove $\mu_{\text{meas}}$ è il valore medio (o RMS) del segnale e $\sigma_{\text{noise}}$ la deviazione standard del disturbo. Per esprimere il rapporto segnale-rumore in decibel (\si{\decibel}), si utilizza la relazione:
 \[
     \text{SNR}_{\si{\decibel}} = 20 \log_{10} \left( \frac{\mu_{\text{meas}}}{\sigma_{\text{noise}}} \right)
 \]
+Un valore elevato di SNR indica che il segnale utile prevale sul rumore, consentendo generalmente una misura più affidabile. Al contrario, un SNR basso indica che il disturbo ha un'influenza significativa sul risultato acquisito.
 
-I meccanismi generatori del rumore si distinguono per localizzazione:
+\textbf{Sorgenti Di Rumore}\\
+In base alla loro origine, le sorgenti di rumore possono essere suddivise in due categorie principali: esterne e interne al dispositivo di misura.
+
 \begin{enumerate}
-    \item \textbf{Sorgenti Esterne Al Dispositivo:} disturbi ambientali accoppiati per via capacitiva, induttiva o conduttiva:
+    \item \textbf{Sorgenti Esterne Al Dispositivo}: Sono disturbi provenienti dall'ambiente circostante, che possono accoppiarsi al sistema di misura attraverso meccanismi capacitivi, induttivi o conduttivi. Per esempio:
     \begin{itemize}
-        \item interferenze elettromagnetiche (EMI) prodotte da inverter e motori elettrici
-        \item ondulazione residua (\textit{ripple}) di alimentatori switching
-        \item diafonia (\textit{cross-talk}) tra conduttori contigui nel cablaggio
-        \item vibrazioni meccaniche trasmesse dalla struttura al sensore.
+        \item \textbf{Interferenze Elettromagnetiche (EMI):} Che possono essere generate da inverter, motori elettrici e altri dispositivi che producono campi elettromagnetici
+        \item \textbf{Ondulazione Residua (\textit{ripple}):}Sono variazioni periodiche della tensione di alimentazione
+        \item \textbf{Diafonia (\textit{cross-talk}):} È l'accoppiamento indesiderato di un segnale su un altro canale attraverso conduttori vicini o elementi circuitali condivisi.
+        \item \textbf{Vibrazioni Meccaniche:} oscillazioni trasmesse dalla struttura al sensore, che possono alterare la grandezza fisica rilevata o introdurre componenti spurie nella misura.
     \end{itemize}
-    \item \textbf{Sorgenti Interne al Dispositivo:} fluttuazioni microscopiche intrinseche ai semiconduttori e ai componenti circuitali:
+    La loro influenza può essere ridotta mediante un'adeguata progettazione del cablaggio, schermatura, disaccoppiamento dell'alimentazione e isolamento meccanico, a seconda della natura del disturbo.
+
+    \item \textbf{Sorgenti Interne Al Dispositivo}:
+    Sono associate ai fenomeni fisici intrinseci ai componenti elettronici, in particolare ai resistori e ai semiconduttori. Anche in assenza di interferenze esterne, questi fenomeni generano fluttuazioni che limitano la precisione raggiungibile dal sistema di misura. Le principali tipologie sono:
     \begin{itemize}
-        \item \textbf{Rumore Termico (Johnson-Nyquist):} agitazione termica dei portatori di carica in un conduttore resistivo a temperatura $T > \SI{0}{\kelvin}$. La densità spettrale di potenza è uniforme (rumore bianco) ed è data da:
+        \item \textbf{Rumore Termico (Johnson--Nyquist):} Causato dall'agitazione dei portatori di carica nei componenti resistivi a temperatura superiore allo zero assoluto. È caratterizzato da una densità spettrale di potenza idealmente costante, per cui viene classificato come rumore bianco. La tensione di rumore quadratica media su una banda di frequenza $\Delta f$ è:
         \[
             \overline{v_n^2} = 4 k_B T R \Delta f
         \]
-        con $k_B \approx \SI{1.38e-23}{\joule\per\kelvin}$ costante di Boltzmann, $T$ temperatura assoluta in $\si{\kelvin}$, $R$ resistenza ohmica e $\Delta f$ banda passante considerata.
-        \item \textbf{Rumore Granulare (\textit{Shot Noise}):} associato alla quantizzazione della carica elettrica (carica elementare $q \approx \SI{1.602e-19}{\coulomb}$) al passaggio attraverso barriere di potenziale (es. giunzioni p-n):
+        dove $k_B \approx \SI{1.38e-23}{\joule\per\kelvin}$ è la costante di Boltzmann, $T$ è la temperatura assoluta in kelvin, $R$ è la resistenza elettrica e $\Delta f$ è la larghezza di banda considerata. La relazione assume una resistenza ideale e una banda sufficientemente uniforme.
+
+        \item \textbf{Rumore Granulare (\textit{shot noise}):} Deriva dalla natura discreta della carica elettrica e dalle fluttuazioni statistiche del numero di portatori che attraversano una barriera di potenziale, come una giunzione p-n. Nel caso ideale di un flusso di carica indipendente, la corrente di rumore quadratica media è:
         \[
-            \overline{i_{\text{shot}}^2} = 2 q I_{dc} \Delta f
+            \overline{i_{\text{shot}}^2} = 2 q I_{\text{dc}} \Delta f
         \]
-        \item \textbf{Rumore di Generazione-Ricombinazione:} transizioni stocastiche dei portatori di carica tra banda di valenza e banda di conduzione nei semiconduttori.
-        \item \textbf{Rumore Rosa (\textit{Pink Noise} o rumore $1/f$):} rumore a bassa frequenza con densità spettrale di potenza $S(f) \propto 1/f^{\alpha}$ ($\alpha \approx 1$), predominante nella banda sub-hertziana.
-        \item \textbf{Rumore Bianco (\textit{White Noise}):} modello ideale con densità spettrale di potenza costante su tutto lo spettro frequenziale d'interesse.
+
+        dove $q \approx \SI{1.602e-19}{\coulomb}$ è il valore assoluto della carica elementare, $I_{\text{dc}}$ è la corrente continua media e $\Delta f$ è la larghezza di banda considerata.
+
+        \item \textbf{Rumore Di Generazione-Ricombinazione:} è dovuto alle fluttuazioni statistiche dei processi di generazione e ricombinazione dei portatori di carica nei semiconduttori. Questi fenomeni modificano temporaneamente la concentrazione dei portatori e, di conseguenza, la corrente elettrica nel dispositivo.
+
+        \item \textbf{Rumore Rosa (\textit{pink noise} o rumore $1/f$):} è particolarmente rilevante alle basse frequenze ed è caratterizzato da una densità spettrale di potenza che diminuisce all'aumentare della frequenza secondo una legge del tipo:
+
+        \[
+            S(f) \propto \frac{1}{f^\alpha},
+            \qquad \alpha \approx 1
+        \]
+
+        È frequente nei dispositivi elettronici e può diventare dominante nella regione a bassa frequenza, anche se la frequenza alla quale prevale dipende dal componente e dalle condizioni operative.
+
+        \item \textbf{Rumore Bianco (\textit{white noise}):} è un modello ideale in cui la densità spettrale di potenza è costante rispetto alla frequenza. Il rumore termico ne costituisce un esempio approssimato su una banda sufficientemente ampia, ma finita. Nella pratica, nessun sistema presenta una densità spettrale perfettamente costante su un intervallo di frequenze illimitato.
     \end{itemize}
 \end{enumerate}
 
+\newpage
 \subsection{Caratteristiche Dinamiche}
 
 In presenza di rapide variazioni dell'ingresso $x(t)$, i processi di accumulo e dissipazione di energia (inerzie delle masse mobili, induttanze e capacità circuitali, capacità termiche) determinano ritardi e distorsioni nell'uscita. Sotto l'ipotesi di linearità, i sensori vengono descritti come \textbf{Sistemi Lineari Tempo-Invarianti (LTI)} tramite un'equazione differenziale a coefficienti costanti di ordine $n$:
