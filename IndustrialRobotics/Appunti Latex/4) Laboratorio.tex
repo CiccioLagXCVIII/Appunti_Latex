@@ -497,14 +497,14 @@ Le caratteristiche dei sensori si dividono in:
 In un sistema di misura, il valore acquisito può differire da quello reale del misurando a causa di diversi fattori, riconducibili principalmente a due categorie: gli errori sistematici e gli errori casuali.
 
 \begin{itemize}
-    \item \textbf{Errori Sistematici:} Sono deviazioni che si ripresentano nelle misure ripetute, mantenendo generalmente lo stesso segno e un valore simile. Possono essere causati, ad esempio, da errori di calibrazione, bias o effetti termici. Quando identificabili, possono essere stimati e compensati mediante procedure di taratura (\textit{calibration}) e correzione.
+    \item \textbf{Errori Sistematici:} Sono deviazioni che si verificano ripetutamente, e generalmente hanno lo stesso segno e un valore simile. Possono essere causati, ad esempio, da errori di calibrazione, bias o effetti termici. Quando identificabili, possono essere stimati e compensati mediante procedure di taratura (\textit{calibration}) e correzione.
 
     \item \textbf{Errori Casuali:} Sono variazioni imprevedibili del risultato di misura, dovute a fenomeni stocastici e a disturbi non controllabili singolarmente. Non possono essere eliminati, ma il loro effetto può essere ridotto mediante tecniche statistiche, come il calcolo della media su misure ripetute e l'impiego di filtri.
 \end{itemize}
 
-Una delle principali cause di variabilità nelle misure è il \textbf{rumore} (\textit{noise}), ovvero una componente indesiderata che si sovrappone al segnale utile o ne modifica il valore. Il rumore può essere generato sia da sorgenti esterne al sistema di misura, sia da fenomeni fisici intrinseci ai suoi componenti elettronici.
+Una delle principali cause di variabilità nelle misure è il \textbf{rumore} (\textit{noise}), ovvero una componente indesiderata che si sovrappone al segnale utile o ne modifica il valore.
 
-La qualità di una misura può essere caratterizzata attraverso il \textbf{Rapporto Segnale-Rumore} (\textit{Signal-to-Noise Ratio}, SNR), che esprime il rapporto tra l'ampiezza del segnale utile e quella del rumore. Assumendo di utilizzare valori efficaci (RMS), oppure valori medi coerenti con la definizione adottata, il rapporto può essere espresso come:
+La qualità di una misura può essere caratterizzata attraverso il \textbf{Rapporto Segnale-Rumore} (\textit{Signal-to-Noise Ratio}, SNR), che esprime il rapporto tra l'ampiezza del segnale utile e quella del rumore e può essere espresso come:
 \[
     \text{SNR} = \frac{\mu_{\text{meas}}}{\sigma_{\text{noise}}}
 \]
@@ -515,35 +515,33 @@ Dove $\mu_{\text{meas}}$ è il valore medio (o RMS) del segnale e $\sigma_{\text
 Un valore elevato di SNR indica che il segnale utile prevale sul rumore, consentendo generalmente una misura più affidabile. Al contrario, un SNR basso indica che il disturbo ha un'influenza significativa sul risultato acquisito.
 
 \textbf{Sorgenti Di Rumore}\\
-In base alla loro origine, le sorgenti di rumore possono essere suddivise in due categorie principali: esterne e interne al dispositivo di misura.
-
+Il rumore può essere generato da diverse sorgenti, sia interne che esterne al sistema di misura.
 \begin{enumerate}
-    \item \textbf{Sorgenti Esterne Al Dispositivo}: Sono disturbi provenienti dall'ambiente circostante, che possono accoppiarsi al sistema di misura attraverso meccanismi capacitivi, induttivi o conduttivi. Per esempio:
+    \item \textbf{Rumore Da Sorgenti Esterne Al Dispositivo}: Sono disturbi provenienti dall'ambiente circostante, che possono influenzare il sistema attraverso meccanismi capacitivi, induttivi o conduttivi. Per esempio:
     \begin{itemize}
-        \item \textbf{Interferenze Elettromagnetiche (EMI):} Che possono essere generate da inverter, motori elettrici e altri dispositivi che producono campi elettromagnetici
-        \item \textbf{Ondulazione Residua (\textit{ripple}):}Sono variazioni periodiche della tensione di alimentazione
-        \item \textbf{Diafonia (\textit{cross-talk}):} È l'accoppiamento indesiderato di un segnale su un altro canale attraverso conduttori vicini o elementi circuitali condivisi.
-        \item \textbf{Vibrazioni Meccaniche:} oscillazioni trasmesse dalla struttura al sensore, che possono alterare la grandezza fisica rilevata o introdurre componenti spurie nella misura.
+        \item \textbf{Interferenze Elettromagnetiche (EMI):} Generate da inverter, motori elettrici e altri dispositivi che producono campi elettromagnetici
+        \item \textbf{Ondulazione Residua (\textit{ripple}):} Variazioni periodiche della tensione di alimentazione
+        \item \textbf{Diafonia (\textit{cross-talk}):} Accoppiamento indesiderato di un segnale su un altro canale attraverso conduttori vicini o elementi circuitali condivisi.
+        \item \textbf{Vibrazioni Meccaniche:} oscillazioni trasmesse dalla struttura al sensore, che possono alterare la grandezza fisica rilevata
     \end{itemize}
     La loro influenza può essere ridotta mediante un'adeguata progettazione del cablaggio, schermatura, disaccoppiamento dell'alimentazione e isolamento meccanico, a seconda della natura del disturbo.
 
-    \item \textbf{Sorgenti Interne Al Dispositivo}:
-    Sono associate ai fenomeni fisici intrinseci ai componenti elettronici, in particolare ai resistori e ai semiconduttori. Anche in assenza di interferenze esterne, questi fenomeni generano fluttuazioni che limitano la precisione raggiungibile dal sistema di misura. Le principali tipologie sono:
+    \item \textbf{Rumore Da Sorgenti Interne Al Dispositivo}: Sono disturbi generati da fenomeni fisici che si verificano all'interno dei componenti, in particolare resistenze e semicondittori. Le principali tipologie sono:
     \begin{itemize}
         \item \textbf{Rumore Termico (Johnson--Nyquist):} Causato dall'agitazione dei portatori di carica nei componenti resistivi a temperatura superiore allo zero assoluto. È caratterizzato da una densità spettrale di potenza idealmente costante, per cui viene classificato come rumore bianco. La tensione di rumore quadratica media su una banda di frequenza $\Delta f$ è:
         \[
             \overline{v_n^2} = 4 k_B T R \Delta f
         \]
-        dove $k_B \approx \SI{1.38e-23}{\joule\per\kelvin}$ è la costante di Boltzmann, $T$ è la temperatura assoluta in kelvin, $R$ è la resistenza elettrica e $\Delta f$ è la larghezza di banda considerata. La relazione assume una resistenza ideale e una banda sufficientemente uniforme.
+        dove $k_B \approx \SI{1.38e-23}{\joule\per\kelvin}$ è la costante di Boltzmann, $T$ è la temperatura assoluta in kelvin, $R$ è la resistenza elettrica e $\Delta f$ è la larghezza di banda considerata.
 
-        \item \textbf{Rumore Granulare (\textit{shot noise}):} Deriva dalla natura discreta della carica elettrica e dalle fluttuazioni statistiche del numero di portatori che attraversano una barriera di potenziale, come una giunzione p-n. Nel caso ideale di un flusso di carica indipendente, la corrente di rumore quadratica media è:
+        \item \textbf{Rumore Granulare (\textit{shot noise}):} Deriva dalle fluttuazioni del numero di portatori che attraversano una barriera di potenziale, come in una giunzione p-n. Nel caso ideale, la corrente di rumore quadratica media è:
         \[
             \overline{i_{\text{shot}}^2} = 2 q I_{\text{dc}} \Delta f
         \]
 
         dove $q \approx \SI{1.602e-19}{\coulomb}$ è il valore assoluto della carica elementare, $I_{\text{dc}}$ è la corrente continua media e $\Delta f$ è la larghezza di banda considerata.
 
-        \item \textbf{Rumore Di Generazione-Ricombinazione:} è dovuto alle fluttuazioni statistiche dei processi di generazione e ricombinazione dei portatori di carica nei semiconduttori. Questi fenomeni modificano temporaneamente la concentrazione dei portatori e, di conseguenza, la corrente elettrica nel dispositivo.
+        \item \textbf{Rumore Di Generazione-Ricombinazione:} è dovuto alle fluttuazioni dei processi di generazione e ricombinazione dei portatori di carica nei semiconduttori. Questi fenomeni modificano temporaneamente la concentrazione dei portatori e, di conseguenza, la corrente elettrica nel dispositivo.
 
         \item \textbf{Rumore Rosa (\textit{pink noise} o rumore $1/f$):} è particolarmente rilevante alle basse frequenze ed è caratterizzato da una densità spettrale di potenza che diminuisce all'aumentare della frequenza secondo una legge del tipo:
 
