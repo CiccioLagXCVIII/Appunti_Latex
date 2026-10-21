@@ -514,6 +514,7 @@ Dove $\mu_{\text{meas}}$ è il valore medio (o RMS) del segnale e $\sigma_{\text
 \]
 Un valore elevato di SNR indica che il segnale utile prevale sul rumore, consentendo generalmente una misura più affidabile. Al contrario, un SNR basso indica che il disturbo ha un'influenza significativa sul risultato acquisito.
 
+\newpage
 \textbf{Sorgenti Di Rumore}\\
 Il rumore può essere generato da diverse sorgenti, sia interne che esterne al sistema di misura.
 \begin{enumerate}
@@ -557,75 +558,134 @@ Il rumore può essere generato da diverse sorgenti, sia interne che esterne al s
 \end{enumerate}
 
 \newpage
+
 \subsection{Caratteristiche Dinamiche}
 
-In presenza di rapide variazioni dell'ingresso $x(t)$, i processi di accumulo e dissipazione di energia (inerzie delle masse mobili, induttanze e capacità circuitali, capacità termiche) determinano ritardi e distorsioni nell'uscita. Sotto l'ipotesi di linearità, i sensori vengono descritti come \textbf{Sistemi Lineari Tempo-Invarianti (LTI)} tramite un'equazione differenziale a coefficienti costanti di ordine $n$:
+In presenza di rapide variazioni del segnale di ingresso $x(t)$, i fenomeni di accumulo e dissipazione energetica (dovuti a inerzie di masse mobili, induttanze e capacità parassite nei circuiti, o capacità termiche) causano ritardi temporali e distorsioni nella risposta in uscita. Sotto l'ipotesi di linearità, il comportamento del sensore viene descritto come quello di un \textbf{Sistema Lineare Tempo-Invariante} (\textit{Linear Time-Invariant}, LTI) mediante un'equazione differenziale a coefficienti costanti di ordine $n$:
 \[
     a_n \frac{d^n y(t)}{dt^n} + a_{n-1} \frac{d^{n-1} y(t)}{dt^{n-1}} + \dots + a_1 \frac{dy(t)}{dt} + a_0 y(t) = b_m \frac{d^m x(t)}{dt^m} + \dots + b_1 \frac{dx(t)}{dt} + b_0 x(t)
     \label{eq:ode_lti}
 \]
-con $n \ge m$ per causalità fisica. Con condizioni iniziali nulle, la trasformata di Laplace definisce la funzione di trasferimento $G(s)$:
+con la condizione $n \ge m$ richiesta dal principio di causalità fisica. Assumendo condizioni iniziali nulle, l'applicazione della trasformata di Laplace permette di definire la \textbf{funzione di trasferimento} (\textit{transfer function}) $G(s)$:
 \[
     G(s) = \frac{Y(s)}{X(s)} = \frac{\sum_{j=0}^m b_j s^j}{\sum_{i=0}^n a_i s^i}
 \]
 
-\subsubsection{Classificazione Per Ordini Dinamici}
-
-\paragraph{1. Sensori di Ordine Zero}
-Privi di elementi di accumulo energetico significativo nella banda utile, sono governati dalla relazione puramente algebrica:
+\subsubsection{Classificazione per Ordine Dinamico}
+\begin{itemize}
+\item \textbf{Sensori Di Ordine Zero:} Sono trasduttori privi di elementi di accumulo energetico nella banda di funzionamento, governati da una relazione puramente algebrica:
 \[
     a_0 y(t) = b_0 x(t) \implies y(t) = K \cdot x(t)
 \]
-in cui $K = b_0 / a_0$ è la sensitività statica. L'uscita segue istantaneamente l'ingresso senza ritardi o attenuazioni. Un potenziometro a film plastico approssima un sistema di ordine zero entro la banda tipica del moto robotico ($\SI{0}{}$-$\SI{100}{\hertz}$).
+Dove $K = b_0 / a_0$ rappresenta la sensitività statica. L'uscita riproduce istantaneamente le variazioni dell'ingresso, in assenza di sfasamenti o attenuazioni. A titolo di esempio, un potenziometro a film plastico approssima un sistema di ordine zero entro la tipica banda operativa del moto robotico ($\SI{0}{}$--$\SI{100}{\hertz}$).
 
-\paragraph{2. Sensori del Primo Ordine}
-Dotati di un singolo elemento di accumulo dominante (es. capacità termica in una termocoppia o capacità parassita in un fotorilevatore). Dividendo l'equazione differenziale per $a_0$:
+\item \textbf{Sensori Del Primo Ordine}
+Presentano un singolo elemento di accumulo energetico dominante (ad esempio, la capacità termica in una termocoppia o la capacità parassita in un fotorilevatore). Normalizzando l'equazione differenziale rispetto ad $a_0$, il modello assume la forma:
 \[
     \tau \frac{dy(t)}{dt} + y(t) = K \cdot x(t)
-    \label{eq:primo_ordine}
 \]
-in cui:
-\begin{itemize}
-    \item $K = b_0 / a_0$ è la sensitività statica;
-    \item $\tau = a_1 / a_0$ è la \textbf{costante di tempo} del sensore, espressa in secondi ($\si{\second}$).
-\end{itemize}
-
-A fronte di un ingresso a gradino $x(t) = X_0 \cdot \delta_{-1}(t)$, l'uscita per $t \ge 0$ risulta:
+Dove $K = b_0 / a_0$ è la sensitività statica e $\tau = a_1 / a_0$ è la \textbf{Costante Di Tempo} (\textit{time constant}) del sensore, espressa in secondi ($\si{\second}$). Se in ingresso si ha un segnale a gradino $x(t) = X_0 \cdot \delta_{-1}(t)$, la risposta in uscita per $t \ge 0$ è data da:
 \[
     y(t) = K X_0 \left( 1 - e^{-\frac{t}{\tau}} \right)
 \]
 La costante di tempo $\tau$ quantifica la prontezza del sistema:
 \begin{itemize}
-    \item per $t = \tau$, l'uscita raggiunge il valore $1 - e^{-1} \approx 0.632$ (\textbf{63.2\%}) del valore asintotico;
-    \item per $t = 3\tau$, l'uscita raggiunge il $95\%$;
-    \item per $t = 5\tau$, l'uscita raggiunge il $99.3\%$ (regime convenzionale).
+    \item per $t = \tau$, l'uscita raggiunge il $63,2\%$ del valore asintotico di regime (da $1 - e^{-1} \approx 0.632$ )
+    \item per $t = 3\tau$, l'uscita raggiunge il $95\%$ del valore asintotico di regime
+    \item per $t = 5\tau$, l'uscita raggiunge il $99.3\%$, del valore asintotico di regime, che convenzionalmente è l'istante di raggiungimento del regime permanente.
 \end{itemize}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{SensPrimo.jpg}
-    \caption{Risposta tipica di un sensore del primo ordine: evidenziazione della costante di tempo $\tau$ e del raggiungimento del regime stazionario.}
-    \label{fig:sens_primo}
-\end{figure}
+    \begin{tikzpicture}[
+        x=1.75cm,
+        y=3.8cm,
+        >=Stealth,
+        font=\small
+    ]
+        % 1. Asintoto orizzontale (Valore di regime K*X_0)
+        \draw[refline, line width=1.2pt, dash pattern=on 6pt off 3pt]
+            (0, 1) -- (5.8, 1)
+            node[right, font=\footnotesize\bfseries, text=refline] {$K X_0$ \ (Regime Permanente)};
 
-\paragraph{3. Sensori del Secondo Ordine}
-Dotati di due elementi di accumulo complementari che scambiano reciprocamente energia (cinetica/potenziale o magnetica/elettrostatica), costituiscono il modello canonico di accelerometri, celle di carico e sensori di pressione a membrana:
+        % 2. Linee guida tratteggiate di proiezione
+        % t = tau (63.2%)
+        \draw[subtext!50, line width=0.8pt, dashed]
+            (1, 0) -- (1, {1-exp(-1)}) -- (0, {1-exp(-1)});
+
+        % t = 3*tau (95.0%)
+        \draw[subtext!50, line width=0.8pt, dashed]
+            (3, 0) -- (3, {1-exp(-3)}) -- (0, {1-exp(-3)});
+
+        % t = 5*tau (99.3%)
+        \draw[subtext!50, line width=0.8pt, dashed]
+            (5, 0) -- (5, {1-exp(-5)});
+
+        % 3. Assi cartesiani
+        \draw[->, line width=1.1pt, black!85] (-0.35, 0) -- (6.0, 0)
+            node[below, font=\footnotesize\bfseries] {$t$};
+        \draw[->, line width=1.1pt, black!85] (0, -0.08) -- (0, 1.22)
+            node[left, font=\footnotesize\bfseries] {$y(t)$};
+
+        % Tratto nullo per t < 0 (condizione iniziale a riposo)
+        \draw[primary, line width=1.8pt] (-0.35, 0) -- (0, 0);
+
+        % 4. Curva esponenziale di risposta indiciale: y(t) = 1 - e^(-t)
+        \draw[primary, line width=1.8pt, domain=0:5.7, samples=120, smooth]
+            plot (\x, {1 - exp(-\x)});
+
+        % 5. Punti notevoli evidenziati sulla curva
+        \node[circle, fill=pointFill, draw=pointDraw, line width=0.9pt, inner sep=2.5pt]
+            at (1, {1-exp(-1)}) {};
+        \node[circle, fill=pointFill, draw=pointDraw, line width=0.9pt, inner sep=2.5pt]
+            at (3, {1-exp(-3)}) {};
+        \node[circle, fill=pointFill, draw=pointDraw, line width=0.9pt, inner sep=2.5pt]
+            at (5, {1-exp(-5)}) {};
+
+        % 6. Etichette asse temporale (X)
+        \node[below=3pt, font=\small\bfseries] at (1, 0) {$\tau$};
+        \node[below=3pt, font=\small\bfseries] at (3, 0) {$3\tau$};
+        \node[below=3pt, font=\small\bfseries] at (5, 0) {$5\tau$};
+        \node[below left=2pt, font=\footnotesize] at (0, 0) {$0$};
+
+        % 7. Etichette asse Y (quote percentuali)
+        \node[left=3pt, font=\footnotesize] at (0, {1-exp(-1)}) {$0.632 \, K X_0$};
+        \node[left=3pt, font=\footnotesize] at (0, {1-exp(-3)}) {$0.950 \, K X_0$};
+        \node[left=3pt, font=\footnotesize\bfseries, text=refline] at (0, 1.05) {$1.0 \, K X_0$};
+
+        % 8. Callout e percentuali a bordo curva
+        \node[above left=1pt and -2pt, font=\footnotesize\bfseries, text=accent]
+            at (1, {1-exp(-1)}) {$63.2\%$};
+        \node[above left=1pt and -2pt, font=\footnotesize\bfseries, text=accent]
+            at (3, {1-exp(-3)}) {$95.0\%$};
+        \node[above right=2pt and -2pt, font=\footnotesize\bfseries, text=good]
+            at (5, {1-exp(-5)}) {$99.3\%$};
+
+        % Annotazione descrittiva a 5*tau
+        \draw[<-, >=Stealth, accent, line width=0.8pt] (5.02, {1-exp(-5)}) -- ++(0.35, -0.18)
+            node[right, font=\footnotesize, text=accent, align=left] {Regime Convenzionale\\($\ge 99\%$ del valore finale)};
+
+    \end{tikzpicture}
+\end{figure}
+\newpage
+\item \textbf{Sensori del Secondo Ordine}
+Sono caratterizzati da due elementi di accumulo energetico complementari che scambiano reciprocamente energia (quali energia cinetica e potenziale, oppure magnetica ed elettrostatica). Rappresentano la modellazione tipica di accelerometri, celle di carico e sensori di pressione a membrana:
 \[
     \frac{1}{\omega_n^2} \frac{d^2 y(t)}{dt^2} + \frac{2\xi}{\omega_n} \frac{dy(t)}{dt} + y(t) = K \cdot x(t)
     \label{eq:secondo_ordine}
 \]
 in cui:
 \begin{itemize}
-    \item $\omega_n = \sqrt{a_0 / a_2}$ è la \textbf{pulsazione naturale non smorzata} ($\si{\radian\per\second}$);
-    \item $\xi = \frac{a_1}{2 \sqrt{a_0 a_2}}$ è il \textbf{fattore di smorzamento adimensionale};
+    \item $\omega_n = \sqrt{a_0 / a_2}$ è la \textbf{pulsazione naturale non smorzata} (\textit{natural frequency}), espressa in $\si{\radian\per\second}$;
+    \item $\xi = \frac{a_1}{2 \sqrt{a_0 a_2}}$ è il \textbf{fattore di smorzamento adimensionale} (\textit{damping ratio});
     \item $K = b_0 / a_0$ è la sensitività statica.
 \end{itemize}
 
-La risposta indiciale è determinata dal valore di $\xi$:
+L'evoluzione della risposta indiciale è determinata in modo univoco dal parametro $\xi$:
 \begin{itemize}
-    \item \textbf{Regime Sovrasmorzato ($\xi > 1$):} radici caratteristiche reali e distinte; evoluzione aperiodica priva di oscillazioni con transitorio più lento al crescere di $\xi$.
-    \item \textbf{Regime Critico ($\xi = 1$):} due radici reali coincidenti; risposta asintotica più rapida in assenza di sovraelongazioni.
-    \item \textbf{Regime Sottosmorzato ($\xi < 1$):} radici complesse coniugate; risposta oscillatoria pseudoperiodica alla pulsazione smorzata $\omega_d = \omega_n \sqrt{1 - \xi^2}$, con \textbf{sovraelongazione massima percentuale} ($S\%$):
+    \item \textbf{Regime Sovrasmorzato} ($\xi > 1$): radici caratteristiche reali e distinte; l'andamento è aperiodico e privo di oscillazioni, con un transitorio progressivamente più lento all'aumentare di $\xi$.
+    \item \textbf{Regime Critico} ($\xi = 1$): due radici reali e coincidenti; costituisce la risposta asintotica più rapida priva di sovraelongazioni.
+    \item \textbf{Regime Sottosmorzato} ($\xi < 1$): radici complesse e coniugate; risposta oscillatoria pseudoperiodica alla pulsazione smorzata $\omega_d = \omega_n \sqrt{1 - \xi^2}$, caratterizzata da una \textbf{sovraelongazione massima percentuale} (\textit{maximum overshoot}, $S\%$):
     \[
         S\% = 100 \cdot e^{-\frac{\pi \xi}{\sqrt{1 - \xi^2}}}
     \]
@@ -633,24 +693,99 @@ La risposta indiciale è determinata dal valore di $\xi$:
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{SensSecondo.jpg}
-    \caption{Famiglia di risposte indiciali di un sistema del secondo ordine al variare del fattore di smorzamento $\xi$, con transizione dal comportamento oscillatorio sottosmorzato a quello sovrasmorzato.}
-    \label{fig:sens_secondo}
+    \begin{tikzpicture}[
+        x=1.35cm,
+        y=2.7cm,
+        >=Stealth,
+        font=\small
+    ]
+        % 1. Fascia di tolleranza (+/- 0.05, ovvero +/- 5%)
+        \fill[primary!7] (5.85, 0.95) rectangle (8.2, 1.05);
+        \draw[subtext!60, line width=0.7pt, dashed] (4.2, 1.05) -- (8.2, 1.05);
+        \draw[subtext!60, line width=0.7pt, dashed] (4.2, 0.95) -- (8.2, 0.95);
+
+        % Indicazione della fascia +/- 0.05
+        \draw[<-, >=Stealth, accent, line width=0.8pt] (7.2, 1.05) -- ++(0.35, 0.25)
+            node[right, font=\footnotesize\bfseries, text=accent] {$\pm 0{,}05$ \ ($\pm 5\%$)};
+
+        % 2. Asintoto orizzontale a regime (y = 1)
+        \draw[refline, line width=1.1pt, dash pattern=on 6pt off 3pt]
+            (0, 1) -- (8.2, 1)
+            node[right, font=\footnotesize\bfseries, text=refline] {$1$ \ ($K X_0$)};
+
+        % 3. Proiezioni tratteggiate dei parametri notevoli
+        % T_s (raggiungimento del 50%, y = 0.5)
+        \draw[subtext!50, line width=0.8pt, dashed] (0, 0.5) -- (0.75, 0.5) -- (0.75, 0);
+
+        % T_r (tempo di salita al 100%, y = 1.0)
+        \draw[subtext!50, line width=0.8pt, dashed] (1.25, 0) -- (1.25, 1);
+
+        % T_m e quota di picco (1 + S)
+        \draw[subtext!50, line width=0.8pt, dashed] (0, 1.35) -- (2.07, 1.35) -- (2.07, 0);
+
+        % T_a (tempo di assestamento a regime permanente entro +/- 5%)
+        \draw[subtext!50, line width=0.8pt, dashed] (5.85, 0) -- (5.85, 1.05);
+
+        % 4. Freccia a doppia punta per la sovraelongazione S
+        \draw[<->, >=Stealth, line width=1pt, accent] (1.45, 1.0) -- (1.45, 1.35)
+            node[midway, left=1pt, font=\small\bfseries, text=accent] {$S$};
+
+        % 5. Assi cartesiani
+        \draw[->, line width=1.1pt, black!85] (-0.35, 0) -- (8.5, 0)
+            node[below, font=\footnotesize\bfseries] {$t$};
+        \draw[->, line width=1.1pt, black!85] (0, -0.1) -- (0, 1.62)
+            node[left, font=\footnotesize\bfseries] {$y(t)$};
+
+        % Tratto nullo per t < 0
+        \draw[primary, line width=1.8pt] (-0.35, 0) -- (0, 0);
+
+        % 6. Risposta indiciale analitica del secondo ordine sottosmorzato
+        % Parametri: omega_n = 1.6 rad/s, xi = 0.32 -> omega_d = 1.516 rad/s (86.86 deg/s)
+        \draw[primary, line width=1.8pt, domain=0:8.0, samples=180, smooth]
+            plot (\x, {1 - exp(-0.512*\x) * (cos(86.86*\x) + 0.338 * sin(86.86*\x))});
+
+        % 7. Punti notevoli evidenziati sulla curva
+        \node[circle, fill=pointFill, draw=pointDraw, line width=0.9pt, inner sep=2.4pt]
+            at (0.75, 0.5) {};
+        \node[circle, fill=pointFill, draw=pointDraw, line width=0.9pt, inner sep=2.4pt]
+            at (1.25, 1.0) {};
+        \node[circle, fill=pointFill, draw=pointDraw, line width=0.9pt, inner sep=2.4pt]
+            at (2.07, 1.35) {};
+        \node[circle, fill=pointFill, draw=pointDraw, line width=0.9pt, inner sep=2.4pt]
+            at (5.85, 1.05) {};
+
+        % 8. Etichette asse Y
+        \node[left=3pt, font=\footnotesize] at (0, 0.5) {$0{,}5$};
+        \node[left=3pt, font=\footnotesize\bfseries] at (0, 1.0) {$1$};
+        \node[left=3pt, font=\footnotesize, text=accent] at (0, 1.35) {$1+S$};
+
+        % 9. Etichette asse X
+        \node[below left=2pt, font=\footnotesize] at (0, 0) {$0$};
+        \node[below=3pt, font=\small\bfseries] at (0.75, 0) {$T_s$};
+        \node[below=3pt, font=\small\bfseries] at (1.25, 0) {$T_r$};
+        \node[below=3pt, font=\small\bfseries] at (2.07, 0) {$T_m$};
+        \node[below=3pt, font=\small\bfseries] at (5.85, 0) {$T_a$};
+
+        % Lettera S in testa al picco (come nella bozza originale)
+        \node[above=3pt, font=\small\bfseries, text=accent] at (2.07, 1.35) {$S$};
+
+    \end{tikzpicture}
 \end{figure}
 
-Nella progettazione dei sensori robotici si impone frequentemente uno smorzamento $\xi \approx 0.707$ (smorzamento di Butterworth), che assicura tempi di salita ridotti con sovraelongazione contenuta al di sotto del $4.3\%$.
-
+Nella progettazione dei sensori per applicazioni robotiche si adotta frequentemente un valore di smorzamento $\xi \approx 0.707$ (smorzamento di Butterworth), in grado di conciliare tempi di salita ridotti con una sovraelongazione contenuta al di sotto del $4.3\%$.
+\end{itemize}
 \subsubsection{Banda Passante}
 
-La \textbf{banda passante} (\textit{bandwidth}) definisce l'intervallo continuo di frequenze in cui il modulo della risposta $|G(j\omega)|$ rimane entro tolleranze prestabilite rispetto al valore statico. Alla frequenza di taglio convenzionale a $\SI{-3}{\decibel}$ ($\omega_B$ o $f_B = \frac{\omega_B}{2\pi}$), l'ampiezza soddisfa:
+La \textbf{banda passante} (\textit{bandwidth}) definisce l'intervallo continuo di frequenze in cui il modulo della risposta armonica $|G(j\omega)|$ si mantiene entro specifiche tolleranze rispetto al valore statico. In corrispondenza della frequenza di taglio convenzionale a $\SI{-3}{\decibel}$ ($\omega_B$ o $f_B = \frac{\omega_B}{2\pi}$), l'ampiezza soddisfa la relazione:
 \[
     |G(j\omega_B)| = \frac{|G(0)|}{\sqrt{2}} \approx 0.707 \cdot |G(0)|
 \]
-In un sensore del primo ordine:
+Nel caso specifico di un sensore del primo ordine, la banda passante è legata univocamente alla costante di tempo:
 \[
     \omega_B = \frac{1}{\tau} \implies f_B = \frac{1}{2\pi \tau}
 \]
-Nel controllo dei manipolatori, la banda passante dei sensori articolari deve superare di almeno un ordine di grandezza la frequenza di risonanza strutturale e la banda dei loop di controllo in corrente/coppia, evitando sfasamenti che comprometterebbero la stabilità ad anello chiuso.
+Nel contesto del controllo dei manipolatori robotici, la banda passante dei sensori articolari deve risultare superiore di almeno un ordine di grandezza rispetto sia alle frequenze di risonanza strutturali, sia alla banda dei loop di retroazione di corrente e coppia, al fine di scongiurare ritardi di fase che comprometterebbero la stabilità complessiva del sistema ad anello chiuso.
+
 \newpage
 
 \section{Classificazione Sensori Per La Robotica Industriale}
