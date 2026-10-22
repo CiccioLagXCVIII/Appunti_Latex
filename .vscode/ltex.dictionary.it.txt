@@ -12,3 +12,6 @@ world
 quaternione
 istanziato
 listener
+torsore
+estensimetri
+pseudo-inversa

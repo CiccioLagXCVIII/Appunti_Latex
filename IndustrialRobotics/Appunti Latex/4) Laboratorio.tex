@@ -89,6 +89,9 @@
 \author{Francesco Lo Verde}
 \begin{document}
 
+\tableofcontents
+
+\newpage
 % AA Parte 1 - Sistemi Di Misura E Sensori Per La Robotica
 \section{Introduzione Alla Percezione Nei Sistemi Robotici}
 Negli organismi viventi, la percezione dipende da organi sensoriali come occhi o orecchie, mentre gli stimoli fisici vengono convertiti in impulsi elettrici tramite il sistema nervoso.\\
@@ -560,24 +563,22 @@ Il rumore può essere generato da diverse sorgenti, sia interne che esterne al s
 \newpage
 
 \subsection{Caratteristiche Dinamiche}
-
-In presenza di rapide variazioni del segnale di ingresso $x(t)$, i fenomeni di accumulo e dissipazione energetica (dovuti a inerzie di masse mobili, induttanze e capacità parassite nei circuiti, o capacità termiche) causano ritardi temporali e distorsioni nella risposta in uscita. Sotto l'ipotesi di linearità, il comportamento del sensore viene descritto come quello di un \textbf{Sistema Lineare Tempo-Invariante} (\textit{Linear Time-Invariant}, LTI) mediante un'equazione differenziale a coefficienti costanti di ordine $n$:
+Quando il misurando $x(t)$ varia nel tempo e sono presenti variazioni rapide, il sensore non può rispondere istantaneamente a causa della presenza di fenomeni di accumulo e dissipazione (come capacità o induttanze parassite per esempio). Supponendo che il sensore sia lineare, la sua risposta può essere descritta come quella di un \textbf{Sistema Lineare Tempo-Invariante} (\textit{Linear Time-Invariant}, LTI) mediante un'equazione differenziale a coefficienti costanti di ordine $n$:
 \[
     a_n \frac{d^n y(t)}{dt^n} + a_{n-1} \frac{d^{n-1} y(t)}{dt^{n-1}} + \dots + a_1 \frac{dy(t)}{dt} + a_0 y(t) = b_m \frac{d^m x(t)}{dt^m} + \dots + b_1 \frac{dx(t)}{dt} + b_0 x(t)
-    \label{eq:ode_lti}
 \]
-con la condizione $n \ge m$ richiesta dal principio di causalità fisica. Assumendo condizioni iniziali nulle, l'applicazione della trasformata di Laplace permette di definire la \textbf{funzione di trasferimento} (\textit{transfer function}) $G(s)$:
+Con la condizione $n \ge m$. Assumendo condizioni iniziali nulle, l'applicazione attraverso la trasformata di Laplace si può definire la \textbf{funzione Di Trasferimento} $G(s)$:
 \[
     G(s) = \frac{Y(s)}{X(s)} = \frac{\sum_{j=0}^m b_j s^j}{\sum_{i=0}^n a_i s^i}
 \]
 
-\subsubsection{Classificazione per Ordine Dinamico}
+\subsubsection{Classificazione Per Ordine Dinamico}
 \begin{itemize}
-\item \textbf{Sensori Di Ordine Zero:} Sono trasduttori privi di elementi di accumulo energetico nella banda di funzionamento, governati da una relazione puramente algebrica:
+\item \textbf{Sensori Di Ordine Zero:} Sono di elementi di accumulo energetico nella banda di funzionamento, governati da una relazione puramente algebrica:
 \[
     a_0 y(t) = b_0 x(t) \implies y(t) = K \cdot x(t)
 \]
-Dove $K = b_0 / a_0$ rappresenta la sensitività statica. L'uscita riproduce istantaneamente le variazioni dell'ingresso, in assenza di sfasamenti o attenuazioni. A titolo di esempio, un potenziometro a film plastico approssima un sistema di ordine zero entro la tipica banda operativa del moto robotico ($\SI{0}{}$--$\SI{100}{\hertz}$).
+Dove $K = b_0 / a_0$ rappresenta la sensitività statica. In questo caso l'uscita riproduce istantaneamente le variazioni dell'ingresso, in assenza di sfasamenti o attenuazioni.
 
 \item \textbf{Sensori Del Primo Ordine}
 Presentano un singolo elemento di accumulo energetico dominante (ad esempio, la capacità termica in una termocoppia o la capacità parassita in un fotorilevatore). Normalizzando l'equazione differenziale rispetto ad $a_0$, il modello assume la forma:
@@ -668,24 +669,22 @@ La costante di tempo $\tau$ quantifica la prontezza del sistema:
     \end{tikzpicture}
 \end{figure}
 \newpage
-\item \textbf{Sensori del Secondo Ordine}
-Sono caratterizzati da due elementi di accumulo energetico complementari che scambiano reciprocamente energia (quali energia cinetica e potenziale, oppure magnetica ed elettrostatica). Rappresentano la modellazione tipica di accelerometri, celle di carico e sensori di pressione a membrana:
+\item \textbf{Sensori del Secondo Ordine:} Sono caratterizzati da due elementi di accumulo energetico complementari che scambiano reciprocamente energia (come ad esempio accelerometri o celle di carico):
 \[
     \frac{1}{\omega_n^2} \frac{d^2 y(t)}{dt^2} + \frac{2\xi}{\omega_n} \frac{dy(t)}{dt} + y(t) = K \cdot x(t)
-    \label{eq:secondo_ordine}
 \]
 in cui:
 \begin{itemize}
-    \item $\omega_n = \sqrt{a_0 / a_2}$ è la \textbf{pulsazione naturale non smorzata} (\textit{natural frequency}), espressa in $\si{\radian\per\second}$;
-    \item $\xi = \frac{a_1}{2 \sqrt{a_0 a_2}}$ è il \textbf{fattore di smorzamento adimensionale} (\textit{damping ratio});
+    \item $\omega_n = \sqrt{a_0 / a_2}$ è la \textbf{frequenza naturale non smorzata} ed è espressa in $\si{\radian\per\second}$;
+    \item $\xi = \frac{a_1}{2 \sqrt{a_0 a_2}}$ è il \textbf{fattore di smorzamento adimensionale} (\textit{damping ratio})
     \item $K = b_0 / a_0$ è la sensitività statica.
 \end{itemize}
 
-L'evoluzione della risposta indiciale è determinata in modo univoco dal parametro $\xi$:
+L'evoluzione della risposta è determinata in modo univoco dal parametro $\xi$:
 \begin{itemize}
-    \item \textbf{Regime Sovrasmorzato} ($\xi > 1$): radici caratteristiche reali e distinte; l'andamento è aperiodico e privo di oscillazioni, con un transitorio progressivamente più lento all'aumentare di $\xi$.
-    \item \textbf{Regime Critico} ($\xi = 1$): due radici reali e coincidenti; costituisce la risposta asintotica più rapida priva di sovraelongazioni.
-    \item \textbf{Regime Sottosmorzato} ($\xi < 1$): radici complesse e coniugate; risposta oscillatoria pseudoperiodica alla pulsazione smorzata $\omega_d = \omega_n \sqrt{1 - \xi^2}$, caratterizzata da una \textbf{sovraelongazione massima percentuale} (\textit{maximum overshoot}, $S\%$):
+    \item \textbf{Regime Sovrasmorzato} ($\xi > 1$): radici reali e distinte e l'uscita è priva di oscillazioni, con fenomeni transitori sempre più lenti all'aumentare di $\xi$.
+    \item \textbf{Regime Critico} ($\xi = 1$): due radici reali e coincidenti e l'uscita presenta la risposta più rapida senza oscillazioni e sovraelongazione
+    \item \textbf{Regime Sottosmorzato} ($\xi < 1$): radici complesse e coniugate e l'uscita oscilla con frequenza smorzata $\omega_d = \omega_n \sqrt{1 - \xi^2}$ e ha \textbf{sovraelongazione massima percentuale} (\textit{maximum overshoot}, $S\%$):
     \[
         S\% = 100 \cdot e^{-\frac{\pi \xi}{\sqrt{1 - \xi^2}}}
     \]
@@ -774,141 +773,85 @@ L'evoluzione della risposta indiciale è determinata in modo univoco dal paramet
 
 Nella progettazione dei sensori per applicazioni robotiche si adotta frequentemente un valore di smorzamento $\xi \approx 0.707$ (smorzamento di Butterworth), in grado di conciliare tempi di salita ridotti con una sovraelongazione contenuta al di sotto del $4.3\%$.
 \end{itemize}
-\subsubsection{Banda Passante}
 
-La \textbf{banda passante} (\textit{bandwidth}) definisce l'intervallo continuo di frequenze in cui il modulo della risposta armonica $|G(j\omega)|$ si mantiene entro specifiche tolleranze rispetto al valore statico. In corrispondenza della frequenza di taglio convenzionale a $\SI{-3}{\decibel}$ ($\omega_B$ o $f_B = \frac{\omega_B}{2\pi}$), l'ampiezza soddisfa la relazione:
+\subsubsection{Banda Passante}
+La \textbf{banda passante} definisce l'intervallo di frequenze in cui il modulo della risposta armonica $|G(j\omega)|$ si mantiene entro determinati limiti rispetto al valore statico. Convenzionalmente, per un sistema passa-basso, la frequenza di taglio $\omega_B$ (o $f_B = \frac{\omega_B}{2\pi}$) è la frequenza alla quale il modulo della risposta armonica è minore di $1/\sqrt{2}$ per il valore statico, corrispondente a una riduzione di circa $\SI{3}{\decibel}$
+
+Per un sistema del primo ordine con costante di tempo $\tau$, la frequenza di taglio è:
 \[
-    |G(j\omega_B)| = \frac{|G(0)|}{\sqrt{2}} \approx 0.707 \cdot |G(0)|
+    \omega_B = \frac{1}{\tau}
+    \qquad \text{oppure} \qquad
+    f_B = \frac{1}{2\pi\tau}
 \]
-Nel caso specifico di un sensore del primo ordine, la banda passante è legata univocamente alla costante di tempo:
-\[
-    \omega_B = \frac{1}{\tau} \implies f_B = \frac{1}{2\pi \tau}
-\]
-Nel contesto del controllo dei manipolatori robotici, la banda passante dei sensori articolari deve risultare superiore di almeno un ordine di grandezza rispetto sia alle frequenze di risonanza strutturali, sia alla banda dei loop di retroazione di corrente e coppia, al fine di scongiurare ritardi di fase che comprometterebbero la stabilità complessiva del sistema ad anello chiuso.
+Nei manipolatori robotici, la banda passante dei sensori e dei sistemi di controllo deve essere almeno un ordine di grandezza superiore alle altre frequenze di interesse per garantire una risposta adeguata del sistema.
 
 \newpage
 
-\section{Classificazione Sensori Per La Robotica Industriale}
-
-I dispositivi di misura impiegati nei robot manipolatori e nei veicoli autonomi si dividono in due macro-categorie: \textbf{propriocettivi} ed \textbf{esterocettivi}.
-
-\begin{figure}[H]
-    \centering
-    \begin{tabular}{p{0.45\textwidth} p{0.45\textwidth}}
-        \toprule
-        \textbf{Sensori Propriocettivi} & \textbf{Sensori Esterocettivi} \\
-        \midrule
-        Misura dello \textbf{stato interno} del sistema & Misura dell'\textbf{ambiente esterno} e dell'interazione \\
-        Posizione, velocità, accelerazione dei giunti & Visione artificiale (camere RGB, stereo, RGB-D) \\
-        Coppie articolari, correnti dei motori & Sensori di prossimità (induttivi, ottici, capacitivi) \\
-        Temperatura avvolgimenti e cuscinetti & Rilevatori di distanza (Sonar, LiDAR) \\
-        Deformazione e vibrazione strutturale dei link & Celle di carico e matrici tattili d'estremità \\
-        \bottomrule
-    \end{tabular}
-\end{figure}
+\section{Classificazione Sensori}
 
 \subsection{Sensori Propriocettivi}
+I sensori propriocettivi misurano le variabili cinematiche interne del manipolatore (posizione, velocità, accelerazione dei giunti) nello spazio dei giunti ($\boldsymbol{q}, \dot{\boldsymbol{q}}, \ddot{\boldsymbol{q}}, \boldsymbol{\tau}$). Questi sensori, sono necessari per determinare la posa dell'end effector nello spazio operativo tramite la \textbf{Cinematica Diretta}, correlare la velocità dei giunti alla velocità cartesiana tramite lo \textbf{Jacobiano Geometrico} e per utilizzare gli algoritmi di controllo della posizione.
 
-I sensori propriocettivi misurano le variabili cinematiche interne del manipolatore nello spazio dei giunti ($\boldsymbol{q}, \dot{\boldsymbol{q}}, \ddot{\boldsymbol{q}}, \boldsymbol{\tau}$), necessarie per:
+\subsubsection{Sensori Di Posizione Angolare: Encoder Ottici}
+L'encoder ottico è il dispositivo installato sull'albero del servomotore (o a valle del riduttore articolare) per trasformare la rotazione in impulsi digitali. Possiamo distinguere tra due tipi di Encoder:
 \begin{itemize}
-    \item Determinare la posa dell'organo terminale nello spazio operativo tramite la \textbf{Cinematica Diretta} $\boldsymbol{x}_e = \boldsymbol{k}(\boldsymbol{q})$;
-    \item Correlare le velocità dei giunti $\dot{\boldsymbol{q}}$ alla velocità cartesiana $\boldsymbol{v}_e$ mediante lo \textbf{Jacobiano Geometrico} $\boldsymbol{J}(\boldsymbol{q})$;
-    \item Attuare gli algoritmi di controllo di posizione e di controllo dinamico a coppia calcolata (\textit{computed torque control}).
-\end{itemize}
+    \item \textbf{Encoder Assoluti:} Sono formati da un disco in vetro su cui sono presenti $N$ tracce concentriche, divise in settori radiali opachi e trasparenti, che vengono letti da una matrice di LED e da fotodiodi. A ognuno dei settori è assegnata una parola binaria di $N$ bit che rappresenta la posizione assoluta dell'albero. In caso di interruzione dell'alimentazione, il valore di posizione è conservato e, all'avvio, non è richiesta alcuna operazione di ricerca dello zero meccanico (\textit{homing}). La risoluzione (in quanto un giro completo è $2\pi\text{rad}$) è $\Delta \theta = \frac{2\pi}{2^N}$.\\
+    Per prevenire errori dovuti alla commutazione di più bit in una transizione tra settori adiacenti, si utilizza la \textbf{Codifica Di Gray}, in cui configurazioni adiacenti differiscono per un solo bit e quindi la \textit{Distanza Di Hamming} vale uno ($D_H(\boldsymbol{c}_k, \boldsymbol{c}_{k+1}) = 1$). In questo modo, eventuali errori dipendono solo dalla tolleranza tra settori adiacenti e non si verificano salti anomali (come nella commutazione tra $0111_2 = 7_{10}$ e $1000_2 = 8_{10}$ in binario puro, che comporta il cambio di 4 bit contemporaneamente).
 
-\subsubsection{Sensori Di Posizione Angolare: Gli Encoder Ottici}
-L'encoder ottico è il dispositivo installato sull'albero del servomotore (o a valle del riduttore articolare) per trasformare la rotazione angolare in impulsi digitali.
-
-\paragraph{Encoder Assoluti}
-Il disco in vetro o polimero presenta $N$ tracce concentriche graduate in configurazioni radiali opache e trasparenti, rilevate da una matrice di LED e fotodiodi. A ciascun settore angolare corrisponde una parola binaria univoca di $N$ bit. Il valore di posizione è conservato in caso di interruzione dell'alimentazione e all'all'avvio non è richiesta alcuna operazione di ricerca dello zero meccanico (\textit{homing}). La risoluzione angolare su un giro completo ($2\pi$) vale $\Delta \theta = \frac{2\pi}{2^N}$.
-
-Per prevenire letture spurie causate dalla commutazione simultanea di più bit nelle transizioni contigue del binario, si adotta la \textbf{codifica di Gray}, in cui configurazioni adiacenti differiscono per un solo bit:
-\[
-    D_H(\boldsymbol{c}_k, \boldsymbol{c}_{k+1}) = 1
-\]
-in cui $D_H$ è la distanza di Hamming tra parole consecutive $\boldsymbol{c}_k$ e $\boldsymbol{c}_{k+1}$. In tal modo l'errore di lettura imputabile a tolleranze fisiche rimane circoscritto al settore contiguo, prevenendo salti di codice anomali (come nella commutazione tra $0111_2 = 7_{10}$ e $1000_2 = 8_{10}$ in binario puro, che comporta il cambio di 4 bit contemporaneamente).
-\newpage
-\paragraph{Encoder Incrementali}
-Gli encoder incrementali impiegano una singola traccia circolare formata da $M$ feritoie equidistanti e determinano la posizione relativa mediante conteggio bidirezionale degli impulsi rispetto a un'origine arbitraria.
-
-L'architettura comprende due canali in quadratura elettrica e un canale di riferimento:
-\begin{itemize}
-    \item \textbf{Canali A e B:} onde quadre sfalsate tra loro di $\SI{90}{\degree}$ ($\pi/2$). Il verso di rotazione è ricavato dallo stato logico del canale B in corrispondenza del fronte di salita di A:
+    \item \textbf{Encoder Incrementali:} Utilizzano una traccia circolare sulla quale sono presenti $M$ feritoie equidistanti, che permettono di rilevare lo spostamento angolare rispetto a un riferimento.\\
+    Sono formati da due canali (A e B) e da un canale di riferimento (Z o indice). Quando l'encoder gira, le feritoie generano due onde quadre sfasate di $\SI{90}{\degree}$ elettrici, che permettono di definire il verso di rotazione tramite lo stato logico del canale B rispetto al canale A:
     \[
         \text{Direzione} =
         \begin{cases}
-            \text{Oraria (CW)}, & \text{Se } B = 0 \text{ Sul Fronte Di Salita Di } A \\
-            \text{Antioraria (CCW)}, & \text{Se } B = 1 \text{ Sul Fronte Di Salita Di } A
+            \text{Oraria (CW)} & \text{se } B=0 \text{ sul fronte di salita di } A\\
+            \text{Antioraria (CCW)} & \text{se } B=1 \text{ sul fronte di salita di } A
         \end{cases}
     \]
-    \item \textbf{Decodifica In Quadratura:} discriminando entrambi i fronti (di salita e discesa) dei canali A e B, si generano 4 conteggi per ciascuna feritoia, elevando la risoluzione a $4M$ impulsi per giro:
-    \[
-        \text{Risoluzione Efficace} = \frac{2\pi}{4M} \;\si{\radian\per count}
-    \]
-    \item \textbf{Canale Indice (Zero o Z):} genera un singolo impulso ogni giro completo ($360^{\circ}$), fornendo il riferimento assoluto per l'\textit{homing} del giunto.
+    La decodifica viene effettuata per quadratura: quando l'encoder gira vengono generate le due onde quadre e, a ogni fronte di salita di A, viene letto il valore del canale B per determinare il verso di rotazione. Se $B=0$, il contatore viene incrementato di 1, mentre se $B=1$, viene decrementato di 1. Per aumentare la risoluzione è possibile rilevare anche i fronti di discesa di A e i fronti di salita e discesa di B (a ogni fronte di salita o discesa, guardare l'altro segnale e aumentare o diminuire il contatore), ottenendo quattro conteggi per ogni periodo dei segnali. Poiché sono presenti $M$ periodi per giro, il numero totale di conteggi per giro è $4M$. La risoluzione è $\Delta\theta = \frac{2\pi}{4M}$.\\
+    Lo spostamento angolare rispetto alla posizione iniziale è dato dal prodotto tra il valore del contatore e la risoluzione angolare: $\Delta\theta = C \cdot \Delta\theta_{\text{count}}$, dove $C$ rappresenta il valore del contatore (positivo o negativo in funzione del verso di rotazione).
+    Il canale Z genera un impulso per ogni giro completo ($360^\circ$), fornendo un riferimento angolare che può essere utilizzato durante la procedura di \textbf{homing} del giunto. Questo riferimento consente di sincronizzare il conteggio con una posizione nota, ma non fornisce autonomamente la posizione assoluta in ogni istante.
 \end{itemize}
-Rispetto ai modelli assoluti, i dispositivi incrementali presentano minore complessità costruttiva e costi inferiori, ma risentono di accumulo di errori causati da disturbi impulsivi e necessitano di batterie tampone o riazzeramento a ogni riavvio.
-
+Rispetto agli encoder assoluti, i dispositivi incrementali presentano generalmente una minore complessità costruttiva e costi inferiori, ma richiedono il mantenimento del conteggio degli impulsi e possono perdere l'informazione sulla posizione in caso di mancato rilevamento delle transizioni o di perdita dell'alimentazione. Per recuperare la posizione dopo un riavvio, se non è disponibile un riferimento esterno, è normalmente necessario eseguire una procedura di homing.
+\newpage
 \subsubsection{Accelerometri MEMS}
+Gli accelerometri misurano le accelerazioni e, in regime statico, permettono di ricavare anche l'inclinazione del dispositivo rispetto al vettore gravità $\boldsymbol{g}$.
 
-Gli accelerometri misurano le accelerazioni lineari cartesiane e, in regime statico consentono di ricavare l'inclinazione dell'asse rispetto al vettore di gravità $\boldsymbol{g}$.
-
-Nei Microsistemi Elettromeccanici (\textbf{MEMS}), realizzati su silicio monocristallino per micro-lavorazione superficiale o di volume, l'architettura primaria corrisponde a un sistema meccanico del secondo ordine:
-\begin{itemize}
-    \item massa sismica (massa di prova) di valore micrometrico $m$;
-    \item sospensione elastica di rigidezza $k$;
-    \item smorzamento viscoso $c$ indotto dal gas residuo nel package.
-\end{itemize}
-
-A fronte di un'accelerazione $a(t)$ della cornice fissa, la massa sismica è soggetta alla forza d'inerzia $F_{\text{in}} = -m a(t)$, inducendo uno spostamento relativo $z(t)$:
+I \textbf{Microsistemi Elettromeccanici} (\textit{MEMS}) integrano elementi meccanici e circuiti elettronici su un unico chip di silicio. Il principio di funzionamento si basa su una massa sismica $m$ sospesa a una struttura elastica con costante $k$ e smorzamento viscoso $c$ (dovuto al gas racchiuso nel package). Quando il dispositivo subisce un'accelerazione $a(t)$, la massa è soggetta alla forza d'inerzia $F_{\text{in}} = -m a(t)$, che induce uno spostamento relativo $z(t)$ rispetto al telaio regolato dall'equazione del moto del secondo ordine:
 \[
     m \ddot{z}(t) + c \dot{z}(t) + k z(t) = -m a(t)
 \]
-In condizioni statiche o per pulsazioni ampiamente inferiori alla frequenza di risonanza ($\omega \ll \omega_n = \sqrt{k/m}$), le derivate $\ddot{z}$ e $\dot{z}$ risultano trascurabili, rendendo lo spostamento proporzionale all'accelerazione:
+In regime statico o per frequenze molto inferiori alla frequenza di risonanza ($\omega \ll \omega_n = \sqrt{k/m}$), i termini dinamici legati alla velocità ($\dot{z}$) e all'accelerazione ($\ddot{z}$) diventano trascurabili. L'equazione si riduce quindi al solo equilibrio tra forza elastica e forza d'inerzia, rendendo lo spostamento direttamente proporzionale all'accelerazione misurata:
 \[
     z_{\text{stat}} = -\frac{m}{k} a(t) = -\frac{1}{\omega_n^2} a(t)
 \]
-
-Lo spostamento micrometrico $z$ è rilevato mediante armature capacitive interdigitate a pettine (\textit{comb fingers}):
+Per convertire lo spostamento meccanico $z$ in una grandezza elettrica si impiegano armature capacitive a pettine (\textit{comb fingers}). Il moto della massa varia in senso opposto le distanze tra gli elettrodi, generando una coppia di capacità differenziali:
 \[
     C_1 = \frac{\varepsilon_0 A}{d_0 - z}, \qquad C_2 = \frac{\varepsilon_0 A}{d_0 + z}
 \]
-La differenza normalizzata di capacità risulta proporzionale allo spostamento:
+Dove $\varepsilon_0$ è la costante dielettrica del vuoto, $A$ l'area di affaccio delle armature e $d_0$ la distanza nominale a riposo.
+Utilizzando la differenza normalizzata di capacità, si linearizza la misura e si ottiene una relazione diretta con lo spostamento:
 \[
     \frac{\Delta C}{C_0} = \frac{C_1 - C_2}{C_1 + C_2} = \frac{z}{d_0}
 \]
-con $d_0$ distanza a riposo e $A$ area di sovrapposizione delle armature. Uno stadio di lettura (amplificatore di carica o demodulatore sincrono) converte $\Delta C$ in tensione analogica o in flusso digitale seriale (bus I$^2$C o SPI).
+Infine, tale variazione di capacità viene convertita in un segnale di tensione, amplificata e digitalizzata per produrre il dato finale in uscita.
 \newpage
 
 \subsection{Sensori Esterocettivi}
+I sensori esterocettivi misurano le grandezze fisiche relative all'ambiente esterno e quelle generate dall'interazione del manipolatore con esso (prossimità, distanza, presenza di ostacoli e forze di contatto). Questi sensori sono necessari per implementare strategie di \textbf{Evitamento Delle Collisioni} (\textit{Collision Avoidance}) e consentire \textbf{Identificazione} e \textbf{Presa Di Componenti} (\textit{Bin Picking})
 
-I sensori esterocettivi misurano le grandezze fisiche generate dall'interazione del robot con l'ambiente operativo, garantendo:
-\begin{itemize}
-    \item Evitamento delle collisioni con ostacoli (\textit{Collision Avoidance});
-    \item Identificazione e presa di componenti (\textit{Bin Picking});
-    \item Controllo di processi di lavorazione a contatto vincolato (sbavatura, assemblaggio) basati su regolazione dell'adattanza meccanica (\textit{Compliance}) o dell'impedenza.
-\end{itemize}
-
-\subsubsection{Estensimetri E Sensori Di Forza/Coppia (\texorpdfstring{$F/T$}{F/T})}
-
-L'\textbf{Estensimetro A Resistenza Elettrica} (\textit{Strain Gauge}) quantifica le deformazioni elastiche relative $\varepsilon = \frac{\Delta L}{L}$ mediante una serpentina in lega metallica vincolata a un supporto isolante.\\
-La variazione di resistenza del conduttore segue la relazione:
+\subsubsection{Estensimetri A Resistenza Elettrica E Condizionamento}
+La forza generata dall'interazione con l'ambiente, viene misurata attraverso la variazione della resistenza dovuta alla deformazione di una struttura metallica. Il sensoreche utilizza questo principio è l'\textbf{Estensimetro A Resistenza Elettrica}, formato da una serpentina metallica collegata ad un supporto isolante, che sottoposta a una sollecitazione subisce una deformazione $\varepsilon = \frac{\Delta L}{L}$, che comporta una variazione della resistenza pari a:
 \[
-    \frac{\Delta R}{R} = K_s \, \varepsilon
+    \frac{\Delta R}{R_0} = K_{s} \, \varepsilon = K_{s} \, \frac{\Delta L}{L}
 \]
-in cui $K_s$ è il \textbf{Fattore Di Taratura} (\textit{Gauge Factor}, pari a $2.0$-$2.2$ nelle leghe metalliche commerciali), determinato dalla deformazione geometrica e dall'effetto piezoresistivo.
+Dove $K_s$ è il \textbf{Fattore Di Taratura}, che vale circa $2.0$. Poiché le deformazioni elastiche dei metalli sono microscopiche (nell'ordine di $100\div2000\,\mu\varepsilon$), la variazione $\Delta R / R_0$ è minima (circa $0.1\%$). Risulta quindi impossibile leggerla accuratamente con misure dirette, rendendo indispensabile il circuito di condizionamento a \textbf{Ponte Di Wheatstone}.
 
-Dato che le deformazioni elastiche nei metalli si mantengono nell'intervallo $100$-$2000\,\mu\varepsilon$ ($\varepsilon \approx 10^{-6}$-$10^{-3}$), la variazione frazionaria $\Delta R / R$ risulta dell'ordine dello $0.1\%$, rendendo necessario il condizionamento tramite \textbf{Ponte Di Wheatstone}.
+Il ponte di Wheatstone è una rete a quattro resistenze alimentata da una tensione continua $V_{\text{in}}$, la cui tensione di uscita è $V_{\text{out}} = V_{\text{in}} \left( \frac{R_1}{R_1 + R_2} - \frac{R_4}{R_3 + R_4} \right)$:
 
-\paragraph{Il Ponte Di Wheatstone}
-Alimentato da una tensione continua $V_{\text{in}}$, la tensione di sbilanciamento ai morsetti diagonali è data da:
-\[
-    V_{\text{out}} = V_{\text{in}} \left( \frac{R_1}{R_1 + R_2} - \frac{R_4}{R_3 + R_4} \right)
-\]
-% FIGURA 1: SCHEMA GENERALE DEL PONTE DI WHEATSTON
+% FIGURA 1: SCHEMA GENERALE DEL PONTE DI WHEATSTONE
 \begin{center}
     \begin{tikzpicture}[
-        scale=0.75,
+        scale=0.7,
         font=\sffamily,
         >=Stealth,
         line width=1.2pt,
@@ -973,19 +916,14 @@ Alimentato da una tensione continua $V_{\text{in}}$, la tensione di sbilanciamen
         \node[right=3pt of right, font=\footnotesize\bfseries, text=accent] {$B \, (-)$};
     \end{tikzpicture}
 \end{center}
+A riposo ($R_1 = R_2 = R_3 = R_4 = R_0$), il ponte è bilanciato e produce $V_{\text{out}} = 0$.\\
+In ambito robotico si utilizza la configurazione \textbf{Full Bridge} dove tutti e quattro i rami sono costituiti da estensimetri (che fanno da resistenze che variano al variare della deformazione) disposti in modo che quelli adiacenti siano uno in trazione ($R_1, R_3 = R_0 + \Delta R$) e l'altro a compressione ($R_2, R_4 = R_0 - \Delta R$). Sostituendo nella relazione generale si ottiene una risposta perfettamente lineare:
 
-Con resistenze identiche a riposo $R_1 = R_2 = R_3 = R_4 = R_0$, il ponte è bilanciato ($V_{\text{out}} = 0$).
-
-\begin{itemize}
-    \item \textbf{Configurazione a Ponte Intero (\textit{Full Bridge}):} impiega quattro estensimetri attivi disposti a coppie sollecitate a trazione ($\Delta R > 0$) e a compressione ($\Delta R < 0$):
-    \[
-        V_{\text{out}} = V_{\text{in}} \, \frac{\Delta R}{R_0} = V_{\text{in}} \, K_s \, \varepsilon
-    \]
-
-    % FIGURA 2: SCHEMA FULL BRIDGE (ESTENSIMETRI A TRAZIONE E COMPRESSIONE)
+\begin{minipage}{0.5\textwidth}
     \begin{center}
+        % FIGURA 2: SCHEMA FULL BRIDGE (ESTENSIMETRI A TRAZIONE E COMPRESSIONE)
         \begin{tikzpicture}[
-            scale=0.75,
+            scale=0.7,
             font=\sffamily,
             >=Stealth,
             line width=1.2pt,
@@ -1058,209 +996,341 @@ Con resistenze identiche a riposo $R_1 = R_2 = R_3 = R_4 = R_0$, il ponte è bil
             \node[morsetto] at (right) {};
         \end{tikzpicture}
     \end{center}
-Tale configurazione massimizza la sensitività, linearizza la caratteristica di sbilanciamento e compensa le variazioni termiche per cancellazione algebrica sui rami adiacenti.
-\end{itemize}
+\end{minipage}%
+\begin{minipage}{0.5\textwidth}
+    \[
+        V_{\text{out}} = V_{\text{in}} \, \frac{\Delta R}{R_0} = V_{\text{in}} \, K_s \, \varepsilon
+    \]
+\end{minipage}
+
+Questa configurazione quadruplica la sensibilità rispetto al singolo estensimetro e riduce l'influenza di eventuali variazioni di temperatura, poiché le resistenze adiacenti sono soggette a deformazioni opposte e quindi compensano gli effetti termici.
 \newpage
-\paragraph{Sensori Di Forza/Coppia A Sei Assi ($F/T$ Sensors)}
-Installati tra l'ultimo giunto e l'organo terminale (\textit{End-Effector}), integrano un elemento deformabile monolitico (es. a croce di Malta) strumentato con ponti estensimetrici per rilevare le deflessioni spaziali.
 
-La \textbf{Matrice Di Calibrazione Elastica} $\boldsymbol{C} \in \mathbb{R}^{6 \times 6}$, ricavata sperimentalmente, proietta il vettore delle tensioni misurate $\boldsymbol{v} \in \mathbb{R}^6$ nel torsore delle forze e dei momenti d'interazione (\textit{wrench}) $\boldsymbol{F} \in \mathbb{R}^6$:
+\subsubsection{Sensori Di Forza/Coppia Al Polso (\texorpdfstring{$F/T$}{F/T})}
+I sensori di forza/coppia a 6 assi sfruttano i ponti estensimetrici per misurare l'interazione tridimensionale tra robot e pezzo. Vengono installati tipicamente tra l'ultimo giunto e l'\textit{End-Effector}.
+
+Sono formati da una struttura elastica deformabile, a croce o a raggi. Sotto l'azione delle forze esterne, i raggi si flettono e si torcono e utilizzando più ponti estensimetrici disposti su questi raggi convertono queste deformazioni in un vettore di tensioni elettriche $\boldsymbol{v} = [v_1, \dots, v_6]^T \in \mathbb{R}^6$.
+
+Sfruttando l'elasticità lineare della struttura, il torsore generalizzato delle forze e dei momenti (\textit{wrench}) $\boldsymbol{F} \in \mathbb{R}^6$ si ricava mediante la \textbf{Matrice Di Calibrazione} $\boldsymbol{C} \in \mathbb{R}^{6 \times 6}$, determinata sperimentalmente:
 \[
-    \boldsymbol{F} = \begin{bmatrix} F_x \\ F_y \\ F_z \\ M_x \\ M_y \\ M_z \end{bmatrix} = \boldsymbol{C} \, \begin{bmatrix} v_1 \\ v_2 \\ \vdots \\ v_6 \end{bmatrix}
+    \boldsymbol{F} = \begin{bmatrix} F_x \\ F_y \\ F_z \\ M_x \\ M_y \\ M_z \end{bmatrix} = \boldsymbol{C} \, \boldsymbol{v}
 \]
-Tale misura consente l'implementazione del controllo ibrido forza/posizione e delle operazioni di inserzione guidata in forza.
+Questa misura costituisce il feedback fondamentale per le strategie di controllo forza/posizione, indispensabili in operazioni di assemblaggio ad alta precisione.
 
-\subsubsection{Sensori Di Prossimità E Misura Di Distanza}
+\subsubsection{Sensori Di Prossimità E Di Distanza}
+I sensori di prossimità e di distanza rilevano la presenza di oggetti o misurano la distanza da essi. Questi sensori sono cruciali per la navigazione autonoma, l'evitamento di ostacoli e la manipolazione di oggetti in ambienti dinamici.
 
-Dispositivi destinati alla stima della distanza o al rilievo di ostacoli entro il raggio d'azione:
 \begin{itemize}
-    \item \textbf{Sonar Ad Ultrasuoni:} trasmettono impulsi acustici ad alta frequenza ($\SI{40}{}$-$\SI{200}{\kilo\hertz}$) tramite elementi piezoelettrici, stimando la distanza dal tempo di volo (\textit{Time-of-Flight}, TOF) dell'eco:
+    \item \textbf{Sonar Ad Ultrasuoni:} Misura la distanza basandosi sul principio del tempo di volo (\textit{Time-of-Flight}, TOF) di un'onda acustica. Un trasduttore emette un treno di impulsi ad alta frequenza ($\SI{40}{}\div\SI{200}{\kilo\hertz}$) e ne rileva l'eco riflesso:
     \[
         d = \frac{v_s \, \Delta t_{\text{eco}}}{2}
     \]
-    con $v_s \approx \SI{343}{\meter\per\second}$ velocità del suono in aria a $\SI{20}{\celsius}$. I limiti operativi includono l'ampiezza del cono di emissione (bassa risoluzione angolare) e la presenza di riflessioni speculari su superfici metalliche lisce inclinate.
-    \item \textbf{Sensori Ottici A Raggi Infrarossi (IR):} operano a corto raggio ($\SI{4}{}$-$\SI{30}{\centi\meter}$) tramite \textbf{triangolazione geometrica}: il fascio emesso da un diodo IR incide sull'oggetto e la luce diffusa viene focalizzata su un sensore PSD (\textit{Position Sensitive Detector}) o lineare CMOS, la cui coordinata di incidenza è correlata trigonometricamente alla distanza.
-    \item \textbf{Laser Scanner (LIDAR, \textit{Light Detection and Ranging}):} emettono impulsi laser nel vicino infrarosso misurando il TOF ottico mediante fotodiodi a valanga (APD). Tramite deflessione a specchio rotante acquisiscono profili $2\text{D}$ o $3\text{D}$ sotto forma di nuvole di punti (\textit{point clouds}), impiegati negli algoritmi di localizzazione e mappatura simultanea (SLAM).
-    \item \textbf{Camere RGB-D:} uniscono un sensore di luminanza/crominanza a colori (RGB) a un canale per la mappa di profondità pixel per pixel (\textit{Depth map}). In modelli a \textit{luce strutturata} (es. Kinect v1), un proiettore IR proietta un pattern di speckle sulla scena; la deformazione geometrica ripresa da un ricevitore IR posto a distanza nota (\textit{baseline}) permette la ricostruzione della profondità $Z(u,v)$ in tempo reale.
+    dove $v_s \approx \SI{343}{\meter\per\second}$ è la velocità del suono in aria a $\SI{20}{\celsius}$. I loro limiti principali risiedono nell'apertura del cono di emissione (che comporta una ridotta risoluzione angolare) e nella vulnerabilità a riflessioni speculari su superfici lisce o inclinate, che possono impedire il ritorno dell'eco al ricevitore.
+
+    \item \textbf{Sensori Ottici A Raggi Infrarossi (IR):} Opera a breve distanza tipicamente $\SI{4}{}\div\SI{30}{\centi\meter}$ impiegando la \textbf{Triangolazione Geometrica}. Un LED o diodo laser proietta un fascio di luce sull'ostacolo e la radiazione diffusa viene rilevata da una lente su un rilevatore di posizione (PSD o matrice CMOS lineare). La coordinata del punto luminoso sul ricevitore varia con la distanza dell'oggetto, consentendo di calcolare $d$ per via trigonometrica indipendentemente dal colore della superficie.
+
+    \item \textbf{Laser Scanner (LIDAR):} Estende la misura di distanza a medio-lungo raggio calcolando il tempo di volo ottico di impulsi laser, rilevati tramite fotodiodi. Uno specchio rotante riflette il raggio sul piano o nello spazio, fornendo scansioni angolari ad elevata frequenza che vengono restituite come nuvole di punti. Tali dati sono alla base della localizzazione e della mappatura ambientale (\textit{SLAM}).
+
+     \item \textbf{Camere RGB-D:} Combinano in un unico dispositivo immagini a colori (RGB) e informazioni sulla profondità (\textit{Depth Map}), associando a ogni pixel una misura della distanza dalla camera. Nei sistemi di visione artificiale, un proiettore emette un pattern luminoso noto, che viene deformato dalla superficie degli oggetti. Una telecamera osserva queste deformazioni e, sfruttando la geometria del sistema e la triangolazione, ricostruisce la profondità dei punti osservati. Il risultato è una rappresentazione tridimensionale densa della scena, acquisita in tempo reale e utile per applicazioni robotiche come il riconoscimento e la presa di oggetti (\textit{Bin Picking}).
 \end{itemize}
 
 \newpage
 
 % AA Parte 2 - Architettura Dei Sistemi Robotici E Unità Meccaniche
 
-\section{Architettura E Schematizzazione Funzionale Di Un Sistema Robotico Industriale}
+\section[Architettura E Schematizzazione Di Un Sistema Robotico Industriale]{Architettura E Schematizzazione Di Un Sistema \\Robotico Industriale}
 
-Un sistema robotico industriale (manipolatore o piattaforma mobile) è un sistema orientato all'esecuzione rapida e ripetibile di compiti in ambienti strutturati o semi-strutturati. L'interazione tra controllore, componenti fisici e ambiente operativo è descritta nello schema a blocchi funzionale di Figura.
+Un sistema robotico industriale, è progettato per eseguire compiti in modo rapido e ripetibile e il suo funzionamento si basa sull'interazione tra vari componenti, che si possono schematizzare in:
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{SchemaABlocchi.png}
+    \resizebox{0.75\textwidth}{!}{%
+    \begin{tikzpicture}[
+        scale=1.0,
+        transform shape,
+        font=\sffamily,
+        % Colori di sfondo
+        bgGov/.style={fill=green!8!white, draw=none},
+        bgSys/.style={fill=blue!6!white, draw=none},
+        bgEnv/.style={fill=red!8!white, draw=none},
+        % Stili linee e frecce
+        mainBox/.style={draw=black, line width=1.2pt, fill=white!60!blue!5},
+        subBox/.style={draw=black, line width=1pt, fill=white!90!blue!10},
+        thickArrow/.style={-{Latex[length=3.2mm, width=4.2mm]}, line width=3.2pt}
+    ]
+
+    % --- 1. SFONDI DELLE AREE ---
+    \fill[bgGov] (0,0) rectangle (3.6, 9.6);
+    \fill[bgSys] (3.75,0) rectangle (16.45, 9.6);
+    \fill[bgEnv] (16.6,0) rectangle (20.3, 9.6);
+
+    % Intestazioni Aree
+    \node[font=\sffamily\bfseries\normalsize] at (1.8, 9.1) {GOVERNOR};
+    \node[font=\sffamily\bfseries\normalsize] at (10.1, 9.1) {ROBOTIC SYSTEM};
+    \node[font=\sffamily\bfseries\normalsize] at (18.45, 9.1) {ENVIRONMENT};
+
+    % --- 2. GOVERNOR ---
+    \draw[draw=black, line width=1.2pt, fill=white] (0.25, 5.65) rectangle (3.35, 6.75);
+    \node[font=\sffamily\footnotesize] at (1.8, 6.2) {TASK DESCRIPTION};
+
+    % --- 3. CONTROL UNIT ---
+    \draw[mainBox] (4.4, 4.4) rectangle (8.7, 8.6);
+    \draw[line width=1.2pt] (5.1, 4.4) -- (5.1, 8.6);
+    \node[rotate=90, font=\sffamily\bfseries\footnotesize] at (4.75, 6.5) {CONTROL UNIT};
+
+    % Linee divisorie e testo Control Unit
+    \foreach \y in {5.45, 6.5, 7.55} {
+        \draw[blue!40!gray, line width=0.6pt] (5.1, \y) -- (8.7, \y);
+    }
+    \node[font=\sffamily\bfseries\scriptsize] at (6.9, 8.075) {ROBOT MODEL};
+    \node[font=\sffamily\bfseries\scriptsize] at (6.9, 7.025) {TRAJECTORY PLANNING};
+    \node[font=\sffamily\bfseries\scriptsize] at (6.9, 5.975) {TASK PLANNING};
+    \node[font=\sffamily\bfseries\scriptsize] at (6.9, 4.925) {CONTROL ALGORITHMS};
+
+    % --- 4. SUPERVISION UNIT ---
+    \draw[mainBox] (4.4, 0.2) rectangle (8.7, 4.1);
+    \draw[line width=1.2pt] (5.1, 0.2) -- (5.1, 4.1);
+    \node[rotate=90, font=\sffamily\bfseries\footnotesize] at (4.75, 2.15) {SUPERVISION UNIT};
+
+    % Linee divisorie e testo Supervision Unit
+    \draw[blue!40!gray, line width=0.6pt] (5.1, 3.1) -- (8.7, 3.1);
+    \draw[blue!40!gray, line width=0.6pt] (5.1, 2.1) -- (8.7, 2.1);
+
+    \node[font=\sffamily\bfseries\scriptsize] at (6.9, 3.6) {REASONING};
+    \node[font=\sffamily\bfseries\scriptsize] at (6.9, 2.6) {AI MODULES};
+
+    % Blocco Sensor Units dentro Supervision Unit
+    \draw[draw=black, line width=1pt, fill=white] (5.45, 0.575) rectangle (8.35, 1.325);
+    \node[font=\sffamily\bfseries\footnotesize] at (6.9, 0.95) {Sensor Units};
+
+    % --- 5. ROBOT ---
+    \draw[mainBox, fill=white] (11.0, 3.6) rectangle (15.8, 8.4);
+    \draw[line width=1.2pt] (11.7, 3.6) -- (11.7, 8.4);
+    \node[rotate=90, font=\sffamily\bfseries\footnotesize] at (11.35, 6.0) {ROBOT};
+
+    % Riquadro rosso (Meccanica + Attuazione)
+    \draw[red!75!black, line width=1.8pt, fill=blue!12!white] (11.85, 5.2) rectangle (15.65, 8.1);
+
+    % Mechanical Units
+    \draw[subBox] (12.0, 6.875) rectangle (15.5, 7.725);
+    \node[font=\sffamily\bfseries\footnotesize] at (13.75, 7.3) {Mechanical Units};
+
+    % Actuation Units
+    \draw[subBox] (12.0, 5.525) rectangle (15.5, 6.375);
+    \node[font=\sffamily\bfseries\footnotesize] at (13.75, 5.95) {Actuation Units};
+
+    % Blocco Sensori Robot
+    \draw[draw=black, line width=1pt, fill=white] (12.0, 3.7) rectangle (15.5, 4.5);
+    \node[font=\sffamily\bfseries\footnotesize] at (13.75, 4.1) {Sensor Units};
+
+    % --- 6. FRECCE E COLLEGAMENTI ---
+
+    % Task Description -> Control Unit
+    \draw[thickArrow, darkgray!80!black] (3.35, 6.2) -- (4.35, 6.2);
+
+    % Commands (Control Unit -> Robot)
+    \draw[thickArrow, blue!60!black] (8.8, 6.2) -- node[above, font=\sffamily\bfseries\scriptsize, text=blue!60!black] {COMMANDS} (10.95, 6.2);
+
+    % Actions (Robot -> Environment)
+    \draw[thickArrow, red!75!black] (15.65, 6.2) -- node[above, font=\sffamily\bfseries\scriptsize, text=red!75!black, pos=0.45] {ACTIONS} (19.0, 6.2);
+
+    % Measurements 1 (Environment -> Robot Sensors -> Control/Supervision)
+    \definecolor{measGreen}{RGB}{0, 176, 80}
+    \draw[line width=3.2pt, measGreen] (19.2, 4.1) -- node[above, font=\sffamily\bfseries\scriptsize, text=measGreen, pos=0.38] {MEASUREMENTS} (15.5, 4.1);
+
+    % Uscita da Sensor Units (Robot) verso Supervision e Control
+    \draw[thickArrow, measGreen] (12.0, 4.1) -- (8.8, 4.1);
+    \draw[thickArrow, measGreen] (10.0, 4.1) |- (8.8, 5.0);
+
+    % Measurements 2 (Environment -> Supervision Sensors)
+    \draw[thickArrow, measGreen] (19.2, 0.95) -- node[above, font=\sffamily\bfseries\scriptsize, text=measGreen, pos=0.12] {MEASUREMENTS} (8.35, 0.95);
+
+    \end{tikzpicture}%
+    }
+    \caption{Architettura funzionale e flusso dei segnali di un sistema robotico industriale.}
+    \label{fig:schema_blocchi}
 \end{figure}
 
-\subsection{Unità Meccanica (\textit{Mechanical Unit})}
-Costituisce la struttura portante del robot, modellata come una catena cinematica di corpi rigidi (\textbf{Collegamenti} o \textit{Links}) interconnessi da coppie cinematiche elementari a un grado di libertà (\textbf{Giunti} o \textit{Joints}):
 \begin{itemize}
-    \item \textbf{Giunti Rotazionali (Revolute - R):} consentono una rotazione relativa attorno a un asse. La coordinata articolare è l'angolo di giunto $q_i = \theta_i \in [-\pi, \pi]\,\si{\radian}$.
-    \item \textbf{Giunti Prismatici (Prismatic - P):} consentono una traslazione pura lungo un asse. La coordinata generalizzata è lo spostamento lineare $q_i = d_i \in \mathbb{R}$.
-\end{itemize}
+    \item \textbf{Unità Meccanica (\textit{Mechanical Unit}):} Costituisce la struttura fisica portante del robot ed è modellata come una catena cinematica di corpi rigidi (\textbf{Links}) interconnessi tra loro da giunti (\textbf{Joints}). Questi ultimi si dividono in:
+    \begin{itemize}
+        \item \textbf{Giunti Rotazionali (Revolute - R):} Consentono una rotazione relativa attorno a un asse, descritta dalla variabile di giunto $\theta_i \in [-\pi, \pi]\,\si{\radian}$.
+        \item \textbf{Giunti Prismatici (Prismatic - P):} Consentono una traslazione pura lungo un asse, descritta dalla variabile di giunto $d_i \in \mathbb{R}$.
+    \end{itemize}
+    Il numero di variabili di giunto indipendenti definisce i \textbf{Gradi di Libertà} (DOF) del manipolatore. Un manipolatore con 6 DOF, può controllare indipendentemente la posizione dell'End-Effector, descritta da \(\boldsymbol{p}\in\mathbb{R}^3\), e il suo orientamento, descritto da \(\boldsymbol{R}\in SO(3)\). Ciò consente, lontano da configurazioni singolari, di modificare la posizione mantenendo costante l'orientamento, oppure di modificare l'orientamento mantenendo costante la posizione. Strutturalmente, la catena cinematica si articola a partire da una base fissa o mobile (\textit{Base Link}), prosegue con il braccio necessario per il posizionamento e il polso sferico per l'orientamento, fino a terminare nell'\textit{End-Effector}
 
-Il numero di coordinate indipendenti definisce i \textbf{Gradi Di Libertà} (\textit{Degrees of Freedom}, DOF). Un manipolatore spaziale standard possiede $6$ DOF, necessari e sufficienti a collocare l'organo terminale con posizione $\boldsymbol{p} \in \mathbb{R}^3$ e orientamento $\boldsymbol{R} \in SO(3)$ arbitrari. L'Unità Meccanica comprende:
-\begin{itemize}
-    \item La base fissa o mobile (\textit{Base Link})
-    \item La struttura del braccio per il posizionamento spaziale;
-    \item Il polso sferico (\textit{Spherical Wrist}) per l'orientamento
-    \item L'organo terminale (\textit{End-Effector}), quale pinza pneumatica o elettromeccanica, torcia di saldatura, mandrino di fresatura o testa laser.
-\end{itemize}
-
-\subsection{Unità Di Attuazione (\textit{Actuation Unit})}
-Genera l'energia cinetica e le coppie $\boldsymbol{\tau}$ necessarie a equilibrare le forze inerziali, centrifughe, gravitazionali ed esterne descritte dal modello dinamico:
-\[
-    \boldsymbol{M}(\boldsymbol{q})\ddot{\boldsymbol{q}} + \boldsymbol{C}(\boldsymbol{q},\dot{\boldsymbol{q}})\dot{\boldsymbol{q}} + \boldsymbol{g}(\boldsymbol{q}) = \boldsymbol{\tau} - \boldsymbol{\tau}_{\text{ext}}
-    \label{eq:robot_dynamics}
-\]
-Comprende:
-\begin{itemize}
-    \item Motori elettrici brushless a magneti permanenti (AC/DC), a elevato rapporto coppia/inerzia e privi di usura da spazzole
-    \item Trasmissioni meccaniche di precisione (riduttori epicicloidali, a gioco zero tipo \textit{Harmonic Drive} o cicloidali ad alta rigidezza torsionale), necessarie per abbassare la velocità angolare e amplificare la coppia erogata all'asse del giunto;
-    \item Elettronica di potenza (\textit{driver}/inverter d'asse PWM), che controlla gli anelli interni di corrente a frequenze di $\SI{10}{}$-$\SI{20}{\kilo\hertz}$.
-\end{itemize}
-\newpage
-\subsection{Unità Sensoriale (\textit{Sensor Unit})}
-Integra i dispositivi di misura dello stato interno e dell'ambiente circostante (approfonditi in Sezione~4):
-\begin{itemize}
-    \item Sensori \textbf{Propriocettivi} (encoder assoluti o incrementali, sensori a effetto Hall per le fasi motore, accelerometri), che trasmettono lo stato $\boldsymbol{q}(t)$ e $\dot{\boldsymbol{q}}(t)$ alla Control Unit;
-    \item Sensori \textbf{Esterocettivi} (telecamere stereoscopiche, profilometri laser, sensori F/T a 6 assi montati sulla flangia), che rilevano l'interazione meccanica con l'ambiente e la posa dei pezzi da manipolare.
-\end{itemize}
-
-\subsection{Unità Di Controllo (\textit{Control Unit})}
-Unità computazionale alloggiata nell'armadio elettrico della cella, costituita da IPC industriali o DSP real-time con sistemi operativi ad alta determinazione temporale (RTOS, jitter nell'ordine del microsecondo). Esegue le seguenti funzioni principali:
-\begin{enumerate}
-    \item \textbf{Generazione E Pianificazione Di Traiettorie:} Conversione dei comandi del programma utente (es. punti di passaggio cartesiani) in traiettorie temporali $\boldsymbol{x}_d(t), \dot{\boldsymbol{x}}_d(t), \ddot{\boldsymbol{x}}_d(t)$ a jerk limitato per contenere le sollecitazioni strutturali.
-    \item \textbf{Cinematica Inversa:} Risoluzione in tempo reale dell'equazione cinematica $\boldsymbol{q}_d(t) = \boldsymbol{k}^{-1}(\boldsymbol{x}_d(t))$ o tramite inversione differenziale con pseudo-inversa di Moore-Penrose dello Jacobiano geometrico:
+    \item \textbf{Unità Di Attuazione (\textit{Actuation Unit}):} Consente di mettere in movimento la struttura meccanica, generando le forze e le coppie necessarie a equilibrare le forze, secondo quanto descritto dal modello dinamico del manipolatore:
     \[
-        \dot{\boldsymbol{q}}_d = \boldsymbol{J}^{\dagger}(\boldsymbol{q}) \dot{\boldsymbol{x}}_d
+        \boldsymbol{M}(\boldsymbol{q})\ddot{\boldsymbol{q}} + \boldsymbol{C}(\boldsymbol{q},\dot{\boldsymbol{q}})\dot{\boldsymbol{q}} + \boldsymbol{g}(\boldsymbol{q}) = \boldsymbol{\tau} - \boldsymbol{\tau}_{\text{ext}}
+        \label{eq:robot_dynamics}
     \]
-    evitando le configurazioni di singolarità cinematica con $\det(\boldsymbol{J}) = 0$.
-    \item \textbf{Controllo In Anello Chiuso:} algoritmi PID digitali decentralizzati o schemi a dinamica inversa non lineare che generano i riferimenti di coppia o tensione per l'Unità di Attuazione minimizzando l'errore d'inseguimento $\boldsymbol{e}(t) = \boldsymbol{q}_d(t) - \boldsymbol{q}(t)$.
-\end{enumerate}
+    Dove $\boldsymbol{M}$ è la matrice di inerzia, il prodotto $\boldsymbol{C}\dot{\boldsymbol{q}}$ rappresenta le forze centrifughe, $\boldsymbol{g}$ è il vettore delle forze di gravità, $\boldsymbol{\tau}$ è il vettore delle coppie applicate ai giunti e $\boldsymbol{\tau}_{\text{ext}}$ è il vettore delle coppie esterne dovute all'interazione con l'ambiente.
 
-\subsection{Unità Di Supervisione (\textit{Supervision Unit})}
-Livello gerarchico preposto alla decisione, al monitoraggio e alla pianificazione delle attività (\textit{Task Planning}). Risiede nella Control Unit o su un server centrale connesso tramite bus di campo deterministici (EtherCAT, PROFINET) o reti industriali.
+    La catena di attuazione è composta da:
+    \begin{itemize}
+        \item \textbf{Motori Elettrici Brushless:} Che convertono l'energia elettrica in energia meccanica e caratterizzati dall'assenza di spazzole e da un elevato rapporto coppia/inerzia
+        \item \textbf{Trasmissioni Meccaniche:} Ad esempio riduttori epicicloidali o cicloidali, utilizzati per adattare velocità e coppia del motore alle specifiche del giunto.
+        \item \textbf{Elettronica Di Potenza:} Consente di regolare la corrente e la tensione applicate al motore, necessarie per il controllo della coppia e della velocità.
+    \end{itemize}
+    \newpage
 
-Svolge le seguenti funzioni:
-\begin{itemize}
-    \item \textbf{Modulo Di Ragionamento (\textit{Reasoning}) e IA:} pianificazione euristica delle sequenze operative, schedulazione del ciclo macchina e generazione di traiettorie \textit{Collision-Free} integrate con visione artificiale e modelli CAD tridimensionali;
-    \item \textbf{Interfaccia Operatore (HMI / Teach Pendant):} terminale industriale per programmazione guidata, movimentazione manuale per singoli assi o coordinate cartesiane (\textit{Jogging}) e diagnostica;
-    \item \textbf{Gestione Della Sicurezza E Interblocchi Di Cella:} controllore di sicurezza hardware certificato SIL3/PLe per la sorveglianza di barriere ottiche, pulsanti di arresto d'emergenza e arresti di categoria 0, 1 o 2 secondo le norme ISO 10218 e ISO/TS 15066.
+    \item \textbf{Unità Sensoriale (\textit{Sensor Unit}):}
+    Questo sottosistema integra i sensori necessari per rilevare lo stato del robot e interagire il mondo esterno. Dal punto di vista architetturale, l'unità fornisce al controllore due flussi informativi distinti:
+    \begin{itemize}
+        \item Il feedback dei sensori \textbf{Propriocettivi} (encoder assoluti o incrementali, accelerometri), che aggiornano in tempo reale lo stato cinematico interno $\boldsymbol{q}(t)$ e $\dot{\boldsymbol{q}}(t)$ dei giunti
+        \item I dati dei sensori \textbf{Esterocettivi} (LiDar, sensori coppia/forza), impiegati per rilevare la posa dei pezzi da manipolare e monitorare le forze di interazione meccanica con l'ambiente.
+    \end{itemize}
+
+    \item \textbf{Unità Di Controllo (\textit{Control Unit}):}
+    Rappresenta il nucleo computazionale del sistema, e basato su DSP real-time governati da sistemi operativi specifici. Elaborando le misure provenienti dall'Unità Sensoriale, esegue tre funzioni sequenziali:
+    \begin{enumerate}
+        \item \textbf{Generazione E Pianificazione Di Traiettorie:} Traduce i comandi del programma utente in leggi orarie $\boldsymbol{x}_d(t), \dot{\boldsymbol{x}}_d(t), \ddot{\boldsymbol{x}}_d(t)$, così da contenere le sollecitazioni meccaniche sulla struttura
+        \item \textbf{Risoluzione Cinematica Inversa:} converte i riferimenti cartesiani dell'End-Effector in riferimenti nello spazio dei giunti, tramite metodi analitici o numerici. Se necessario ricavare le velocità dei giunti a partire dalle velocità cartesiane tramite l'inversa di Moore-Penrose della matrice Jacobiana:
+        \[
+            \dot{\boldsymbol{q}}_d =
+            \boldsymbol{J}(\boldsymbol{q})^\dagger
+            \begin{bmatrix}
+                \boldsymbol{v}{e,d}\
+                \boldsymbol{\omega}_{e,d}
+            \end{bmatrix}
+        \]
+        La risoluzione deve tenere conto delle singolarità cinematiche, nelle cui vicinanze la soluzione può diventare mal condizionata o richiedere velocità articolari molto elevate.
+        \item \textbf{Controllo In Anello Chiuso:} Calcola i valori di tensione o coppia per l'Unità di Attuazione al fine di minimizzare l'errore d'inseguimento $\boldsymbol{e}(t) = \boldsymbol{q}_d(t) - \boldsymbol{q}(t)$.
+    \end{enumerate}
+
+    \item \textbf{Unità Di Supervisione (\textit{Supervision Unit}):}
+    Costituisce il livello gerarchico superiore per l'analisi, il monitoraggio e la pianificazione delle attività (\textit{Task Planning}). Può risiedere fisicamente nella stessa Control Unit o su un server e svolge tre compiti chiave:
+    \begin{itemize}
+        \item \textbf{Modulo Di Ragionamento (\textit{Reasoning}):} Gestisce la pianificazione delle sequenze operative e la generazione di traiettorie \textit{Collision-Free} mediante l'integrazione di visione artificiale e modelli CAD tridimensionali
+        \item \textbf{Interfaccia Operatore (HMI / Teach Pendant):} Offre un terminale per la programmazione guidata, la diagnostica e la movimentazione manuale del robot per singoli assi o in coordinate cartesiane
+        \item \textbf{Gestione Della Sicurezza E Interblocchi Di Cella:} Integra un controllore logico di sicurezza dedicato al monitoraggio di barriere e alla gestionde degli arresti
+    \end{itemize}
+
 \end{itemize}
 \newpage
 
-\section{L'Unità Meccanica: Cinematica E Tipologie Di Robot Industriali}
-L'Unità Meccanica sostiene i carichi operativi, guida l'organo terminale (\textit{End-Effector}) nello spazio cartesiano e garantisce rigidezza strutturale e precisione di posizionamento. È modellata come una \textbf{Catena Cinematica} di corpi rigidi ideali (\textbf{Collegamenti} o \textit{Links}) interconnessi da vincoli a un singolo grado di libertà (\textbf{Giunti} o \textit{Joints}).
+\section{Cinematica e Tipologie di Robot Industriali}
+La disposizione degli assi relativi ai \textit{Links}  definisce la configurazione cinematica, il volume di lavoro ($\mathcal{W} \subset \mathbb{R}^3$) e i gradi di libertà (DOF), identificati dal vettore delle coordinate generalizzate indipendenti $\boldsymbol{q} = [q_1, q_2, \dots, q_n]^T \in \mathbb{R}^n$ rispetto al riferimento di base (\textit{base frame}).
 
-La disposizione geometrica degli assi definisce la configurazione cinematica, il volume di lavoro (\textit{workspace} $\mathcal{W} \subset \mathbb{R}^3$) e i gradi di libertà (DOF), pari al numero di coordinate generalizzate indipendenti $\boldsymbol{q} = [q_1, q_2, \dots, q_n]^T \in \mathbb{R}^n$ necessarie a descrivere la configurazione rispetto alla terna di base (\textit{Base Frame}).
-
-Le quattro architetture cinematiche prevalenti nell'industria sono: robot articolati (antropomorfi), robot SCARA, robot paralleli (Delta) e robot cartesiani.
+Nel contesto industriale prevalgono quattro architetture: antropomorfi (articolati), SCARA, a cinematica parallela (Delta) e cartesiani.
 
 \subsection{Robot Antropomorfo (\textit{Articulated Robot})}
-
-Il robot antropomorfo è una catena cinematica aperta seriale interamente rotoidale (solitamente sequenza $6\text{R}$) configurata per emulare il braccio umano:
+È una catena seriale aperta interamente rotoidale (tipicamente $6\text{R}$) concepita per replicare il braccio umano:
 \begin{itemize}
-    \item i primi tre giunti ($R_1, R_2, R_3$) costituiscono la \textbf{Struttura Portante}: l'asse verticale $R_1$ consente la rotazione azimutale sul basamento, mentre gli assi orizzontali e paralleli $R_2$ e $R_3$ replicano spalla e gomito, determinando la posizione del polso nello spazio ($\boldsymbol{p} \in \mathbb{R}^3$);
-    \item Gli ultimi tre giunti ($R_4, R_5, R_6$) formano il \textbf{Polso Sferico} (\textit{Spherical Wrist}): i loro assi concorrono idealmente nel \textit{Punto Di Polso}, garantendo il disaccoppiamento cinematico tra il posizionamento cartesiano e l'orientamento angolare dell'utensile ($\boldsymbol{R} \in SO(3)$).
+    \item \textbf{Struttura Portante ($RF_1, RF_2, RF_3$):} l'asse verticale $RF_1$ consente la rotazione azimutale alla base, mentre gli assi orizzontali e paralleli $RF_2$ e $RF_3$ (spalla e gomito) definiscono la posizione cartesiana del polso ($\boldsymbol{p} \in \mathbb{R}^3$);
+    \item \textbf{Polso Sferico ($RF_4, RF_5, RF_6$):} gli assi di tutti e tre i giunti hanno un origine comune nel punto detto \textbf{Centro Del Polso}, e definiscono l'orientamento dell'End Effector ($\boldsymbol{R} \in SO(3)$).
 \end{itemize}
+Poiché i $6$ DOF offrono piena destrezza spaziale ($3$ parametri di posizione e $3$ di orientamento) è possibile disaccoppiare posizione e orientamento, ovvero si può far variare una mantenendo l'altra costante. Esistono anche configurazioni a $7$ DOF introducendo una ridondanza cinematica, che abilita i moti interni, ovvero modificare l'orientamento mantenendo la posa invariata
 
-La configurazione a $6$ DOF assicura completa destrezza spaziale (assegnazione indipendente di $3$ coordinate di posizione e $3$ parametri di orientamento). Varianti a $4$ o $5$ DOF sono adottate per compiti a orientamento vincolato (es. pallettizzazione), mentre strutture a $7$ DOF sono \textbf{cinematicamente ridondanti}: il grado di libertà addizionale consente moti interni (rotazione del gomito sul cerchio di auto-moto) a posa terminale invariata, agevolando l'evitamento di ostacoli (\textit{obstacle avoidance}) e la riconfigurazione lontana da singolarità.
+L'ampio sbraccio e l'elevata manovrabilità rendono questo manipolatore molto usato per vari tipi di saldatura, verniciatura o montaggio tridimensionale. Di contro, la non linearità dei modelli e la molteplicità delle soluzioni cinematiche inverse, comportano costi d'acquisto e manutenzione superiori rispetto ad altre cinematiche a parità di carico utile (\textit{payload}).
 
-\subsubsection*{Caratteristiche Applicative Ed Economiche}
-L'elevato sbraccio e la versatilità di orientamento rendono il manipolatore antropomorfo la soluzione primaria per:
-\begin{itemize}
-    \item Saldatura ad arco (MIG/MAG, TIG) e a punti (\textit{Spot Welding});
-    \item Verniciatura a spruzzo ed erogazione di sigillanti;
-    \item Asportazione di truciolo (sbavatura, fresatura leggera) e assemblaggio tridimensionale.
-\end{itemize}
-Tuttavia, la complessità dell'inversione cinematica (molteplicità delle soluzioni, matrici jacobiane non lineari) e la necessità di riduttori a gioco zero ad alta rigidezza su bracci a sbalzo comportano costi di acquisto e manutenzione superiori rispetto ad altre cinematiche a parità di carico utile (\textit{payload}).
-\newpage
 \subsection{Robot SCARA (\textit{Selective Compliance Articulated Robot Arm})}
-Il robot SCARA adotta una catena cinematica seriale $\text{R-R-P-R}$ a quattro gradi di libertà. I primi due giunti rotoidali presentano assi verticali paralleli, vincolando i bracci a muoversi nel piano orizzontale $XY$ secondo una cinematica planare. L'estremità della catena impiega un asse scanalato a ricircolo di sfere (\textit{ball screw / spline}) che integra:
-\begin{itemize}
-    \item Traslazione verticale pura lungo $Z$ (giunto prismatico);
-    \item Rotazione (rollio o \textit{yaw}) attorno all'asse $Z$ per orientare il pezzo in presa.
-\end{itemize}
+Adotta una catena seriale $\text{RRPR}$ a quattro gradi di libertà. I primi due giunti ruotano attorno all'asse verticale vincolando il moto al piano orizzontale $XY$. All'estremità di questa catena è presente un \underline{albero (scanalato) a ricircolo di sfere} che realizza sia il movimento verticale lungo $Z$ (giunto prismatico), sia la rotazione attorno a $Z$ (giunto rotoidale).
 
-\subsubsection*{Il Concetto Di Cedevolezza Selettiva (\textit{Selective Compliance})}
-La configurazione determina proprietà elastiche anisotrope:
+La capacità di movimento del sistema varia in funzione della direzione considerata (anisotropia):
 \begin{itemize}
-    \item Nel piano orizzontale $XY$, la catena articolata presenta un'intrinseca \textbf{Cedevolezza Elastica} (\textit{High Compliance}): in compiti di inserimento (\textit{Peg-In-Hole}), eventuali disallineamenti generano reazioni di contatto che flettono i bracci, consentendo l'autocentraggio dell'utensile ed evitando impuntamenti;
-    \item Lungo l'asse verticale $Z$, la sollecitazione assiale dei componenti garantisce \textbf{Rigidezza Elevatissima} (\textit{High Stiffness}), consentendo l'applicazione di carichi elevati di inserimento o pressatura senza deflessioni rilevabili.
+    \item Nel piano $XY$, la struttura può cedere leggermente per adattarsi a piccoli disallineamenti, ad esempio durante l'inserimento di un perno in un foro, per facilitare l'allineamento dei componenti e ridurre il rischio di blocchi.
+
+    \item Lungo l'asse $Z$, invece, la struttura è più rigida e può quindi applicare forze elevate, ad esempio durante un'operazione di pressatura, senza subire deformazioni significative.
 \end{itemize}
-I robot SCARA assicurano tempi di ciclo ridotti, ingombro al suolo (\textit{footprint}) minimo ed elevata ripetibilità ($\le \pm \SI{0.01}{\milli\meter}$), risultando ottimali per compiti di pick-and-place ad alta cadenza, dosaggio di collanti e montaggio di componenti su piani paralleli.
+Grazie al ridotto ingombro a terra e all'alta ripetibilità, gli SCARA sono ideali per operazioni di \textit{pick-and-place} veloce, dosaggio e assemblaggio planare.
+\newpage
 
 \subsection{Robot Delta (Robot A Cinematica Parallela)}
-Il robot Delta appartiene alla classe delle macchine a catena cinematica parallela (PKM, \textit{Parallel Kinematic Machines}). L'architettura comprende:
+
+Il robot Delta appartiene alla categoria dei robot a cinematica parallela (PKM, \textit{Parallel Kinematic Machines}). A differenza dei robot seriali, nei quali i giunti sono collegati in successione, il Delta utilizza tre catene cinematiche che collegano una base fissa a una piattaforma mobile. La sua struttura è composta da:
+% Delta Robot Animation: https://www.youtube.com/shorts/1JK8eHhRJ78
 \begin{itemize}
-    \item Una piastra di base fissa superiore (montata a soffitto) che alloggia tre servomotori rotativi o attuatori lineari;
-    \item Tre bracci indipendenti composti ciascuno da una biella motrice e da un parallelogramma deformabile a tiranti paralleli vincolati tramite giunti sferici;
-    \item Una piastra mobile inferiore (\textit{Travelling Plate}) che supporta l'organo terminale.
+    \item Una base superiore fissa, sulla quale sono installati tre attuatori, generalmente motori rotativi
+    \item Tre bracci cinematici, ciascuno costituito da un'asta rigida collegata all'attuatore e da aste parallele collegate tra loro a formare un parallelogramma deformabile
+    \item Una piattaforma mobile inferiore (\textit{travelling plate}), alla quale è collegato l'organo terminale.
 \end{itemize}
-I tre parallelogrammi vincolano la piastra mobile a rimanere parallela alla base, sopprimendo per costruzione i gradi di libertà rotazionali e generando una \textbf{traslazione spaziale pura}:
+
+I tre parallelogrammi svolgono una funzione fondamentale: mantengono la piattaforma mobile sempre parallela alla base fissa, impedendole di ruotare durante il movimento. In questo modo, il robot può spostare l'organo terminale nelle tre direzioni dello spazio, senza modificarne l'orientamento. Indicando con $x_e$, $y_e$ e $z_e$ la posizione dell'organo terminale, la sua configurazione può essere descritta mediante:
+
 \[
-    \boldsymbol{p}_e = [x_e, y_e, z_e]^T \in \mathbb{R}^3, \qquad \boldsymbol{R}_e = \boldsymbol{I}_{3 \times 3}
+    \boldsymbol{p}_e =
+    \begin{bmatrix}
+        x_e \\ y_e \\ z_e
+    \end{bmatrix}
+    \in \mathbb{R}^3,
+    \qquad
+    \boldsymbol{R}_e = \boldsymbol{I}_{3 \times 3}
 \]
-L'orientamento del pezzo (rollio) richiede un quarto asse telescopico centrale a giunto cardanico, azionato da un motore addizionale montato sulla base.
 
-\subsubsection*{Vantaggi Dinamici E Limitazioni Operative}
-L'alloggiamento degli attuatori sulla base fissa sgrava i membri mobili dal peso dei motori. I bracci, realizzati con tubolari in fibra di carbonio o leghe leggere di alluminio a bassa inerzia, consentono accelerazioni di $15g$-$20g$ ($\approx \SI{150}{}$-$\SI{200}{\meter\per\second\squared}$), velocità di punta superiori a $\SI{10}{\meter\per\second}$ e frequenze di smistamento di $200$-$300$ cicli al minuto.
+dove $\boldsymbol{p}_e$ rappresenta la posizione nello spazio e $\boldsymbol{R}_e$ descrive l'orientamento, che rimane costante rispetto alla base assumendo i sistemi di riferimento allineati. Se è necessario introdurre anche una rotazione attorno all'asse verticale $Z$, occorre aggiungere un meccanismo ausiliario, generalmente costituito da un albero telescopico con giunto cardanico, azionato da un motore dedicato montato sulla struttura fissa.
 
-I limiti strutturali comprendono:
+Una caratteristica importante del robot Delta è l'elevata velocità operativa. Poiché i motori sono montati sulla base fissa, la piattaforma mobile e i bracci devono movimentare una massa relativamente ridotta. Inoltre, l'impiego di aste leggere, consente di ottenere accelerazioni molto elevate, che nei modelli più performanti possono raggiungere circa $\SI{150}{}$--$\SI{200}{\meter\per\second\squared}$.Nonostante le elevate prestazioni, il robot Delta presenta alcuni limiti applicativi:
+
 \begin{itemize}
-    \item \textbf{Carico Utile Ridotto:} \textit{Payload} tipicamente compreso tra $\SI{0.5}{\kilo\gram}$ e $\SI{3}{\kilo\gram}$ (raramente oltre $\SI{10}{\kilo\gram}$);
-    \item \textbf{Spazio Di Lavoro Conico/Piramidale:} volume accessibile decrescente lungo $Z$;
-    \item \textbf{Complessità Di Installazione E Calibrazione:} necessità di intelaiature aeree antivibranti e risoluzione di sistemi algebrici non lineari ad anello chiuso per la cinematica diretta.
+    \item \textbf{Carico Utile Limitato:} La struttura è progettata principalmente per movimentare oggetti leggeri. Il carico utile tipico può variare indicativamente tra $\SI{0.5}{\kilo\gram}$ e $\SI{3}{\kilo\gram}$
+
+    \item \textbf{Spazio Di Lavoro Limitato:} Il volume raggiungibile dall'organo terminale ha generalmente una forma approssimativamente conica/piramidale
+
+    \item \textbf{Installazione E Calibrazione Complesse:} Per sfruttare le elevate accelerazioni è necessaria una struttura di supporto rigida e sufficientemente stabile da limitare le vibrazioni. Inoltre, il calcolo della cinematica diretta è più complesso rispetto a quello di un robot seriale, poiché richiede la soluzione di un sistema di equazioni non lineari che descrive i vincoli imposti dalle tre catene cinematiche.
 \end{itemize}
 
 \newpage
+
 \subsection{Robot Cartesiano (\textit{Gantry Robot})}
-Il robot cartesiano adotta una cinematica seriale a tre giunti prismatici mutuamente ortogonali ($\text{P-P-P}$), in cui le coordinate di giunto coincidono direttamente con le coordinate lineari cartesiane:
+% GANTRY ROBOT ANIMATION: https://www.youtube.com/watch?v=2wG3aSqrGKc
+Si basa su una cinematica seriale a tre giunti prismatici ortogonali ($\text{PPP}$), in cui le coordinate di giunto corrispondono direttamente a quelle lineari cartesiane:
 \[
     q_1 = x, \qquad q_2 = y, \qquad q_3 = z
 \]
-Le strutture a portale sorrette da montanti perimetrali assumono la denominazione di \textbf{Robot A Portale} (\textit{Gantry Robot}).
+Se la configurazione è sorretta da un telaio perimetrale, prende il nome di robot a portale (\textit{gantry}).
 
-\subsubsection*{Proprietà Cinetiche E Metrologiche}
-L'architettura cartesiana garantisce:
+I principali punti di forza includono:
 \begin{itemize}
-    \item \textbf{Disaccoppiamento Cinematico:} la matrice jacobiana geometrica $\boldsymbol{J}$, che lega le velocità dei giunti $\dot{\boldsymbol{q}} = [\dot{x}, \dot{y}, \dot{z}]^T$ alla velocità di traslazione della flangia $\boldsymbol{v}_e = [\dot{x}_e, \dot{y}_e, \dot{z}_e]^T$, è la matrice identità:
+    \item \textbf{Disaccoppiamento Cinematico Totale:} La matrice jacobiana geometrica $\boldsymbol{J}$ coincide con la matrice identità:
     \[
-        \boldsymbol{v}_e = \boldsymbol{J} \, \dot{\boldsymbol{q}} = \begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{bmatrix} \begin{bmatrix} \dot{x} \\ \dot{y} \\ \dot{z} \end{bmatrix}
+        \boldsymbol{v}_e = \boldsymbol{J} \, \dot{\boldsymbol{q}} = \begin{bmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1 \end{bmatrix} \begin{bmatrix} \dot{x} \\ \dot{y} \\ \dot{z} \end{bmatrix} = \dot{\boldsymbol{q}}
     \]
-    Lo spazio di lavoro è privo di singolarità cinematiche interne e il controllo di traiettoria coincide punto per punto con il comando dei singoli assi.
-    \item \textbf{Spazio Di Lavoro Regolare:} il volume operativo è un parallelepipedo retto coincidente con le corse delle guide lineari, massimizzando lo sfruttamento volumetrico.
-    \item \textbf{Elevata Rigidità E Capacità Di Carico:} il supporto continuo lungo le guide minimizza i momenti flettenti, consentendo la movimentazione di carichi elevati (da centinaia di chilogrammi a tonnellate) con precisione sub-millimetrica su corse fino a decine di metri (asservimento macchine CNC, laminazione di fibre composite, taglio termico di grandi lamiere).
+    Lo spazio di lavoro è privo di singolarità interne e la pianificazione di traiettoria si traduce direttamente nel comando dei singoli assi indipendenti.
+    \item \textbf{Spazio Di Lavoro:} Il volume utile è un parallelepipedo coincidente con le corse delle guide lineari, massimizzando l'efficienza volumetrica.
+    \item \textbf{Elevata Capacità Di Carico E Rigidezza:} l'appoggio continuo lungo le guide elimina i problemi di flessione, permettendo la manipolazione di carichi pesanti (da quintali a diverse tonnellate) con accuratezza sub-millimetrica su corse metriche estese
 \end{itemize}
 
-\subsection{Quadro Sinottico Comparativo Delle Architetture Meccaniche}
-
-La Tabella~\ref{tab:confronto_robot} riassume le caratteristiche prestazionali delle quattro architetture esaminate.
+\subsection{Tabella Riassuntiva delle Tipologie di Manipolatori}
 
 \begin{table}[H]
     \centering
     \small
-    \begin{tabular}{p{2cm} p{2cm} p{2cm} p{3cm} p{3.5cm}}
+    \begin{tabular}{
+        >{\raggedright\arraybackslash}p{2.3cm}
+        >{\raggedright\arraybackslash}p{1.9cm}
+        >{\raggedright\arraybackslash}p{2.3cm}
+        >{\raggedright\arraybackslash}p{3.8cm}
+        >{\raggedright\arraybackslash}p{3.7cm}
+    }
         \toprule
-        \textbf{Architettura} & \textbf{DOF Tipici} & \textbf{Spazio di Lavoro} & \textbf{Punti di Forza} & \textbf{Campi Applicativi Primari} \\
+        \textbf{Architettura} & \textbf{Cinematica E DOF} & \textbf{Spazio Di Lavoro} & \textbf{Punti Di Forza} & \textbf{Campi Applicativi Tipici} \\
         \midrule
-        \textbf{Articolato} & $6$ (da $4$ a $7$) & Sferico / Toroidale con sbalzo & Massima destrezza spaziale, orientamento arbitrario & Saldatura, verniciatura, manipolazione generale, sbavatura \\
+        \textbf{Antropomorfo}\newline(\textit{Articulated})
+            & $6$ ($6\text{R}$)\newline(varianti $4$--$7$)
+            & Quasi sferico / toroidale ad ampio sbraccio
+            & Massima destrezza spaziale, disaccoppiamento di polso ($\boldsymbol{R} \in SO(3)$)
+            & Saldatura (arco/punti), verniciatura/sigillatura, asportazione truciolo, assemblaggio 3D \\
         \addlinespace
-        \textbf{SCARA} & $4$ & Cilindrico cavo & Alta velocità ciclica, cedevolezza orizzontale, compatto & Assemblaggio elettronico, pick-and-place, montaggio viti \\
+        \textbf{SCARA}
+            & $4$ ($\text{RRPR}$)
+            & Cilindrico cavo
+            & Cedevolezza nel piano $XY$, elevata rigidità assiale in $Z$, ripetibilità $\le \pm \SI{0.01}{\milli\meter}$
+            & Assemblaggio planare, inserimento (\textit{peg-in-hole}), dosaggio, \textit{pick-and-place} rapido \\
         \addlinespace
-        \textbf{Delta} & $3$ o $4$ & Conico / Piramidale tronco & Accelerazioni elevatissime ($> 15g$), cinematismi ultraleggeri & Confezionamento rapido, smistamento alimentare, packaging \\
+        \textbf{Delta}\newline(\textit{PKM})
+            & $3$ trasl. ($+ 1$ rot. opzionale)
+            & Conico / piramidale (decrescente lungo $Z$)
+            & Masse mobili ridotte, accelerazioni estreme ($15g$--$20g$), velocità $> \SI{10}{\meter\per\second}$
+            & Confezionamento primario, smistamento rapido ($200$--$300\text{ cicli/min}$), manipolazione leggera \\
         \addlinespace
-        \textbf{Cartesiano} & $3$ (lineari) & Parallelepipedo retto & Rigidezza uniforme, corse scalabili, cinematica lineare & Asservimento presse, taglio laser, stoccaggio pesante \\
+        \textbf{Cartesiano}\newline(\textit{Gantry})
+            & $3$ lineari ($\text{PPP}$)
+            & Parallelepipedo retto
+            & $\boldsymbol{J} = \boldsymbol{I}$, assenza di singolarità interne, portate estreme (fino a tonnellate) su corse scalabili
+            & Asservimento macchine CNC, taglio termico lamiere, laminazione di fibre composite, stoccaggio pesante \\
         \bottomrule
     \end{tabular}
-    \caption{Confronto sinottico tra le principali classi cinematiche di robot industriali.}
-    \label{tab:confronto_robot}
 \end{table}
 
 \newpage
@@ -1679,6 +1749,7 @@ La figura illustra le curve caratteristiche coppia-velocità, mentre la tabella 
     }
 \end{table}
 
+\addtocontents{toc}{\protect\clearpage}
 \newpage
 \section{Servomotori Elettrici Brushless (BLDC)}
 I servomotori a corrente continua senza spazzole (\textbf{BLDC}, \textit{BrushLess Direct Current}) sostituiscono i motori a spazzole nelle catene cinematiche dei robot industriali grazie all'\textbf{eliminazione dei contatti meccanici striscianti}. L'inversione delle correnti di fase è attuata da un ponte di commutazione elettronico a semiconduttori coordinato in tempo reale da un microprocessore.
