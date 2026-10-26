@@ -52,6 +52,18 @@
 \usepackage{graphicx}
 \graphicspath{{./Images/Lab}}
 \usepackage{float}
+
+% --- RIDUZIONE SPAZI FIGURE E CAPTION ---
+% Spazio Sopra E Sotto Le Figure [H] (default: 12pt)
+\setlength{\intextsep}{6pt plus 1pt minus 1pt}
+% Spazio Per Figure In Alto/Basso [t]/[b] (Default: 20pt)
+\setlength{\textfloatsep}{8pt plus 1pt minus 1pt}
+% Spazio Tra L'immagine E La Caption (Default: 10pt)
+\setlength{\abovecaptionskip}{6pt}
+% Compensa Lo Spazio Extra Aggiunto Da \usepackage{parskip}
+\setlength{\belowcaptionskip}{-4pt}
+% ----------------------------------------
+
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{multirow}
@@ -90,6 +102,7 @@
 
 
 \author{Francesco Lo Verde}
+
 \begin{document}
 
 \tableofcontents
@@ -111,7 +124,6 @@ I dispositivi di misura impiegati nei sistemi robotici quantificano grandezze fi
 \section{Dispositivi Di Misura E Definizioni Fondamentali}
 
 \subsection{Esempio Pratico: La Misura Della Temperatura}
-\label{subsec:misura_temperatura}
 
 La \textbf{temperatura} è grandezza scalare che indica l'energia cinetica media del moto delle particelle. Esistono molti strumenti che permettono di stimare la temperatura di un corpo (\textit{misurando}) attraverso differenti principi fisici:
 \begin{figure}[H]
@@ -148,7 +160,6 @@ Si possono dividere questi dispositivi in tre classi principali
         \item \textbf{Architettura A Più Livelli:} integrano l'elemento primario con elaborazioni di linearizzazione matematica e filtraggio digitale.
     \end{itemize}
 \end{itemize}
-
 
 \subsection{Definizione Formale Di Sistema Di Misura}
 Un sistema di misura può essere schematizzato come una \textit{Black Box} che riceve in ingresso il \textbf{misurando} $x(t)$ e produce in uscita una stima $y(t)$ del suo valore. Nei sistemi per la robotica, questa architettura può essere rappresentata una catena di acquisizione composta da tre stadi funzionali:
@@ -248,6 +259,7 @@ L'architettura funzionale è costituita da tre stadi sequenziali:
 \end{enumerate}
 
 \newpage
+
 \subsection{Distinzione Tra Concettuale Sensore E Trasduttore}
 
 In robotica, \textit{sensore}, \textit{trasduttore} e \textit{attuatore} assumono delle definizioni rigorose
@@ -816,6 +828,7 @@ L'encoder ottico è il dispositivo installato sull'albero del servomotore (o a v
 \end{itemize}
 Rispetto agli encoder assoluti, i dispositivi incrementali presentano generalmente una minore complessità costruttiva e costi inferiori, ma richiedono il mantenimento del conteggio degli impulsi e possono perdere l'informazione sulla posizione in caso di mancato rilevamento delle transizioni o di perdita dell'alimentazione. Per recuperare la posizione dopo un riavvio, se non è disponibile un riferimento esterno, è normalmente necessario eseguire una procedura di homing.
 \newpage
+
 \subsubsection{Accelerometri MEMS}
 Gli accelerometri misurano le accelerazioni e, in regime statico, permettono di ricavare anche l'inclinazione del dispositivo rispetto al vettore gravità $\boldsymbol{g}$.
 
@@ -1409,458 +1422,743 @@ A questo punto, la spira entrando nel campo magnetico opposto, avrà la corrente
 
 \subsection{Principi Fisici E Modellazione Elettromeccanica}
 
-\subsubsection{Generazione Della Coppia Motrice (Forza di Lorentz)}
-
-La produzione di coppia motrice si basa sull'azione dalla \textbf{forza di Lorentz}. Dato un conduttore lineare infinitesimo $d\bm{\ell}$ percorso da una corrente stazionaria $I$ ($\si{\ampere}$) e immerso in un campo magnetico $\bm{B}$ ($\si{\tesla} = \si{\weber\per\meter\squared}$), la forza meccanica elementare agente sul tratto è:
+\subsubsection{Generazione Della Coppia Motrice (Forza Di Lorentz)}
+Nei motori \textit{brushed DC} la coppia si genera grazie alla \textbf{forza di Lorentz}. In pratica, considerando un conduttore di lunghezza infinitesima \(d\bm{\ell}\), percorso da una corrente \(I\) e immerso in un campo magnetico \(\bm{B}\), la forza elementare è:
 \[
     d\bm{F} = I \, (d\bm{\ell} \times \bm{B})
 \]
-Per un conduttore rettilineo di lunghezza finita $L$ immerso in un campo uniforme $\bm{B}$, integrando entrambi i membri si ottiene:
+Per un conduttore rettilineo di lunghezza \(L\), immerso in un campo uniforme, il modulo della forza è:
 \[
-    F = I \cdot L \cdot B \cdot \sin(\alpha)
+    F = I L B \sin(\alpha)
 \]
-Dove $\alpha = \angle(d\bm{\ell}, \bm{B})$ è l'angolo tra il conduttore e le linee del campo magnetico.
+dove \(\alpha\) è l'angolo tra la direzione della corrente e quella del campo magnetico.
 
-La conformazione geometrica delle espansioni polari rende il campo magnetico al traferro essenzialmente radiale e quindi ortogonale all'asse dei conduttori rotorici ($\alpha \approx 90^\circ$). In tali condizioni la forza agente sul lato attivo risulta massima:
+La forma delle \textbf{espansioni polari} fa sì che, nel traferro, il campo magnetico sia prevalentemente radiale. Poiché i conduttori attivi del rotore sono paralleli all'asse dell'albero, la corrente risulta perpendicolare al campo magnetico, per cui \(\alpha \approx 90^\circ\). La forza assume quindi il valore massimo:
 \[
-    F = I \cdot L \cdot B
+    F = I L B
 \]
-
-Si consideri una singola spira rotorica rettangolare di raggio $r$ e lunghezza assiale utile $L$, costituita da due lati attivi longitudinali immersi nel campo statorico e da due testate d'estremità che chiudono il circuito senza fornire contributi utili alla coppia.
+Consideriamo una singola spira rettangolare del rotore, con lati attivi di lunghezza \(L\) posti a una distanza \(r\) dall'asse di rotazione. Nei due lati attivi le correnti hanno verso opposto e poiché ogni conduttore si trova in prossimità di uno dei poli è immerso in un campo magnetico (di versi opposti tra loro). Sono presenti anche le due testate (materiale conduttivo) che collegano i lati attivi, ma essendo parallele al campo magnetico non contribuiscono alla generazione della coppia.
 
 \begin{figure}[H]
     \centering
     \begin{tikzpicture}[
-        scale=1.1,
+        scale=1,
         font=\sffamily,
         >=Stealth,
         line width=1.1pt
     ]
         % --- PARAMETRI GEOMETRIA ---
-        \def\R{2.0}        % Raggio del rotore
-        \def\ang{35}       % Angolo theta della spira
+        \def\R{2.0}
+        \def\ang{35}
 
-        % 1. POLI MAGNETICI (Allontanati per non sovrapporsi alle frecce)
-        % Polo Nord (Sinistra)
+        % Polo Nord
         \draw[fill=poleN!12, draw=poleN, line width=1.3pt]
             (-4.2, -2.1) rectangle (-3.3, 2.1);
-        \node[font=\bfseries\small, text=poleN, rotate=90] at (-3.75, 0) {POLO N};
+        \node[font=\bfseries\small, text=poleN, rotate=90]
+            at (-3.75, 0) {POLO N};
 
-        % Polo Sud (Destra)
+        % Polo Sud
         \draw[fill=poleS!12, draw=poleS, line width=1.3pt]
             (3.3, -2.1) rectangle (4.2, 2.1);
-        \node[font=\bfseries\small, text=poleS, rotate=-90] at (3.75, 0) {POLO S};
+        \node[font=\bfseries\small, text=poleS, rotate=-90]
+            at (3.75, 0) {POLO S};
 
-        % Linee di Campo Magnetico B nel traferro
+        % Campo magnetico nel traferro
         \foreach \y in {-1.2, 0, 1.2} {
-            \draw[->, draw=bField, dashed, line width=0.8pt] (-3.3, \y) -- (3.3, \y);
+            \draw[->, draw=bField, dashed, line width=0.8pt]
+                (-3.3, \y) -- (3.3, \y);
         }
-        \node[above, font=\footnotesize\bfseries, text=bField] at (0, 1.25) {$\bm{B}$};
+        \node[above, font=\footnotesize\bfseries, text=bField]
+            at (0, 1.25) {$\bm{B}$};
 
-        % 2. ROTORE E ASSI
-        \draw[fill=rotorFill, draw=black!75, line width=1.2pt] (0,0) circle (\R);
+        % Rotore e assi
+        \draw[fill=rotorFill, draw=black!75, line width=1.2pt]
+            (0,0) circle (\R);
+        \draw[draw=black!35, dashed, line width=0.7pt]
+            (-\R-0.3, 0) -- (\R+0.3, 0);
+        \draw[draw=black!35, dashed, line width=0.7pt]
+            (0, -\R-0.3) -- (0, \R+0.3);
 
-        % Assi cartesiani tratteggiati sottili
-        \draw[draw=black!35, dashed, line width=0.7pt] (-\R-0.3, 0) -- (\R+0.3, 0);
-        \draw[draw=black!35, dashed, line width=0.7pt] (0, -\R-0.3) -- (0, \R+0.3);
+        % Posizioni dei conduttori
+        \coordinate (C1) at (\ang:\R);
+        \coordinate (C2) at ({180+\ang}:\R);
 
-        % Coordinate conduttori (esattamente opposti)
-        \coordinate (C1) at (\ang:\R);              % 1° Quadrante
-        \coordinate (C2) at ({180+\ang}:\R);        % 3° Quadrante
-
-        % Linea della spira (collega perfettamente C1 e C2)
+        % Collegamento schematico della spira
         \draw[draw=black!85, line width=1.4pt] (C2) -- (C1);
 
-        % Etichetta raggio r
-        \node[above left=1pt, font=\small\bfseries] at (\ang:1.0) {$r$};
+        % Raggio e angolo
+        \node[above left=1pt, font=\small\bfseries]
+            at (\ang:1.0) {$r$};
+        \draw[->, draw=black, line width=1pt]
+            (0:1.2) arc (0:\ang:1.2);
+        \node[right=2pt, font=\small\bfseries]
+            at (\ang/2:1.35) {$\theta$};
 
-        % Angolo theta con arco
-        \draw[->, draw=black, line width=1pt] (0:1.2) arc (0:\ang:1.2);
-        \node[right=2pt, font=\small\bfseries] at (\ang/2:1.35) {$\theta$};
-
-        % 3. ALBERO CENTRALE E COPPIA MOTRICE (tau_m)
-        \filldraw[fill=black!15, draw=black, line width=1.2pt] (0,0) circle (0.32);
+        % Albero centrale
+        \filldraw[fill=black!15, draw=black, line width=1.2pt]
+            (0,0) circle (0.32);
         \fill[black] (0,0) circle (2pt);
 
-        % Freccia curva per la coppia motrice (oraria)
-        \draw[->, line width=1.3pt, draw=black] (100:0.6) arc (100:-30:0.6)
-            node[pos=0.85, below right=1pt, font=\small\bfseries] {$\tau_m$};
+        % Coppia motrice indicata schematicamente
+        \draw[->, line width=1.3pt, draw=black]
+            (100:0.6) arc (100:-30:0.6)
+            node[pos=0.85, below right=1pt, font=\small\bfseries]
+            {$\tau_m$};
 
-        % 4. CONDUTTORE 1 (Entrante x) E FORZA F
-        \filldraw[fill=white, draw=black, line width=1.3pt] (C1) circle (0.22);
-        % Crocetta x
-        \draw[line width=1.1pt] ([shift={(-0.1,-0.1)}]C1) -- ([shift={(0.1,0.1)}]C1);
-        \draw[line width=1.1pt] ([shift={(-0.1,0.1)}]C1) -- ([shift={(0.1,-0.1)}]C1);
-        % Etichetta corrente (posta sopra per non toccare la forza)
-        \node[above right=3pt, font=\small\bfseries] at (C1) {$I_a \, (\otimes)$};
-
-        % Forza Tangenziale F1 (verso il basso/destra, tangenziale a 90°)
-        \draw[->, line width=1.8pt, draw=forceColor] (C1) -- ++({\ang-90}:1.3)
+        % Conduttore destro: corrente entrante nel piano
+        \filldraw[fill=white, draw=black, line width=1.3pt]
+            (C1) circle (0.22);
+        \draw[line width=1.1pt]
+            ([shift={(-0.1,-0.1)}]C1) --
+            ([shift={(0.1,0.1)}]C1);
+        \draw[line width=1.1pt]
+            ([shift={(-0.1,0.1)}]C1) --
+            ([shift={(0.1,-0.1)}]C1);
+        \node[above right=3pt, font=\small\bfseries]
+            at (C1) {$I_a\,(\otimes)$};
+        \draw[->, line width=1.8pt, draw=forceColor]
+            (C1) -- ++({\ang-90}:1.3)
             node[below right=1pt, font=\bfseries] {$\bm{F}$};
 
-        % 5. CONDUTTORE 2 (Uscente .) E FORZA F
-
-        \filldraw[fill=white, draw=black, line width=1.3pt] (C2) circle (0.22);
-        % Puntino .
+        % Conduttore sinistro: corrente uscente dal piano
+        \filldraw[fill=white, draw=black, line width=1.3pt]
+            (C2) circle (0.22);
         \fill[black] (C2) circle (2.6pt);
-        % Etichetta corrente (posta sotto)
-        \node[below left=3pt, font=\small\bfseries] at (C2) {$I_a \, (\odot)$};
-
-        % Forza Tangenziale F2 (verso l'alto/sinistra)
-        \draw[->, line width=1.8pt, draw=forceColor] (C2) -- ++({180+\ang-90}:1.3)
+        \node[below left=3pt, font=\small\bfseries]
+            at (C2) {$I_a\,(\odot)$};
+        \draw[->, line width=1.8pt, draw=forceColor]
+            (C2) -- ++({180+\ang-90}:1.3)
             node[above left=1pt, font=\bfseries] {$\bm{F}$};
 
     \end{tikzpicture}
-    \caption{Rappresentazione schematica della sezione di una spira rotorica ruotata di un angolo $\theta$: le forze tangenziali $\bm{F}$ sui conduttori generano una coppia motrice netta $\tau_m$ attorno all'albero di rotazione.}
+    \caption{Rappresentazione schematica delle forze agenti sui due lati attivi della spira.}
 \end{figure}
-
-I due conduttori attivi trasportano correnti di intensità $I_a$ ma con verso assiale opposto (l'uno entrante nel piano, l'altro uscente). Trovandosi affacciati rispettivamente a un polo Nord e a un polo Sud statorico, le induzioni magnetiche locali risultano anch'esse discordi. Applicando la regola del prodotto vettoriale si determina che:
-\begin{itemize}
-    \item sul lato sinistro la forza agisce ortogonalmente al raggio vettore verso l'alto;
-    \item sul lato destro la forza agisce con medesimo modulo diretta verso il basso.
-\end{itemize}
-
-Le due forze, parallele e concordi nel momento risultante, formano una coppia meccanica il cui modulo varia con l'orientamento della spira:
+\newpage
+Applicando il prodotto vettoriale, le forze di Lorentz risultano opposte tra loro e tangenti alla traiettoria circolare. Entrambe producono un momento nello stesso verso rispetto all'asse di rotazione e di consenguenza, la \textbf{coppia totale} generata dalla spira è:
 \[
-    \tau(\theta) = 2 \cdot r \cdot F \cdot \sin(\theta) = 2 \cdot r \cdot (I_a \cdot L \cdot B) \cdot \sin(\theta)
+    \tau(\theta) = 2rF\sin(\theta)
 \]
-dove $\theta$ indica l'angolo formato dal piano della spira rispetto all'asse neutro geometrico:
-\begin{itemize}
-    \item \textbf{Coppia massima ($\theta = 90^\circ$):} il piano della spira giace parallelamente alle espansioni polari; il braccio geometrico delle forze rispetto all'asse di rotazione assume il valore massimo ($r$).
-    \item \textbf{Coppia nulla ($\theta = 0^\circ$):} la spira giace lungo l'asse neutro geometrico; le forze risultano allineate lungo la direttrice diametrale con braccio nullo, sollecitando la struttura rotorica a sola trazione senza produrre momento utile ($\tau = 0$).
-\end{itemize}
-
-L'espressione analitica di $\tau(\theta)$ evidenzia come una singola spira sviluppi una coppia pulsante a doppia semionda sinusoidale, con punti di nullo a ogni semirotazione ($180^\circ$). Ciò precluderebbe l'avviamento qualora il rotore si trovasse fermo esattamente sull'asse neutro.
-
-Nei motori reali tale discontinuità viene superata adottando pacchi rotorici multi-cava e commutatori a elevato numero di lamelle (tipicamente $12 \div 48$). Le spire di armatura sono distribuite uniformemente lungo la periferia rotorica e collegate in sequenza alle rispettive lamelle. Le spazzole alimentano istante per istante soltanto le bobine che transitano nell'intervallo angolare a rendimento massimo ($\theta \approx 90^\circ$). La coppia complessiva $\tau_m$, risultante dalla sovrapposizione di molteplici contributi sfalsati nello spazio, presenta un profilo temporale quasi costante, riducendo al minimo l'ondulazione residua (\textbf{ripple di coppia}).
-
-\subsubsection{Forza Contro-Elettromotrice E Bilancio di Armatura}
-
-Il moto relativo dei conduttori d'indotto nel campo magnetico statorico induce una tensione interna regolata dalla \textbf{legge di Faraday-Neumann-Lenz}. La rotazione del rotore alla velocità angolare meccanica $\omega_m$ ($\si{\radian\per\second}$) provoca una variazione temporale del flusso magnetico concatenato con gli avvolgimenti. Ne scaturisce una \textbf{forza contro-elettromotrice (FCEM)} $E_a$ la cui polarità elettrica, per la legge di Lenz, si contrappone alla tensione esterna applicata $V_a$.
-
-Il valore medio della FCEM ai morsetti dell'armatura è dato da:
+Sostituendo \(F = I_a L B\), si ottiene:
 \[
-    E_a = K_e \cdot \Phi \cdot \omega_m
-    \label{eq:fcem}
+    \boxed{\tau(\theta) = 2r I_a L B \sin(\theta)}
+\]
+dove \(\alpha\) è l'angolo tra la direzione della corrente e quella del campo magnetico. Il fattore \(\sin(\theta)\) descrive la variazione del braccio delle forze durante la rotazione. In particolare:
+\begin{itemize}
+    \item \textbf{Coppia Massima (\(\theta = 90^\circ\)):} Il braccio delle forze è massimo e vale \(r\).
+    \item \textbf{Coppia Nulla (\(\theta = 0^\circ\)):} Il braccio è nullo e le forze non generano un momento risultante attorno all'asse.
+\end{itemize}
+Una singola spira alimentata in corrente continua sviluppa quindi una coppia che varia con l'angolo di rotazione e presenta posizioni in cui la coppia è nulla. Se il rotore si arresta esattamente in una di queste posizioni, la sola spira potrebbe non generare una coppia iniziale sufficiente a riavviarlo.
+
+Nei motori reali tale discontinuità viene superata adottando commutatori a elevato numero di lamelle (tipicamente $12 \div 48$) e facendo in modo che le spazzole alimentino istante per istante soltanto le bobine che transitano nell'intervallo angolare a rendimento massimo ($\theta \approx 90^\circ$). La coppia complessiva $\tau_m$, risultante dalla sovrapposizione di molteplici contributi sfalsati nello spazio, presenta un profilo temporale quasi costante, riducendo al minimo l'ondulazione residua (\textbf{ripple di coppia}).
+
+\subsubsection{Forza Contro-Elettromotrice E Bilancio Di Armatura}
+Quando il rotore è in movimento, i conduttori dell'avvolgimento di indotto ruotano all'interno del campo magnetico generato dallo statore. In base alla \textbf{legge di Faraday-Neumann-Lenz}, questo moto relativo con velocità angolare meccanica $\omega_m$ ($\si{\radian\per\second}$) provoca una variazione nel tempo del flusso magnetico concatenato con le bobine, inducendo una tensione interna nei conduttori.
+
+Questa tensione prende il nome di \textbf{forza contro-elettromotrice (FCEM)}, indicata con $E_a$, poiché, per la legge di Lenz, ha una polarità che si oppone alla tensione di alimentazione esterna $V_a$ che ha generato il movimento. Il valore medio della forza contro-elettromotrice ai morsetti del motore è dato da:
+\[
+    E_a = K_e \Phi \omega_m
 \]
 dove:
 \begin{itemize}
-    \item $\Phi$ è il flusso magnetico utile per polo al traferro espresso in Weber ($\si{\weber} = \si{\volt\second}$);
-    \item $\omega_m$ è la velocità angolare meccanica dell'albero in $\si{\radian\per\second}$;
-    \item $K_e$ è la costante costruttiva legata alla geometria dell'avvolgimento:
+    \item \textbf{Flusso Magnetico ($\Phi$):} È il flusso magnetico utile per polo presente nel traferro, espresso in Weber ($\si{\weber} = \si{\volt\second}$).
+    \item \textbf{Velocità Angolare ($\omega_m$):} È la velocità di rotazione meccanica dell'albero, espressa in $\si{\radian\per\second}$.
+    \item \textbf{Costante Elettrica ($K_e$):} È una costante costruttiva che dipende dalla geometria degli avvolgimenti:
     \[
-        K_e = \frac{p \cdot Z}{2\pi \cdot a}
-        \label{eq:costante_ke}
+        K_e = \frac{p Z}{2\pi a}
     \]
-    con $p$ coppie polari, $Z$ numero totale di conduttori attivi d'armatura e $2a$ numero di vie di corrente parallele create dal tipo di avvolgimento.
+    in cui $p$ è il numero di coppie polari, $Z$ è il numero totale di conduttori attivi del rotore e $2a$ indica il numero di vie di corrente in parallelo formate dall'avvolgimento.
 \end{itemize}
 
-Trascurando la caduta di potenziale non lineare sulle spazzole ($\Delta V_{\text{spz}} \approx 1 \div 2\,\si{\volt}$), l'equazione di bilancio alla maglia elettrica di armatura in regime stazionario è:
+Per descrivere il comportamento elettrico del motore a regime stazionario, possiamo scrivere l'equazione di bilancio delle tensioni nel circuito di armatura. Trascurando la piccola caduta di tensione dovuta al contatto sulle spazzole (solitamente intorno a $1 \div 2\,\si{\volt}$), la tensione continua di alimentazione $V_a$ ($\si{\volt}$) si ripartisce tra la caduta resistiva sugli avvolgimenti e la forza contro-elettromotrice:
 \[
-    V_a = R_a \cdot I_a + E_a
-    \label{eq:kirchhoff_armatura}
+    V_a = R_a I_a + E_a
 \]
-in cui $V_a$ ($\si{\volt}$) è la tensione continua imposta ai morsetti ed $R_a$ ($\si{\ohm}$) rappresenta la resistenza ohmica totale del circuito d'indotto. Esplicitando la corrente d'armatura $I_a$, si ottiene:
+dove $R_a$ ($\si{\ohm}$) rappresenta la resistenza ohmica complessiva degli avvolgimenti di indotto. Esplicitando la corrente di armatura $I_a$, si ottiene:
 \[
-    I_a = \frac{V_a - E_a}{R_a} = \frac{V_a - K_e \Phi \omega_m}{R_a}
-    \label{eq:corrente_armatura}
+    \boxed{I_a = \frac{V_a - E_a}{R_a} = \frac{V_a - K_e \Phi \omega_m}{R_a}}
 \]
-
-L'equazione~\eqref{eq:corrente_armatura} manifesta l'esistenza di un anello intrinseco di retroazione negativa elettromeccanica:
+Questa relazione mostra chiaramente come il motore possieda una sorta di \textbf{autoregolazione naturale} che lega la parte meccanica a quella elettrica. In particolare, si possono distinguere tre situazioni tipiche:
 \begin{itemize}
-    \item \textbf{Condizione di avviamento ($\omega_m = 0$):} la FCEM è nulla ($E_a = 0$), pertanto la corrente assorbita dipende esclusivamente dalla resistenza ohmica d'armatura:
+    \item \textbf{Condizione Di Avviamento ($\omega_m = 0$):} All'istante iniziale il rotore è fermo, quindi non c'è variazione di flusso e la forza contro-elettromotrice è nulla ($E_a = 0$). La corrente assorbita, detta \textbf{corrente di spunto}, è limitata unicamente dalla resistenza degli avvolgimenti:
     \[
         I_{\text{spunto}} = \frac{V_a}{R_a}
     \]
-    Dato che nei servomotori $R_a$ assume valori frazionari (minori dell'Ohm per massimizzare il rendimento), la corrente di spunto può raggiungere da $5$ a $10$ volte il valore nominale, imponendo cautele di pilotaggio o rampe di tensione.
-    \item \textbf{Funzionamento a regime ($\omega_m > 0$):} all'aumentare della velocità di rotazione, la FCEM $E_a$ cresce progressivamente, riducendo la caduta ohmica netta $(V_a - E_a)$ e contraendo la corrente $I_a$ fino all'equilibrio tra coppia motrice sviluppata e coppia resistente al carico.
-    \item \textbf{Perturbazione del carico meccanico:} l'applicazione di un carico resistente frena transitoriamente il rotore; la contestuale diminuzione di $\omega_m$ abbassa la FCEM $E_a$, incrementando istantaneamente il salto $(V_a - E_a)$ e quindi la corrente $I_a$. La macchina eroga spontaneamente una coppia motrice superiore fino a stabilire un nuovo punto stazionario.
+    Poiché nei motori la resistenza $R_a$ è progettata per essere molto bassa (spesso inferiore a $1\,\si{\ohm}$ per ridurre le perdite per effetto Joule), la corrente di spunto può raggiungere valori da $5$ a $10$ volte superiori alla corrente nominale. Per questo motivo è spesso necessario utilizzare sistemi di controllo che applichino la tensione gradualmente durante l'avvio.
+
+    \item \textbf{Funzionamento A Regime ($\omega_m > 0$):} Man mano che il rotore accelera, la velocità $\omega_m$ aumenta e con essa cresce anche la tensione $E_a$. Di conseguenza, la differenza di potenziale netta $(V_a - E_a)$ diminuisce, facendo scendere progressivamente la corrente $I_a$. Il motore accelera fino a raggiungere una velocità di equilibrio, in cui la coppia generata dal rotore è uguale alla coppia generata dal carico.
+
+    \item \textbf{Variazione Del Carico Meccanico:} Se durante il funzionamento viene applicato un carico maggiore all'albero, il rotore tende inizialmente a rallentare. La diminuzione della velocità $\omega_m$ fa abbassare subito la forza contro-elettromotrice $E_a$, facendo aumentare la differenza $(V_a - E_a)$ e, di conseguenza, la corrente $I_a$ che circola nel rotore. L'aumento di corrente permette al motore di sviluppare spontaneamente una coppia motrice più elevata, necessaria per contrastare il nuovo carico e stabilizzarsi su un nuovo punto di equilibrio.
 \end{itemize}
 
-\subsubsection{Bilancio di Potenza ed Equivalenza delle Costanti $K_e$ e $K_t$}
+\subsubsection{Bilancio Di Potenza Ed Equivalenza Delle Costanti \texorpdfstring{$K_e$}{Ke} E \texorpdfstring{$K_t$}{Kt}}
+La coppia totale $\tau_m$ ($\si{\newton\meter}$) sviluppata dal rotore è direttamente proporzionale al flusso magnetico $\Phi$ e alla corrente di armatura $I_a$:
+\[
+    \tau_m = K_t \Phi I_a
+\]
+dove $K_t$ prende il nome di \textbf{costante di coppia} del motore.
 
-La coppia motrice totale generata dal rotore $\tau_m$ ($\si{\newton\meter}$) è direttamente proporzionale al flusso polare $\Phi$ e alla corrente di armatura $I_a$:
+Supponendo un contesto ideale, ovvero senza attriti e perdite, in regime stazionario tutta la potenza elettromagnetica viene convertita in potenza meccanica all'albero. In questo contesto quindi, si può uguagliare la potenza elettromagnetica $P_{\text{em}}$ con la potenza meccanica $P_{\text{mec}}$:
+\begin{align*}
+    P_{\text{em}} &= P_{\text{mec}}\\
+    E_{a} I_{a} &= \tau_{m} \omega_{m}\\
+    (K_e \Phi \omega_m) I_a &= (K_t \Phi I_a) \omega_m
+\end{align*}
+Semplificando in entrambi i membri i termini comuni $(\Phi I_a \omega_m)$, si giunge a una relazione fondamentale:
 \[
-    \tau_m = K_t \cdot \Phi \cdot I_a
-    \label{eq:coppia_motrice}
+    \boxed{K_e = K_t} \quad \left[\si{\volt\second\per\radian} \equiv \si{\newton\meter\per\ampere}\right]
 \]
-dove $K_t$ è la \textbf{costante di coppia} del motore.
+Questo risultato dimostra che, esprimendo la velocità angolare in $\si{\radian\per\second}$, \textbf{la costante elettrica e la costante di coppia assumono esattamente lo stesso valore numerico} e sono dimensionalmente equivalenti.
 
-In condizioni ideali di conversione elettromeccanica (assenza di perdite nel ferro e attriti meccanici), a regime stazionario la potenza elettromagnetica convertita $P_{\text{em}}$ coincide integralmente con la potenza meccanica sviluppata all'albero:
+Nella pratica industriale, tuttavia, i cataloghi dei costruttori esprimono spesso la costante $K_e$ in unità pratiche non appartenenti al Sistema Internazionale, come i $\si{\milli\volt}$ per giro al minuto ($\si{\milli\volt\per\rpm}$). Per riportare il valore dei datasheet all'unità standard ($\si{\volt\second\per\radian}$), è sufficiente applicare il fattore di conversione legato alla velocità angolare:
 \[
-    P_{\text{em}} = E_a \cdot I_a = \tau_m \cdot \omega_m
-\]
-Sostituendo nelle due espressioni di potenza le definizioni costitutive di $E_a$ da Eq.~\eqref{eq:fcem} e di $\tau_m$ da Eq.~\eqref{eq:coppia_motrice}:
-\[
-    (K_e \cdot \Phi \cdot \omega_m) \cdot I_a = (K_t \cdot \Phi \cdot I_a) \cdot \omega_m
-\]
-Dividendo ambo i membri per il termine comune non nullo $(\Phi \cdot I_a \cdot \omega_m)$, si ottiene l'equivalenza fondamentale:
-\[
-    K_e = K_t \quad \left[\si{\volt\second\per\radian} \equiv \si{\newton\meter\per\ampere}\right]
-    \label{eq:identita_costanti}
-\]
-Nel Sistema Internazionale, adottando la velocità di rotazione espressa in radianti al secondo ($\si{\radian\per\second}$), \textbf{la costante di forza contro-elettromotrice e la costante di coppia coincidono numericamente e dimensionalmente}.
-
-Nei cataloghi industriali, ove la costante $K_e$ viene frequentemente tabulata in unità pratiche non SI quali $\si{\milli\volt\per\rpm}$, il raccordo al valore coerente SI avviene applicando la conversione delle unità di misura della velocità angolare:
-\[
-    K_e \left[\si{\volt\second\per\radian}\right] = \frac{30}{\pi \cdot 1000} \cdot K_e \left[\frac{\si{\milli\volt}}{\si{rpm}}\right]
+    K_e \left[\si{\volt\second\per\radian}\right] = \frac{30}{\pi \cdot 1000} \, K_e \left[\frac{\si{\milli\volt}}{\si{rpm}}\right]
 \]
 \newpage
 
-
-
-
-
-
-
-
 \subsection{Configurazioni Circuitali E Caratteristiche Meccaniche}
 
-\subsubsection{Motori A Magneti Permanenti E A Eccitazione Separata}
+\subsubsection{Servomotori A Magneti Permanenti}
+Nei servomotori a \textbf{Magneti Permanenti}, il flusso magnetico $\Phi$ nel traferro è costante e quindi si può inglobare questo parametro nelle costanti globali di macchina definendo
+\[
+    K'_{E} = K_e \Phi \qquad K'_{T} = K_t \Phi
+\]
+E di conseguenza le equazioni di forza contro elettromotrice e di coppia del rotore diventano:
+\begin{align*}
+    E_a     &= K'_{E} \cdot \omega_m\\
+    \tau_m  &= K'_{T} \cdot I_a
+\end{align*}
+Da questo risulta che la coppia $\tau_m$ dipende solo dalla corrente di armatura $I_{a}$ mentre la tensione regola solo la velocità angolare $\omega_m$
 
-Nei servomotori a \textbf{magneti permanenti}, il flusso al traferro $\Phi$ è costante nel punto di lavoro stabilito dai magneti. È pertanto prassi inglobare tale parametro nelle costanti globali di macchina, definendo $k'_e = K_e \Phi$ e $k'_t = K_t \Phi$. Le relazioni di funzionamento assumono forma strettamente lineare:
-\begin{align}
-    E_a &= k'_e \cdot \omega_m \label{eq:fcem_pm} \\
-    \tau_m &= k'_t \cdot I_a \label{eq:coppia_pm}
-\end{align}
-Il controllo della macchina risulta disaccoppiato: la corrente d'armatura definisce proporzionalmente la coppia, mentre la tensione applicata regola la velocità di rotazione.
+Nei \textbf{Motori A Eccitazione Separata}, i circuiti dello statore e del rotore dipendono da due alimentazioni indipendenti statorico e rotorico fanno capo a due alimentatori indipendenti a tensione $V_{\text{ecc}}$ e $V_a$.
 
-Nei motori a statore avvolto (con elettromagneti), il legame tra coppia e velocità è determinato dallo schema di connessione tra il circuito di eccitazione statorico e il circuito d'armatura rotorico.
+Nei servomotori con \textbf{Avvolgimento Di Eccitazione}, la relazione tra la coppia e velocità angolare dipende dalla connessione tra il circuito dello statore e il circuito del rotore
 
-Nel \textbf{motore a eccitazione separata}, i circuiti statorico e rotorico fanno capo a due alimentatori indipendenti a tensione $V_{\text{ecc}}$ e $V_a$. Questa architettura assicura la massima flessibilità di regolazione: al di sotto della velocità base si agisce modulando la tensione $V_a$ a flusso massimo, mentre per regimi superiori si riduce la corrente di eccitazione $I_{\text{ecc}}$, realizzando il funzionamento in \textbf{deflussaggio} (\textit{field weakening}) a potenza costante.
-
-\subsubsection{Motore Con Eccitazione In Derivazione (Shunt)}
-
-Il \textbf{motore Shunt} (o con eccitazione in derivazione) fa uso di un'unica linea di alimentazione continua alla tensione $V$: il circuito di eccitazione è collegato in parallelo all'armatura, come riportato in Figura~\ref{fig:dc_shunt}.
+\subsubsection{Motore Con Eccitazione In Parallelo (Shunt)}
+Nel \textbf{Motore Shunt} (O Con Eccitazione In Derivazione) il circuito di eccitazione e il circuito di armatura sono collegati in parallelo.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\linewidth]{DCShunt.jpg}
-    \caption{Schema circuitale equivalente di un motore DC Shunt (in derivazione): l'avvolgimento di eccitazione $R_{\text{ecc}}, L_{\text{ecc}}$ è collegato in parallelo all'armatura $R_a, L_a$ sulla medesima alimentazione continua.}
-    \label{fig:dc_shunt}
+    \scalebox{0.8}{%
+        \begin{tikzpicture}[
+            line width=1pt,
+            font=\sffamily,
+            terminal/.style={circle, draw=accent, fill=white, inner sep=1.8pt, line width=1.2pt},
+            brush/.style={fill=accent, draw=accent, rounded corners=0.4pt},
+            wire/.style={draw=accent, line cap=round, line join=round},
+            junc/.style={circle, fill=accent, inner sep=1.5pt}
+        ]
+
+            % --- Coordinate Griglia (Identiche per entrambi gli schemi) ---
+            \coordinate (VinTop) at (0, 2.8);
+            \coordinate (VinBot) at (0, 0);
+            \coordinate (JuncTop) at (2.6, 2.8);
+            \coordinate (JuncBot) at (2.6, 0);
+            \coordinate (F1) at (2.6, 2.15);
+            \coordinate (F2) at (2.6, 0.65);
+            \coordinate (ArmCenter) at (5.0, 1.4);
+
+            % --- Morsetti Ingresso DC ---
+            \node[terminal] (in+) at (VinTop) {};
+            \node[terminal] (in-) at (VinBot) {};
+            \node[left=3pt of in+, font=\bfseries] {$+$};
+            \node[left=3pt of in-, font=\bfseries] {$-$};
+
+            % Indicazione Tensione DC (spazio pulito, nessun contatto con le etichette)
+            \draw[{Latex[length=3.5pt]}-{Latex[length=3.5pt]}, draw=subtext, dashed]
+                ($(VinTop)+(0.45, -0.15)$) -- ($(VinBot)+(0.45, 0.15)$)
+                node[midway, fill=white, inner sep=1.5pt, font=\scriptsize\bfseries, text=subtext] {$V_{\mathrm{DC}}$};
+
+            % --- Ramo 1: Avvolgimento Statore (Shunt / Parallelo) ---
+            \draw[wire] (in+) -- (5.0, 2.8);
+            \draw[wire] (in-) -- (5.0, 0);
+
+            \node[junc] at (JuncTop) {};
+            \node[junc] at (JuncBot) {};
+            \draw[wire] (JuncTop) -- (F1);
+            \draw[wire] (F2) -- (JuncBot);
+
+            % Spire Statore (4 archi ben raccordati)
+            \draw[wire, line width=1.2pt, color=primary]
+                (F1) arc[start angle=90, end angle=-90, radius=0.1875]
+                    arc[start angle=90, end angle=-90, radius=0.1875]
+                    arc[start angle=90, end angle=-90, radius=0.1875]
+                    arc[start angle=90, end angle=-90, radius=0.1875] -- (F2);
+
+            % Etichette Statore
+            \node[right=4pt, text=accent, font=\scriptsize\bfseries, align=center] at (1, 1.4) {Avv.\\Statore};
+            \node[left=3pt, text=subtext, font=\tiny\bfseries] at (F1) {F1};
+            \node[left=3pt, text=subtext, font=\tiny\bfseries] at (F2) {F2};
+
+            % --- Ramo 2: Rotore (Indotto) ---
+            \draw[wire] (5.0, 2.8) -- ($(ArmCenter)+(0, 0.92)$);
+            \draw[wire] ($(ArmCenter)+(0, -0.92)$) -- (5.0, 0);
+
+            % Cerchio Rotore
+            \draw[line width=1.3pt, draw=primary, fill=rotorFill]
+                (ArmCenter) circle (0.75);
+            \node[font=\large\bfseries, text=primary] at (ArmCenter) {A};
+
+            % Spazzole
+            \draw[brush] ($(ArmCenter)+(-0.18, 0.75)$) rectangle ($(ArmCenter)+(0.18, 0.92)$);
+            \draw[brush] ($(ArmCenter)+(-0.18, -0.75)$) rectangle ($(ArmCenter)+(0.18, -0.92)$);
+
+            % Morsetti Spazzole
+            \node[left=4pt, text=subtext, font=\tiny\bfseries] at ($(ArmCenter)+(-0.18, 0.83)$) {A1};
+            \node[left=4pt, text=subtext, font=\tiny\bfseries] at ($(ArmCenter)+(-0.18, -0.83)$) {A2};
+
+            % Etichetta Rotore
+            \node[right=4pt, text=accent, font=\scriptsize\bfseries, align=center] at (5.6, 1.4) {Avv.\\Rotore};
+
+        \end{tikzpicture}%
+    }
 \end{figure}
+Al fine di minimizzare la corrente assorbita per la generazione del campo magnetico dello statore, si deve avere che $I_{acc} \ll I_{a}$. Per questo motivo, per gli avvolgimenti, in questo caso, si utilizzano delle spire sottili e quindi che hanno una resistenza $R_{ecc}$ elevata, di conseguenza la corrente di eccitazione, data da $I_{\text{ecc}} = V / R_{\text{ecc}}$ sarà ridotta e produrrà un flusso magnetico costante e privo di oscillazioni.
 
-Al fine di minimizzare la potenza assorbita per la magnetizzazione statorica ($I_{\text{ecc}} \ll I_a$), l'avvolgimento di campo viene realizzato con un numero elevato di spire in conduttore a sezione ridotta, presentando una resistenza intrinseca $R_{\text{ecc}}$ cospicua. A tensione di rete $V$ costante, la corrente di campo $I_{\text{ecc}} = V / R_{\text{ecc}}$ produce un flusso utile $\Phi$ costante e svincolato dalle oscillazioni della corrente di carico $I_a$.
-
-Per derivare la caratteristica meccanica a regime stazionario, si considera l'equazione alla maglia d'armatura $V = E_a + R_a I_a$. Esplicitando la corrente in funzione della coppia elettromagnetica erogata tramite Eq.~\eqref{eq:coppia_motrice}, $I_a = \tau_m / (K_t \Phi)$, e inserendo la FCEM $E_a = K_e \Phi \omega_m$:
+Per ottenere la caratteristica meccanica a regime stazionario, si considera l'equazione alla maglia d'armatura $V = E_a + R_a I_a$. Andando a sostituire l'equazione della corrente ricavata tramite l'equazione della coppia $\tau_{m}$ si ottiene:
 \[
     V = K_e \Phi \omega_m + R_a \left(\frac{\tau_m}{K_t \Phi}\right)
 \]
-Isolando la velocità angolare meccanica $\omega_m$:
-\[
-    K_e \Phi \omega_m = V - \frac{R_a}{K_t \Phi} \tau_m
-\]
-da cui si ricava l'\textbf{equazione della caratteristica meccanica del motore Shunt}:
-\[
-    \omega_m(\tau_m) = \frac{V}{K_e \Phi} - \frac{R_a}{(K_t \Phi)(K_e \Phi)} \cdot \tau_m
-    \label{eq:caratteristica_shunt}
-\]
-
-L'equazione~\eqref{eq:caratteristica_shunt} descrive una retta a pendenza negativa nel piano $(\tau_m, \omega_m)$:
+Da cui, si ricava l'\textbf{equazione caratteristica del motore Shunt}
+\begin{align*}
+    K_e \Phi \omega_m &= V - \frac{R_a}{K_t \Phi} \tau_m\\
+    \omega_m(\tau_m) &= \frac{V}{K_e \Phi} - \frac{R_a}{(K_t \Phi)(K_e \Phi)} \cdot \tau_m
+\end{align*}
+Questa equazione desrive una retta in funzione della coppia $\tau_{m}$ nel piano $(\tau_m, \omega_m)$. Si nota che
 \begin{itemize}
-    \item \textbf{Velocità a vuoto ($\tau_m = 0$):} corrisponde all'intercetta sull'asse delle ordinate:
+    \item \textbf{Per $\tau_m = 0$:} Si ottiene la \textit{Velocità A Vuoto} che corrisponde alla velocità del motore senza il carico ed è:
     \[
         \omega_0 = \frac{V}{K_e \Phi}
     \]
-    \item \textbf{Pendenza della caratteristica:} governata dal fattore $\frac{R_a}{(K_t \Phi)(K_e \Phi)}$. Essendo la resistenza di armatura $R_a$ modesta, tale coefficiente assume valori ridotti.
+    \item \textbf{Per $\tau_m \ne 0$:} Il valore della velocità dipende dal fattore $\frac{R_a}{(K_t \Phi)(K_e \Phi)}$, ma essendo la resistenza di armatura $R_{a}$ un valore non troppo elevato, questo valore non riduce di tanto il valore della velocità a vuoto
 \end{itemize}
-La caratteristica del motore Shunt è detta \textbf{rigida}: il calo di velocità tra il funzionamento a vuoto e quello a carico nominale è contenuto entro il $3\% \div 6\%$. L'intrinseca stabilità di regolazione ne determina l'elezione in macchine utensili industriali, pompe volumetriche e nastri trasportatori di processo.
+Per questi motivi, la caratteristica del motore Shunt è detta \textbf{rigida}, perchè il calo della velocità tra a vuoto e con carico è limitata (entro il $3\% \div 6\%$)
+\newpage
 
 \subsubsection{Motore Con Eccitazione In Serie}
-
-Nel \textbf{motore Serie}, l'avvolgimento di campo è inserito in serie elettrica al circuito rotorico d'armatura; la medesima corrente transita pertanto in entrambi i sottosistemi:
-\[
-    I_{\text{ecc}} = I_a = I
-\]
+Nel \textbf{Motore In Serie} il circuito di eccitazione e il circuito di armatura sono collegati in serie, e di conseguenza si ha che $I_{ecc} = I_{a} = I$
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.3\linewidth]{DCSerie.jpg}
-    \caption{Schema circuitale del motore DC con eccitazione in serie: l'avvolgimento di campo è attraversato dall'intera corrente d'armatura $I_a$.}
-    \label{fig:dc_serie}
+    \scalebox{0.8}{%
+        \begin{tikzpicture}[
+            line width=1.1pt,
+            font=\sffamily,
+            terminal/.style={circle, draw=accent, fill=white, inner sep=1.8pt, line width=1.2pt},
+            brush/.style={fill=accent, draw=accent, rounded corners=0.4pt},
+            wire/.style={draw=accent, line cap=round, line join=round}
+        ]
+
+            % --- Coordinate Griglia (Identiche allo Shunt) ---
+            \coordinate (VinTop) at (0, 2.8);
+            \coordinate (VinBot) at (0, 0);
+            \coordinate (S1) at (1.6, 2.8);
+            \coordinate (S2) at (3.6, 2.8);
+            \coordinate (ArmCenter) at (5.0, 1.4);
+
+            % --- Morsetti Ingresso DC ---
+            \node[terminal] (in+) at (VinTop) {};
+            \node[terminal] (in-) at (VinBot) {};
+            \node[left=3pt of in+, font=\bfseries] {$+$};
+            \node[left=3pt of in-, font=\bfseries] {$-$};
+
+            % Indicazione Tensione DC
+            \draw[{Latex[length=3.5pt]}-{Latex[length=3.5pt]}, draw=subtext, dashed]
+                ($(VinTop)+(0.45, -0.15)$) -- ($(VinBot)+(0.45, 0.15)$)
+                node[midway, fill=white, inner sep=1.5pt, font=\scriptsize\bfseries, text=subtext] {$V_{\mathrm{DC}}$};
+
+            % --- Avvolgimento Statore (Serie) ---
+            \draw[wire] (in+) -- (S1);
+
+            \draw[wire, line width=1.2pt, color=primary]
+                (S1) arc[start angle=180, end angle=0, radius=0.333]
+                    arc[start angle=180, end angle=0, radius=0.333]
+                    arc[start angle=180, end angle=0, radius=0.333] -- (S2);
+
+            % Etichette Statore
+            \node[right=4pt, text=accent, font=\scriptsize\bfseries, align=center] at (1.75, 3.5) {Avv.\\Statore};
+            \node[below=3pt, text=subtext, font=\tiny\bfseries] at (S1) {S1};
+            \node[below=3pt, text=subtext, font=\tiny\bfseries] at (S2) {S2};
+
+            % --- Collegamento verso il Rotore ---
+            \draw[wire] (S2) -- (5.0, 2.8) -- ($(ArmCenter)+(0, 0.92)$);
+            \draw[wire] ($(ArmCenter)+(0, -0.92)$) -- (5.0, 0) -- (in-);
+
+            % --- Cerchio Rotore (Identico allo Shunt) ---
+            \draw[line width=1.3pt, draw=primary, fill=rotorFill]
+                (ArmCenter) circle (0.75);
+            \node[font=\large\bfseries, text=primary] at (ArmCenter) {A};
+
+            % Spazzole
+            \draw[brush] ($(ArmCenter)+(-0.18, 0.75)$) rectangle ($(ArmCenter)+(0.18, 0.92)$);
+            \draw[brush] ($(ArmCenter)+(-0.18, -0.75)$) rectangle ($(ArmCenter)+(0.18, -0.92)$);
+
+            % Morsetti Spazzole
+            \node[left=4pt, text=subtext, font=\tiny\bfseries] at ($(ArmCenter)+(-0.18, 0.83)$) {A1};
+            \node[left=4pt, text=subtext, font=\tiny\bfseries] at ($(ArmCenter)+(-0.18, -0.83)$) {A2};
+
+            % Etichetta Rotore
+            \node[right=4pt, text=accent, font=\scriptsize\bfseries, align=center] at (5.6, 1.4) {Avv.\\Rotore};
+
+        \end{tikzpicture}%
+    }
 \end{figure}
 
-Dovendo sostenere l'intera corrente d'armatura senza introdurre cadute ohmiche eccessive, la bobina di eccitazione viene realizzata con poche spire a sezione maggiorata, garantendo $R_{\text{ecc}} \ll R_a$.
+poiché la corrente che scorre in entrambi i circuiti e uguale, si deve fare in modo che la corrente che nel circuito di generazione del campo magnetico non ci siano perdite e che $R_{ecc} \ll R_{a}$ e per questo motivo, le spire degli avvolgimenti dello statore hanno una sezione elevata per ridurre la resistenza
 
-In assenza di saturazione ferromagnetica del nucleo, il flusso magnetico per polo risulta direttamente proporzionale alla corrente circolante nel circuito:
+Per polo. il flusso magnetico risulta proporzionale alla corrente e quindi poiché la corrente che scorre in entrambi i circuiti è uguale:
 \[
     \Phi = c_f \cdot I_a
 \]
-ove $c_f$ è la costante di proporzionalità del circuito magnetico. Sostituendo tale relazione nella definizione di coppia motrice:
+Dove $c_f$ è la costante di proporzionalità del circuito magnetico. Sostituendo nell'equazione della coppia $\tau_{m}$ si ottiene
 \[
     \tau_m = K_t \cdot (c_f \cdot I_a) \cdot I_a = K_t \, c_f \cdot I_a^2
 \]
-Nel motore con eccitazione in serie, dunque, \textbf{la coppia elettromagnetica a circuito insaturo cresce con legge quadratica rispetto alla corrente assorbita}.
-
-Invertendo la relazione di coppia si esplicita la corrente:
+Quindi, nel motore in serie \underline{la coppia del rotore è proporzionale al quadrato della corrente}, e isolando $I_{a}$ si ottiene:
 \[
     I_a = \sqrt{\frac{\tau_m}{K_t c_f}}
 \]
-L'equazione di bilancio delle tensioni alla maglia unica comprende entrambe le cadute resistive:
-\[
-    V = E_a + (R_a + R_{\text{ecc}}) \cdot I_a = K_e (c_f I_a) \omega_m + (R_a + R_{\text{ecc}}) \cdot I_a
-\]
-Sostituendo l'espressione di $I_a$ in funzione di $\tau_m$:
+L'equazione di bilancio delle tensioni in questo caso sarà
+\begin{align*}
+    V &= E_a + (R_a + R_{\text{ecc}}) \cdot I_a =\\
+    &= K_e (c_f I_a) \omega_m + (R_a + R_{\text{ecc}}) \cdot I_a
+\end{align*}
+Sostituendo $I_a$ si ottiene
 \[
     V = K_e c_f \sqrt{\frac{\tau_m}{K_t c_f}} \cdot \omega_m + (R_a + R_{\text{ecc}}) \cdot \sqrt{\frac{\tau_m}{K_t c_f}}
 \]
 Isolando il termine dipendente da $\omega_m$:
+\begin{align*}
+    K_e c_f \sqrt{\frac{\tau_m}{K_t c_f}} \cdot \omega_m &= V - (R_a + R_{\text{ecc}}) \cdot \sqrt{\frac{\tau_m}{K_t c_f}}\\
+    \omega_m &= \frac{V}{K_e c_f \sqrt{\frac{\tau_m}{K_t c_f}}} - \frac{(R_a + R_{\text{ecc}}) \cdot \sqrt{\frac{\tau_m}{K_t c_f}}}{K_e c_f \sqrt{\frac{\tau_m}{K_t c_f}}}\\
+    \omega_m &= \frac{V}{K_e c_f \sqrt{\frac{\tau_m}{K_t c_f}}} - \frac{(R_a + R_{\text{ecc}})}{K_e c_f}
+\end{align*}
+Per quanto riguarda il primo termine:
 \[
-    K_e c_f \sqrt{\frac{\tau_m}{K_t c_f}} \cdot \omega_m = V - (R_a + R_{\text{ecc}}) \cdot \sqrt{\frac{\tau_m}{K_t c_f}}
+    \frac{V}{K_e c_f \sqrt{\frac{\tau_m}{K_t c_f}}} = \frac{V}{K_e c_f \frac{\sqrt{\tau_m}}{K_t c_f}} = \frac{V \sqrt{K_t c_f}}{K_e c_f \sqrt{\tau_m}}  = \frac{V \sqrt{K_t} \sqrt{c_f}}{K_e c_f \sqrt{\tau_m}}
 \]
-Dividendo ambo i membri per il coefficiente $K_e c_f \sqrt{\frac{\tau_m}{K_t c_f}}$:
+poiché, in condizioni ideali $K_{t} = K_{e}$ e la radice è uguale ad elevare a $\frac{1}{2}$, si ottiene
 \[
-    \omega_m = \frac{V}{K_e c_f \sqrt{\frac{\tau_m}{K_t c_f}}} - \frac{(R_a + R_{\text{ecc}}) \cdot \sqrt{\frac{\tau_m}{K_t c_f}}}{K_e c_f \sqrt{\frac{\tau_m}{K_t c_f}}}
+    = \frac{V K_{e}^{\frac{1}{2}} c_{f}^{\frac{1}{2}}}{K_e c_f \sqrt{\tau_m}} = \frac{V K_{e}^{-\frac{1}{2}} c_{f}^{-\frac{1}{2}}}{ \sqrt{\tau_m}} = \frac{V}{\sqrt{K_e c_f}} \cdot \frac{1}{\sqrt{\tau_m}}
 \]
-Semplificando il secondo termine ed esplicitando le costanti nel primo (tenendo conto che, per l'identità fondamentale nei sistemi coerenti SI, $K_e = K_t$):
-\[
-    \frac{V}{K_e c_f \frac{\sqrt{\tau_m}}{\sqrt{K_t c_f}}} = \frac{V \sqrt{K_t c_f}}{K_e c_f \sqrt{\tau_m}} = \frac{V \sqrt{K_t}}{K_e \sqrt{c_f} \sqrt{\tau_m}} = \frac{V}{\sqrt{K_e c_f}} \cdot \frac{1}{\sqrt{\tau_m}}
-\]
-Si ottiene l'\textbf{equazione caratteristica meccanica del motore Serie}:
+E sostituendo nell'equazione di $\omega_{m}$ si ottiene l'\textbf{equazione caratteristica del motore in serie:}
 \[
     \omega_m(\tau_m) = \frac{V}{\sqrt{K_e c_f}} \cdot \frac{1}{\sqrt{\tau_m}} - \frac{R_a + R_{\text{ecc}}}{K_e c_f}
     \label{eq:caratteristica_serie}
 \]
+Questa equazione descrive una curva iperbolica in funzione della coppia $\tau_{m}$ nel piano $(\tau_m, \omega_m)$. Si nota che
 
-La relazione definisce una curva di tipo \textbf{iperbolico} nel piano $(\tau_m, \omega_m)$, le cui conseguenze operative sono:
 \begin{itemize}
-    \item \textbf{Elevatissima coppia di spunto:} all'avviamento ($\omega_m = 0$), non opponendosi alcuna FCEM, la corrente d'armatura tocca i valori massimi di cortocircuito; per effetto della dipendenza quadratica, il motore genera picchi di coppia assai elevati ($4 \div 6\,\tau_n$), ideali per accelerare masse dotate di grande inerzia o superare attriti di primo distacco.
-    \item \textbf{Rischio di fuga a vuoto (\textit{motor runaway}):} per valori di coppia resistente prossimi allo zero ($\tau_m \to 0$), l'equazione~\eqref{eq:caratteristica_serie} implica:
-    \[
-        \lim_{\tau_m \to 0} \omega_m(\tau_m) = +\infty
-    \]
-    Fisicamente, al decrescere del carico la corrente $I_a$ si riduce drasticamente, indebolendo il flusso statorico di eccitazione ($\Phi = c_f I_a \to 0$). Per generare la FCEM necessaria a bilanciare la tensione di alimentazione $V$, il rotore deve accelerare a velocità teoricamente illimitate. Le forze centrifughe generate possono provocare la dispersione degli avvolgimenti per sbandellamento e il collasso del collettore. Ne deriva la prescrizione tassativa: \textbf{i motori con eccitazione in serie non devono mai essere avviati o operare a vuoto né essere accoppiati tramite cinghie suscettibili di rottura o slittamento}, imponendo accoppiamenti meccanici rigidi e permanenti (riduttori calettati o viti senza fine).
-\end{itemize}
-\newpage
-\subsubsection{Motore A Eccitazione Composta (Compound) E Quadro Comparativo}
-
-Il \textbf{motore composto} (o \textit{compound}) combina le due modalità costruttive integrando su ogni espansione polare sia una bobina shunt (ad alta resistenza, posta in parallelo alla sorgente), sia una bobina serie (a bassa impedenza, percorsa dalla corrente d'armatura $I_a$).
-
-La combinazione dei due campi magnetici genera un comportamento di compromesso:
-\begin{itemize}
-    \item all'avviamento e a carichi gravosi, l'avvolgimento serie fornisce un flusso addizionale proporzionale a $I_a$, potenziando la coppia di spunto rispetto a un motore shunt equivalente;
-    \item a vuoto o in caso di distacco improvviso del carico resistente, la componente shunt garantisce un flusso polare minimo permanente non nullo, imponendo un limite finito alla velocità massima ed eliminando il pericolo di fuga a vuoto.
+    \item \textbf{Per $\omega_m = 0$:} Si ha un elevata coppia di spunto, poiché non essendoci forza contro elettromotrice, la corrente di armatura assume il valore massimo e si ottiene una coppia molto elevata
+    \item \textbf{Per $\tau_{m} \approx 0$:} Si ha un elevata velocità angolare. Fisicamente quando diminuisce il carico, diminuisce anche la corrente di armatura $I_a$ e di conseguenza anche il flusso magnetico (che è proporzionale a quest'ultima) e quindi, per generare la forza contro elettromotrice necessaria a bilanciare la tensione di alimentazione, il motore deve per forza aumentare la velocità angolare, raggiungendo idealmente velocità infinite che possono causare danni fisici al motore. Per questo motivo, si deve evitare di avviare a vuoto i motori in serie, oppure prevedere delle contromisure per evitare che il motore si rompa
 \end{itemize}
 
-La comparazione qualitativa delle caratteristiche meccaniche è illustrata in Figura~\ref{fig:curve_dc}, mentre la Tabella~\ref{tab:confronto_config_dc} riassume le caratteristiche prestazionali e gli impieghi tipici delle diverse architetture.
+\subsubsection{Motore A Eccitazione Composta (Compound)}
+Nel \textbf{Motore Compound} (o a eccitazione composta) si combinano le proprietà del \textit{motore Shunt} e del \textit{motore Serie}. In questa configurazione, su ciascuna \textbf{espansione polare} dello statore sono alloggiati due distinti avvolgimenti:
+\begin{itemize}
+    \item un avvolgimento a filo sottile con molte spire (avvolgimento derivato o \textit{shunt}), collegato in parallelo al circuito di armatura;
+    \item un avvolgimento a filo di sezione elevata con poche spire (avvolgimento serie), collegato in serie al circuito di armatura.
+\end{itemize}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\linewidth]{CurveCaratteristicheDC.jpg}
-    \caption{Rappresentazione comparativa delle curve caratteristiche meccaniche coppia-velocità nel piano cartesiano $(\tau_m, \omega_m)$ per motori a corrente continua Shunt, Serie e Compound.}
-    \label{fig:curve_dc}
+    \scalebox{0.8}{%
+        \begin{tikzpicture}[
+            line width=1.1pt,
+            font=\sffamily,
+            terminal/.style={circle, draw=accent, fill=white, inner sep=1.8pt, line width=1.2pt},
+            brush/.style={fill=accent, draw=accent, rounded corners=0.4pt},
+            wire/.style={draw=accent, line cap=round, line join=round},
+            junc/.style={circle, fill=accent, inner sep=1.5pt}
+        ]
+
+            % --- Coordinate Griglia (Distanziate per dare respiro a V_DC) ---
+            \coordinate (VinTop) at (0, 2.8);
+            \coordinate (VinBot) at (0, 0);
+            \coordinate (JuncTop) at (2.4, 2.8);
+            \coordinate (JuncBot) at (2.4, 0);
+            \coordinate (F1) at (2.4, 2.15);
+            \coordinate (F2) at (2.4, 0.65);
+            \coordinate (S1) at (3.2, 2.8);
+            \coordinate (S2) at (4.8, 2.8);
+            \coordinate (ArmCenter) at (6.0, 1.4);
+
+            % --- Morsetti Ingresso DC ---
+            \node[terminal] (in+) at (VinTop) {};
+            \node[terminal] (in-) at (VinBot) {};
+            \node[left=3pt of in+, font=\bfseries] {$+$};
+            \node[left=3pt of in-, font=\bfseries] {$-$};
+
+            % Indicazione Tensione DC
+            \draw[{Latex[length=3.5pt]}-{Latex[length=3.5pt]}, draw=subtext, dashed]
+                ($(VinTop)+(0.45, -0.15)$) -- ($(VinBot)+(0.45, 0.15)$)
+                node[midway, fill=white, inner sep=1.5pt, font=\scriptsize\bfseries, text=subtext] {$V_{\mathrm{DC}}$};
+
+            % --- Bus Primario e Ramo Derivato (Shunt: F1-F2) ---
+            \draw[wire] (in+) -- (S1);
+            \draw[wire] (in-) -- (6.0, 0);
+
+            \node[junc] at (JuncTop) {};
+            \node[junc] at (JuncBot) {};
+            \draw[wire] (JuncTop) -- (F1);
+            \draw[wire] (F2) -- (JuncBot);
+
+            % Spire Avvolgimento Shunt
+            \draw[wire, line width=1.2pt, color=primary]
+                (F1) arc[start angle=90, end angle=-90, radius=0.1875]
+                    arc[start angle=90, end angle=-90, radius=0.1875]
+                    arc[start angle=90, end angle=-90, radius=0.1875]
+                    arc[start angle=90, end angle=-90, radius=0.1875] -- (F2);
+
+            \node[left=3pt, text=subtext, font=\tiny\bfseries] at (F1) {F1};
+            \node[left=3pt, text=subtext, font=\tiny\bfseries] at (F2) {F2};
+            \node[left=6pt, text=accent, font=\scriptsize\bfseries, align=center] at (2.6, 1.4) {Avv.\\Shunt};
+
+            % --- Ramo Serie (S1-S2) ---
+            \draw[wire, line width=1.2pt, color=primary]
+                (S1) arc[start angle=180, end angle=0, radius=0.266]
+                    arc[start angle=180, end angle=0, radius=0.266]
+                    arc[start angle=180, end angle=0, radius=0.266] -- (S2);
+
+            \node[below=3pt, text=subtext, font=\tiny\bfseries] at (S1) {S1};
+            \node[below=3pt, text=subtext, font=\tiny\bfseries] at (S2) {S2};
+            \node[above=4pt, text=accent, font=\scriptsize\bfseries, align=center] at (4.0, 3.2) {Avv. Serie};
+
+            % --- Ramo Rotore (Indotto) ---
+            \draw[wire] (S2) -- (6.0, 2.8) -- ($(ArmCenter)+(0, 0.92)$);
+            \draw[wire] ($(ArmCenter)+(0, -0.92)$) -- (6.0, 0);
+
+            % Cerchio Rotore
+            \draw[line width=1.3pt, draw=primary, fill=rotorFill]
+                (ArmCenter) circle (0.75);
+            \node[font=\large\bfseries, text=primary] at (ArmCenter) {A};
+
+            % Spazzole
+            \draw[brush] ($(ArmCenter)+(-0.18, 0.75)$) rectangle ($(ArmCenter)+(0.18, 0.92)$);
+            \draw[brush] ($(ArmCenter)+(-0.18, -0.75)$) rectangle ($(ArmCenter)+(0.18, -0.92)$);
+
+            % Morsetti Spazzole
+            \node[left=4pt, text=subtext, font=\tiny\bfseries] at ($(ArmCenter)+(-0.18, 0.83)$) {A1};
+            \node[left=4pt, text=subtext, font=\tiny\bfseries] at ($(ArmCenter)+(-0.18, -0.83)$) {A2};
+            \node[right=4pt, text=accent, font=\scriptsize\bfseries, align=center] at (6.6, 1.4) {Avv.\\Rotore};
+
+        \end{tikzpicture}%
+    }
+    \caption{Schema Circuitale Del Motore Dc A Eccitazione Composta (Compound).}
 \end{figure}
+
+Il flusso complessivo per polo è la somma (nella configurazione additiva standard) della quota costante $\Phi_{\text{sh}}$ prodotta dalla bobina shunt e della quota variabile $\Phi_{\text{se}} = c_s I_a$ prodotta dalla bobina serie:
+\[
+    \Phi_{\text{tot}} = \Phi_{\text{sh}} + c_s I_a
+\]
+In questo modo si ottiene un comportamento ottimizzato:
+\begin{itemize}
+    \item \textbf{All'avvio O Per Carichi Elevati:} La corrente di armatura $I_a$ che transita nella bobina serie incrementa notevolmente il flusso $\Phi_{\text{tot}}$, generando una coppia di spunto sensibilmente maggiore rispetto a un equivalente motore Shunt puro.
+    \item \textbf{A vuoto O Per Distacco Improvviso Del Carico:} Al tendere di $\tau_m \to 0$, la corrente $I_a$ si azzera e il contributo serie svanisce, ma permane il flusso base $\Phi_{\text{sh}}$ imposto dall'avvolgimento in parallelo; la velocità a vuoto converge quindi stabilmente a un valore finito $\omega_0 = V / (K_e \Phi_{\text{sh}})$, eliminando alla radice il rischio di fuga e danneggiamento meccanico tipico del motore Serie.
+\end{itemize}
+\newpage
+
+\subsubsection{Confronto Tra Configurazioni}
+Il grafico confronta le caratteristiche meccaniche $\omega_m(\tau_m)$ delle tre configurazioni descritte.
+
+\begin{figure}[H]
+    \centering
+    \scalebox{0.88}{%
+        \begin{tikzpicture}[
+            font=\sffamily,
+            >=Stealth,
+            line cap=round,
+            line join=round
+        ]
+            % --- Griglia di Sfondo ---
+            \draw[step=1cm, draw=subtext!20, line width=0.5pt] (0,0) grid (8.5, 5.5);
+
+            % --- Assi Cartesiani ---
+            \draw[->, line width=1.1pt, draw=accent] (0,0) -- (9.2,0)
+                node[below=4pt, anchor=north east, font=\bfseries] {Coppia $\tau_m$ [$\mathrm{N\cdot m}$]};
+            \draw[->, line width=1.1pt, draw=accent] (0,0) -- (0,5.8)
+                node[above=4pt, anchor=south west, font=\bfseries] {Velocità $\omega_m$ [$\mathrm{rad/s}$]};
+
+            \node[below left=2pt, font=\small\bfseries, text=subtext] at (0,0) {0};
+
+            % --- 1. SHUNT (Caratteristica dura: retta a debole pendenza) ---
+            \draw[line width=1.6pt, color=primary]
+                (0, 4.3) -- (8.2, 3.4);
+
+            % --- 2. COMPOUND (Caratteristica intermedia) ---
+            \draw[line width=1.6pt, color=measGreen]
+                plot[domain=0:8.2, samples=80, smooth] (\x, {4.9 - 0.45*\x - 0.012*\x^2});
+
+            % --- 3. SERIE (Caratteristica elastica: iperbolica) ---
+            \draw[line width=1.6pt, color=actRed]
+                plot[domain=0.55:8.2, samples=100, smooth] (\x, {0.35 + 2.75/(\x^0.8)});
+
+            % Punti a vuoto
+            \fill[primary] (0, 4.3) circle (2.2pt) node[left=3pt, font=\footnotesize\bfseries] {$\omega_{0,\text{sh}}$};
+            \fill[measGreen] (0, 4.9) circle (2.2pt) node[left=3pt, font=\footnotesize\bfseries] {$\omega_{0,\text{comp}}$};
+
+            % Fuga a vuoto Serie
+            \draw[->, line width=1pt, draw=actRed, dashed]
+                (0.65, 4.7) -- (0.65, 5.6)
+                node[right=3pt, font=\scriptsize\bfseries, text=actRed, align=left] {Pericolo di fuga\\a vuoto ($\tau_m \to 0$)};
+
+            % --- Legenda Esterna a Destra Fuori dal Piano Cartesiano ---
+            \node[draw=subtext!35, fill=white, rounded corners=3pt, inner sep=7pt, anchor=west]
+                at (9.6, 3.2) {
+                \begin{tabular}{l l}
+                    \tikz\draw[line width=1.6pt, color=primary] (0,0) -- (0.55,0); & \textbf{\textcolor{primary}{Shunt}} (Rigida) \\[4pt]
+                    \tikz\draw[line width=1.6pt, color=measGreen] (0,0) -- (0.55,0); & \textbf{\textcolor{measGreen}{Compound}} (Intermedia) \\[4pt]
+                    \tikz\draw[line width=1.6pt, color=actRed] (0,0) -- (0.55,0); & \textbf{\textcolor{actRed}{Serie}} (Elastica)
+                \end{tabular}
+            };
+        \end{tikzpicture}%
+    }
+    \caption{Confronto Caratteristiche Meccaniche $\omega_m(\tau_m)$ Per Motori Dc Con Eccitazione Shunt, Compound E Serie.}
+\end{figure}
+
+Nella tabella vengono riassunti i parametri analitici e le proprietà operative fondamentali delle tre tipologie di motore a corrente continua.
 
 \begin{table}[H]
     \centering
-    \caption{Quadro comparativo delle prestazioni e applicazioni tipiche delle configurazioni dei motori DC.}
-    \label{tab:confronto_config_dc}
-    \vspace{0.2cm}
-    \resizebox{\textwidth}{!}{
-    \begin{tabular}{|l|l|l|p{8cm}|}
-        \hline
-        \textbf{Tipologia} & \textbf{Coppia di Spunto} & \textbf{Regolazione di Velocità} & \textbf{Applicazioni Industriali Tipiche} \\ \hline
-        \textbf{Shunt} & Media ($1.5 \div 2\,\tau_n$) & Eccellente (caratteristica rigida, $\Delta\omega < 5\%$) & Azionamenti per macchine utensili a velocità costante, pompe volumetriche, ventilatori, nastri trasportatori di processo. \\ \hline
-        \textbf{Serie} & Altissima ($4 \div 6\,\tau_n$) & Molto scarsa (caratteristica cedevole iperbolica) & Trazione elettrica pesante (carrelli industriali AGV, convogli ferroviari), argani di sollevamento, gru a ponte, motorini di avviamento. \\ \hline
-        \textbf{Compound} & Alta ($2.5 \div 4\,\tau_n$) & Buona (compromesso stabile tra Serie e Shunt) & Presse meccaniche per stampaggio lamiera, cesoie a volano, ascensori da carico, compressori a pistone con picchi di carico impulsivi. \\ \hline
-    \end{tabular}
+    \renewcommand{\arraystretch}{1.5}
+    \scalebox{0.75}{%
+    \begin{tabular}{l l l l}
+        \toprule
+        \textbf{Configurazione} &
+        \textbf{Equazione Caratteristica $\bm{\omega_m(\tau_m)}$} &
+        \textbf{Coppia Di Spunto} &
+        \textbf{Velocità A Vuoto $\bm{\omega_0}$} \\ % <-- Mancava questo \\
+        \midrule
+        \textbf{\textcolor{primary}{Shunt}} (Parallelo) &
+        $\displaystyle \omega_m = \frac{V}{K_e \Phi} - \frac{R_a}{K_t K_e \Phi^2}\,\tau_m$ &
+        Media ($\tau_m \propto I_a$) &
+        $\displaystyle \frac{V}{K_e \Phi}$ (Finita) \\
+        \addlinespace[10pt]
+        \textbf{\textcolor{measGreen}{Compound}} (Composto) &
+        $\displaystyle \omega_m \approx \frac{V}{K_e \Phi_{\text{tot}}} - \frac{R_a + R_{\text{se}}}{K_t K_e \Phi_{\text{tot}}^2}\,\tau_m$ &
+        Elevata &
+        $\displaystyle \frac{V}{K_e \Phi_{\text{sh}}}$ (Finita e sicura) \\
+        \addlinespace[10pt]
+        \textbf{\textcolor{actRed}{Serie}} &
+        $\displaystyle \omega_m = \frac{V}{\sqrt{K_e K_t c_f}}\,\frac{1}{\sqrt{\tau_m}} - \frac{R_a + R_{\text{se}}}{K_e K_t c_f}$ &
+        Molto Elevata ($\tau_m \propto I_a^2$) &
+        $\to \infty$ \textbf{\textcolor{bad}{(Fuga a vuoto)}} \\
+        \bottomrule
+    \end{tabular}%
     }
 \end{table}
 
 \newpage
 
-\section{Servomotori Elettrici Brushless (BLDC)}
-I servomotori a corrente continua senza spazzole (\textbf{BLDC}, \textit{BrushLess Direct Current}) sostituiscono i motori a spazzole nelle catene cinematiche dei robot industriali grazie all'\textbf{eliminazione dei contatti meccanici striscianti}. L'inversione delle correnti di fase è attuata da un ponte di commutazione elettronico a semiconduttori coordinato in tempo reale da un microprocessore.
 
-\subsection{Architettura Invertita E Principio Costruttivo}
 
-Rispetto al motore DC convenzionale, la topologia costruttiva è \textbf{invertita}:
+\newpage
+% AA Parte 4 - Trasmissioni Meccaniche E Riduttori Di Precisione
+\addtocontents{toc}{\protect\clearpage}
+
+\section{Il Servomotore Elettrico DC Senza Spazzole (BLDC)}
+
+\subsection{Architettura E Principio Di Funzionamento}
+Il servomotore elettrico a corrente continua senza spazzole (\textbf{BLDC}, \textit{BrushLess Direct Current}) è un dispositivo ampiamente impiegato nelle catene cinematiche dei robot industriali, dove sostituisce il motore DC tradizionale grazie all'\textbf{eliminazione dei contatti meccanici striscianti}. In questa tipologia di attuatori, l'inversione periodica delle correnti di fase non è affidata a un collettore meccanico, ma viene realizzata da un ponte di commutazione elettronico a semiconduttori, coordinato in tempo reale da un microprocessore.\\
+Dal punto di vista costruttivo, rispetto al motore DC con spazzole, la topologia della macchina risulta \textbf{invertita}, pur mantenendo i due componenti principali coassiali: \textbf{Statore} e \textbf{Rotore}.
+
+\subsubsection{Statore E Smaltimento Termico}
+Lo statore costituisce la parte esterna fissa del motore (armatura esterna) e ha la funzione di generare un \textbf{campo magnetico rotante nello spazio}. È formato da un pacco lamellare in acciaio ferromagnetico a basse perdite nel ferro, sulla cui superficie interna sono ricavate le scanalature longitudinali, chiamate \textbf{cave}. All'interno delle cave vengono alloggiati gli \textbf{avvolgimenti di fase} in rame (tipicamente tre, indicati con le lettere U, V, W).\\
+Questa disposizione costruttiva ottimizza notevolmente lo smaltimento termico della macchina:
 \begin{itemize}
-    \item \textbf{Statore (Armatura Esterna):} parte fissa contenente gli avvolgimenti di fase (tipicamente tre: U, V, W), alloggiati entro cave lamellari di acciaio a basse perdite nel ferro;
-    \item \textbf{Rotore (Poli Di Campo Interni):} organo rotante costituito da \textbf{Magneti Permanenti} sinterizzati in materiali magnetici avanzati, che generano densità di flusso al traferro comprese tra $0.8$ e $1.2\,\si{\tesla}$.
+    \item \textbf{Nei Motori Con Spazzole:} Le correnti di carico percorrono gli avvolgimenti situati sul rotore interno; di conseguenza, il calore generato per effetto Joule ($R_a I_a^2$) può essere dissipato verso l'esterno unicamente attraversando l'aria del traferro e l'albero meccanico, limitando la densità di corrente ammissibile.
+    \item \textbf{Nei Motori BLDC:} La dissipazione termica avviene direttamente sullo statore esterno. Ciò facilita l'estrazione del calore per conduzione diretta verso la carcassa del manipolatore robotico, la quale può essere agevolmente supportata da alette di raffreddamento o da circuiti di scambio termico a liquido.
 \end{itemize}
+
+\subsubsection{Rotore A Magneti Permanenti E Inerzia Meccanica}
+È la parte interna rotante del motore, vincolata all'albero di trasmissione mediante cuscinetti e separata dallo statore dal \textbf{traferro} (\textit{air gap}). A differenza del motore tradizionale, il rotore è completamente passivo dal punto di vista elettrico ed è costituito da \textbf{Magneti Permanenti} sinterizzati in materiali magnetici avanzati, i quali generano densità di flusso magnetico al traferro comprese tra $0.8\,\si{\tesla}$ e $1.2\,\si{\tesla}$.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{BLDCBrushedComparison.jpg}
-    \caption{Confronto Morfologico Tra Motore DC Con Spazzole (A Sinistra: Magneti Sullo Statore E Avvolgimenti Sul Rotore Con Collettore A Lamelle) E Motore BLDC (A Destra: Avvolgimenti Sullo Statore E Magneti Permanenti Sul Rotore).}
+    \includegraphics[width=0.5\textwidth]{BLDCBrushedComparison.jpg}
+    \caption{Confronto Morfologico Tra Motore DC Con Spazzole (A Sinistra) E Motore BLDC (A Destra)}
 \end{figure}
-Come mostrato in figura, tale disposizione ottimizza lo smaltimento termico. Nel motore a spazzole le correnti di carico percorrono il rotore, da cui il calore dissipato per effetto Joule ($R_a I_a^2$) viene dissipato unicamente attraverso il traferro e l'albero. Nel BLDC la dissipazione avviene sullo statore esterno, facilitando l'estrazione del calore per conduzione verso la carcassa del manipolatore (supportata da alette o circuiti a liquido). Inoltre, l'assenza di avvolgimenti sul rotore ne riduce le dimensioni radiali e il \textbf{Momento D'Inerzia $J_m$}, consentendo accelerazioni angolari elevate ($> 10^4\,\si{\radian\per\second\squared}$) necessarie nei cicli di \textit{pick-and-place} ad alta cadenza.
+Come mostrato in figura, l'assenza degli avvolgimenti in rame e del collettore a lamelle sul rotore consente di ridurne sensibilmente le dimensioni radiali e la massa complessiva.\\
+Ciò comporta una drastica riduzione del \textbf{Momento D'Inerzia $J_m$}, permettendo al servomotore di raggiungere accelerazioni angolari molto elevate ($> 10^4\,\si{\radian\per\second\squared}$), requisito fondamentale nei cicli operativi di \textit{pick-and-place} ad alta cadenza.
 
-\newpage
+\subsubsection{Commutazione Elettronica E Trasduttori Di Posizione}
+Il compito principale del sistema di commutazione elettronica è quello di sostituire l'azione del sistema collettore-spazzole. Poiché l'assenza del collettore meccanico elimina l'accoppiamento cinematico diretto tra la posizione geometrica dell'albero e l'alimentazione delle bobine, il controllore elettronico deve rilevare istante per istante la \textbf{posizione angolare del rotore} $\theta_m$.\\
+Grazie a questa misura, l'unità di controllo può alimentare la corretta coppia di fasi statoriche al momento opportuno, mantenendo il vettore del campo magnetico di statore sempre in quadratura (ovvero sfasato di $90^\circ$ elettrici) rispetto al flusso magnetico del rotore, in modo da massimizzare la coppia motrice erogata e mantenerne costante il verso.
 
-\subsection{Sensoristica Di Feedback Per La Commutazione Elettronica}
-
-L'assenza del collettore meccanico elimina l'accoppiamento cinematico diretto tra posizione angolare e commutazione. Il controllore deve pertanto rilevare la \textbf{posizione angolare istantanea del rotore} $\theta_m$ per alimentare la corretta coppia di fasi, mantenendo il vettore di campo statorico in quadratura rispetto al flusso rotorico per massimizzare la coppia erogata.
-
-I trasduttori impiegati comprendono:
+A seconda della precisione richiesta dal controllo, i trasduttori di posizione impiegati si dividono in tre categorie:
 \begin{itemize}
-    \item \textbf{Sensori A Effetto Hall Digitali:} tre semiconduttori solidali allo statore, reciprocamente sfasati di $120^\circ$ (o $60^\circ$) elettrici. Al transito dei poli magnetici commutano tra i livelli logici $0$ e $1$. La combinazione delle uscite individua $6$ settori angolari di $60^\circ$ elettrici ciascuno, fornendo la risoluzione discreta necessaria alla \textbf{commutazione a sei stati} (\textit{six-step trapzoidal commutation}).
-    \item \textbf{Encoder Ottici O Magnetici:} trasduttori digitali calettati sull'albero. Gli \textit{encoder incrementali} (canali in quadratura A, B e tacca di zero Z) offrono risoluzioni da $1000$ a oltre $100\,000$ impulsi per giro. Negli assi robotici industriali si impiegano prevalentemente \textbf{encoder assoluti monogiro e multigiro} (con bus seriali sincroni quali EnDat, BiSS o SSI), che mantengono il dato di posizione anche a motore spento, eliminando la procedura di ricerca dello zero (\textit{homing}).
-    \item \textbf{Resolver:} trasformatori rotativi analogici composti da uno statore a due avvolgimenti ortogonali alimentati in alta frequenza e da un rotore eccitato. Restituiscono segnali modulati in ampiezza proporzionali al seno e coseno dell'angolo meccanico. Privi di elettronica a bordo, risultano immuni a disturbi elettromagnetici, temperature elevate ($> 150\,\si{\celsius}$), polveri e vibrazioni, trovando applicazione in fonderie e contesti aerospaziali.
+    \item \textbf{Sensori A Effetto Hall Digitali:} Sono costituiti da tre elementi a semiconduttore solidali allo statore, disposti lungo la circonferenza e reciprocamente sfasati di $120^\circ$ (oppure $60^\circ$) elettrici. Al transito dei poli magnetici del rotore, ciascun sensore commuta la propria uscita tra i livelli logici $0$ e $1$. La combinazione binaria delle tre uscite permette di individuare $6$ settori angolari di $60^\circ$ elettrici ciascuno, fornendo la risoluzione discreta necessaria per realizzare la \textbf{commutazione a sei stati} (\textit{six-step trapezoidal commutation}).
+
+    \item \textbf{Encoder Ottici O Magnetici:} Sono trasduttori digitali ad alta risoluzione calettati direttamente sull'albero del motore. Gli \textit{encoder incrementali} (dotati di due canali in quadratura A, B e di una tacca di riferimento di zero Z) offrono risoluzioni che variano da $1000$ a oltre $100\,000$ impulsi per giro. Negli assi dei robot industriali si impiegano prevalentemente \textbf{encoder assoluti monogiro e multigiro} (interfacciati tramite bus seriali sincroni quali EnDat, BiSS o SSI), i quali mantengono l'informazione sulla posizione angolare anche a motore spento, eliminando la necessità di eseguire la procedura di azzeramento (\textit{homing}) all'avvio.
+
+    \item \textbf{Resolver:} Sono trasformatori rotativi di tipo analogico composti da uno statore, provvisto di due avvolgimenti secondari disposti ortogonalmente, e da un rotore eccitato in alta frequenza. Durante la rotazione, il dispositivo restituisce due segnali sinusoidali modulati in ampiezza, proporzionali rispettivamente al seno e al coseno dell'angolo meccanico $\theta_m$. Essendo privi di componenti elettronici delicati a bordo, i resolver risultano immuni a forti disturbi elettromagnetici, temperature elevate ($> 150\,\si{\celsius}$), polveri e vibrazioni meccaniche, trovando largo impiego in fonderie e in ambito aerospaziale.
 \end{itemize}
 
-\subsection{Vantaggi E Svantaggi Dei Motori BLDC}
-
-\subsubsection*{Vantaggi}
+\subsubsection{Vantaggi E Svantaggi Operativi}
+Rispetto ai motori DC tradizionali con spazzole, l'architettura costruttiva dei servomotori BLDC offre i seguenti \textbf{vantaggi}:
 \begin{enumerate}
-    \item \textbf{Efficienza Energetica Superiore:} l'assenza di contatti striscianti annulla gli attriti meccanici e le cadute di tensione di contatto spazzola-lamella.
-    \item \textbf{Vita Operativa e Ridotta Manutenzione (MTBF Elevato):} l'assenza di usura e scintillio limita il degrado della macchina alla sola durata dei cuscinetti volventi (in genere superiore a $20\,000 \div 40\,000$ ore di servizio).
-    \item \textbf{Assenza di Scintille:} l'assenza di archi voltaici consente l'impiego in ambienti puliti (nessuna emissione di polvere di grafite) o con atmosfere infiammabili.
-    \item \textbf{Elevate Velocità Di Rotazione:} l'eliminazione dei vincoli centrifughi connessi alle spazzole consente velocità tra $10\,000$ e oltre $50\,000\,\si{rpm}$.
-    \item \textbf{Eccellente Dinamica Di Risposta:} l'elevato rapporto coppia-inerzia ($\tau_m / J_m$) assicura elevata prontezza nei transitori.
+    \item \textbf{Efficienza Energetica Superiore:} L'assenza di contatti meccanici striscianti annulla le perdite per attrito radiale e le cadute di tensione elettriche localizzate all'interfaccia spazzola-lamella.
+    \item \textbf{Vita Operativa E Ridotta Manutenzione (MTBF Elevato):} L'eliminazione dell'usura meccanica delle spazzole e dell'erosione elettrica del collettore limita il degrado della macchina alla sola durata meccanica dei cuscinetti volventi (generalmente superiore a $20\,000 \div 40\,000$ ore di servizio).
+    \item \textbf{Assenza Di Scintillio:} La commutazione statica tramite semiconduttori impedisce l'innesco di archi voltaici, consentendo l'impiego del motore in camere bianche (nessuna emissione di polvere di grafite nell'ambiente) o in atmosfere potenzialmente esplosive e infiammabili.
+    \item \textbf{Elevate Velocità Di Rotazione:} L'eliminazione dei limiti meccanici legati alla forza centrifuga agente sulle lamelle del collettore permette di raggiungere velocità di rotazione comprese tra $10\,000$ e oltre $50\,000\,\si{rpm}$.
+    \item \textbf{Eccellente Dinamica Di Risposta:} L'elevato rapporto tra coppia motrice erogabile e momento d'inerzia rotorico ($\tau_m / J_m$) assicura un'elevata prontezza di risposta durante i transitori rapidi.
 \end{enumerate}
 
-\subsubsection*{Svantaggi}
+Di contro, l'adozione di questa tecnologia comporta alcuni \textbf{svantaggi}:
 \begin{enumerate}
-    \item \textbf{Costo Economico Dell'Hardware:} L'impiego di magneti in materiali magnetici avanzati sinterizzati ad alto prodotto d'energia $(BH)_{\max}$ incide sul costo di fabbricazione.
-    \item \textbf{Complessità Dell'Elettronica Di Pilotaggio:} Il funzionamento richiede un convertitore dedicato provvisto di DSP, sensori di corrente, stadi di isolamento ottico e inverter trifase a semiconduttori di potenza.
+    \item \textbf{Costo Economico Dell'Hardware:} L'impiego di magneti permanenti sinterizzati in terre rare ad alto prodotto d'energia $(BH)_{\max}$ incide sensibilmente sul costo di fabbricazione del motore.
+    \item \textbf{Complessità Dell'Elettronica Di Pilotaggio:} Il motore non può essere collegato direttamente a una sorgente in corrente continua, ma richiede obbligatoriamente un azionamento elettronico dedicato, provvisto di microcontrollore o DSP, sensori di corrente, stadi di isolamento galvanico/ottico e un inverter trifase a semiconduttori di potenza.
 \end{enumerate}
 \newpage
 
 \subsection{Il Motore BLDC Trifase E Il Circuito Di Pilotaggio Ad Inverter}
-I servomotori BLDC per robotica adottano tipicamente la configurazione \textbf{trifase sincrona}. Lo statore ospita tre avvolgimenti indipendenti sfasati nello spazio di $120^\circ$ elettrici. Dato il numero di coppie polari $p$, la relazione tra l'angolo meccanico del rotore $\theta_m$ e l'angolo elettrico $\theta_e$ è:
+
+\subsubsection{Configurazione Trifase E Relazioni Elettromeccaniche}
+I servomotori BLDC impiegati in ambito robotico adottano tipicamente una configurazione di tipo \textbf{trifase sincrono}, in cui lo statore ospita tre avvolgimenti indipendenti sfasati geometricamente nello spazio di $120^\circ$ elettrici.\\
+Indicando con $p$ il \textbf{numero di coppie polari} del rotore, un giro meccanico completo ($360^\circ$ meccanici) corrisponde a $p$ cicli completi del campo magnetico ($p \cdot 360^\circ$ elettrici). Di conseguenza, il legame tra l'angolo meccanico del rotore $\theta_m$ e l'angolo elettrico $\theta_e$ è espresso dalla relazione:
 \[
     \theta_e = p \cdot \theta_m
 \]
-Analogamente, la pulsazione elettrica $\omega_e$ delle correnti statoriche è legata alla velocità meccanica $\omega_m$ da:
+Derivando rispetto al tempo, si ottiene che la pulsazione elettrica $\omega_e$ delle correnti statoriche è direttamente proporzionale alla velocità angolare meccanica $\omega_m$ dell'albero:
 \[
     \omega_e = p \cdot \omega_m
 \]
-Il controllo dell'ampiezza e del verso delle correnti di fase è affidato a un \textbf{inverter trifase a ponte intero}
+
+\subsubsection{Architettura Dell'Inverter A Ponte Trifase}
+Il controllo dell'ampiezza, della frequenza e del verso delle correnti che attraversano gli avvolgimenti di fase è affidato a un convertitore statico di potenza, denominato \textbf{inverter trifase a ponte intero}.
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{BLDCHBridgeDriver.jpg}
-    \caption{Schema Inverter A Ponte Trifase A 6 Switch (MOSFET o IGBT) Per Il Pilotaggio Di Un Servomotore Bldc Con Centro-Stella Non Accessibile.}
+    \caption{Schema Elettrico Di Un Inverter A Ponte Trifase A 6 Interruttori (MOSFET O IGBT) Per Il Pilotaggio Di Un Servomotore BLDC Con Avvolgimenti Collegati A Stella E Centro-Stella Non Accessibile.}
+    \label{fig:bldc_inverter}
 \end{figure}
 
-Il circuito in figura dipende da un bus a tensione continua $V_{DC}$, derivato da raddrizzamento e livellamento della tensione di rete. Il ponte si compone di tre rami paralleli (\textit{legs}) associati alle fasi U, V, W:
+Come illustrato in figura, il circuito viene alimentato da un bus in tensione continua $V_{DC}$, ottenuto mediante il raddrizzamento e il successivo livellamento capacitivo della tensione alternata di rete. La struttura del ponte si compone di tre rami in parallelo (\textit{legs}), ciascuno associato a una delle tre fasi statoriche (U, V, W):
 \begin{itemize}
-    \item \textbf{Ramo U:} Interruttore superiore $Q_1$ (\textit{High-Side}) e inferiore $Q_2$ (\textit{Low-Side});
-    \item \textbf{Ramo V:} Interruttore superiore $Q_3$ (High-Side) e inferiore $Q_4$ (Low-Side);
-    \item \textbf{Ramo W:} Interruttore superiore $Q_5$ (High-Side) e inferiore $Q_6$ (Low-Side).
+    \item \textbf{Ramo Della Fase U:} Costituito dall'interruttore superiore $Q_1$ (\textit{High-Side}), collegato al polo positivo $+V_{DC}$, e dall'interruttore inferiore $Q_2$ (\textit{Low-Side}), collegato al riferimento di massa.
+    \item \textbf{Ramo Della Fase V:} Costituito dall'interruttore superiore $Q_3$ (\textit{High-Side}) e dall'interruttore inferiore $Q_4$ (\textit{Low-Side}).
+    \item \textbf{Ramo Della Fase W:} Costituito dall'interruttore superiore $Q_5$ (\textit{High-Side}) e dall'interruttore inferiore $Q_6$ (\textit{Low-Side}).
 \end{itemize}
-Ciascun interruttore (MOSFET per tensioni $< 100\,\si{\volt}$, IGBT per tensioni superiori) è provvisto di un diodo in antiparallelo (\textit{freewheeling}) per il ricircolo delle correnti reattive di fase durante l'interdizione. Per impedire cortocircuiti diretti sulla linea di alimentazione (\textit{shoot-through}), l'apertura e la chiusura dei due interruttori di uno stesso ramo sono separate da un tempo morto (\textit{dead-time}).
+Gli interruttori elettronici vengono realizzati mediante transistor MOSFET di potenza per tensioni di bus inferiori a $100\,\si{\volt}$, oppure tramite IGBT per livelli di tensione e potenza superiori. Ciascun transistor è affiancato da un diodo collegato in antiparallelo, detto \textbf{diodo di ricircolo} (\textit{freewheeling diode}), che offre una via di continuità alle correnti induttive di fase durante le fasi di interdizione degli interruttori.\\
+Inoltre, per evitare che entrambi i transistor appartenenti allo stesso ramo conducano simultaneamente generando un cortocircuito netto sul bus di alimentazione (fenomeno di \textit{shoot-through}), i segnali di comando per l'apertura e la chiusura degli interruttori complementari vengono separati da un breve intervallo di sicurezza, denominato \textbf{tempo morto} (\textit{dead-time}).
 \newpage
-\paragraph{La Logica Di Commutazione A Sei Passi (\textit{Six-Step Control})}
-Nella modulazione, il periodo di $360^\circ$ elettrici è suddiviso in sei settori di ampiezza pari a $60^\circ$ elettrici. In ciascun settore, due fasi sono connesse al bus DC:un interruttore High-Side conduce corrente da $+V_{DC}$ a una fase, mentre un Low-Side di un altro ramo la richiude a massa. Mentre la terza fase rimane scollegata (\textit{floating}). La sequenza di commutazione è sincronizzata con la posizione del rotore, rilevata dai sensori di Hall o da un encoder assoluto.
 
-I tre sensori di Hall rilevano i passaggi di settore. La decodifica della parola binaria d'uscita ($100_2 \to 110_2 \to 010_2 \dots$) comanda l'accensione sincronizzata dei gate secondo la sequenza:
+\subsubsection{Logica Di Commutazione A Sei Passi (Six-Step Control)}
+Nella tecnica di pilotaggio trapezoidale a sei passi (\textit{Six-Step Control}), il periodo elettrico completo di $360^\circ$ viene suddiviso in sei settori angolari discreti, ciascuno di ampiezza pari a $60^\circ$ elettrici.\\
+All'interno di ogni singolo settore, solamente due delle tre fasi statoriche vengono connesse attivamente al bus di alimentazione: un interruttore superiore (\textit{High-Side}) viene chiuso per iniettare corrente dal terminale $+V_{DC}$ verso un primo avvolgimento di fase, mentre un interruttore inferiore (\textit{Low-Side}) appartenente a un altro ramo viene chiuso per permettere il ritorno della corrente verso massa attraverso un secondo avvolgimento. Contemporaneamente, la terza fase non viene alimentata e rimane elettricamente flottante (\textit{floating}).
+
+Durante la rotazione dell'albero, i tre sensori a effetto Hall rilevano il passaggio dei poli rotorici da un settore al successivo. La decodifica logica della parola binaria a 3 bit generata dai sensori ($100_2 \to 110_2 \to 010_2 \dots$) permette al microcontrollore di comandare l'accensione sincronizzata dei gate dei transistor secondo la seguente sequenza ciclica:
 \begin{align*}
-    \text{Settore 1: } & Q_1 \text{ ON (Fase U a } +V_{DC}\text{)}, & Q_4 \text{ ON (Fase V a massa)}, & \text{Fase W scollegata} \\
-    \text{Settore 2: } & Q_1 \text{ ON (Fase U a } +V_{DC}\text{)}, & Q_6 \text{ ON (Fase W a massa)}, & \text{Fase V scollegata} \\
-    \text{Settore 3: } & Q_3 \text{ ON (Fase V a } +V_{DC}\text{)}, & Q_6 \text{ ON (Fase W a massa)}, & \text{Fase U scollegata} \\
-    \text{Settore 4: } & Q_3 \text{ ON (Fase V a } +V_{DC}\text{)}, & Q_2 \text{ ON (Fase U a massa)}, & \text{Fase W scollegata} \\
-    \text{Settore 5: } & Q_5 \text{ ON (Fase W a } +V_{DC}\text{)}, & Q_2 \text{ ON (Fase U a massa)}, & \text{Fase V scollegata} \\
-    \text{Settore 6: } & Q_5 \text{ ON (Fase W a } +V_{DC}\text{)}, & Q_4 \text{ ON (Fase V a massa)}, & \text{Fase U scollegata}
+    \text{Settore 1: } & Q_1 \text{ ON (Fase U a } +V_{DC}\text{)}, & Q_4 \text{ ON (Fase V a massa)}, \quad & \text{Fase W scollegata} \\
+    \text{Settore 2: } & Q_1 \text{ ON (Fase U a } +V_{DC}\text{)}, & Q_6 \text{ ON (Fase W a massa)}, \quad & \text{Fase V scollegata} \\
+    \text{Settore 3: } & Q_3 \text{ ON (Fase V a } +V_{DC}\text{)}, & Q_6 \text{ ON (Fase W a massa)}, \quad & \text{Fase U scollegata} \\
+    \text{Settore 4: } & Q_3 \text{ ON (Fase V a } +V_{DC}\text{)}, & Q_2 \text{ ON (Fase U a massa)}, \quad & \text{Fase W scollegata} \\
+    \text{Settore 5: } & Q_5 \text{ ON (Fase W a } +V_{DC}\text{)}, & Q_2 \text{ ON (Fase U a massa)}, \quad & \text{Fase V scollegata} \\
+    \text{Settore 6: } & Q_5 \text{ ON (Fase W a } +V_{DC}\text{)}, & Q_4 \text{ ON (Fase V a massa)}, \quad & \text{Fase U scollegata}
 \end{align*}
 
-Questo ciclo genera un campo statorico rotante a passi discreti di $60^\circ$, che trascina in rotazione sincrona il rotore. Modulando la tensione media tramite tecnica PWM (\textit{Pulse Width Modulation}) ad alta frequenza ($10 \div 20\,\si{\kilo\hertz}$) applicata agli switch High-Side, si regola la corrente $I_a$, controllando la coppia motrice e il profilo cinematico del giunto robotico.
-
-\newpage
-% AA Parte 4 - Trasmissioni Meccaniche E Riduttori Di Precisione
-
-\addtocontents{toc}{\protect\clearpage}
+L'esecuzione continua di questa sequenza genera all'interno dello statore un campo magnetico che ruota nello spazio a passi discreti di $60^\circ$ elettrici. Poiché la commutazione è vincolata alla posizione istantanea del rotore, i poli magnetici rotorici vengono costantemente attratti dal campo statorico, trascinando l'albero in rotazione sincrona.\\
+Infine, per regolare la velocità e la coppia del motore, agli interruttori attivi (tipicamente gli \textit{High-Side}) non viene applicato un comando di chiusura fisso, bensì un segnale modulato ad alta frequenza ($10 \div 20\,\si{\kilo\hertz}$) tramite tecnica \textbf{PWM} (\textit{Pulse Width Modulation}). Variando il \textit{duty-cycle} della modulazione PWM si controlla la tensione media applicata agli avvolgimenti e, di conseguenza, l'intensità della corrente di fase $I_a$, permettendo di governare con precisione la coppia motrice erogata e il profilo cinematico del giunto robotico.
 
 \section{La Trasmissione Meccanica Nei Sistemi Robotici}
 
@@ -2008,6 +2306,7 @@ Sostituendo $r_a$ e $r_b$
 \]
 In presenza di dentatura interna, i membri ruotano concordemente: $\tau = +z_a/z_b$.
 \newpage
+
 \subsubsection{Rotismo Composto A Cascata}
 Poiché rapporti di riduzione elevati ($|\tau| \ll 1$) a singolo stadio richiederebbero ingombri radiali inaccettabili ($z_b = z_a / |\tau|$), si ricorre al \textbf{rotismo composto}, ripartendo la riduzione su più stadi in serie. Per una catena ordinaria di $k$ coppie in cascata tra l'albero movente $1$ e il cedente $n$, il rapporto di trasmissione globale $\tau$ è il prodotto dei rapporti delle singole coppie:
 \[
@@ -2118,6 +2417,7 @@ Il parametro $z_b$ si semplifica algebricamente: il rapporto di velocità è ind
 \end{enumerate}
 
 \newpage
+
 \subsection{Caso Particolare: Meccanismo Pignone E Cremagliera}
 
 Il sistema \textbf{pignone e cremagliera} (\textit{rack and pinion}) rappresenta la configurazione limite di una coppia di ruote cilindriche in cui il raggio primitivo di una ruota tende all'infinito ($r_c \to \infty$), degenerando in un'asta dentata rettilinea (\textbf{cremagliera}). Il sistema opera come convertitore bidirezionale tra rotazione e traslazione:
@@ -2248,6 +2548,7 @@ Il meccanismo è articolato su tre componenti coassiali (Figura~\ref{fig:harmoni
 \end{enumerate}
 
 \newpage
+
 \subsubsection{Principio Cinematico Di Funzionamento E Derivazione Del Rapporto Di Riduzione}
 
 Il principio cinematico si fonda sulla differenza del numero di denti tra i due elementi ingrananti:

@@ -25,7 +25,7 @@ $folderChoice = Read-Host "`nInserisci Numero Corrispondente (Oppure 'A')"
 
 $selectedPath = $null
 if ($folderChoice -match '^[Aa]$') {
-    $selectedPath = $baseDir
+    $selectedPath = (Resolve-Path $baseDir).Path
     Write-Host "Hai Selezionato: Tutte Le Cartelle In $baseDir" -ForegroundColor Green
 } elseif ($folderChoice -match '^\d+$' -and [int]$folderChoice -ge 1 -and [int]$folderChoice -le $folders.Count) {
     $selectedFolder = $folders[[int]$folderChoice - 1]
@@ -52,21 +52,29 @@ if (-not $doClean -and -not $doCompile) {
     exit
 }
 
+# AA SBLOCCO PREVENTIVO DEI PROCESSI LATEX APPESI
+Write-Host "`n--- Terminazione Eventuali Processi LaTeX Appesi In Background... ---" -ForegroundColor DarkYellow
+Stop-Process -Name *pdftex*, *xelatex*, *lualatex*, *latex*, *texify*, perl -Force -ErrorAction SilentlyContinue
+
 # 3. PULIZIA DEI FILE (PDF E AUSILIARI) GENERATI DA .TEX
 if ($doClean) {
     Write-Host "`n--- Ricerca Dei File Generati Da LaTeX In Corso... ---" -ForegroundColor Magenta
 
-    # Estensioni dei file generati da LaTeX da rimuovere
+    # Estensioni dei file generati da LaTeX da rimuovere (inclusi i .synctex(busy))
     $targetExtensions = @(
         ".pdf", ".aux", ".log", ".synctex.gz", ".synctex",
+        ".synctex(busy)", ".synctex.gz(busy)",
         ".out", ".toc", ".lof", ".lot", ".bbl", ".blg",
         ".fls", ".fdb_latexmk", ".nav", ".snm", ".vrb",
         ".bcf", ".run.xml", ".xdv"
     )
 
-    # Cerca tutti i file con tali estensioni e filtra solo quelli che hanno un .tex corrispondente nella stessa cartella
+    # Cerca i file con tali estensioni (elimina sempre i file (busy) anche se il .tex è già stato cancellato)
     $filesToDelete = Get-ChildItem -Path $selectedPath -File -Recurse | Where-Object {
         $file = $_
+        if ($file.Name -like "*.synctex*(busy)") {
+            return $true
+        }
         foreach ($ext in $targetExtensions) {
             if ($file.Name.EndsWith($ext, [System.StringComparison]::OrdinalIgnoreCase)) {
                 $baseName = $file.Name.Substring(0, $file.Name.Length - $ext.Length)
@@ -80,7 +88,7 @@ if ($doClean) {
     if ($filesToDelete) {
         Write-Host "Trovati $($filesToDelete.Count) File Generati Da .tex. Eliminazione In Corso..." -ForegroundColor Magenta
         foreach ($file in $filesToDelete) {
-            Remove-Item -Path $file.FullName -Force
+            Remove-Item -LiteralPath $file.FullName -Force -ErrorAction SilentlyContinue
             Write-Host "  Rimosso: $($file.Name)" -ForegroundColor DarkGray
         }
         Write-Host "Pulizia Completata Con Successo!`n" -ForegroundColor Green
@@ -96,24 +104,36 @@ if ($doCompile) {
     if ($files.Count -eq 0) {
         Write-Host "Nessun File .tex Trovato Nel Percorso Selezionato." -ForegroundColor Gray
     } else {
-        Write-Host "`nTrovati $($files.Count) File .tex Da Compilare..." -ForegroundColor Yellow
+        Write-Host "`nTrovati $($files.Count) File .tex Da Analizzare..." -ForegroundColor Yellow
 
         foreach ($file in $files) {
+            # Salta i file .tex che sono solo frammenti (privi di \documentclass) per evitare blocchi
+            $hasDocClass = Select-String -LiteralPath $file.FullName -Pattern "\\documentclass" -Quiet
+            if (-not $hasDocClass) {
+                Write-Host "`n[SALTATO] $($file.Name) (Frammento privo di \documentclass)" -ForegroundColor DarkGray
+                continue
+            }
+
             Write-Host "`n==================================================" -ForegroundColor Gray
             Write-Host "Compilando: $($file.Name)" -ForegroundColor Cyan
             Write-Host "Cartella:   $($file.DirectoryName)" -ForegroundColor Gray
             Write-Host "==================================================" -ForegroundColor Gray
 
             # Entra nella cartella del file per accedere a pacchetti, immagini e stili locali
-            Push-Location $file.DirectoryName
+            Push-Location -LiteralPath $file.DirectoryName
 
-            # Esegue XeLaTeX in modalità silenziosa
-            xelatex -synctex=1 -interaction=nonstopmode -file-line-error "$($file.Name)" *>$null
+            # 1a Passata: "$null |" impedisce a pdflatex di restare appeso in attesa di input da tastiera
+            $null | pdflatex -synctex=1 -interaction=nonstopmode -halt-on-error -file-line-error "$($file.Name)" *>$null
 
             if ($LASTEXITCODE -eq 0) {
-                Write-Host "OK: Compilazione Di $($file.Name) Eseguita." -ForegroundColor Green
+                # 2a Passata: Risolve Indice (.toc) e Riferimenti Incrociati (\ref, \cref) e genera .synctex.gz
+                $null | pdflatex -synctex=1 -interaction=nonstopmode -halt-on-error -file-line-error "$($file.Name)" *>$null
+                Write-Host "OK: Compilazione Di $($file.Name) Eseguita (Indice e SyncTeX aggiornati)." -ForegroundColor Green
             } else {
                 Write-Host "ERRORE: Compilazione Di $($file.Name) Fallita." -ForegroundColor Red
+                # Assicura la chiusura del processo e rimuove eventuali .synctex(busy) rimasti a metà
+                Stop-Process -Name *pdftex*, *latex* -Force -ErrorAction SilentlyContinue
+                Remove-Item -Path "*.synctex*(busy)" -Force -ErrorAction SilentlyContinue
             }
 
             # Ritorna alla posizione precedente
@@ -122,4 +142,4 @@ if ($doCompile) {
     }
 }
 
-Write-Host "`nProcesso Completato!" -ForegroundColor Yellow
+Write-Host "Processo Completato!" -ForegroundColor Yellow
