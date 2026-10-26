@@ -2123,7 +2123,7 @@ Derivando rispetto al tempo, si ottiene che la pulsazione elettrica $\omega_e$ d
 \]
 
 \subsubsection{Architettura Dell'Inverter A Ponte Trifase E Del Sistema Di Pilotaggio}
-Nei motori Brushless DC (BLDC), l'assenza del collettore meccanico a spazzole richiede che il controllo dell'ampiezza, della frequenza e del verso delle correnti di fase sia affidato a un convertitore statico di potenza, denominato \textbf{Inverter Trifase A Ponte Intero}, governato da una logica di commutazione elettronica.
+Nei motori Brushless DC (BLDC), l'assenza del sistema collettore-spazzole richiede che il controllo dell'ampiezza, della frequenza e del verso delle correnti di fase sia affidato a un convertitore statico di potenza, denominato \textbf{Inverter Trifase A Ponte Intero}, governato da una logica di commutazione elettronica.
 
 \begin{figure}[H]
     \centering
@@ -2131,20 +2131,24 @@ Nei motori Brushless DC (BLDC), l'assenza del collettore meccanico a spazzole ri
     % Schema Funzionale Del Sistema Di Pilotaggio Di Un Motore BLDC: A Sinistra, L'Architettura Con Sensori Di Hall ($H_1, H_2, H_3$), Circuito Di Decodifica E Ponte Trifase A Sei Transistor Collegato Alle Fasi Statoriche ($\phi_A, \phi_B, \phi_C$). A Destra, Il Principio Di Formazione Dei Poli Magnetici Statorici In Una Configurazione Trifase A 12 Poli.
 \end{figure}
 
-Lo statore presenta tre avvolgimenti di fase, identificati dalle linee $\phi_A$ (in nero), $\phi_B$ (in rosso) e $\phi_C$ (in blu), collegati elettricamente a stella mediante un conduttore comune (rappresentato dall'anello verde esterno), in cui centro-stella non è accessibile dall'esterno. L'alimentazione degli avvolgimenti è gestita da uno stadio di potenza, alimentato da una tensione continua $V_{+}$
+Lo statore presenta 3 fasi (ovvero 6 avvolgimenti), identificati dalle linee $\phi_A$ (in nero), $\phi_B$ (in rosso) e $\phi_C$ (in blu), collegati elettricamente a stella tramite un conduttore comune (in verde), in cui il centro-stella non è accessibile dall'esterno.
 
-La struttura del ponte trifase è formata da tre rami verticali in parallelo (\textit{legs}), ciascuno dedicato a una specifica fase del motore ($\phi_A, \phi_B, \phi_C$). Ogni ramo è costituito da una coppia di interruttori elettronici disposti in serie: un transistor superiore (\textit{High-Side}), incaricato di connettere il terminale di fase al polo positivo di alimentazione $V_+$, e un transistor inferiore (\textit{Low-Side}), preposto a chiudere il percorso di corrente verso il riferimento di massa. A seconda delle specifiche applicative, tali commutatori vengono realizzati mediante MOSFET di potenza (preferiti per tensioni di bus inferiori a $100\,\si{\volt}$ e alte frequenze di lavoro) oppure tramite IGBT per livelli di tensione e potenza più elevati. In un circuito reale ciascun transistor è sempre affiancato da un \textbf{diodo di ricircolo} (\textit{freewheeling diode}) collegato in antiparallelo, indispensabile per garantire una via di continuità alle correnti induttive degli avvolgimenti durante gli istanti di apertura degli interruttori.
+La struttura del ponte trifase è formata da tre rami in parallelo (\textit{legs}), ciascuno dedicato a una specifica fase del motore ($\phi_A, \phi_B, \phi_C$). Ogni ramo è collegato a una coppia di transistor disposti in serie: il transistor superiore (\textit{High-Side}), connette il terminale dell'avvolgimento di fase al polo positivo dell'alimentazione $V_{+}$ e il transistor inferiore (\textit{Low-Side}) connette il terminale dell'avvolgimento di fase a massa. Questi due transistor ricevono un segnale da un \textit{Decoder} che decodifica la posizione del rotore, rilevata tramite sensori di Hall, e li attiva/disattiva in modo da commutare correttamente la corrente nello statore, in modo da mantenere costante il verso della coppia.
 
-Un aspetto critico nella gestione di ciascun ramo del ponte riguarda la transizione di stato dei transistor complementari: per scongiurare il rischio che l'interruttore \textit{High-Side} e quello \textit{Low-Side} della medesima fase conducano simultaneamente, evento che genererebbe un cortocircuito diretto tra il bus $V_+$ e la massa (fenomeno di \textit{shoot-through}), i segnali di comando applicati alle basi o ai gate vengono separati da un breve intervallo di guardia, noto come \textbf{tempo morto} (\textit{dead-time}).
+A seconda delle specifiche applicative, i transistor possono essere MOSFET di potenza (per tensioni inferiori a $100\,\si{\volt}$) oppure tramite IGBT per livelli di tensione e potenza più elevati.\\
+Nei circuiti reali ciascun transistor è sempre correlato a un \textbf{Diodo Di Ricircolo} che garantisce alle correnti induttive generate dagli avvolgimenti dello statore di scorrere durante gli istanti di commutazione dei transistor.
+
+Un aspetto critico per ogni ramo, riguarda la commutazione dei transistor complementari (ovvero collegati allo stesso terminale). Per evitare che entrambi i transistor conducano contemporaneamente, generando un cortocircuito diretto tra $V_+$ e la massa, i segnali che derivano dal decoder applicati alle basi (o ai gate nel caso di MOSFET) vengono separati da un breve intervallo di guardia, noto come \textbf{Tempo Morto} (\textit{dead-time})
 
 \newpage
+
 \subsubsection{Logica Di Commutazione A Sei Passi (Six-Step Control)}
-Per generare una coppia motrice continua e uniforme, l'eccitazione delle fasi statoriche deve essere costantemente sincronizzata con la posizione angolare dei magneti permanenti del rotore (raffigurati con le polarità Nord in viola/blu e Sud in giallo/rosso). A tale scopo, nella struttura statorica sono integrati tre \textbf{sensori a effetto Hall} ($H_1, H_2, H_3$), posizionati in punti strategici per rilevare il transito del flusso magnetico rotorico.
+Per generare una coppia motrice continua e uniforme, l'eccitazione delle fasi deve essere sincronizzata con la posizione angolare dei magneti permanenti del rotore (raffigurati con le polarità Nord in viola e Sud in giallo). A tale scopo, nello statore sono integrati tre \textbf{Sensori A Effetto Hall} ($H_1, H_2, H_3$), posizionati in punti strategici per rilevare il del flusso magnetico generato dal rotore.
 
-Durante la rotazione dell'albero, i sensori forniscono tre segnali digitali che, combinati, formano una parola binaria a 3 bit indicativa del settore angolare in cui si trova il rotore. Questi segnali vengono acquisiti dal blocco logico di decodifica (\textbf{\textit{Decoder Circuit}} in figura), il quale traduce in tempo reale lo stato dei sensori nella corretta sequenza di pilotaggio dei sei transistor del ponte. Nella tecnica di controllo trapezoidale a sei passi (\textit{Six-Step Control}), l'intero periodo elettrico di $360^\circ$ viene infatti suddiviso in sei settori discreti di $60^\circ$ elettrici ciascuno. All'interno di ogni settore, il circuito di decodifica attiva esclusivamente due fasi alla volta: un transistor \textit{High-Side} viene posto in conduzione per iniettare corrente dal nodo $V_+$ dentro una prima fase, mentre un transistor \textit{Low-Side} appartenente a un altro ramo viene chiuso per raccogliere la corrente in uscita da una seconda fase e convogliarla a massa, attraversando nel mezzo il centro-stella (linea verde). La terza fase non viene eccitata e rimane elettricamente flottante (\textit{floating}).
+Durante la rotazione dell'albero, i sensori forniscono tre segnali digitali che, combinati formano una parola binaria a 3 bit che indica il settore angolare in cui si trova il rotore. Questi segnali vengono acquisiti dal \textbf{\textit{Decoder}}, il quale traduce in tempo reale lo stato dei sensori nella corretta sequenza di pilotaggio dei sei transistor del ponte. Nella tecnica di controllo (trapezoidale) a sei passi (\textit{Six-Step Control}), l'intero periodo elettrico di $360^\circ$ viene infatti suddiviso in sei settori di $60^\circ$ ciascuno. \\
+All'interno di ogni settore, il circuito di decodifica attiva esclusivamente due fasi alla volta: un transistor \textit{High-Side} viene posto in conduzione per far fluire la corrente dal polo positivo della tensione di alimentazione a una prima fase, mentre un transistor \textit{Low-Side} appartenente a un altro ramo viene chiuso per far scorrere la corrente in uscita da una seconda fase a massa (attraversando il centro-stella). La terza fase non viene eccitata e rimane elettricamente flottante (\textit{floating}).
 
-A titolo esemplificativo, nella configurazione istantanea catturata in Figura \ref{fig:bldc_inverter}, i sensori $H_1$ e $H_3$ risultano attivi (evidenziati in rosso) mentre $H_2$ è inattivo. il circuito di decodifica comanda di conseguenza i transistor associati, alimentando una coppia di fasi (come evidenziato dalla linea di comando rossa attiva in uscita dal decoder) e lasciando interdetta la restante. Al progredire della rotazione, la commutazione ciclica attraversa ordinatamente i sei stati secondo la seguente logica:
-
+Supponendo che i sensori $H_1$ e $H_3$ risultano attivi mentre $H_2$ è inattivo, il circuito di decodifica comanda di conseguenza i transistor associati, alimentando una coppia di fasi e lasciando interdetta la restante. Al progredire della rotazione, la commutazione ciclica attraversa ordinatamente i sei stati secondo la seguente logica:
 \begin{align*}
     \text{Settore 1: } & \text{\textit{High-Side} Fase } \phi_A \text{ ON } (V_+), & \text{\textit{Low-Side} Fase } \phi_B \text{ ON (Massa)}, \quad & \text{Fase } \phi_C \text{ scollegata} \\
     \text{Settore 2: } & \text{\textit{High-Side} Fase } \phi_A \text{ ON } (V_+), & \text{\textit{Low-Side} Fase } \phi_C \text{ ON (Massa)}, \quad & \text{Fase } \phi_B \text{ scollegata} \\
@@ -2154,33 +2158,36 @@ A titolo esemplificativo, nella configurazione istantanea catturata in Figura \r
     \text{Settore 6: } & \text{\textit{High-Side} Fase } \phi_C \text{ ON } (V_+), & \text{\textit{Low-Side} Fase } \phi_B \text{ ON (Massa)}, \quad & \text{Fase } \phi_A \text{ scollegata}
 \end{align*}
 
-L'effetto fisico di questa commutazione sequenziale è chiaramente visibile anche nello schema a destra della Figura \ref{fig:bldc_inverter}, dove il principio è esteso a uno statore trifase a 12 poli ($A, \bar{A}, B, \bar{B}, C, \bar{C}$): la circolazione di corrente nelle bobine attive trasforma le espansioni polari statoriche in elettromagneti temporanei con polarità ben definite, generando un campo magnetico statorico che avanza nello spazio a scatti di $60^\circ$ elettrici. Poiché tale avanzamento è vincolato alla retroazione dei sensori di Hall, il campo di statore si mantiene costantemente in quadratura (o in anticipo di fase) rispetto ai magneti del rotore, esercitando una forza di attrazione e repulsione magnetica che trascina l'albero in rotazione sincrona.
+Questa logica di commutazione può essere estesa anche per statori a 12 poli ($A, \bar{A}, B, \bar{B}, C, \bar{C}$): la circolazione di corrente nelle bobine trasforma le espansioni polari statoriche in elettromagneti temporanei con polarità ben definite, generando un campo magnetico statorico che avanza a scatti di $60^\circ$ elettrici. Poiché tale avanzamento è vincolato dai sensori di Hall, il campo dello statore si mantiene costantemente in quadratura rispetto ai magneti del rotore, esercitando una forza magnetica che trascina l'albero in rotazione sincrona.
 
-Infine, poiché il circuito di decodifica illustrato definisce unicamente la fasatura angolare della commutazione, il controllo fine della velocità di rotazione e della coppia erogata viene ottenuto sovrapponendo ai comandi di accensione dei transistor attivi una modulazione di larghezza d'impulso (\textbf{PWM}, \textit{Pulse Width Modulation}) ad alta frequenza ($10 \div 20\,\si{\kilo\hertz}$). Parzializzando mediante il \textit{duty-cycle} la tensione media effettivamente applicata tra le fasi attive e la massa, il sistema regola con precisione l'intensità della corrente circolante negli avvolgimenti e, di conseguenza, la coppia elettromagnetica sviluppata all'asse del giunto robotico.
+Infine, poiché il circuito di decodifica definisce unicamente l'angolo di commutazione, il controllo della velocità di rotazione e della coppia erogata viene ottenuto sovrapponendo ai comandi di accensione dei transistor attivi una modulazione di larghezza d'impulso (\textbf{PWM}, \textit{Pulse Width Modulation}) ad alta frequenza ($10 \div 20\,\si{\kilo\hertz}$). Parzializzando mediante il \textit{duty-cycle} la tensione media effettivamente applicata tra le fasi attive e la massa, il sistema regola con precisione l'intensità della corrente circolante negli avvolgimenti e, di conseguenza, la coppia elettromagnetica sviluppata all'asse del giunto robotico.
+
+\newpage
 
 \section{La Trasmissione Meccanica Nei Sistemi Robotici}
 
-Nell'architettura di un robot industriale, la \textbf{trasmissione meccanica} collega l'albero d'uscita dell'attuatore (tipicamente un servomotore rotativo) al rispettivo giunto (\textit{joint}) del braccio rigido (\textit{link}). L'azionamento diretto (\textit{direct-drive}) è limitato ad applicazioni specifiche a causa della ridotta densità di coppia dei motori elettrici e del loro riscaldamento per effetto Joule a basse velocità.
+\subsection{Ruolo E Funzioni Della Trasmissione Meccanica}
+Nell'architettura di un robot industriale, i servomotori elettrici vengono raramente collegati in modo diretto (\textit{direct-drive}) alle articolazioni del manipolatore. I motori elettrici presentano infatti una ridotta densità di coppia e, per generare coppie elevate a basse velocità, richiederebbero correnti molto intense, comportando un eccessivo surriscaldamento degli avvolgimenti per effetto Joule e un aumento proibitivo di peso e ingombri. Per questo motivo, tra l'albero d'uscita dell'attuatore e il rispettivo giunto (\textit{joint}) del braccio meccanico (\textit{link}) viene generalmente interposta una \textbf{trasmissione meccanica}.
 
-L'interposizione della trasmissione risponde a tre esigenze:
+L'impiego di un sistema di trasmissione risponde a tre esigenze fondamentali:
 
 \begin{enumerate}
-    \item \textbf{Adattamento Meccanico E Moltiplicazione Della Coppia (\textit{Impedance Matching})}: I servomotori elettrici (sia \textit{brushless} sia in corrente continua) erogano la massima densità di potenza ad alte velocità ($2\,000 \div 6\,000\,\si{rpm}$, ovvero $\omega_m \approx 200 \div 600\,\si{\radian\per\second}$) con coppie nominali continuative contenute (da frazioni a pochi $\si{\newton\meter}$). I giunti di un manipolatore seriale richiedono invece basse velocità ($30 \div 60\,\si{rpm}$, ovvero $\omega_L \approx 3 \div 6\,\si{\radian\per\second}$) ed elevate coppie statiche e dinamiche (da decine a migliaia di $\si{\newton\meter}$) per contrastare carichi gravitazionali $\bm{g}(\bm{q})$, forze centrifughe e di Coriolis $\bm{C}(\bm{q},\dot{\bm{q}})\dot{\bm{q}}$, e accelerare le inerzie $\bm{M}(\bm{q})\ddot{\bm{q}}$. Il riduttore meccanico riduce la velocità angolare amplificando contestualmente la coppia erogata in base al \textbf{rapporto di riduzione}. Inoltre, l'inerzia del carico $J_L$ riflessa all'asse motore scala quadraticamente ($J_L' = \tau^2 J_L$), favorendo stabilità e controllabilità.
+    \item \textbf{Adattamento Meccanico E Moltiplicazione Della Coppia (\textit{Impedance Matching})}: I servomotori elettrici (sia con spazzole sia \textit{brushless}) sono progettati per erogare la massima densità di potenza a velocità di rotazione elevate ($2\,000 \div 6\,000\,\si{rpm}$, ovvero $\omega_m \approx 200 \div 600\,\si{\radian\per\second}$), sviluppando però coppie nominali contenute (dell'ordine di frazioni o di pochi $\si{\newton\meter}$). Al contrario, i giunti di un manipolatore seriale operano a basse velocità ($30 \div 60\,\si{rpm}$, ovvero $\omega_L \approx 3 \div 6\,\si{\radian\per\second}$), ma richiedono coppie statiche e dinamiche molto elevate (da decine a migliaia di $\si{\newton\meter}$) per equilibrare i carichi gravitazionali $\bm{g}(\bm{q})$, compensare le forze centrifughe e di Coriolis $\bm{C}(\bm{q},\dot{\bm{q}})\dot{\bm{q}}$ e vincere i termini inerziali $\bm{M}(\bm{q})\ddot{\bm{q}}$. L'interposizione di un riduttore meccanico consente quindi di ridurre la velocità angolare del motore e, contemporaneamente, di amplificare la coppia applicata al giunto in funzione del \textbf{rapporto di riduzione}. Inoltre, l'inerzia del carico $J_L$ vista dall'albero motore viene ridotta secondo un fattore quadratico ($J_L' = \tau^2 J_L$), migliorando sensibilmente la stabilità e la prontezza di risposta del sistema di controllo.
 
-    \item \textbf{Conversione Della Morfologia Del Moto}: Converte il moto puramente rotatorio dell'attuatore nello spostamento traslatorio richiesto da giunti prismatici (carrelli lineari o assi verticali di robot cartesiani).
+    \item \textbf{Conversione Della Morfologia Del Moto}: Poiché i motori elettrici impiegati in robotica generano prevalentemente un movimento rotatorio, la trasmissione ha anche il compito di trasformare la rotazione dell'albero in uno spostamento lineare ogni volta che la configurazione cinematica prevede dei giunti prismatici (come avviene nei carrelli lineari dei robot cartesiani o lungo l'asse verticale dei manipolatori SCARA).
 
-    \item \textbf{Ottimizzazione Della Distribuzione Delle Masse E Delle Prestazioni Dinamiche}: In catene seriali a sbalzo, montare ciascun motore sul rispettivo giunto appesantisce i membri a monte, accrescendone momento flettente e coppie necessarie. Trasmissioni remote (cinghie dentate, alberi coassiali o catene) consentono di collocare i motori in prossimità del basamento, riducendo le inerzie mobili a vantaggio delle accelerazioni, del tempo di ciclo e dell'accuratezza di inseguimento.
+    \item \textbf{Ottimizzazione Della Distribuzione Delle Masse E Delle Prestazioni Dinamiche}: Nelle catene cinematiche seriali, installare ciascun motore direttamente sul rispettivo giunto appesantirebbe sensibilmente i bracci in movimento, aumentando i momenti flettenti sulla struttura e richiedendo coppie ancora più elevate agli attuatori posti a monte. L'utilizzo di trasmissioni a distanza (come cinghie dentate, catene o alberi di rinvio) permette invece di collocare i motori in prossimità della base fissa, riducendo le inerzie mobili a vantaggio delle accelerazioni, dei tempi di ciclo e dell'accuratezza di inseguimento della traiettoria.
 \end{enumerate}
-
+\newpage
 \subsection{Panoramica Delle Principali Tecnologie Di Trasmissione}
+In base ai requisiti di rigidezza elastica, rendimento energetico, ingombro e precisione di posizionamento richiesti dall'applicazione, nei sistemi robotici si impiegano differenti tipologie di trasmissioni meccaniche:
 
-Le trasmissioni impiegate nella robotica industriale differiscono per accoppiamento, rendimento, rigidezza elastica e accuratezza di posizionamento:
-
+\vspace{0.2cm}
 \noindent
 \begin{minipage}[t]{0.48\textwidth}
-    \textbf{Ingranaggi Dentati Cilindrici e Conici}
+    \textbf{Ingranaggi Dentati Cilindrici E Conici}
     \par\vspace{0.2cm}
-    Trasmettono moto tra assi adiacenti, variando rapporto di velocità, coppia, senso di rotazione e orientamento spaziale (da paralleli a concorrenti). Presentano rigidezza torsionale finita sotto carichi ciclici elevati e \textbf{gioco angolare} (\textit{backlash}), sorgente di zona morta (\textit{deadband}) critica nelle inversioni di moto retroazionate.
+    Permettono di trasmettere il moto rotatorio tra alberi adiacenti, modificando il rapporto di velocità, la coppia, il verso di rotazione e la disposizione spaziale degli assi (da paralleli a incidenti). Pur garantendo un'elevata capacità di carico, presentano una rigidezza torsionale finita sotto sollecitazioni elevate e sono affetti da \textbf{gioco angolare} (\textit{backlash}), che nei sistemi retroazionati introduce una zona morta (\textit{deadband}) critica durante le inversioni di moto.
     \begin{figure}[H]
         \centering
         \includegraphics[width=0.6\linewidth]{IngranaggiDentati.jpg}
@@ -2191,7 +2198,7 @@ Le trasmissioni impiegate nella robotica industriale differiscono per accoppiame
 \begin{minipage}[t]{0.48\textwidth}
     \textbf{Viti A Ricircolo Di Sfere E Viti Senza Fine}
     \par\vspace{0.2cm}
-    Convertono il moto rotativo in traslatorio nei giunti prismatici. Le viti a ricircolo di sfere sostituiscono il contatto radente delle madreviti convenzionali con l'attrito volvente, assicurando rendimenti superiori al $90\%$, elevata rigidezza assiale e annullamento del gioco mediante precarico. Le viti a strisciamento presentano invece rendimenti inferiori e usura progressiva.
+    Vengono impiegate nei giunti prismatici per convertire il moto rotatorio dell'attuatore in uno spostamento lineare. A differenza delle viti a strisciamento (soggette a rendimenti ridotti e usura progressiva), le viti a ricircolo di sfere sostituiscono il contatto radente con l'attrito volvente di sfere d'acciaio, assicurando rendimenti superiori al $90\%$, elevata rigidezza assiale e l'annullamento del gioco meccanico tramite precarico.
     \begin{figure}[H]
         \centering
         \includegraphics[width=0.6\linewidth]{RicircoloViti.jpg}
@@ -2200,13 +2207,14 @@ Le trasmissioni impiegate nella robotica industriale differiscono per accoppiame
     \end{figure}
 \end{minipage}
 
-\newpage
-
 \noindent
+
+\hspace{2cm}
+
 \begin{minipage}[t]{0.48\textwidth}
     \textbf{Cinghie Dentate E Catene Di Trasmissione}
     \par\vspace{0.2cm}
-    Trasmettono potenza tra assi paralleli distanziati, svincolando la posizione del motore da quella del giunto. Le cinghie sincrone dentate in elastomero con armature in acciaio garantiscono silenziosità, assenza di lubrificazione e isolamento elettrico, ma introducono cedevolezza elastica longitudinale che abbassa le risonanze strutturali. Le catene metalliche sostengono carichi superiori, ma la massa rilevante induce forze d'inerzia e vibrazioni ad alti regimi.
+    Consentono di trasferire potenza tra alberi paralleli distanziati, svincolando la posizione del motore da quella del giunto. Le cinghie sincrone dentate in elastomero con armature in acciaio garantiscono silenziosità, assenza di lubrificazione e isolamento elettrico, ma introducono una cedevolezza elastica longitudinale che abbassa le frequenze di risonanza strutturali. Le catene metalliche sostengono invece carichi superiori, ma la loro massa rilevante genera forze d'inerzia e vibrazioni ad alte velocità.
     \begin{figure}[H]
         \centering
         \includegraphics[width=0.6\linewidth]{CinghieCatene.jpg}
@@ -2217,7 +2225,7 @@ Le trasmissioni impiegate nella robotica industriale differiscono per accoppiame
 \begin{minipage}[t]{0.48\textwidth}
     \textbf{Riduttori Armonici (\textit{Harmonic Drives})}
     \par\vspace{0.2cm}
-    Impiegati nei giunti di robot antropomorfi, cobot e manipolatori di precisione. Sfruttando la deformazione elastica ciclica di una boccola metallica flessibile, ottengono elevati rapporti di riduzione (da $30:1$ a oltre $160:1$) in un singolo stadio coassiale compatto, privo di gioco angolare (\textit{zero-backlash}). Richiedono tuttavia compensazione della cedevolezza torsionale distribuita a livello di controllo.
+    Sono ampiamente impiegati nei giunti di robot antropomorfi, \textit{cobot} e manipolatori di precisione. Sfruttando la deformazione elastica ciclica di una boccola metallica flessibile, permettono di ottenere elevati rapporti di riduzione (da $30:1$ a oltre $160:1$) in un singolo stadio coassiale compatto e privo di gioco angolare (\textit{zero-backlash}). Di contro, introducono una cedevolezza torsionale distribuita che deve essere compensata dal sistema di controllo.
     \begin{figure}[H]
         \centering
         \includegraphics[width=0.6\linewidth]{HarmonicDrives.jpg}

@@ -1,4 +1,5 @@
 end-effector
+End-Effector
 RViz
 Jacobiano
 workspace
@@ -16,3 +17,6 @@ torsore
 estensimetri
 pseudo-inversa
 statorica
+centro-stella
+decoder
+Decoder
