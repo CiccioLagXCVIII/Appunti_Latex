@@ -2058,39 +2058,38 @@ Nella tabella vengono riassunti i parametri analitici e le proprietà operative 
 \section{Il Servomotore Elettrico DC Senza Spazzole (BLDC)}
 
 \subsection{Architettura E Principio Di Funzionamento}
-Il servomotore elettrico a corrente continua senza spazzole (\textbf{BLDC}, \textit{BrushLess Direct Current}) è un dispositivo ampiamente impiegato nelle catene cinematiche dei robot industriali, dove sostituisce il motore DC tradizionale grazie all'\textbf{eliminazione dei contatti meccanici striscianti}. In questa tipologia di attuatori, l'inversione periodica delle correnti di fase non è affidata a un collettore meccanico, ma viene realizzata da un ponte di commutazione elettronico a semiconduttori, coordinato in tempo reale da un microprocessore.\\
+Il servomotore elettrico a corrente continua senza spazzole (\textbf{BLDC}, \textit{BrushLess Direct Current}) è un dispositivo impiegato nelle catene cinematiche dei robot industriali, dove sostituisce il motore Brushed DC grazie all'\textbf{eliminazione dei contatti meccanici striscianti}. In questa tipologia di motori, l'inversione periodica della corrente non è affidata al collettore meccanico, ma viene realizzata da un circuito elettronico a semiconduttori, coordinato da un microprocessore.\\
 Dal punto di vista costruttivo, rispetto al motore DC con spazzole, la topologia della macchina risulta \textbf{invertita}, pur mantenendo i due componenti principali coassiali: \textbf{Statore} e \textbf{Rotore}.
 
-\subsubsection{Statore E Smaltimento Termico}
-Lo statore costituisce la parte esterna fissa del motore (armatura esterna) e ha la funzione di generare un \textbf{campo magnetico rotante nello spazio}. È formato da un pacco lamellare in acciaio ferromagnetico a basse perdite nel ferro, sulla cui superficie interna sono ricavate le scanalature longitudinali, chiamate \textbf{cave}. All'interno delle cave vengono alloggiati gli \textbf{avvolgimenti di fase} in rame (tipicamente tre, indicati con le lettere U, V, W).\\
-Questa disposizione costruttiva ottimizza notevolmente lo smaltimento termico della macchina:
+\subsubsection{Statore}
+Lo statore costituisce la parte esterna del motore e ha la funzione di generare il \textbf{Campo Magnetico}. È formato da un pacco lamellare, sulla cui superficie interna sono ricavate delle scanalature longitudinali, chiamate \textbf{cave}. All'interno delle cave vengono alloggiati gli \textbf{Avvolgimenti Di Fase} in rame (tipicamente tre, indicati con le lettere U, V, W).\\
+Questa disposizione costruttiva ottimizza notevolmente lo smaltimento termico della motore, poiché
 \begin{itemize}
-    \item \textbf{Nei Motori Con Spazzole:} Le correnti di carico percorrono gli avvolgimenti situati sul rotore interno; di conseguenza, il calore generato per effetto Joule ($R_a I_a^2$) può essere dissipato verso l'esterno unicamente attraversando l'aria del traferro e l'albero meccanico, limitando la densità di corrente ammissibile.
-    \item \textbf{Nei Motori BLDC:} La dissipazione termica avviene direttamente sullo statore esterno. Ciò facilita l'estrazione del calore per conduzione diretta verso la carcassa del manipolatore robotico, la quale può essere agevolmente supportata da alette di raffreddamento o da circuiti di scambio termico a liquido.
+    \item \textbf{Nei Motori Brushed:} La corrente scorre negli avvolgimenti del rotore e di conseguenza il calore generato (per effetto Joule $R_a I_a^2$) viene dissipato verso l'esterno attraverso il traferro e l'albero
+    \item \textbf{Nei Motori Brushless:} Gli avvolgimenti si trovano sullo statore e quindi il calore viene dissipato attraverso lo statore stesso e per conduzione verso la struttura del manipolatore (dove possono essere presenti dei circuiti di raffreddamento)
 \end{itemize}
 
 \subsubsection{Rotore A Magneti Permanenti E Inerzia Meccanica}
-È la parte interna rotante del motore, vincolata all'albero di trasmissione mediante cuscinetti e separata dallo statore dal \textbf{traferro} (\textit{air gap}). A differenza del motore tradizionale, il rotore è completamente passivo dal punto di vista elettrico ed è costituito da \textbf{Magneti Permanenti} sinterizzati in materiali magnetici avanzati, i quali generano densità di flusso magnetico al traferro comprese tra $0.8\,\si{\tesla}$ e $1.2\,\si{\tesla}$.
-
+È la parte interna rotante del motore, vincolata all'albero di trasmissione mediante cuscinetti e separata dallo statore dal \textbf{traferro} (\textit{air gap}). A differenza del motore tradizionale, il rotore è completamente passivo dal punto di vista elettrico ed è costituito da \textbf{Magneti Permanenti} costruiti con materiali magnetici avanzati, i quali generano densità di flusso magnetico al traferro comprese tra $0.8\,\si{\tesla}$ e $1.2\,\si{\tesla}$.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{BLDCBrushedComparison.jpg}
-    \caption{Confronto Morfologico Tra Motore DC Con Spazzole (A Sinistra) E Motore BLDC (A Destra)}
+    \includegraphics[width=0.6\textwidth]{BLDCBrushedComparison.jpg}
+    \caption{Confronto Tra Motore DC Con Spazzole (A Sinistra) E Motore BLDC (A Destra)}
 \end{figure}
-Come mostrato in figura, l'assenza degli avvolgimenti in rame e del collettore a lamelle sul rotore consente di ridurne sensibilmente le dimensioni radiali e la massa complessiva.\\
-Ciò comporta una drastica riduzione del \textbf{Momento D'Inerzia $J_m$}, permettendo al servomotore di raggiungere accelerazioni angolari molto elevate ($> 10^4\,\si{\radian\per\second\squared}$), requisito fondamentale nei cicli operativi di \textit{pick-and-place} ad alta cadenza.
+L'assenza degli avvolgimenti in rame e del collettore a lamelle sul rotore consente di ridurne sensibilmente le dimensioni e la massa complessiva. Questo comporta una riduzione del \textbf{Momento D'Inerzia $J_m$}, permettendo al servomotore di raggiungere accelerazioni angolari molto elevate ($> 10^4\,\si{\radian\per\second\squared}$), requisito fondamentale nei cicli operativi di \textit{pick-and-place} ad alta cadenza.
+\newpage
 
 \subsubsection{Commutazione Elettronica E Trasduttori Di Posizione}
-Il compito principale del sistema di commutazione elettronica è quello di sostituire l'azione del sistema collettore-spazzole. Poiché l'assenza del collettore meccanico elimina l'accoppiamento cinematico diretto tra la posizione geometrica dell'albero e l'alimentazione delle bobine, il controllore elettronico deve rilevare istante per istante la \textbf{posizione angolare del rotore} $\theta_m$.\\
-Grazie a questa misura, l'unità di controllo può alimentare la corretta coppia di fasi statoriche al momento opportuno, mantenendo il vettore del campo magnetico di statore sempre in quadratura (ovvero sfasato di $90^\circ$ elettrici) rispetto al flusso magnetico del rotore, in modo da massimizzare la coppia motrice erogata e mantenerne costante il verso.
+Nei motori brushless, l'assenza del sistema collettore-spazzole elimina la corrispondenza tra la posizione dell'albero e l'alimentazione delle bobine corrette per far commutare la corrente. Per farlo, si utilizza un controllore elettronico che rileva istante per istante la \textbf{posizione angolare del rotore} $\theta_m$.\\
+Grazie a questa misura, l'unità di controllo può alimentare correttamente le bobine, per fare in modo che la corrente commuti periodicamente al variare del flusso magnetico in modo da mantenere costante il verso della coppia
 
-A seconda della precisione richiesta dal controllo, i trasduttori di posizione impiegati si dividono in tre categorie:
+A seconda della precisione richiesta, i trasduttori di posizione impiegati si dividono in tre categorie:
 \begin{itemize}
-    \item \textbf{Sensori A Effetto Hall Digitali:} Sono costituiti da tre elementi a semiconduttore solidali allo statore, disposti lungo la circonferenza e reciprocamente sfasati di $120^\circ$ (oppure $60^\circ$) elettrici. Al transito dei poli magnetici del rotore, ciascun sensore commuta la propria uscita tra i livelli logici $0$ e $1$. La combinazione binaria delle tre uscite permette di individuare $6$ settori angolari di $60^\circ$ elettrici ciascuno, fornendo la risoluzione discreta necessaria per realizzare la \textbf{commutazione a sei stati} (\textit{six-step trapezoidal commutation}).
+    \item \textbf{Sensori A Effetto Hall Digitali:} Sono costituiti da tre elementi a semiconduttore solidali allo statore, disposti lungo la circonferenza e sfasati di  $60^\circ$ o $120^\circ$. Al passaggio dei poli magnetici del rotore, ciascun sensore commuta la propria uscita tra i livelli logici $0$ e $1$. La combinazione binaria delle tre uscite permette di individuare $6$ settori angolari di $60^\circ$ elettrici ciascuno, fornendo la risoluzione discreta necessaria per realizzare la \textbf{commutazione a sei stati}
 
-    \item \textbf{Encoder Ottici O Magnetici:} Sono trasduttori digitali ad alta risoluzione calettati direttamente sull'albero del motore. Gli \textit{encoder incrementali} (dotati di due canali in quadratura A, B e di una tacca di riferimento di zero Z) offrono risoluzioni che variano da $1000$ a oltre $100\,000$ impulsi per giro. Negli assi dei robot industriali si impiegano prevalentemente \textbf{encoder assoluti monogiro e multigiro} (interfacciati tramite bus seriali sincroni quali EnDat, BiSS o SSI), i quali mantengono l'informazione sulla posizione angolare anche a motore spento, eliminando la necessità di eseguire la procedura di azzeramento (\textit{homing}) all'avvio.
+    \item \textbf{Encoder Ottici O Magnetici:} Sono trasduttori digitali ad alta risoluzione fissati direttamente sull'albero del motore. Gli \textit{encoder incrementali} offrono risoluzioni che variano da $1000$ a oltre $100\,000$ impulsi per giro. Negli assi dei robot industriali si impiegano prevalentemente \textbf{encoder assoluti}, i quali mantengono l'informazione sulla posizione angolare anche a motore spento, eliminando la necessità di eseguire la procedura di azzeramento (\textit{homing}) all'avvio.
 
-    \item \textbf{Resolver:} Sono trasformatori rotativi di tipo analogico composti da uno statore, provvisto di due avvolgimenti secondari disposti ortogonalmente, e da un rotore eccitato in alta frequenza. Durante la rotazione, il dispositivo restituisce due segnali sinusoidali modulati in ampiezza, proporzionali rispettivamente al seno e al coseno dell'angolo meccanico $\theta_m$. Essendo privi di componenti elettronici delicati a bordo, i resolver risultano immuni a forti disturbi elettromagnetici, temperature elevate ($> 150\,\si{\celsius}$), polveri e vibrazioni meccaniche, trovando largo impiego in fonderie e in ambito aerospaziale.
+    \item \textbf{Resolver:} Sono trasformatori di tipo analogico composti da uno statore, provvisto di due avvolgimenti disposti ortogonalmente, e da un rotore. Durante la rotazione, il dispositivo restituisce due segnali sinusoidali modulati in ampiezza, proporzionali rispettivamente al seno e al coseno dell'angolo meccanico $\theta_m$. Essendo privi di componenti elettronici delicati a bordo, i resolver risultano immuni a forti disturbi elettromagnetici, temperature elevate ($> 150\,\si{\celsius}$), polveri e vibrazioni meccaniche, trovando largo impiego in fonderie e in ambito aerospaziale.
 \end{itemize}
 
 \subsubsection{Vantaggi E Svantaggi Operativi}
@@ -2123,42 +2122,41 @@ Derivando rispetto al tempo, si ottiene che la pulsazione elettrica $\omega_e$ d
     \omega_e = p \cdot \omega_m
 \]
 
-\subsubsection{Architettura Dell'Inverter A Ponte Trifase}
-Il controllo dell'ampiezza, della frequenza e del verso delle correnti che attraversano gli avvolgimenti di fase è affidato a un convertitore statico di potenza, denominato \textbf{inverter trifase a ponte intero}.
+\subsubsection{Architettura Dell'Inverter A Ponte Trifase E Del Sistema Di Pilotaggio}
+Nei motori Brushless DC (BLDC), l'assenza del collettore meccanico a spazzole richiede che il controllo dell'ampiezza, della frequenza e del verso delle correnti di fase sia affidato a un convertitore statico di potenza, denominato \textbf{Inverter Trifase A Ponte Intero}, governato da una logica di commutazione elettronica.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{BLDCHBridgeDriver.jpg}
-    \caption{Schema Elettrico Di Un Inverter A Ponte Trifase A 6 Interruttori (MOSFET O IGBT) Per Il Pilotaggio Di Un Servomotore BLDC Con Avvolgimenti Collegati A Stella E Centro-Stella Non Accessibile.}
-    \label{fig:bldc_inverter}
+    \includegraphics[width=0.7\textwidth]{BLDCHBridgeDriver.jpg}
+    % Schema Funzionale Del Sistema Di Pilotaggio Di Un Motore BLDC: A Sinistra, L'Architettura Con Sensori Di Hall ($H_1, H_2, H_3$), Circuito Di Decodifica E Ponte Trifase A Sei Transistor Collegato Alle Fasi Statoriche ($\phi_A, \phi_B, \phi_C$). A Destra, Il Principio Di Formazione Dei Poli Magnetici Statorici In Una Configurazione Trifase A 12 Poli.
 \end{figure}
 
-Come illustrato in figura, il circuito viene alimentato da un bus in tensione continua $V_{DC}$, ottenuto mediante il raddrizzamento e il successivo livellamento capacitivo della tensione alternata di rete. La struttura del ponte si compone di tre rami in parallelo (\textit{legs}), ciascuno associato a una delle tre fasi statoriche (U, V, W):
-\begin{itemize}
-    \item \textbf{Ramo Della Fase U:} Costituito dall'interruttore superiore $Q_1$ (\textit{High-Side}), collegato al polo positivo $+V_{DC}$, e dall'interruttore inferiore $Q_2$ (\textit{Low-Side}), collegato al riferimento di massa.
-    \item \textbf{Ramo Della Fase V:} Costituito dall'interruttore superiore $Q_3$ (\textit{High-Side}) e dall'interruttore inferiore $Q_4$ (\textit{Low-Side}).
-    \item \textbf{Ramo Della Fase W:} Costituito dall'interruttore superiore $Q_5$ (\textit{High-Side}) e dall'interruttore inferiore $Q_6$ (\textit{Low-Side}).
-\end{itemize}
-Gli interruttori elettronici vengono realizzati mediante transistor MOSFET di potenza per tensioni di bus inferiori a $100\,\si{\volt}$, oppure tramite IGBT per livelli di tensione e potenza superiori. Ciascun transistor è affiancato da un diodo collegato in antiparallelo, detto \textbf{diodo di ricircolo} (\textit{freewheeling diode}), che offre una via di continuità alle correnti induttive di fase durante le fasi di interdizione degli interruttori.\\
-Inoltre, per evitare che entrambi i transistor appartenenti allo stesso ramo conducano simultaneamente generando un cortocircuito netto sul bus di alimentazione (fenomeno di \textit{shoot-through}), i segnali di comando per l'apertura e la chiusura degli interruttori complementari vengono separati da un breve intervallo di sicurezza, denominato \textbf{tempo morto} (\textit{dead-time}).
+Lo statore presenta tre avvolgimenti di fase, identificati dalle linee $\phi_A$ (in nero), $\phi_B$ (in rosso) e $\phi_C$ (in blu), collegati elettricamente a stella mediante un conduttore comune (rappresentato dall'anello verde esterno), in cui centro-stella non è accessibile dall'esterno. L'alimentazione degli avvolgimenti è gestita da uno stadio di potenza, alimentato da una tensione continua $V_{+}$
+
+La struttura del ponte trifase è formata da tre rami verticali in parallelo (\textit{legs}), ciascuno dedicato a una specifica fase del motore ($\phi_A, \phi_B, \phi_C$). Ogni ramo è costituito da una coppia di interruttori elettronici disposti in serie: un transistor superiore (\textit{High-Side}), incaricato di connettere il terminale di fase al polo positivo di alimentazione $V_+$, e un transistor inferiore (\textit{Low-Side}), preposto a chiudere il percorso di corrente verso il riferimento di massa. A seconda delle specifiche applicative, tali commutatori vengono realizzati mediante MOSFET di potenza (preferiti per tensioni di bus inferiori a $100\,\si{\volt}$ e alte frequenze di lavoro) oppure tramite IGBT per livelli di tensione e potenza più elevati. In un circuito reale ciascun transistor è sempre affiancato da un \textbf{diodo di ricircolo} (\textit{freewheeling diode}) collegato in antiparallelo, indispensabile per garantire una via di continuità alle correnti induttive degli avvolgimenti durante gli istanti di apertura degli interruttori.
+
+Un aspetto critico nella gestione di ciascun ramo del ponte riguarda la transizione di stato dei transistor complementari: per scongiurare il rischio che l'interruttore \textit{High-Side} e quello \textit{Low-Side} della medesima fase conducano simultaneamente, evento che genererebbe un cortocircuito diretto tra il bus $V_+$ e la massa (fenomeno di \textit{shoot-through}), i segnali di comando applicati alle basi o ai gate vengono separati da un breve intervallo di guardia, noto come \textbf{tempo morto} (\textit{dead-time}).
+
 \newpage
-
 \subsubsection{Logica Di Commutazione A Sei Passi (Six-Step Control)}
-Nella tecnica di pilotaggio trapezoidale a sei passi (\textit{Six-Step Control}), il periodo elettrico completo di $360^\circ$ viene suddiviso in sei settori angolari discreti, ciascuno di ampiezza pari a $60^\circ$ elettrici.\\
-All'interno di ogni singolo settore, solamente due delle tre fasi statoriche vengono connesse attivamente al bus di alimentazione: un interruttore superiore (\textit{High-Side}) viene chiuso per iniettare corrente dal terminale $+V_{DC}$ verso un primo avvolgimento di fase, mentre un interruttore inferiore (\textit{Low-Side}) appartenente a un altro ramo viene chiuso per permettere il ritorno della corrente verso massa attraverso un secondo avvolgimento. Contemporaneamente, la terza fase non viene alimentata e rimane elettricamente flottante (\textit{floating}).
+Per generare una coppia motrice continua e uniforme, l'eccitazione delle fasi statoriche deve essere costantemente sincronizzata con la posizione angolare dei magneti permanenti del rotore (raffigurati con le polarità Nord in viola/blu e Sud in giallo/rosso). A tale scopo, nella struttura statorica sono integrati tre \textbf{sensori a effetto Hall} ($H_1, H_2, H_3$), posizionati in punti strategici per rilevare il transito del flusso magnetico rotorico.
 
-Durante la rotazione dell'albero, i tre sensori a effetto Hall rilevano il passaggio dei poli rotorici da un settore al successivo. La decodifica logica della parola binaria a 3 bit generata dai sensori ($100_2 \to 110_2 \to 010_2 \dots$) permette al microcontrollore di comandare l'accensione sincronizzata dei gate dei transistor secondo la seguente sequenza ciclica:
+Durante la rotazione dell'albero, i sensori forniscono tre segnali digitali che, combinati, formano una parola binaria a 3 bit indicativa del settore angolare in cui si trova il rotore. Questi segnali vengono acquisiti dal blocco logico di decodifica (\textbf{\textit{Decoder Circuit}} in figura), il quale traduce in tempo reale lo stato dei sensori nella corretta sequenza di pilotaggio dei sei transistor del ponte. Nella tecnica di controllo trapezoidale a sei passi (\textit{Six-Step Control}), l'intero periodo elettrico di $360^\circ$ viene infatti suddiviso in sei settori discreti di $60^\circ$ elettrici ciascuno. All'interno di ogni settore, il circuito di decodifica attiva esclusivamente due fasi alla volta: un transistor \textit{High-Side} viene posto in conduzione per iniettare corrente dal nodo $V_+$ dentro una prima fase, mentre un transistor \textit{Low-Side} appartenente a un altro ramo viene chiuso per raccogliere la corrente in uscita da una seconda fase e convogliarla a massa, attraversando nel mezzo il centro-stella (linea verde). La terza fase non viene eccitata e rimane elettricamente flottante (\textit{floating}).
+
+A titolo esemplificativo, nella configurazione istantanea catturata in Figura \ref{fig:bldc_inverter}, i sensori $H_1$ e $H_3$ risultano attivi (evidenziati in rosso) mentre $H_2$ è inattivo. il circuito di decodifica comanda di conseguenza i transistor associati, alimentando una coppia di fasi (come evidenziato dalla linea di comando rossa attiva in uscita dal decoder) e lasciando interdetta la restante. Al progredire della rotazione, la commutazione ciclica attraversa ordinatamente i sei stati secondo la seguente logica:
+
 \begin{align*}
-    \text{Settore 1: } & Q_1 \text{ ON (Fase U a } +V_{DC}\text{)}, & Q_4 \text{ ON (Fase V a massa)}, \quad & \text{Fase W scollegata} \\
-    \text{Settore 2: } & Q_1 \text{ ON (Fase U a } +V_{DC}\text{)}, & Q_6 \text{ ON (Fase W a massa)}, \quad & \text{Fase V scollegata} \\
-    \text{Settore 3: } & Q_3 \text{ ON (Fase V a } +V_{DC}\text{)}, & Q_6 \text{ ON (Fase W a massa)}, \quad & \text{Fase U scollegata} \\
-    \text{Settore 4: } & Q_3 \text{ ON (Fase V a } +V_{DC}\text{)}, & Q_2 \text{ ON (Fase U a massa)}, \quad & \text{Fase W scollegata} \\
-    \text{Settore 5: } & Q_5 \text{ ON (Fase W a } +V_{DC}\text{)}, & Q_2 \text{ ON (Fase U a massa)}, \quad & \text{Fase V scollegata} \\
-    \text{Settore 6: } & Q_5 \text{ ON (Fase W a } +V_{DC}\text{)}, & Q_4 \text{ ON (Fase V a massa)}, \quad & \text{Fase U scollegata}
+    \text{Settore 1: } & \text{\textit{High-Side} Fase } \phi_A \text{ ON } (V_+), & \text{\textit{Low-Side} Fase } \phi_B \text{ ON (Massa)}, \quad & \text{Fase } \phi_C \text{ scollegata} \\
+    \text{Settore 2: } & \text{\textit{High-Side} Fase } \phi_A \text{ ON } (V_+), & \text{\textit{Low-Side} Fase } \phi_C \text{ ON (Massa)}, \quad & \text{Fase } \phi_B \text{ scollegata} \\
+    \text{Settore 3: } & \text{\textit{High-Side} Fase } \phi_B \text{ ON } (V_+), & \text{\textit{Low-Side} Fase } \phi_C \text{ ON (Massa)}, \quad & \text{Fase } \phi_A \text{ scollegata} \\
+    \text{Settore 4: } & \text{\textit{High-Side} Fase } \phi_B \text{ ON } (V_+), & \text{\textit{Low-Side} Fase } \phi_A \text{ ON (Massa)}, \quad & \text{Fase } \phi_C \text{ scollegata} \\
+    \text{Settore 5: } & \text{\textit{High-Side} Fase } \phi_C \text{ ON } (V_+), & \text{\textit{Low-Side} Fase } \phi_A \text{ ON (Massa)}, \quad & \text{Fase } \phi_B \text{ scollegata} \\
+    \text{Settore 6: } & \text{\textit{High-Side} Fase } \phi_C \text{ ON } (V_+), & \text{\textit{Low-Side} Fase } \phi_B \text{ ON (Massa)}, \quad & \text{Fase } \phi_A \text{ scollegata}
 \end{align*}
 
-L'esecuzione continua di questa sequenza genera all'interno dello statore un campo magnetico che ruota nello spazio a passi discreti di $60^\circ$ elettrici. Poiché la commutazione è vincolata alla posizione istantanea del rotore, i poli magnetici rotorici vengono costantemente attratti dal campo statorico, trascinando l'albero in rotazione sincrona.\\
-Infine, per regolare la velocità e la coppia del motore, agli interruttori attivi (tipicamente gli \textit{High-Side}) non viene applicato un comando di chiusura fisso, bensì un segnale modulato ad alta frequenza ($10 \div 20\,\si{\kilo\hertz}$) tramite tecnica \textbf{PWM} (\textit{Pulse Width Modulation}). Variando il \textit{duty-cycle} della modulazione PWM si controlla la tensione media applicata agli avvolgimenti e, di conseguenza, l'intensità della corrente di fase $I_a$, permettendo di governare con precisione la coppia motrice erogata e il profilo cinematico del giunto robotico.
+L'effetto fisico di questa commutazione sequenziale è chiaramente visibile anche nello schema a destra della Figura \ref{fig:bldc_inverter}, dove il principio è esteso a uno statore trifase a 12 poli ($A, \bar{A}, B, \bar{B}, C, \bar{C}$): la circolazione di corrente nelle bobine attive trasforma le espansioni polari statoriche in elettromagneti temporanei con polarità ben definite, generando un campo magnetico statorico che avanza nello spazio a scatti di $60^\circ$ elettrici. Poiché tale avanzamento è vincolato alla retroazione dei sensori di Hall, il campo di statore si mantiene costantemente in quadratura (o in anticipo di fase) rispetto ai magneti del rotore, esercitando una forza di attrazione e repulsione magnetica che trascina l'albero in rotazione sincrona.
+
+Infine, poiché il circuito di decodifica illustrato definisce unicamente la fasatura angolare della commutazione, il controllo fine della velocità di rotazione e della coppia erogata viene ottenuto sovrapponendo ai comandi di accensione dei transistor attivi una modulazione di larghezza d'impulso (\textbf{PWM}, \textit{Pulse Width Modulation}) ad alta frequenza ($10 \div 20\,\si{\kilo\hertz}$). Parzializzando mediante il \textit{duty-cycle} la tensione media effettivamente applicata tra le fasi attive e la massa, il sistema regola con precisione l'intensità della corrente circolante negli avvolgimenti e, di conseguenza, la coppia elettromagnetica sviluppata all'asse del giunto robotico.
 
 \section{La Trasmissione Meccanica Nei Sistemi Robotici}
 
@@ -2264,7 +2262,7 @@ Le figure seguenti illustrano le geometrie e i diagrammi funzionali corrisponden
 In base alla cinematica degli assi e alla struttura dell'alberaggio, i rotismi si classificano in:
 
 \begin{itemize}
-    \item \textbf{Rotismo Piano:} Assi reciprocamente paralleli; le traiettorie dei punti giacciono su piani ortogonali agli assi.
+    \item \textbf{Rotismo Piano:} Assi reciprocamente paralleli. le traiettorie dei punti giacciono su piani ortogonali agli assi.
     \item \textbf{Rotismo Sferico:} Assi concorrenti in un punto fisso; le traiettorie descrivono archi su superfici sferiche concentriche.
     \item \textbf{Rotismo Ordinario:} Assi di rotazione tutti \textbf{fissi rispetto al telaio}. Si articola in:
     \begin{itemize}

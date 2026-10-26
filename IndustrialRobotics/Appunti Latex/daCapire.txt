@@ -1,3 +1,5 @@
 LTI
 Sovraelongazione
 Risposta Armonica E Relativo Modulo
+Collegamento A Stella (BLDC)
+Stadio Di Potenza (BLDC)
