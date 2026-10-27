@@ -2167,27 +2167,27 @@ Infine, poiché il circuito di decodifica definisce unicamente l'angolo di commu
 \section{La Trasmissione Meccanica Nei Sistemi Robotici}
 
 \subsection{Ruolo E Funzioni Della Trasmissione Meccanica}
-Nell'architettura di un robot industriale, i servomotori elettrici vengono raramente collegati in modo diretto (\textit{direct-drive}) alle articolazioni del manipolatore. I motori elettrici presentano infatti una ridotta densità di coppia e, per generare coppie elevate a basse velocità, richiederebbero correnti molto intense, comportando un eccessivo surriscaldamento degli avvolgimenti per effetto Joule e un aumento proibitivo di peso e ingombri. Per questo motivo, tra l'albero d'uscita dell'attuatore e il rispettivo giunto (\textit{joint}) del braccio meccanico (\textit{link}) viene generalmente interposta una \textbf{trasmissione meccanica}.
+Nell'architettura di un robot industriale, i servomotori elettrici vengono raramente montati in maniera diretta (\textit{direct-drive}) sui giunti perché presentano una ridotta densità di coppia, ovvero per generare coppie elevate a basse velocità richiedono un elevata corrente, che comporta un surriscaldamento degli avvolgimenti. Per questo motivo, tra l'albero dell'attuatore e il \textit{giunto} viene generalmente montata una \textbf{trasmissione meccanica}.
 
-L'impiego di un sistema di trasmissione risponde a tre esigenze fondamentali:
-
+La trasmissione meccanica svolge principalmente tre funzioni:
 \begin{enumerate}
-    \item \textbf{Adattamento Meccanico E Moltiplicazione Della Coppia (\textit{Impedance Matching})}: I servomotori elettrici (sia con spazzole sia \textit{brushless}) sono progettati per erogare la massima densità di potenza a velocità di rotazione elevate ($2\,000 \div 6\,000\,\si{rpm}$, ovvero $\omega_m \approx 200 \div 600\,\si{\radian\per\second}$), sviluppando però coppie nominali contenute (dell'ordine di frazioni o di pochi $\si{\newton\meter}$). Al contrario, i giunti di un manipolatore seriale operano a basse velocità ($30 \div 60\,\si{rpm}$, ovvero $\omega_L \approx 3 \div 6\,\si{\radian\per\second}$), ma richiedono coppie statiche e dinamiche molto elevate (da decine a migliaia di $\si{\newton\meter}$) per equilibrare i carichi gravitazionali $\bm{g}(\bm{q})$, compensare le forze centrifughe e di Coriolis $\bm{C}(\bm{q},\dot{\bm{q}})\dot{\bm{q}}$ e vincere i termini inerziali $\bm{M}(\bm{q})\ddot{\bm{q}}$. L'interposizione di un riduttore meccanico consente quindi di ridurre la velocità angolare del motore e, contemporaneamente, di amplificare la coppia applicata al giunto in funzione del \textbf{rapporto di riduzione}. Inoltre, l'inerzia del carico $J_L$ vista dall'albero motore viene ridotta secondo un fattore quadratico ($J_L' = \tau^2 J_L$), migliorando sensibilmente la stabilità e la prontezza di risposta del sistema di controllo.
+    \item \textbf{Adattamento E Moltiplicazione Della Coppia}: I servomotori elettrici (sia con spazzole sia \textit{brushless}) sono progettati per erogare la massima densità di potenza a velocità di rotazione elevate ($\omega_m \approx 200 \div 600\,\si{\radian\per\second}$), sviluppando però coppie nell'ordine di frazioni o di pochi $\si{\newton\meter}$. Al contrario, i giunti di un manipolatore seriale operano a basse velocità ($\omega_L \approx 3 \div 6\,\si{\radian\per\second}$), ma richiedono coppie molto elevate (da decine a migliaia di $\si{\newton\meter}$) per equilibrare i carichi e compensare le forze centrifughe. L'utilizzo di un riduttore meccanico consente di ridurre la velocità angolare del motore e, contemporaneamente di amplificare la coppia applicata al giunto in funzione del \textbf{Rapporto Di Riduzione}. Inoltre, l'inerzia del carico $J_L$ vista dall'albero motore viene ridotta secondo un fattore quadratico ($J_L' = \tau^2 J_L$), migliorando la stabilità e la prontezza di risposta del sistema di controllo.
 
     \item \textbf{Conversione Della Morfologia Del Moto}: Poiché i motori elettrici impiegati in robotica generano prevalentemente un movimento rotatorio, la trasmissione ha anche il compito di trasformare la rotazione dell'albero in uno spostamento lineare ogni volta che la configurazione cinematica prevede dei giunti prismatici (come avviene nei carrelli lineari dei robot cartesiani o lungo l'asse verticale dei manipolatori SCARA).
 
-    \item \textbf{Ottimizzazione Della Distribuzione Delle Masse E Delle Prestazioni Dinamiche}: Nelle catene cinematiche seriali, installare ciascun motore direttamente sul rispettivo giunto appesantirebbe sensibilmente i bracci in movimento, aumentando i momenti flettenti sulla struttura e richiedendo coppie ancora più elevate agli attuatori posti a monte. L'utilizzo di trasmissioni a distanza (come cinghie dentate, catene o alberi di rinvio) permette invece di collocare i motori in prossimità della base fissa, riducendo le inerzie mobili a vantaggio delle accelerazioni, dei tempi di ciclo e dell'accuratezza di inseguimento della traiettoria.
+     \item \textbf{Ottimizzazione della Distribuzione delle Masse}: Nelle catene cinematiche seriali, installare ciascun motore direttamente sul rispettivo giunto aumenterebbe le masse in movimento, incrementando le coppie necessarie per ottenere determinate accelerazioni. L'utilizzo di trasmissioni a distanza (come cinghie dentate, catene o alberi di rinvio) permette invece di collocare i motori in prossimità della base fissa, riducendo le masse associate ai link in movimento e, di conseguenza, le coppie richieste durante il moto, con potenziali benefici in termini di prestazioni e inseguimento delle traiettorie.
 \end{enumerate}
 \newpage
 \subsection{Panoramica Delle Principali Tecnologie Di Trasmissione}
-In base ai requisiti di rigidezza elastica, rendimento energetico, ingombro e precisione di posizionamento richiesti dall'applicazione, nei sistemi robotici si impiegano differenti tipologie di trasmissioni meccaniche:
+In base ai requisiti (rigidezza elastica, rendimento energetico, ingombro e precisione) richiesti, nei sistemi robotici si impiegano differenti tipologie di trasmissioni meccaniche:
 
 \vspace{0.2cm}
 \noindent
 \begin{minipage}[t]{0.48\textwidth}
     \textbf{Ingranaggi Dentati Cilindrici E Conici}
     \par\vspace{0.2cm}
-    Permettono di trasmettere il moto rotatorio tra alberi adiacenti, modificando il rapporto di velocità, la coppia, il verso di rotazione e la disposizione spaziale degli assi (da paralleli a incidenti). Pur garantendo un'elevata capacità di carico, presentano una rigidezza torsionale finita sotto sollecitazioni elevate e sono affetti da \textbf{gioco angolare} (\textit{backlash}), che nei sistemi retroazionati introduce una zona morta (\textit{deadband}) critica durante le inversioni di moto.
+    Permettono di trasmettere il moto rotatorio tra alberi adiacenti, modificando il rapporto di velocità, la coppia, il verso di rotazione e la disposizione spaziale degli assi (da paralleli a incidenti).\\
+    Garantiscono un'elevata capacità di carico, ma sono affetti da \textbf{gioco angolare} (\textit{backlash}), che in specifici sistemi introduce una zona morta (\textit{deadband}) critica durante le inversioni di moto.
     \begin{figure}[H]
         \centering
         \includegraphics[width=0.6\linewidth]{IngranaggiDentati.jpg}
@@ -2198,7 +2198,7 @@ In base ai requisiti di rigidezza elastica, rendimento energetico, ingombro e pr
 \begin{minipage}[t]{0.48\textwidth}
     \textbf{Viti A Ricircolo Di Sfere E Viti Senza Fine}
     \par\vspace{0.2cm}
-    Vengono impiegate nei giunti prismatici per convertire il moto rotatorio dell'attuatore in uno spostamento lineare. A differenza delle viti a strisciamento (soggette a rendimenti ridotti e usura progressiva), le viti a ricircolo di sfere sostituiscono il contatto radente con l'attrito volvente di sfere d'acciaio, assicurando rendimenti superiori al $90\%$, elevata rigidezza assiale e l'annullamento del gioco meccanico tramite precarico.
+    Vengono impiegate nei giunti prismatici per convertire il moto rotatorio in spostamento lineare. Nelle \textbf{Viti A Ricircolo Di Sfere}, la chiocciola contiene sfere d'acciaio poste tra le scanalature della vite e quelle della chiocciola stessa. Durante la rotazione, le sfere rotolano lungo le scanalature e vengono rimesse in circolo attraverso appositi circuiti, riducendo l'attrito. Attraverso il numero di sfere utilizzate, è possibile aumentare la rigidezza e la precisione di posizionamento. Le \textbf{Viti Senza Fine}, invece, sfruttano un accoppiamento elicoidale tra vite e ruota dentata per trasmettere il moto e ottenere una riduzione della velocità angolare.
     \begin{figure}[H]
         \centering
         \includegraphics[width=0.6\linewidth]{RicircoloViti.jpg}
@@ -2214,7 +2214,7 @@ In base ai requisiti di rigidezza elastica, rendimento energetico, ingombro e pr
 \begin{minipage}[t]{0.48\textwidth}
     \textbf{Cinghie Dentate E Catene Di Trasmissione}
     \par\vspace{0.2cm}
-    Consentono di trasferire potenza tra alberi paralleli distanziati, svincolando la posizione del motore da quella del giunto. Le cinghie sincrone dentate in elastomero con armature in acciaio garantiscono silenziosità, assenza di lubrificazione e isolamento elettrico, ma introducono una cedevolezza elastica longitudinale che abbassa le frequenze di risonanza strutturali. Le catene metalliche sostengono invece carichi superiori, ma la loro massa rilevante genera forze d'inerzia e vibrazioni ad alte velocità.
+    Consentono di trasferire potenza tra alberi paralleli distanziati, svincolando la posizione del motore da quella del giunto. Le \textbf{Cinghie Sincrone Dentate} in elastomero con armature in acciaio garantiscono silenziosità e non necessitano di lubrificazione e isolamento elettrico, ma introducono una cedevolezza elastica. Le \textbf{Catene Metalliche} sostengono invece carichi superiori, ma la loro massa rilevante genera forze d'inerzia e vibrazioni ad alte velocità.
     \begin{figure}[H]
         \centering
         \includegraphics[width=0.6\linewidth]{CinghieCatene.jpg}
@@ -2225,7 +2225,7 @@ In base ai requisiti di rigidezza elastica, rendimento energetico, ingombro e pr
 \begin{minipage}[t]{0.48\textwidth}
     \textbf{Riduttori Armonici (\textit{Harmonic Drives})}
     \par\vspace{0.2cm}
-    Sono ampiamente impiegati nei giunti di robot antropomorfi, \textit{cobot} e manipolatori di precisione. Sfruttando la deformazione elastica ciclica di una boccola metallica flessibile, permettono di ottenere elevati rapporti di riduzione (da $30:1$ a oltre $160:1$) in un singolo stadio coassiale compatto e privo di gioco angolare (\textit{zero-backlash}). Di contro, introducono una cedevolezza torsionale distribuita che deve essere compensata dal sistema di controllo.
+    Sono ampiamente impiegati nei giunti di robot antropomorfi e manipolatori di precisione. Sfruttando la deformazione elastica di una boccola metallica, permettendo di ottenere elevati rapporti di riduzione (da $30:1$ a oltre $160:1$) in un singolo stadio coassiale compatto e privo di gioco angolare (\textit{zero-backlash}). Di contro, introducono una cedevolezza torsionale che deve essere compensata dal sistema di controllo.
     \begin{figure}[H]
         \centering
         \includegraphics[width=0.6\linewidth]{HarmonicDrives.jpg}
@@ -2237,47 +2237,48 @@ In base ai requisiti di rigidezza elastica, rendimento energetico, ingombro e pr
 
 \section{Teoria Meccanica Dei Rotismi E Delle Ruote Dentate}
 
-Un \textbf{ingranaggio} trasmette moto e potenza mediante contatto di forma tra denti, senza slittamento macroscopico. Una sequenza di due o più ruote dentate vincolate costituisce un \textbf{rotismo} (o treno di ingranaggi).
+Nelle trasmissioni meccaniche dei sistemi robotici, un \textbf{ingranaggio} è un sistema elementare che permette di trasmettere il moto rotatorio e la potenza meccanica tra due alberi mediante il contatto di forma tra i denti, garantendo un accoppiamento sincrono privo di slittamento macroscopico. Quando due o più ruote dentate vengono vincolate in successione all'interno di una catena cinematica, il sistema complessivo prende il nome di \textbf{rotismo} (o treno di ingranaggi).
 
-\subsection{Accoppiamento Cinematica E Geometria Degli Assi}
+\subsection{Accoppiamento Cinematico E Geometria Degli Assi}
 
-La conformazione delle ruote dipende dalla disposizione reciproca degli assi di ingresso e uscita:
+Dal punto di vista costruttivo, la geometria delle ruote dentate viene scelta in funzione della disposizione spaziale reciproca tra l'asse di ingresso e l'asse di uscita:
 
 \begin{enumerate}
-    \item \textbf{Assi Paralleli}: Si impiegano \textbf{ingranaggi cilindrici}, le cui superfici primitive sono cilindri retti a rotolamento puro. Le dentature possono essere diritte (semplici, prive di spinte assiali, ma rumorose ad alta velocità) o elicoidali (ingranamento progressivo, maggiore capacità di carico e silenziosità, con insorgenza di una spinta assiale che richiede supporti reggispinta).
-    \item \textbf{Assi Concorrenti (o Incidenti)}: Quando gli assi sono complanari e incidenti (tipicamente a $90^\circ$, come nei polsi robotici), si adottano \textbf{ingranaggi conici}. Le superfici primitive sono tronchi di cono con vertice coincidente nel punto d'intersezione degli assi. I denti possono essere diritti o spiroidali (es. profilo Gleason).
-    \item \textbf{Assi Sghembi}: In assenza di complanarità e intersezione, la trasmissione avviene mediante ruote elicoidali per assi sghembi, ingranaggi ipoidi o coppie \textbf{vite senza fine e ruota elicoidale}. Queste ultime offrono rapporti elevati in ingombri ridotti e consentono l'\textit{irreversibilità meccanica} (trasmissione possibile unicamente dalla vite alla ruota), garantendo l'arresto statico del carico a motore disalimentato.
+    \item \textbf{Assi Paralleli}: In questa configurazione si impiegano \textbf{ingranaggi cilindrici}, le cui superfici primitive di riferimento sono costituite da cilindri retti che rotolano l'uno sull'altro senza strisciare. Le dentature possono essere realizzate a \textbf{denti diritti}, che risultano costruttivamente semplici e non generano spinte assiali sui cuscinetti ma producono maggiore rumorosità e vibrazioni ad alte velocità, oppure a \textbf{denti elicoidali}. In quest'ultimo caso, l'ingranamento avviene in modo progressivo lungo l'elica, garantendo una maggiore capacità di carico e una superiore silenziosità operativa; di contro, l'inclinazione dei denti introduce una componente di forza assiale che richiede l'impiego di cuscinetti reggispinta.
+    \item \textbf{Assi Concorrenti (O Incidenti)}: Quando gli alberi di trasmissione sono complanari e i loro assi si intersecano in un punto (tipicamente formando un angolo di $90^\circ$, come avviene nei meccanismi differenziali dei polsi sferici robotici), si adottano gli \textbf{ingranaggi conici}. In questo caso, le superfici primitive sono rappresentate da tronchi di cono il cui vertice comune coincide esattamente con il punto di intersezione degli assi. Analogamente al caso cilindrico, i denti possono avere uno sviluppo diritto oppure spiroidale (ad esempio con profilo Gleason) per incrementare la gradualità della trasmissione.
+    \item \textbf{Assi Sghembi}: Quando gli assi non sono né paralleli né incidenti, la trasmissione del moto viene realizzata tramite ruote elicoidali per assi sghembi, ingranaggi ipoidi oppure mediante l'accoppiamento \textbf{vite senza fine e ruota elicoidale}. Quest'ultima soluzione permette di ottenere rapporti di riduzione molto elevati in uno spazio estremamente compatto e offre la proprietà dell'\textbf{irreversibilità meccanica}: il moto può essere trasmesso unicamente dalla vite (motrice) alla ruota dentata (condotta) e non viceversa, consentendo di bloccare staticamente il carico in posizione anche quando il servomotore viene disalimentato.
 \end{enumerate}
 
-Le figure seguenti illustrano le geometrie e i diagrammi funzionali corrispondenti.
+Nelle figure seguenti vengono riportate le principali configurazioni geometriche e i relativi schemi funzionali di contatto.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\linewidth]{Ingranaggi.jpeg}
-    \caption{Classificazione Geometrica Dei Componenti Dentati: (a) Ingranaggio Cilindrico A Denti Diritti Per Assi Paralleli, (b) Ingranaggio Conico A Denti Diritti Per Assi Concorrenti, (c) Ingranaggi Elicoidali E Vite Senza Fine Per Assi Sghembi.}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.6\linewidth]{SchemaIngranaggi.jpeg}
-    \caption{Schematizzazione Funzionale E Tracciato Delle Forze Di Contatto Nelle Principali Geometrie Di Ruote Dentate.}
+    \begin{minipage}[c]{0.42\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{Ingranaggi.jpeg}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[c]{0.56\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{SchemaIngranaggi.jpeg}
+    \end{minipage}
+    \caption{Classificazione Geometrica Dei Componenti Dentati Per Assi Paralleli (a), Concorrenti (b) E Sghembi (c) (A Sinistra) E Schematizzazione Funzionale Delle Principali Tipologie Di Ruote Dentate (A Destra).}
 \end{figure}
 
 \newpage
-
 \subsection{Classificazione Meccanica Dei Rotismi}
 
-In base alla cinematica degli assi e alla struttura dell'alberaggio, i rotismi si classificano in:
+In base alla disposizione cinematica degli assi e alla mobilità della struttura di supporto degli alberi, i rotismi si dividono nelle seguenti categorie:
 
 \begin{itemize}
-    \item \textbf{Rotismo Piano:} Assi reciprocamente paralleli. le traiettorie dei punti giacciono su piani ortogonali agli assi.
-    \item \textbf{Rotismo Sferico:} Assi concorrenti in un punto fisso; le traiettorie descrivono archi su superfici sferiche concentriche.
-    \item \textbf{Rotismo Ordinario:} Assi di rotazione tutti \textbf{fissi rispetto al telaio}. Si articola in:
+    \item \textbf{Rotismo Piano}: Tutti gli assi di rotazione delle ruote sono reciprocamente paralleli; di conseguenza, le traiettorie descritte dai punti appartenenti alle ruote giacciono su piani paralleli tra loro e ortogonali agli assi.
+    \item \textbf{Rotismo Sferico}: Gli assi di rotazione delle ruote sono concorrenti in un unico punto fisso nello spazio e le traiettorie dei punti si sviluppano lungo superfici sferiche concentriche.
+    \item \textbf{Rotismo Ordinario}: È caratterizzato dal fatto che tutti gli assi di rotazione delle ruote sono \textbf{fissi rispetto al telaio} (cassa del riduttore). Al suo interno si distinguono due ulteriori configurazioni:
     \begin{itemize}
-        \item \textbf{Rotismo Semplice}: Ciascun albero porta un'unica ruota dentata.
-        \item \textbf{Rotismo Composto}: Almeno un albero intermedio porta calettate due o più ruote dentate solidali, aventi la medesima velocità angolare.
+        \item \textbf{Rotismo Semplice}: Su ciascun albero della trasmissione è calettata un'unica ruota dentata.
+        \item \textbf{Rotismo Composto}: Almeno un albero intermedio porta calettate due o più ruote dentate rese solidali tra loro, le quali ruotano quindi con la medesima velocità angolare.
     \end{itemize}
-    \item \textbf{Rotismo Epicicloidale (o Planetario):} Almeno un asse di rotazione (ruota satellite o pianeta) \textbf{è mobile nello spazio}, muovendosi lungo una traiettoria circolare guidata da un braccio portasatelliti imperniato sull'asse principale.
+    \item \textbf{Rotismo Epicicloidale (O Planetario)}: È una configurazione in cui almeno un asse di rotazione non è fisso, ma \textbf{è mobile nello spazio}. Le ruote ad asse mobile, dette \textit{satelliti} (o pianeti), ruotano attorno al proprio asse e contemporaneamente rivoluzionano lungo una traiettoria circolare, trascinate da un elemento rotante detto \textit{portasatelliti} imperniato sull'asse principale del sistema.
 \end{itemize}
 
 \begin{figure}[H]
@@ -2286,109 +2287,105 @@ In base alla cinematica degli assi e alla struttura dell'alberaggio, i rotismi s
     \caption{Tipologie Strutturali Di Rotismi: Confronto Tra Rotismi Ordinari A Cascata (Semplici E Composti) E Rotismi Epicicloidali Ad Assi Planetari Mobili.}
 \end{figure}
 
+\newpage
 \subsection{Rapporto Di Trasmissione: Analisi Cinematica E Statica}
 
-Il \textbf{rapporto di trasmissione} (o di velocità) $\tau$ è il rapporto algebrico tra la velocità angolare d'uscita ($\omega_{\text{out}}$) e quella d'ingresso ($\omega_{\text{in}}$):
+Per caratterizzare il comportamento cinematico di un meccanismo, si definisce il \textbf{Rapporto Di Trasmissione} (o rapporto di velocità) $\tau$ come il rapporto algebrico tra la velocità angolare dell'albero di uscita ($\omega_{\text{out}}$) e quella dell'albero di ingresso ($\omega_{\text{in}}$):
 \[
     \tau = \frac{\omega_{\text{out}}}{\omega_{\text{in}}}
-    \label{eq:def_tau}
 \]
-Il rapporto di riduzione $i$ è definito come il reciproco $i = 1/\tau = \omega_{\text{in}}/\omega_{\text{out}}$. Nel seguito si adotta la convenzione $\tau = \omega_{\text{out}}/\omega_{\text{in}}$, per cui un riduttore di velocità soddisfa $|\tau| < 1$.
+In ambito industriale viene spesso utilizzato anche il \textbf{Rapporto Di Riduzione} $i$, definito come il reciproco del rapporto di trasmissione ($i = 1/\tau = \omega_{\text{in}}/\omega_{\text{out}}$). Nel seguito si adotterà la convenzione basata su $\tau$, per cui un riduttore di velocità è sempre caratterizzato dalla condizione $|\tau| < 1$.
 
 \subsubsection{Ingranaggio Singolo Elementare Ad Assi Paralleli}
-Date due ruote $a$ e $b$ montate su perni fissi paralleli, con dentature $z_a, z_b$ e raggi primitivi $r_a, r_b$, l'ingranamento richiede il medesimo \textbf{modulo normale} $m$ (in $\si{\milli\meter}$), definito come rapporto tra diametro primitivo $d = 2r$ e numero di denti $z$:
+Consideriamo una coppia di ruote dentate cilindriche $a$ (motrice) e $b$ (condotta) montate su assi fissi paralleli, caratterizzate rispettivamente da un numero di denti $z_a, z_b$ e da raggi primitivi $r_a, r_b$. Affinché le due ruote possano ingranare correttamente, devono possedere lo stesso \textbf{modulo normale} $m$ (espresso in $\si{\milli\meter}$), definito come il rapporto tra il diametro primitivo $d = 2r$ e il numero di denti $z$:
 \[
     m = \frac{d_a}{z_a} = \frac{d_b}{z_b} \implies r_a = \frac{m z_a}{2}, \quad r_b = \frac{m z_b}{2}
 \]
-Il passo primitivo è $p = \pi m$. Poiché nel punto di contatto primitivo $C$ vi è rotolamento puro senza strisciamento tangenziale, le velocità periferiche coincidono:
+La distanza circonferenziale tra due denti omologhi consecutivi lungo la circonferenza primitiva è detta \textbf{passo primitivo} e vale $p = \pi m$. Poiché nel punto di contatto $C$ tra le circonferenze primitive si realizza una condizione di rotolamento puro senza strisciamento, le velocità periferiche tangenziali delle due ruote devono coincidere in modulo:
 \[
     v_c = \omega_a r_a = -\omega_b r_b
 \]
-dove il segno negativo indica che per dentature esterne le rotazioni hanno versi opposti.\\
-Sostituendo $r_a$ e $r_b$
+dove il segno negativo tiene conto del fatto che, in un ingranaggio a dentatura esterna, le due ruote ruotano in verso opposto. Esplicitando il rapporto tra le velocità angolari e sostituendo le espressioni dei raggi primitivi $r_a$ e $r_b$, si ottiene:
 \[
-    \tau_{a,b} = \frac{\omega_b}{\omega_a} = -\frac{r_a}{r_b} = -\frac{z_a}{z_b}
-    \label{eq:rapporto_singolo}
+    \boxed{\tau_{a,b} = \frac{\omega_b}{\omega_a} = -\frac{r_a}{r_b} = -\frac{z_a}{z_b}}
 \]
-In presenza di dentatura interna, i membri ruotano concordemente: $\tau = +z_a/z_b$.
-\newpage
+Nel caso in cui l'accoppiamento avvenga tramite una corona a dentatura interna, entrambe le ruote mantengono lo stesso verso di rotazione e la relazione diventa positiva ($\tau_{a,b} = +z_a/z_b$).
 
 \subsubsection{Rotismo Composto A Cascata}
-Poiché rapporti di riduzione elevati ($|\tau| \ll 1$) a singolo stadio richiederebbero ingombri radiali inaccettabili ($z_b = z_a / |\tau|$), si ricorre al \textbf{rotismo composto}, ripartendo la riduzione su più stadi in serie. Per una catena ordinaria di $k$ coppie in cascata tra l'albero movente $1$ e il cedente $n$, il rapporto di trasmissione globale $\tau$ è il prodotto dei rapporti delle singole coppie:
+Quando nelle applicazioni robotiche è necessario realizzare rapporti di riduzione molto spinti ($|\tau| \ll 1$), l'impiego di un singolo stadio risulterebbe impraticabile, poiché richiederebbe una ruota condotta con un numero di denti $z_b = z_a / |\tau|$ eccessivo e un conseguente ingombro radiale inaccettabile. Per superare questo limite si ricorre al \textbf{rotismo composto}, suddividendo la riduzione complessiva su più stadi collegati in serie.
+
+Considerando un rotismo ordinario formato da $k$ coppie di ruote in cascata, interposte tra l'albero motore iniziale $1$ e l'albero condotto finale $n$, il rapporto di trasmissione globale $\tau$ è pari al prodotto dei rapporti di trasmissione dei singoli stadi:
 \[
     \tau = \frac{\omega_n}{\omega_1} = \prod_{i=1}^{k} \tau_{i} = (-1)^{p_{\text{est}}} \frac{\prod z_{\text{motrici}}}{\prod z_{\text{condotte}}}
-    \label{eq:formula_generale_rotismo}
 \]
-dove $p_{\text{est}}$ indica il numero di contatti a dentatura esterna lungo la catena, ciascuno determinante un'inversione del verso di rotazione.
+dove l'esponente $p_{\text{est}}$ indica il numero complessivo di accoppiamenti a dentatura esterna presenti nella catena, ciascuno dei quali introduce un'inversione del verso di rotazione.
+\newpage
+\subsubsection*{Esempio Analitico: Rotismo Composto A Due Stadi}
 
-\subsubsection*{Esempio Analitico Svolto: Rotismo Composto A Due Stadi}
-
-Si consideri il rotismo in figura: la ruota motrice $a$ aziona la ruota $b$; solidale e coassiale a $b$ è montata la ruota $c$ ($\omega_c \equiv \omega_b$); la ruota $c$ aziona infine la ruota d'uscita $d$.
+Si consideri il rotismo composto a due stadi mostrato in figura: il pignone motore $a$ ingrana con la ruota $b$; sullo stesso albero intermedio è calettata in modo solidale la ruota $c$ (per cui si ha $\omega_c = \omega_b$), la quale trasmette infine il moto alla ruota di uscita $d$.
 
 \noindent
 \begin{minipage}[c]{0.48\textwidth}
     \begin{figure}[H]
         \centering
         \includegraphics[width=0.7\linewidth]{EsempioAnalisi.jpg}
-        \caption{Schema Cinematico Del Rotismo Composto A 4 Ruote Dentate ($a, b, c, d$).}
+        \caption{Schema Cinematico Del Rotismo Composto A Quattro Ruote Dentate ($a, b, c, d$).}
     \end{figure}
 \end{minipage}
 \hfill
 \begin{minipage}[c]{0.48\textwidth}
-    I rapporti di trasmissione per le due coppie ad assi fissi valgono:
-    \begin{align}
+    Considerando separatamente i due stadi ad assi fissi, i rispettivi rapporti di trasmissione sono:
+    \begin{align*}
         \tau_{a,b} &= \frac{\omega_b}{\omega_a} = -\frac{z_a}{z_b}\\
         \tau_{c,d} &= \frac{\omega_d}{\omega_c} = -\frac{z_c}{z_d}
-    \end{align}
+    \end{align*}
 \end{minipage}
 
 \vspace{0.3cm}
 \noindent
-Essendo $\omega_c = \omega_b$, il rapporto globale $\tau_{a,d}$ tra uscita $d$ e ingresso $a$ si espande mediante la regola della catena:
+Poiché le ruote $b$ e $c$ sono calettate sul medesimo albero e ruotano alla stessa velocità ($\omega_c = \omega_b$), il rapporto di trasmissione globale $\tau_{a,d}$ tra l'uscita $d$ e l'ingresso $a$ si ricava moltiplicando i contributi dei due stadi:
 \[
     \tau_{a,d} = \frac{\omega_d}{\omega_a} = \frac{\omega_d}{\omega_c} \cdot \frac{\omega_b}{\omega_a} = \tau_{c,d} \cdot \tau_{a,b}
 \]
-Sostituendo le equazioni di $\tau_{a,b}$ e di $\tau_{c,d}$
+Andando a sostituire le espressioni di $\tau_{a,b}$ e $\tau_{c,d}$ in funzione del numero di denti, si ottiene:
 \[
     \tau_{a,d} = \left(-\frac{z_c}{z_d}\right) \cdot \left(-\frac{z_a}{z_b}\right) = +\frac{z_a z_c}{z_b z_d}
 \]
-La presenza di due contatti esterni consecutivi rende positivo il rapporto ($\tau_{a,d} > 0$): l'uscita $d$ ruota nello stesso verso dell'ingresso $a$.
+Si nota che la presenza di due ingranamenti esterni consecutivi comporta una doppia inversione di moto ($\tau_{a,d} > 0$), facendo sì che l'albero di uscita $d$ ruoti nello stesso verso dell'albero motore $a$.
 
 \subsubsection{Bilancio Di Potenza Ed Equilibrio Delle Coppie}
-In regime stazionario ($\dot{\omega} = 0$) e in condizioni ideali a \textbf{rendimento unitario} ($\eta = 1$), in assenza di perdite per attrito di strisciamento e nei supporti, la conservazione dell'energia impone $P_{\text{in}} = P_{\text{out}}$:
+Supponendo un contesto ideale, ovvero in assenza di perdite per attrito tra i denti e nei cuscinetti (\textbf{rendimento unitario}, $\eta = 1$), a regime stazionario ($\dot{\omega} = 0$) tutta la potenza meccanica in ingresso viene trasferita integralmente all'albero di uscita:
 \[
     P_{\text{in}} = P_{\text{out}} \implies C_m \cdot \omega_m = C_r \cdot \omega_r
-    \label{eq:conservazione_potenza}
 \]
 Dove:
 \begin{itemize}
-    \item $C_m$ è la coppia motrice all'albero d'ingresso [$\si{\newton\meter}$];
-    \item $\omega_m = \omega_{\text{in}}$ è la velocità angolare motrice [$\si{\radian\per\second}$];
-    \item $C_r$ è la coppia utile al carico all'albero d'uscita [$\si{\newton\meter}$];
-    \item $\omega_r = \omega_{\text{out}}$ è la velocità angolare resistente d'uscita [$\si{\radian\per\second}$].
+    \item \textbf{Coppia Motrice ($C_m$)}: È la coppia applicata dall'attuatore all'albero di ingresso, espressa in $\si{\newton\meter}$.
+    \item \textbf{Velocità Angolare Motrice ($\omega_m = \omega_{\text{in}}$)}: È la velocità di rotazione dell'albero veloce lato motore, espressa in $\si{\radian\per\second}$.
+    \item \textbf{Coppia Resistente ($C_r$)}: È la coppia utile erogata al carico sull'albero di uscita del giunto, espressa in $\si{\newton\meter}$.
+    \item \textbf{Velocità Angolare Di Uscita ($\omega_r = \omega_{\text{out}}$)}: È la velocità di rotazione dell'albero lento lato carico, espressa in $\si{\radian\per\second}$.
 \end{itemize}
 
-Sostituendo $\tau = \omega_r / \omega_m$ nell'equazione precedente, si ottiene il bilancio delle coppie:
+Andando a sostituire la definizione del rapporto di trasmissione $\tau = \omega_r / \omega_m$ nella relazione di bilancio energetico, si ricava il legame tra le coppie:
 \[
-    \frac{C_r}{C_m} = \frac{\omega_m}{\omega_r} = \frac{1}{\tau} \implies C_r = \frac{1}{\tau} \cdot C_m
+    \frac{C_r}{C_m} = \frac{\omega_m}{\omega_r} = \frac{1}{\tau} \implies \boxed{C_r = \frac{1}{\tau} \cdot C_m}
 \]
-Quest'equazione mostra che un riduttore di velocità ($|\tau| < 1$) moltiplica idealmente la coppia motrice di un fattore $1/|\tau|$.
+Questo risultato dimostra chiaramente come un riduttore di velocità ($|\tau| < 1$) agisca contemporaneamente da moltiplicatore di coppia, amplificando la coppia erogata dal motore secondo un fattore pari a $1/|\tau|$.
 
-\paragraph{Caso Reale Con Rendimento Meccanico e Dinamica delle Masse}
-Nel caso reale, attriti di contatto, sbattimento del lubrificante (\textit{churning losses}) e rotolamento nei supporti determinano un \textbf{rendimento meccanico} $\eta < 1$ ($\eta \approx 0.95 \div 0.98$ per singolo stadio cilindrico di precisione):
+\paragraph{Caso Reale Con Rendimento Meccanico E Dinamica Delle Masse}
+Nei sistemi reali, gli attriti di strisciamento tra i fianchi dei denti, le perdite per sbattimento del lubrificante (\textit{churning losses}) e gli attriti volventi nei supporti determinano una dissipazione energetica, quantificata da un \textbf{rendimento meccanico} $\eta < 1$ (tipicamente $\eta \approx 0.95 \div 0.98$ per singolo stadio cilindrico di precisione). Il bilancio di potenza e la coppia effettivamente disponibile al carico diventano quindi:
 \[
     P_{\text{out}} = \eta \cdot P_{\text{in}} \implies C_r \omega_r = \eta \cdot (C_m \omega_m) \implies C_r = \eta \cdot \frac{C_m}{\tau}
 \]
-Durante i transitori di accelerazione ($\dot{\omega} \neq 0$), l'equazione del moto all'albero motore, comprensiva dell'inerzia del rotore $J_m$, del riduttore $J_{\text{rid}}$ e del link $J_L$, assume la forma:
+Durante i transitori dinamici ($\dot{\omega}_m \neq 0$), occorre inoltre considerare le forze d'inerzia delle masse in rotazione. Indicando con $J_m$ il momento d'inerzia del rotore, con $J_{\text{rid}}$ l'inerzia del riduttore e con $J_L$ l'inerzia del link robotico a valle, l'equazione di equilibrio dinamico riportata all'albero veloce del motore assume la forma:
 \[
     C_m - \tau \cdot \frac{C_{\text{ext}}}{\eta} = \left( J_m + J_{\text{rid}} + \frac{\tau^2}{\eta} J_L \right) \dot{\omega}_m + \beta_m \omega_m
-    \label{eq:dinamica_motore_riduttore}
 \]
-dove $\beta_m$ è il coefficiente d'attrito viscoso e $C_{\text{ext}}$ la coppia esterna applicata al link. L'inerzia del carico riflessa scala con $\tau^2$: per $\tau = 0.01$ (riduzione $1:100$), $J_L$ riflessa all'asse motore risulta attenuata di un fattore $10^{-4}$, disaccoppiando la dinamica del rotore dalle variazioni di carico.
+dove $\beta_m$ rappresenta il coefficiente di attrito viscoso complessivo e $C_{\text{ext}}$ la coppia resistente esterna agente sul giunto. Come anticipato nella panoramica sulle trasmissioni, l'inerzia del carico vista dal motore risulta ridotta secondo un fattore quadratico $\tau^2$: ad esempio, impiegando un riduttore con $\tau = 0.01$ (rapporto $1:100$), il termine inerziale $J_L$ viene attenuato di un fattore $10^{-4}$, rendendo il servomotore quasi insensibile alle variazioni di configurazione del braccio robotico.
 
 \subsection{La Ruota Dentata Oziosa}
 
-Nei rotismi ordinari semplici ad assi paralleli, la \textbf{ruota oziosa} (\textit{idler gear}) è una ruota intermedia montata su perno fisso che ingrana simultaneamente con la ruota motrice e con la ruota condotta.
+Nei rotismi ordinari semplici ad assi paralleli, prende il nome di \textbf{ruota oziosa} (\textit{idler gear}) una ruota dentata intermedia che ingrana contemporaneamente con la ruota motrice a monte e con la ruota condotta a valle, senza prelevare o erogare potenza meccanica verso l'esterno.
 
 \noindent
 \begin{minipage}[c]{0.48\textwidth}
@@ -2396,11 +2393,12 @@ Nei rotismi ordinari semplici ad assi paralleli, la \textbf{ruota oziosa} (\text
         \centering
         \includegraphics[width=0.7\linewidth]{EsempioRuotaOziosa.jpg}
         \caption{Rotismo Semplice A Tre Ruote Con Ruota Intermedia Oziosa $b$.}
+        \label{fig:ruota_oziosa}
     \end{figure}
 \end{minipage}
 \hfill
 \begin{minipage}[c]{0.48\textwidth}
-    Per le coppie adiacenti di Figura~\ref{fig:ruota_oziosa}, con ruota motrice $a$, oziosa $b$ e condotta $c$:
+    Con riferimento allo schema riportato in figura, indicando con $a$ la ruota motrice, con $b$ la ruota oziosa e con $c$ la ruota condotta, i rapporti di trasmissione parziali valgono:
     \[
         \tau_{a,b} = \frac{\omega_b}{\omega_a} = -\frac{z_a}{z_b}
     \]
@@ -2411,28 +2409,29 @@ Nei rotismi ordinari semplici ad assi paralleli, la \textbf{ruota oziosa} (\text
 
 \vspace{0.3cm}
 \noindent
-Il rapporto globale tra ruota condotta $c$ e motrice $a$ è:
+Calcolando il rapporto di trasmissione complessivo $\tau_{a,c}$ tra l'uscita $c$ e l'ingresso $a$, si ottiene:
 \[
     \tau_{a,c} = \frac{\omega_c}{\omega_a} = \tau_{b,c} \cdot \tau_{a,b} = \left(-\frac{z_b}{z_c}\right) \cdot \left(-\frac{z_a}{z_b}\right) = +\frac{z_a}{z_c}
-    \label{eq:semplificazione_oziosa}
 \]
-Il parametro $z_b$ si semplifica algebricamente: il rapporto di velocità è indipendente dalle dimensioni della ruota oziosa. La ruota oziosa assolve a due funzioni:
+Si osserva che il numero di denti $z_b$ della ruota intermedia si semplifica algebricamente: di conseguenza, la ruota oziosa non modifica in alcun modo il modulo del rapporto di velocità, che rimane identico a quello di un accoppiamento diretto tra $a$ e $c$. Nella pratica progettuale, l'inserimento di una ruota oziosa svolge due funzioni principali:
 \begin{enumerate}
-    \item \textbf{Inversione Del Verso Di Rotazione}: L'accoppiamento diretto $a$-$c$ imporrebbe rotazione contraria ($\tau = -z_a/z_c$), mentre l'inserimento dell'oziosa garantisce rotazione concorde ($\tau > 0$).
-    \item \textbf{Superamento Di Distanze Meccaniche}: Collega assi distanziati senza impiegare ruote di raggio primitivo elevato, limitando gli ingombri.
+    \item \textbf{Inversione Del Verso Di Rotazione}: Mentre l'ingranamento diretto tra le due ruote $a$ e $c$ imporrebbe versi di rotazione opposti ($\tau_{a,c} = -z_a/z_c$), l'interposizione della ruota oziosa ristabilisce la concordanza di verso tra l'albero motore e l'albero condotto ($\tau_{a,c} > 0$).
+    \item \textbf{Collegamento Di Assi Distanziati}: Consente di trasmettere il moto tra due alberi posti a un interasse significativo senza dover aumentare il diametro primitivo delle ruote principali, contenendo così gli ingombri radiali e i momenti d'inerzia del sistema.
 \end{enumerate}
 
 \newpage
 
 \subsection{Caso Particolare: Meccanismo Pignone E Cremagliera}
 
-Il sistema \textbf{pignone e cremagliera} (\textit{rack and pinion}) rappresenta la configurazione limite di una coppia di ruote cilindriche in cui il raggio primitivo di una ruota tende all'infinito ($r_c \to \infty$), degenerando in un'asta dentata rettilinea (\textbf{cremagliera}). Il sistema opera come convertitore bidirezionale tra rotazione e traslazione:
+Il meccanismo \textbf{pignone e cremagliera} (\textit{rack and pinion}) costituisce il caso limite di un ingranaggio cilindrico ad assi paralleli in cui il raggio primitivo di una delle due ruote tende all'infinito ($r_c \to \infty$). In questa condizione, la circonferenza primitiva degenera in una linea retta e la ruota si trasforma in un'asta dentata rettilinea, denominata \textbf{cremagliera}, caratterizzata da denti a fianchi piani.
+
+Grazie alla reversibilità cinematica dell'accoppiamento, il dispositivo permette di convertire la morfologia del moto in modo bidirezionale:
 \begin{itemize}
-    \item Posto in rotazione il pignone di raggio primitivo $r_p$ alla velocità $\omega_p$ su perno fisso, la cremagliera trasla a velocità:
+    \item \textbf{Conversione Da Rotazione A Traslazione}: Alimentando il pignone di raggio primitivo $r_p$ con una velocità angolare $\omega_p$ attorno a un asse fisso, la cremagliera viene spinta in traslazione lineare con una velocità $v_c$ direttamente proporzionale alla rotazione:
     \[
         v_c = \omega_p \cdot r_p = \omega_p \cdot \frac{m z_p}{2}
     \]
-    \item Imponendo una traslazione alla cremagliera, le forze tangenziali sui denti trascinano in rotazione il pignone.
+    \item \textbf{Conversione Da Traslazione A Rotazione}: Viceversa, applicando uno spostamento lineare alla cremagliera, la spinta esercitata dai denti mette in rotazione il pignone attorno al proprio asse.
 \end{itemize}
 
 \begin{figure}[H]
@@ -2440,7 +2439,8 @@ Il sistema \textbf{pignone e cremagliera} (\textit{rack and pinion}) rappresenta
     \includegraphics[width=0.75\linewidth]{CremaglieraPignone.jpeg}
     \caption{Cinematica Del Sistema Pignone-Cremagliera: Conversione Tra Velocità Angolare $\omega_p$ E Velocità Traslatoria Uniforme $v_c$.}
 \end{figure}
-Il meccanismo è impiegato nei gruppi sterzo e nel \textbf{settimo asse di scorrimento} (\textit{runway track}) di robot industriali, ove lunghezze di corsa elevate impediscono l'adozione di viti a ricircolo di sfere a causa dell'inflessione e dell'innesco di velocità critiche flessionali.
+
+In ambito robotico e industriale, questa soluzione viene ampiamente impiegata negli assi lineari dei robot cartesiani a portale (\textit{gantry}) di grandi dimensioni e nel cosiddetto \textbf{settimo asse di traslazione a terra} (\textit{runway track}) dei manipolatori antropomorfi. Su corse metriche molto estese, infatti, il sistema a pignone e cremagliera sostituisce le viti a ricircolo di sfere, le quali risulterebbero soggette a un'eccessiva inflessione sotto il proprio peso e all'innesco di vibrazioni risonanti legate al raggiungimento della velocità critica flessionale.
 
 \newpage
 
