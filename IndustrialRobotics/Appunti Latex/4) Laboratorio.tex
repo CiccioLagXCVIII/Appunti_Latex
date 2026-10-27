@@ -7,7 +7,7 @@
 \usepackage{lmodern}
 
 % AA Layout Di Pagina E Tipografia
-\usepackage[margin=2cm, top=1.5cm, bottom=1.5cm]{geometry}
+\usepackage[margin=1.75cm, top=1.5cm, bottom=1.5cm]{geometry}
 \usepackage{parskip}
  \usepackage[expansion=false]{microtype}
 
@@ -2236,20 +2236,18 @@ In base ai requisiti (rigidezza elastica, rendimento energetico, ingombro e prec
 \newpage
 
 \section{Teoria Meccanica Dei Rotismi E Delle Ruote Dentate}
-
-Nelle trasmissioni meccaniche dei sistemi robotici, un \textbf{ingranaggio} è un sistema elementare che permette di trasmettere il moto rotatorio e la potenza meccanica tra due alberi mediante il contatto di forma tra i denti, garantendo un accoppiamento sincrono privo di slittamento macroscopico. Quando due o più ruote dentate vengono vincolate in successione all'interno di una catena cinematica, il sistema complessivo prende il nome di \textbf{rotismo} (o treno di ingranaggi).
+Nelle trasmissioni meccaniche, un \textbf{ingranaggio} è un sistema elementare che permette di trasmettere il moto rotatorio e la potenza meccanica tra due alberi mediante il contatto tra i denti, garantendo un accoppiamento sincrono. Quando due o più ruote dentate vengono poste in sequenza all'interno di una catena cinematica, il sistema complessivo prende il nome di \textbf{rotismo}.
 
 \subsection{Accoppiamento Cinematico E Geometria Degli Assi}
 
 Dal punto di vista costruttivo, la geometria delle ruote dentate viene scelta in funzione della disposizione spaziale reciproca tra l'asse di ingresso e l'asse di uscita:
 
 \begin{enumerate}
-    \item \textbf{Assi Paralleli}: In questa configurazione si impiegano \textbf{ingranaggi cilindrici}, le cui superfici primitive di riferimento sono costituite da cilindri retti che rotolano l'uno sull'altro senza strisciare. Le dentature possono essere realizzate a \textbf{denti diritti}, che risultano costruttivamente semplici e non generano spinte assiali sui cuscinetti ma producono maggiore rumorosità e vibrazioni ad alte velocità, oppure a \textbf{denti elicoidali}. In quest'ultimo caso, l'ingranamento avviene in modo progressivo lungo l'elica, garantendo una maggiore capacità di carico e una superiore silenziosità operativa; di contro, l'inclinazione dei denti introduce una componente di forza assiale che richiede l'impiego di cuscinetti reggispinta.
-    \item \textbf{Assi Concorrenti (O Incidenti)}: Quando gli alberi di trasmissione sono complanari e i loro assi si intersecano in un punto (tipicamente formando un angolo di $90^\circ$, come avviene nei meccanismi differenziali dei polsi sferici robotici), si adottano gli \textbf{ingranaggi conici}. In questo caso, le superfici primitive sono rappresentate da tronchi di cono il cui vertice comune coincide esattamente con il punto di intersezione degli assi. Analogamente al caso cilindrico, i denti possono avere uno sviluppo diritto oppure spiroidale (ad esempio con profilo Gleason) per incrementare la gradualità della trasmissione.
-    \item \textbf{Assi Sghembi}: Quando gli assi non sono né paralleli né incidenti, la trasmissione del moto viene realizzata tramite ruote elicoidali per assi sghembi, ingranaggi ipoidi oppure mediante l'accoppiamento \textbf{vite senza fine e ruota elicoidale}. Quest'ultima soluzione permette di ottenere rapporti di riduzione molto elevati in uno spazio estremamente compatto e offre la proprietà dell'\textbf{irreversibilità meccanica}: il moto può essere trasmesso unicamente dalla vite (motrice) alla ruota dentata (condotta) e non viceversa, consentendo di bloccare staticamente il carico in posizione anche quando il servomotore viene disalimentato.
+    \item \textbf{Assi Paralleli}: In questo caso si utilizzano \textbf{Ingranaggi Cilindrici}. Le superfici di riferimento sono costituite da cilindri che rotolano l'uno sull'altro senza strisciare. Le dentature possono essere realizzate a \textbf{Denti Diritti}, che risultano costruttivamente semplici e non generano spinte assiali sui cuscinetti ma producono maggiore rumorosità e vibrazioni ad alte velocità, oppure a \textbf{Denti Elicoidali}. In quest'ultimo caso, l'ingranamento avviene in modo progressivo (lungo l'elica), garantendo una maggiore capacità di carico e una superiore silenziosità operativa. Di contro, l'inclinazione dei denti introduce una componente di forza assiale che richiede l'impiego di cuscinetti specifici.
+    \item \textbf{Assi Incidenti}: In questo caso si utilizzano \textbf{Ingranaggi Conici}. Le superfici di riferimento sono costituite da tronchi di cono, il cui vertice comune coincide con il punto di intersezione degli assi (che tipicamente formano un angolo di $90^\circ$, come nei meccanismi dei polsi sferici). Anche in questo caso, le dentature possono essere a \textbf{Denti Dritti} oppure a \textbf{Denti Elicoidali} (come per la dentatura Gleason).
+    \item \textbf{Assi Sghembi}: In questo caso si utilizzano \textbf{Ingranaggi Elicoidali} per assi sghembi oppure il sistema \textbf{Vite Senza Fine - Ingranaggio Elicoidale}. Gli ingranaggi elicoidali consentono di trasmettere il moto tra due alberi disposti in modo arbitrario, ma richiedono un'accurata progettazione. Il sistema vite senza fine e ruota elicoidale, invece, permette di ottenere rapporti di riduzione molto elevati in uno spazio estremamente compatto e gode della proprietà dell'\textbf{Irreversibilità Meccanica}: il moto può essere trasmesso unicamente dalla vite (motrice) alla ruota dentata (condotta) e non viceversa, consentendo di bloccare il carico in posizione anche quando il servomotore viene disalimentato.
 \end{enumerate}
-
-Nelle figure seguenti vengono riportate le principali configurazioni geometriche e i relativi schemi funzionali di contatto.
+Nella seguente figura, vengono riportate le principali configurazioni geometriche e i relativi schemi funzionali di contatto.
 
 \begin{figure}[H]
     \centering
@@ -2266,60 +2264,62 @@ Nelle figure seguenti vengono riportate le principali configurazioni geometriche
 \end{figure}
 
 \newpage
+
 \subsection{Classificazione Meccanica Dei Rotismi}
 
-In base alla disposizione cinematica degli assi e alla mobilità della struttura di supporto degli alberi, i rotismi si dividono nelle seguenti categorie:
+In base alla disposizione degli assi e alla mobilità della struttura di supporto, i rotismi si dividono in:
 
 \begin{itemize}
-    \item \textbf{Rotismo Piano}: Tutti gli assi di rotazione delle ruote sono reciprocamente paralleli; di conseguenza, le traiettorie descritte dai punti appartenenti alle ruote giacciono su piani paralleli tra loro e ortogonali agli assi.
-    \item \textbf{Rotismo Sferico}: Gli assi di rotazione delle ruote sono concorrenti in un unico punto fisso nello spazio e le traiettorie dei punti si sviluppano lungo superfici sferiche concentriche.
-    \item \textbf{Rotismo Ordinario}: È caratterizzato dal fatto che tutti gli assi di rotazione delle ruote sono \textbf{fissi rispetto al telaio} (cassa del riduttore). Al suo interno si distinguono due ulteriori configurazioni:
+    \item \textbf{Rotismo Piano}: Tutti gli assi di rotazione delle ruote sono reciprocamente paralleli. Di conseguenza, le traiettorie descritte giacciono su piani paralleli tra loro e ortogonali agli assi.
+    \item \textbf{Rotismo Sferico}: Gli assi di rotazione delle ruote sono incidenti in un unico punto fisso nello spazio e le traiettorie dei punti si sviluppano lungo superfici sferiche concentriche.
+    \item \textbf{Rotismo Ordinario}: È caratterizzato dal fatto che tutti gli assi di rotazione sono \textbf{Fissi Rispetto Al Telaio} (cassa del riduttore). Al suo interno si distinguono due ulteriori configurazioni:
     \begin{itemize}
-        \item \textbf{Rotismo Semplice}: Su ciascun albero della trasmissione è calettata un'unica ruota dentata.
-        \item \textbf{Rotismo Composto}: Almeno un albero intermedio porta calettate due o più ruote dentate rese solidali tra loro, le quali ruotano quindi con la medesima velocità angolare.
+        \item \textbf{Rotismo Semplice}: Su ciascun albero della trasmissione è fissata un'unica ruota dentata.
+        \item \textbf{Rotismo Composto}: Su almeno un albero intermedio sono fissate due o più ruote dentate solidali tra loro, che ruotano quindi con la stessa velocità angolare.
     \end{itemize}
-    \item \textbf{Rotismo Epicicloidale (O Planetario)}: È una configurazione in cui almeno un asse di rotazione non è fisso, ma \textbf{è mobile nello spazio}. Le ruote ad asse mobile, dette \textit{satelliti} (o pianeti), ruotano attorno al proprio asse e contemporaneamente rivoluzionano lungo una traiettoria circolare, trascinate da un elemento rotante detto \textit{portasatelliti} imperniato sull'asse principale del sistema.
+    \item \textbf{Rotismo Epicicloidale (O Planetario)}: È una configurazione in cui almeno un asse di rotazione non è fisso, ma \textbf{Mobile Nello Spazio}. Le ruote ad asse mobile, dette \textit{satelliti} (o pianeti), ruotano attorno al proprio asse e contemporaneamente rivoluzionano lungo una traiettoria circolare, trascinate da un elemento rotante detto \textit{portasatelliti} imperniato sull'asse principale del sistema.
 \end{itemize}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\linewidth]{EsempiRotismo.jpeg}
-    \caption{Tipologie Strutturali Di Rotismi: Confronto Tra Rotismi Ordinari A Cascata (Semplici E Composti) E Rotismi Epicicloidali Ad Assi Planetari Mobili.}
+    \includegraphics[width=0.7\linewidth]{EsempiRotismo.jpeg}
 \end{figure}
 
-\newpage
 \subsection{Rapporto Di Trasmissione: Analisi Cinematica E Statica}
 
-Per caratterizzare il comportamento cinematico di un meccanismo, si definisce il \textbf{Rapporto Di Trasmissione} (o rapporto di velocità) $\tau$ come il rapporto algebrico tra la velocità angolare dell'albero di uscita ($\omega_{\text{out}}$) e quella dell'albero di ingresso ($\omega_{\text{in}}$):
+Per caratterizzare il comportamento cinematico di un meccanismo, si definisce il \textbf{Rapporto Di Trasmissione} $\tau$ come il rapporto tra la velocità angolare dell'albero di uscita ($\omega_{\text{out}}$) e quella dell'albero di ingresso ($\omega_{\text{in}}$):
 \[
     \tau = \frac{\omega_{\text{out}}}{\omega_{\text{in}}}
 \]
-In ambito industriale viene spesso utilizzato anche il \textbf{Rapporto Di Riduzione} $i$, definito come il reciproco del rapporto di trasmissione ($i = 1/\tau = \omega_{\text{in}}/\omega_{\text{out}}$). Nel seguito si adotterà la convenzione basata su $\tau$, per cui un riduttore di velocità è sempre caratterizzato dalla condizione $|\tau| < 1$.
+In ambito industriale viene spesso utilizzato anche il \textbf{Rapporto Di Riduzione} $i$, definito come il reciproco del rapporto di trasmissione ($i = 1/\tau = \omega_{\text{in}}/\omega_{\text{out}}$).
+% Nel seguito si adotterà la convenzione basata su $\tau$, per cui un riduttore di velocità è sempre caratterizzato dalla condizione $|\tau| < 1$.
 
 \subsubsection{Ingranaggio Singolo Elementare Ad Assi Paralleli}
-Consideriamo una coppia di ruote dentate cilindriche $a$ (motrice) e $b$ (condotta) montate su assi fissi paralleli, caratterizzate rispettivamente da un numero di denti $z_a, z_b$ e da raggi primitivi $r_a, r_b$. Affinché le due ruote possano ingranare correttamente, devono possedere lo stesso \textbf{modulo normale} $m$ (espresso in $\si{\milli\meter}$), definito come il rapporto tra il diametro primitivo $d = 2r$ e il numero di denti $z$:
+Considerando due ruote cilindriche $a$ (motrice/ingresso) con numero di denti $z_a$ e raggio primitivo $r_a$ e $b$ (condotta/uscita) con numero di denti $z_b$ e raggio primitivo $r_b$, montate su assi fissi paralleli, affinché le due ruote possano ingranare correttamente devono avere lo stesso \textbf{Modulo Normale} (in $\si{\milli\meter}$), che è definito come il rapporto tra il diametro della ruota dentata e il numero di denti:
 \[
-    m = \frac{d_a}{z_a} = \frac{d_b}{z_b} \implies r_a = \frac{m z_a}{2}, \quad r_b = \frac{m z_b}{2}
+    m_{i} = \frac{d_{i}}{z_{i}} = \frac{2 \, r_{i}}{z_{i}} \qquad\longrightarrow\qquad r_{i} = \frac{m_{i} \, z_{i}}{2}
 \]
-La distanza circonferenziale tra due denti omologhi consecutivi lungo la circonferenza primitiva è detta \textbf{passo primitivo} e vale $p = \pi m$. Poiché nel punto di contatto $C$ tra le circonferenze primitive si realizza una condizione di rotolamento puro senza strisciamento, le velocità periferiche tangenziali delle due ruote devono coincidere in modulo:
+Inoltre, la distanza tra due denti consecutivi lungo la circonferenza è detta \textbf{Passo Primitivo} e corrisponde a $p = \pi m$. Poiché nel punto di contatto $C$ tra le circonferenze primitive si realizza una condizione di rotolamento puro senza strisciamento, le velocità tangenziali delle due ruote devono coincidere in modulo, ovvero:
 \[
-    v_c = \omega_a r_a = -\omega_b r_b
+    \omega_{a} r_{a} = -\omega_{b} r_{b} \qquad\longrightarrow\qquad \frac{\omega_{b}}{\omega_{a}} = -\frac{r_{a}}{r_{b}}
 \]
-dove il segno negativo tiene conto del fatto che, in un ingranaggio a dentatura esterna, le due ruote ruotano in verso opposto. Esplicitando il rapporto tra le velocità angolari e sostituendo le espressioni dei raggi primitivi $r_a$ e $r_b$, si ottiene:
+Dove il segno meno tiene conto che nelle ruote a dentatura esterna le due ruote ruotano in verso opposto. Sostituendo il valore di $r_{a}$ e $r_{b}$ in funzione del modulo normale e del numero di denti, si ottiene la relazione fondamentale che lega il rapporto di trasmissione $\tau$ al numero di denti delle ruote:
 \[
-    \boxed{\tau_{a,b} = \frac{\omega_b}{\omega_a} = -\frac{r_a}{r_b} = -\frac{z_a}{z_b}}
+    \boxed{
+        \tau_{a, b} = \frac{\omega_{b}}{\omega_{a}} = -\frac{r_{a}}{r_{b}} = -\frac{m z_{a}/2}{m z_{b}/2} = -\frac{z_{a}}{z_{b}}
+    }
 \]
 Nel caso in cui l'accoppiamento avvenga tramite una corona a dentatura interna, entrambe le ruote mantengono lo stesso verso di rotazione e la relazione diventa positiva ($\tau_{a,b} = +z_a/z_b$).
 
 \subsubsection{Rotismo Composto A Cascata}
-Quando nelle applicazioni robotiche è necessario realizzare rapporti di riduzione molto spinti ($|\tau| \ll 1$), l'impiego di un singolo stadio risulterebbe impraticabile, poiché richiederebbe una ruota condotta con un numero di denti $z_b = z_a / |\tau|$ eccessivo e un conseguente ingombro radiale inaccettabile. Per superare questo limite si ricorre al \textbf{rotismo composto}, suddividendo la riduzione complessiva su più stadi collegati in serie.
+Quando è necessario un rapporto di riduzione elevato ($|\tau| \ll 1$), l'impiego di un singolo stadio risulterebbe impraticabile, poiché richiederebbe una ruota condotta con un numero di denti $z_b = z_a / |\tau|$ eccessivo e un conseguente ingombro radiale inaccettabile. Per superare questo limite si ricorre al \textbf{rotismo composto}, suddividendo la riduzione complessiva su più stadi collegati in serie.
 
 Considerando un rotismo ordinario formato da $k$ coppie di ruote in cascata, interposte tra l'albero motore iniziale $1$ e l'albero condotto finale $n$, il rapporto di trasmissione globale $\tau$ è pari al prodotto dei rapporti di trasmissione dei singoli stadi:
 \[
     \tau = \frac{\omega_n}{\omega_1} = \prod_{i=1}^{k} \tau_{i} = (-1)^{p_{\text{est}}} \frac{\prod z_{\text{motrici}}}{\prod z_{\text{condotte}}}
 \]
 dove l'esponente $p_{\text{est}}$ indica il numero complessivo di accoppiamenti a dentatura esterna presenti nella catena, ciascuno dei quali introduce un'inversione del verso di rotazione.
-\newpage
+
 \subsubsection*{Esempio Analitico: Rotismo Composto A Due Stadi}
 
 Si consideri il rotismo composto a due stadi mostrato in figura: il pignone motore $a$ ingrana con la ruota $b$; sullo stesso albero intermedio è calettata in modo solidale la ruota $c$ (per cui si ha $\omega_c = \omega_b$), la quale trasmette infine il moto alla ruota di uscita $d$.
@@ -2352,28 +2352,31 @@ Andando a sostituire le espressioni di $\tau_{a,b}$ e $\tau_{c,d}$ in funzione d
     \tau_{a,d} = \left(-\frac{z_c}{z_d}\right) \cdot \left(-\frac{z_a}{z_b}\right) = +\frac{z_a z_c}{z_b z_d}
 \]
 Si nota che la presenza di due ingranamenti esterni consecutivi comporta una doppia inversione di moto ($\tau_{a,d} > 0$), facendo sì che l'albero di uscita $d$ ruoti nello stesso verso dell'albero motore $a$.
-
+\newpage
 \subsubsection{Bilancio Di Potenza Ed Equilibrio Delle Coppie}
-Supponendo un contesto ideale, ovvero in assenza di perdite per attrito tra i denti e nei cuscinetti (\textbf{rendimento unitario}, $\eta = 1$), a regime stazionario ($\dot{\omega} = 0$) tutta la potenza meccanica in ingresso viene trasferita integralmente all'albero di uscita:
+Supponendo un contesto ideale, ovvero in assenza di perdite per attrito (\textbf{rendimento unitario}, $\eta = 1$) e a regime stazionario ($\dot{\omega} = 0$) tutta la potenza meccanica in ingresso viene trasferita all'albero di uscita:
 \[
-    P_{\text{in}} = P_{\text{out}} \implies C_m \cdot \omega_m = C_r \cdot \omega_r
+    P_{\text{in}} = P_{\text{out}} \implies C_{out} \cdot \omega_{out} = C_{in} \cdot \omega_{in}
 \]
 Dove:
 \begin{itemize}
-    \item \textbf{Coppia Motrice ($C_m$)}: È la coppia applicata dall'attuatore all'albero di ingresso, espressa in $\si{\newton\meter}$.
-    \item \textbf{Velocità Angolare Motrice ($\omega_m = \omega_{\text{in}}$)}: È la velocità di rotazione dell'albero veloce lato motore, espressa in $\si{\radian\per\second}$.
-    \item \textbf{Coppia Resistente ($C_r$)}: È la coppia utile erogata al carico sull'albero di uscita del giunto, espressa in $\si{\newton\meter}$.
-    \item \textbf{Velocità Angolare Di Uscita ($\omega_r = \omega_{\text{out}}$)}: È la velocità di rotazione dell'albero lento lato carico, espressa in $\si{\radian\per\second}$.
+    \item \textbf{$C_{in}$}: È la coppia applicata dall'attuatore all'albero di ingresso $[\si{\newton\meter}]$
+    \item \textbf{$\omega_{\text{in}}$}: È la velocità di rotazione dell'albero di ingresso [$\si{\radian\per\second}$]
+    \item \textbf{$C_{out}$}: È la coppia erogata al carico dall'albero di uscita (sul giunto) $[\si{\newton\meter}]$
+    \item \textbf{$\omega_{\text{out}}$}: È la velocità di rotazione dell'albero lato carico [$\si{\radian\per\second}$]
 \end{itemize}
-
-Andando a sostituire la definizione del rapporto di trasmissione $\tau = \omega_r / \omega_m$ nella relazione di bilancio energetico, si ricava il legame tra le coppie:
+L'equazione può essere riscritta come
 \[
-    \frac{C_r}{C_m} = \frac{\omega_m}{\omega_r} = \frac{1}{\tau} \implies \boxed{C_r = \frac{1}{\tau} \cdot C_m}
+    C_{out} =  C_{in} \cdot \frac{\omega_{in}}{\omega_{out}}
 \]
-Questo risultato dimostra chiaramente come un riduttore di velocità ($|\tau| < 1$) agisca contemporaneamente da moltiplicatore di coppia, amplificando la coppia erogata dal motore secondo un fattore pari a $1/|\tau|$.
+Ricordando che il \textbf{rapporto di trasmissione} è $\tau =  \frac{\omega_{out}}{\omega_{in}}$ si ottiene
+\[
+    \boxed{C_{out} =  C_{in} \cdot \frac{1}{\tau}}
+\]
+Questo risultato dimostra che un riduttore di velocità ($|\tau| < 1$) non solo riduce effettivamente la velocità angolare vista in uscita, ma amplifica anche la coppia di un valore $\frac{1}{|\tau|}$
 
 \paragraph{Caso Reale Con Rendimento Meccanico E Dinamica Delle Masse}
-Nei sistemi reali, gli attriti di strisciamento tra i fianchi dei denti, le perdite per sbattimento del lubrificante (\textit{churning losses}) e gli attriti volventi nei supporti determinano una dissipazione energetica, quantificata da un \textbf{rendimento meccanico} $\eta < 1$ (tipicamente $\eta \approx 0.95 \div 0.98$ per singolo stadio cilindrico di precisione). Il bilancio di potenza e la coppia effettivamente disponibile al carico diventano quindi:
+Nei sistemi reali, gli attriti comportano una dissipazione energetica, quantificata da un \textbf{Rendimento Meccanico} $\eta < 1$ (tipicamente $\eta \approx 0.95 \div 0.98$ per singolo stadio cilindrico). Il bilancio di potenza e la coppia effettivamente disponibile al carico diventano quindi:
 \[
     P_{\text{out}} = \eta \cdot P_{\text{in}} \implies C_r \omega_r = \eta \cdot (C_m \omega_m) \implies C_r = \eta \cdot \frac{C_m}{\tau}
 \]
@@ -2382,10 +2385,16 @@ Durante i transitori dinamici ($\dot{\omega}_m \neq 0$), occorre inoltre conside
     C_m - \tau \cdot \frac{C_{\text{ext}}}{\eta} = \left( J_m + J_{\text{rid}} + \frac{\tau^2}{\eta} J_L \right) \dot{\omega}_m + \beta_m \omega_m
 \]
 dove $\beta_m$ rappresenta il coefficiente di attrito viscoso complessivo e $C_{\text{ext}}$ la coppia resistente esterna agente sul giunto. Come anticipato nella panoramica sulle trasmissioni, l'inerzia del carico vista dal motore risulta ridotta secondo un fattore quadratico $\tau^2$: ad esempio, impiegando un riduttore con $\tau = 0.01$ (rapporto $1:100$), il termine inerziale $J_L$ viene attenuato di un fattore $10^{-4}$, rendendo il servomotore quasi insensibile alle variazioni di configurazione del braccio robotico.
+\newpage
 
 \subsection{La Ruota Dentata Oziosa}
+La \textbf{Ruota Dentata Oziosa} è una ruota dentata intermedia, posta tra due ruote principali, che non trasmette potenza meccanica o riduce/amplifica la velocità angolare.
 
-Nei rotismi ordinari semplici ad assi paralleli, prende il nome di \textbf{ruota oziosa} (\textit{idler gear}) una ruota dentata intermedia che ingrana contemporaneamente con la ruota motrice a monte e con la ruota condotta a valle, senza prelevare o erogare potenza meccanica verso l'esterno.
+Nella pratica progettuale, l'inserimento di una ruota oziosa svolge due funzioni principali:
+\begin{enumerate}
+    \item \textbf{Inversione Del Verso Di Rotazione}: Poichè l'ingranamento diretto tra due ruote $a$ e $b$ imporrebbe versi di rotazione opposti ($\tau_{a,b} = -z_a/z_b$), con l'utilizzo della ruota oziosa si ristabilisce la concordanza di verso tra l'albero motore e l'albero condotto ($\tau_{a,b} > 0$).
+    \item \textbf{Collegamento Di Assi Distanziati}: In pratica, permette di trasmettere il moto tra due alberi distanti senza modificare il diametro delle ruote principali, contenendo così gli ingombri radiali e i momenti d'inerzia del sistema.
+\end{enumerate}
 
 \noindent
 \begin{minipage}[c]{0.48\textwidth}
@@ -2413,25 +2422,21 @@ Calcolando il rapporto di trasmissione complessivo $\tau_{a,c}$ tra l'uscita $c$
 \[
     \tau_{a,c} = \frac{\omega_c}{\omega_a} = \tau_{b,c} \cdot \tau_{a,b} = \left(-\frac{z_b}{z_c}\right) \cdot \left(-\frac{z_a}{z_b}\right) = +\frac{z_a}{z_c}
 \]
-Si osserva che il numero di denti $z_b$ della ruota intermedia si semplifica algebricamente: di conseguenza, la ruota oziosa non modifica in alcun modo il modulo del rapporto di velocità, che rimane identico a quello di un accoppiamento diretto tra $a$ e $c$. Nella pratica progettuale, l'inserimento di una ruota oziosa svolge due funzioni principali:
-\begin{enumerate}
-    \item \textbf{Inversione Del Verso Di Rotazione}: Mentre l'ingranamento diretto tra le due ruote $a$ e $c$ imporrebbe versi di rotazione opposti ($\tau_{a,c} = -z_a/z_c$), l'interposizione della ruota oziosa ristabilisce la concordanza di verso tra l'albero motore e l'albero condotto ($\tau_{a,c} > 0$).
-    \item \textbf{Collegamento Di Assi Distanziati}: Consente di trasmettere il moto tra due alberi posti a un interasse significativo senza dover aumentare il diametro primitivo delle ruote principali, contenendo così gli ingombri radiali e i momenti d'inerzia del sistema.
-\end{enumerate}
+Si osserva che il numero di denti $z_b$ della ruota intermedia si semplifica algebricamente: di conseguenza, la ruota oziosa non modifica in alcun modo il modulo del rapporto di velocità, che rimane identico a quello di un accoppiamento diretto tra $a$ e $c$.
 
 \newpage
 
 \subsection{Caso Particolare: Meccanismo Pignone E Cremagliera}
 
-Il meccanismo \textbf{pignone e cremagliera} (\textit{rack and pinion}) costituisce il caso limite di un ingranaggio cilindrico ad assi paralleli in cui il raggio primitivo di una delle due ruote tende all'infinito ($r_c \to \infty$). In questa condizione, la circonferenza primitiva degenera in una linea retta e la ruota si trasforma in un'asta dentata rettilinea, denominata \textbf{cremagliera}, caratterizzata da denti a fianchi piani.
+Il meccanismo \textbf{Pignone E Cremagliera} costituisce un caso limite di un \textit{Rotismo Piano} a due ingranaggi, in cui il raggio di una delle due ruote dentate tende a infinito ($r_c \to \infty$). In questa condizione, la circonferenza degenera in una linea retta e la ruota si trasforma in un'asta dentata rettilinea, denominata \textbf{Cremagliera}, caratterizzata da denti a fianchi piani.
 
-Grazie alla reversibilità cinematica dell'accoppiamento, il dispositivo permette di convertire la morfologia del moto in modo bidirezionale:
+Grazie alla reversibilità cinematica dell'accoppiamento, il dispositivo permette di convertire il moto in modo bidirezionale:
 \begin{itemize}
-    \item \textbf{Conversione Da Rotazione A Traslazione}: Alimentando il pignone di raggio primitivo $r_p$ con una velocità angolare $\omega_p$ attorno a un asse fisso, la cremagliera viene spinta in traslazione lineare con una velocità $v_c$ direttamente proporzionale alla rotazione:
+    \item \textbf{Conversione Da Rotazione A Traslazione}: Fissando il pignone (di raggio $r_{p}$) e alimentandolo con una velocità angolare $\omega_p$, la cremagliera viene spinta in traslazione lineare con una velocità $v_c$ direttamente proporzionale alla rotazione:
     \[
         v_c = \omega_p \cdot r_p = \omega_p \cdot \frac{m z_p}{2}
     \]
-    \item \textbf{Conversione Da Traslazione A Rotazione}: Viceversa, applicando uno spostamento lineare alla cremagliera, la spinta esercitata dai denti mette in rotazione il pignone attorno al proprio asse.
+    \item \textbf{Conversione Da Traslazione A Rotazione}: Applicando uno spostamento lineare alla cremagliera, la spinta esercitata dai denti mette in rotazione il pignone attorno al proprio asse.
 \end{itemize}
 
 \begin{figure}[H]
@@ -2440,105 +2445,104 @@ Grazie alla reversibilità cinematica dell'accoppiamento, il dispositivo permett
     \caption{Cinematica Del Sistema Pignone-Cremagliera: Conversione Tra Velocità Angolare $\omega_p$ E Velocità Traslatoria Uniforme $v_c$.}
 \end{figure}
 
-In ambito robotico e industriale, questa soluzione viene ampiamente impiegata negli assi lineari dei robot cartesiani a portale (\textit{gantry}) di grandi dimensioni e nel cosiddetto \textbf{settimo asse di traslazione a terra} (\textit{runway track}) dei manipolatori antropomorfi. Su corse metriche molto estese, infatti, il sistema a pignone e cremagliera sostituisce le viti a ricircolo di sfere, le quali risulterebbero soggette a un'eccessiva inflessione sotto il proprio peso e all'innesco di vibrazioni risonanti legate al raggiungimento della velocità critica flessionale.
+In ambito robotico, questa soluzione viene impiegata negli assi lineari dei robot cartesiani a portale (\textit{gantry}) di grandi dimensioni. Su corse metriche molto estese, infatti, il sistema a pignone e cremagliera sostituisce le viti a ricircolo di sfere, le quali risulterebbero soggette a un'eccessiva inflessione sotto il proprio peso e all'innesco di vibrazioni risonanti legate al raggiungimento della velocità critica flessionale.
 
 \newpage
 
 \section{Rotismi Epicicloidali (O Planetari)}
-Un \textbf{rotismo epicicloidale} (o riduttore planetario, \textit{planetary gear}) è una catena cinematica di ruote dentate in cui gli assi di una o più ruote \textbf{orbitano nello spazio} attorno all'asse principale anziché essere fissi rispetto al telaio.
+Un \textbf{Rotismo Epicicloidale} (o riduttore planetario, \textit{planetary gear}) è una catena cinematica di ruote dentate in cui gli assi di rotazione di una o più ruote non sono fissi rispetto al telaio, ma \textbf{Sono Mobili Nello Spazio} e orbitano attorno all'asse principale del sistema.
 
-Questa topologia presenta tre vantaggi principali:
+In ambito robotico e industriale, questa particolare topologia costruttiva presenta tre vantaggi principali rispetto ai rotismi ordinari:
 \begin{itemize}
-    \item \textbf{Rapporti Di Riduzione Elevati:} Da $3:1$ a $10:1$ per stadio singolo, oltre $1\,000:1$ in stadi multipli integrati entro un carter coassiale a simmetria cilindrica;
-    \item \textbf{Elevatissima Densità di Coppia}: Ripartizione della coppia d'ingresso su più satelliti (tipicamente 3, 4 o 5), con conseguente riduzione delle pressioni di contatto hertziane;
-    \item \textbf{Bilanciamento Intrinseco Delle Forze} radiali sull'albero centrale, che annulla le reazioni vincolari flettenti sui cuscinetti del motore.
+    \item \textbf{Rapporti Di Riduzione Elevati}: Consentono di ottenere rapporti di riduzione compresi tra $3:1$ e $10:1$ in un singolo stadio, arrivando a superare $1\,000:1$ collegando più stadi in cascata all'interno di un'unica cassa coassiale compatta e a simmetria cilindrica.
+    \item \textbf{Elevatissima Densità Di Coppia}: A differenza dei rotismi ordinari in cui il carico è sostenuto da una singola coppia di denti in presa, nei riduttori epicicloidali la coppia d'ingresso viene ripartita simultaneamente su più ruote intermedie (tipicamente 3, 4 o 5 satelliti). Ciò riduce sensibilmente le pressioni di contatto hertziane sui fianchi dei denti e permette di trasmettere coppie molto elevate con ingombri ridotti.
+    \item \textbf{Bilanciamento Intrinseco Delle Forze}: La disposizione simmetrica dei satelliti attorno all'albero centrale fa sì che le forze radiali mutue si annullino reciprocamente, eliminando le reazioni vincolari flettenti sui cuscinetti dell'albero motore.
 \end{itemize}
 
 \subsection{Componenti Funzionali Dell'Architettura Epicicloidale}
-
-Come illustrato nello schema seguente, un rotismo epicicloidale a un grado di libertà è costituito da quattro sottosistemi coassiali:
+Come illustrato nello schema seguente, un rotismo epicicloidale elementare è costituito da quattro componenti coassiali principali:
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\linewidth]{Epicicloidale.jpeg}
+    \includegraphics[width=0.5\linewidth]{Epicicloidale.jpeg}
     \caption{Architettura Costruttiva Di Un Riduttore Epicicloidale: Solare Centrale ($s$), Terna Di Satelliti Intermedi ($p$), Portasatelliti O Planetario ($c$) E Corona Circolare Esterna A Dentatura Interna ($r$).}
 \end{figure}
 
 \begin{enumerate}
-    \item \textbf{Solare (\textit{Sun Gear}, $s$)}: Ruota dentata cilindrica centrale a dentatura esterna montata sull'albero d'ingresso, con $z_s$ denti e velocità angolare $\omega_s$.
-    \item \textbf{Satelliti (\textit{Planet Gears}, $p$)}: $n_p \ge 3$ ruote dentate identiche con $z_p$ denti, equispaziate angolarmente a $360^\circ/n_p$, che ingranano simultaneamente con il solare all'interno e con la corona all'esterno.
-    \item \textbf{Portasatelliti o Planetario (\textit{Planet Carrier}, $c$)}: Braccio strutturale imperniato sull'albero principale con velocità angolare $\omega_c$, recante i perni su cui ruotano liberamente i satelliti tramite cuscinetti a rullini.
-    \item \textbf{Corona (\textit{Ring Gear}, $r$)}: Anello rigido a \textbf{dentatura interna} concentrico al solare, con $z_r$ denti e velocità angolare $\omega_r$, entro cui alloggiano i satelliti.
+    \item \textbf{Solare (\textit{Sun Gear}, $s$)}: È la ruota dentata cilindrica centrale a dentatura esterna, tipicamente calettata sull'albero veloce d'ingresso, caratterizzata da un numero di denti $z_s$ e da una velocità angolare $\omega_s$.
+    \item \textbf{Satelliti (\textit{Planet Gears}, $p$)}: Sono un insieme di $n_p \ge 3$ ruote dentate identiche a dentatura esterna, ciascuna con numero di denti $z_p$, disposte in modo angolarmente equispaziato ($360^\circ/n_p$) attorno al solare. I satelliti ingranano simultaneamente sia all'interno con il solare, sia all'esterno con la corona, combinando il moto di rotazione attorno al proprio asse con il moto di rivoluzione attorno all'asse centrale.
+    \item \textbf{Portasatelliti O Planetario (\textit{Planet Carrier}, $c$)}: È l'elemento strutturale rotante, imperniato sull'asse principale del sistema e animato da velocità angolare $\omega_c$. Esso sostiene i perni eccentrici sui quali ruotano liberamente i satelliti mediante cuscinetti a rullini.
+    \item \textbf{Corona (\textit{Ring Gear}, $r$)}: È un anello circolare esterno rigido, concentrico al solare e provvisto di \textbf{dentatura interna} con numero di denti $z_r$ e velocità angolare $\omega_r$, all'interno del quale alloggiano e ingranano i satelliti.
 \end{enumerate}
 
-La congruenza geometrica dei diametri primitivi a parità di modulo $m$ ($d_r = d_s + 2d_p$) impone il vincolo sui numeri di denti:
+Affinché il montaggio geometrico dei componenti coassiali sia fisicamente possibile, il raggio primitivo della corona esterna $r_r$ deve essere pari alla somma del raggio primitivo del solare $r_s$ e del diametro primitivo di un satellite $2r_p$ (ovvero, in termini di diametri primitivi, $d_r = d_s + 2d_p$). Poiché tutte le ruote devono avere lo stesso modulo normale $m$ per poter ingranare correttamente ($d_i = m z_i$), la congruenza geometrica impone un vincolo fondamentale sui numeri di denti:
 \[
-    z_r = z_s + 2 z_p
+    m z_r = m z_s + 2 m z_p \implies \boxed{z_r = z_s + 2 z_p}
 \]
+
 \newpage
 \subsection{Formalizzazione Analitica: La Formula Di Willis}
+La mobilità degli assi di rotazione dei satelliti nello spazio impedisce di applicare direttamente le relazioni cinematiche viste per i rotismi ordinari. Per studiare analiticamente il sistema si ricorre quindi al \textbf{Metodo Di Inversione Cinematica Di Willis}: si applica idealmente a tutto il meccanismo una rotazione rigida fittizia uguale e contraria a quella del portasatelliti, ovvero pari a $-\omega_c$.
 
-La mobilità degli assi dei satelliti impedisce l'applicazione diretta delle relazioni per rotismi ordinari. Si ricorre quindi al \textbf{metodo di inversione cinematica di Willis}, imponendo al sistema la velocità angolare virtuale $-\omega_c$. Nel sistema relativo solidale al portasatelliti ($\omega_c' = \omega_c - \omega_c = 0$), il meccanismo opera come un rotismo ordinario ad assi fissi.
+Così facendo, un osservatore solidale al portasatelliti vede quest'ultimo fermo ($\omega_c' = \omega_c - \omega_c = 0$) e il meccanismo si riduce apparentemente a un rotismo ordinario ad assi fissi, in cui il solare ruota con velocità relativa $\omega_s' = \omega_s - \omega_c$ e la corona con velocità relativa $\omega_r' = \omega_r - \omega_c$.
 
-Il \textbf{rapporto fondamentale di Willis} $p_0$ è definito dal rapporto tra le velocità relative della corona e del solare rispetto al portasatelliti:
+Si definisce quindi il \textbf{Rapporto Fondamentale Di Willis} $p_0$ come il rapporto di trasmissione del rotismo valutato nel moto relativo rispetto al portasatelliti, ovvero il rapporto tra la velocità relativa della corona e quella del solare:
 \[
     p_0 = \frac{\omega_r - \omega_c}{\omega_s - \omega_c}
     \label{eq:willis_fondamentale}
 \]
-Nel rotismo a portasatelliti fermo, il contatto esterno tra solare e satelliti introduce un'inversione di polarità, mentre l'ingranamento interno tra satelliti e corona conserva il verso; l'accoppiamento globale presenta quindi una singola inversione di segno:
+Osservando il meccanismo a portasatelliti fermo, i satelliti agiscono semplicemente come ruote oziose intermedie tra il solare e la corona. Il contatto esterno tra il solare e il satellite introduce un'inversione del verso di rotazione ($\tau_{s,p} = -z_s/z_p$), mentre l'ingranamento interno tra il satellite e la corona mantiene lo stesso verso ($\tau_{p,r} = +z_p/z_r$). Moltiplicando i due contributi, il numero di denti dei satelliti $z_p$ si semplifica e l'accoppiamento globale presenta una singola inversione di segno:
 \[
-    p_0 = -\frac{z_s}{z_r}
+    p_0 = \left( -\frac{z_s}{z_p} \right) \cdot \left( +\frac{z_p}{z_r} \right) = -\frac{z_s}{z_r}
     \label{eq:rapporto_willis_denti}
 \]
-Uguagliando le equazioni precedenti si ricava la \textbf{Formula di Willis}:
+Uguagliando le due espressioni di $p_0$ appena ricavate, si ottiene la celebre \textbf{Formula Di Willis}:
 \[
-    \omega_r - \omega_c = -\frac{z_s}{z_r} \cdot (\omega_s - \omega_c) \implies z_r \omega_r + z_s \omega_s = (z_r + z_s) \omega_c
+    \frac{\omega_r - \omega_c}{\omega_s - \omega_c} = -\frac{z_s}{z_r} \implies \omega_r - \omega_c = -\frac{z_s}{z_r} \cdot (\omega_s - \omega_c)
+\]
+Moltiplicando entrambi i membri per $z_r$ e riordinando i termini, la relazione assume la forma canonica:
+\[
+    \boxed{z_r \omega_r + z_s \omega_s = (z_r + z_s) \omega_c}
     \label{eq:formula_willis_risolta}
 \]
-Quest'equazione evidenzia che il rotismo possiede \textbf{due gradi di libertà cinematici}. Per funzionare con un singolo ingresso e una singola uscita, uno dei tre membri ($s, c, r$) deve essere bloccato a telaio ($\omega = 0$).
+Dal punto di vista algebrico, si tratta di una singola equazione lineare che lega tre variabili cinematiche ($\omega_s, \omega_c, \omega_r$). Questo dimostra che un rotismo epicicloidale libero possiede \textbf{Due Gradi Di Libertà Cinematici} (configurazione tipica dei meccanismi differenziali). Affinché il dispositivo possa operare come un riduttore di velocità ad un solo grado di libertà (con un unico albero di ingresso e un unico albero di uscita), è necessario bloccare rigidamente al telaio uno dei tre elementi principali, imponendo che la sua velocità angolare sia nulla ($\omega = 0$).
 
 \subsection{Configurazioni Operative Dei Rotismi Epicicloidali}
-
-A seconda del membro vincolato e della scelta degli assi di ingresso e uscita, si definiscono tre regimi operativi:
+A seconda dell'elemento che viene vincolato alla cassa del riduttore e della scelta degli alberi di ingresso e di uscita, si ottengono tre diverse configurazioni operative:
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.65\linewidth]{ConfigEpicicloidale.jpeg}
-    \caption{Le Tre Configurazioni Operative Fondamentali: (a) Configurazione Planetaria Con Corona Fissa, (b) Configurazione Solare Con Solare Bloccato, (c) Configurazione A Stella Con Portasatelliti Fisso.}
-    \label{fig:config_epicicloidale}
+    \includegraphics[width=0.55\linewidth]{ConfigEpicicloidale.jpeg}
 \end{figure}
-
-\begin{description}
-    \item[1. Configurazione ``Planetary'' (Corona Fissa):]
-    Configurazione primaria nei riduttori per robotica. Corona bloccata a telaio ($\omega_r = 0$), ingresso sul solare ($\omega_{\text{in}} = \omega_s$) e uscita sul portasatelliti collegato al link ($\omega_{\text{out}} = \omega_c$). Ponendo $\omega_r = 0$ in Eq.~\eqref{eq:formula_willis_risolta}:
+\begin{enumerate}[label=(\alph*)]
+    \item \textbf{Configurazione "Planetary" (Corona Fissa)}:
+    È la configurazione principale utilizzata nei riduttori epicicloidali per la robotica. In questo caso la corona esterna è bloccata rigidamente al telaio ($\omega_r = 0$), il moto entra dal solare ($\omega_{\text{in}} = \omega_s$) ed esce dal portasatelliti collegato al giunto ($\omega_{\text{out}} = \omega_c$). Sostituendo $\omega_r = 0$ nella formula di Willis si ottiene:
     \[
         z_s \omega_s = (z_r + z_s) \omega_c \implies \tau = \frac{\omega_{\text{out}}}{\omega_{\text{in}}} = \frac{\omega_c}{\omega_s} = \frac{z_s}{z_s + z_r} = \frac{1}{1 + \frac{z_r}{z_s}}
         \label{eq:tau_planetary}
     \]
-    Essendo $z_r > z_s$, si ottiene $\tau > 0$ (rotazione equiversa), con valori tipicamente compresi tra $1/3$ e $1/10$.
-
-    \item[2. Configurazione ``Solar'' (Solare Fisso):]
-    Solare vincolato a terra ($\omega_s = 0$), ingresso sulla corona ($\omega_{\text{in}} = \omega_r$) e uscita sul portasatelliti ($\omega_{\text{out}} = \omega_c$). Dall'Eq.~\eqref{eq:formula_willis_risolta}:
+    Poiché per costruzione il numero di denti della corona è sempre maggiore di quello del solare ($z_r > z_s$), si ottiene un rapporto di trasmissione positivo ($\tau > 0$, ovvero l'albero di uscita ruota nello stesso verso del motore) e sensibilmente minore di uno, con valori tipicamente compresi tra $1/3$ e $1/10$ per singolo stadio.
+    \newpage
+    \item \textbf{Configurazione "Solar" (Solare Fisso)}:
+    In questa configurazione il solare centrale è bloccato a telaio ($\omega_s = 0$), l'ingresso del moto è applicato alla corona ($\omega_{\text{in}} = \omega_r$) e l'uscita è prelevata sul portasatelliti ($\omega_{\text{out}} = \omega_c$). Ponendo $\omega_s = 0$ nella formula di Willis si ricava:
     \[
-        z_r \omega_r = (z_r + z_s) \omega_c \implies \tau = \frac{\omega_c}{\omega_r} = \frac{z_r}{z_r + z_s} = \frac{1}{1 + \frac{z_s}{z_r}}
+        z_r \omega_r = (z_r + z_s) \omega_c \implies \tau = \frac{\omega_{\text{out}}}{\omega_{\text{in}}} = \frac{\omega_c}{\omega_r} = \frac{z_r}{z_r + z_s} = \frac{1}{1 + \frac{z_s}{z_r}}
     \]
-    Il rapporto di riduzione risultante è contenuto ($\tau \approx 0.7 \div 0.9$); trova impiego come moltiplicatore di velocità o ripartitore di coppia.
+    Anche in questo caso il rapporto di trasmissione è positivo (rotazione concorde), ma poiché $z_s < z_r$, la riduzione di velocità ottenibile è molto contenuta ($\tau \approx 0.7 \div 0.9$). Per questo motivo, tale configurazione viene impiegata principalmente come moltiplicatore di velocità (invertendo ingresso e uscita) o come ripartitore di coppia.
 
-    \item[3. Configurazione ``Star'' o a Stella (Portasatelliti Fisso):]
-    Portasatelliti bloccato a telaio ($\omega_c = 0$). I perni non orbitano e il sistema si comporta come un rotismo ordinario ad assi fissi, con i satelliti operanti da ruote oziose. L'ingresso è sul solare ($\omega_{\text{in}} = \omega_s$) e l'uscita sulla corona ($\omega_{\text{out}} = \omega_r$). Ponendo $\omega_c = 0$ in Eq.~\eqref{eq:formula_willis_risolta}:
+    \item \textbf{Configurazione "Star" O A Stella (Portasatelliti Fisso)}:
+    In questo caso è il portasatelliti a essere bloccato al telaio ($\omega_c = 0$). Di conseguenza, gli assi dei satelliti non orbitano più nello spazio e il meccanismo perde la natura epicicloidale, comportandosi esattamente come un rotismo ordinario ad assi fissi in cui i satelliti agiscono da ruote oziose per ripartire il carico. Ponendo l'ingresso sul solare ($\omega_{\text{in}} = \omega_s$) e l'uscita sulla corona ($\omega_{\text{out}} = \omega_r$), dalla formula di Willis con $\omega_c = 0$ si ottiene:
     \[
-        z_r \omega_r + z_s \omega_s = 0 \implies \tau = \frac{\omega_r}{\omega_s} = -\frac{z_s}{z_r}
+        z_r \omega_r + z_s \omega_s = 0 \implies \tau = \frac{\omega_{\text{out}}}{\omega_{\text{in}}} = \frac{\omega_r}{\omega_s} = -\frac{z_s}{z_r}
     \]
-    Il senso di rotazione risulta invertito ($\tau < 0$), con rapporti compresi tra $-1/2$ e $-1/6$.
-\end{description}
+    Il segno meno indica che l'albero di uscita inverte il senso di rotazione rispetto all'ingresso ($\tau < 0$), fornendo rapporti di trasmissione tipicamente compresi tra $-1/2$ e $-1/6$.
+\end{enumerate}
 
 \subsection{Riduttori Speciali Ad Alta Precisione: L'Harmonic Drive}
-
-I riduttori a onda di deformazione elastica (\textbf{Harmonic Drive} o \textit{strain wave gears}), brevettati da C. Walton Musser nel 1955, costituiscono la soluzione dominante per l'azionamento dei giunti rotoidali in robot antropomorfi, cobot e sistemi avionici o aerospaziali.
+Come accennato nella panoramica sulle trasmissioni, i riduttori armonici a onda di deformazione elastica (\textbf{Harmonic Drive} o \textit{strain wave gears}), brevettati da C. Walton Musser nel 1955, rappresentano la soluzione tecnologica dominante per l'attuazione dei giunti rotoidali nei robot antropomorfi industriali, nei robot collaborativi (cobot) e nei sistemi aerospaziali.
 
 \subsubsection{Costituzione Meccanica Ed Elementi Costitutivi}
-
-Il meccanismo è articolato su tre componenti coassiali (Figura~\ref{fig:harmonic_drive_detail}):
+A differenza dei rotismi tradizionali basati su corpi rigidi, l'Harmonic Drive sfrutta la deformazione elastica controllata di un componente metallico. Dal punto di vista costruttivo, il meccanismo è formato da tre elementi coassiali (Figura~\ref{fig:harmonic_drive_detail}):
 
 \begin{figure}[H]
     \centering
@@ -2548,57 +2552,49 @@ Il meccanismo è articolato su tre componenti coassiali (Figura~\ref{fig:harmoni
 \end{figure}
 
 \begin{enumerate}
-    \item \textbf{Wave Generator (Generatore d'Onda, WG)}: Elemento d'ingresso calettato sull'albero motore, composto da una camma a profilo \textbf{ellittico} inserita forzatamente in un cuscinetto a sfere deformabile a parete sottile; la sua rotazione genera un'onda radiale viaggiante.
-    \item \textbf{FlexSpline (Boccola Deformabile Flessibile, FS)}: Tazza cilindrica a parete sottile in acciaio legato ad alto limite di fatica. L'estremità aperta presenta una \textbf{dentatura esterna}, mentre la base chiusa è collegata all'albero d'uscita del giunto. L'alloggiamento del Wave Generator impone all'estremità aperta la sagoma ellittica della camma.
-    \item \textbf{Circular Spline (Corona Circolare Rigida, CS)}: Anello rigido solidale alla struttura, provvisto di \textbf{dentatura interna} con modulo e passo identici a quelli del FlexSpline.
+    \item \textbf{Wave Generator (Generatore D'Onda, WG)}: È l'elemento d'ingresso collegato direttamente all'albero veloce del servomotore. È costituito da un disco in acciaio a profilo \textbf{ellittico} (camma), calettato all'interno di uno speciale cuscinetto a sfere a parete sottile radialmente deformabile. La sua rotazione genera un'onda di deformazione meccanica viaggiante.
+    \item \textbf{FlexSpline (Boccola Deformabile Flessibile, FS)}: È un cilindro metallico a parete sottile a forma di tazza, realizzato in acciaio speciale ad altissima resistenza a fatica. Sulla superficie esterna del bordo aperto è ricavata una \textbf{dentatura esterna} con numero di denti $z_{\text{FS}}$, mentre il fondo chiuso della tazza è fissato rigidamente all'albero di uscita del giunto robotico. Quando il Wave Generator viene inserito all'interno del FlexSpline, ne deforma elasticamente il bordo aperto imponendogli una forma ellittica, pur lasciando circolare la base d'uscita.
+    \item \textbf{Circular Spline (Corona Circolare Rigida, CS)}: È un anello circolare esterno indeformabile, fissato solidalmente alla struttura del manipolatore (telaio), sulla cui superficie interna è ricavata una \textbf{dentatura interna} con numero di denti $z_{\text{CS}}$ avente lo stesso modulo e passo di quella del FlexSpline.
 \end{enumerate}
 
 \newpage
-
 \subsubsection{Principio Cinematico Di Funzionamento E Derivazione Del Rapporto Di Riduzione}
-
-Il principio cinematico si fonda sulla differenza del numero di denti tra i due elementi ingrananti:
+Il principio di funzionamento cinematico dell'Harmonic Drive si basa sulla leggera differenza tra il numero di denti della corona rigida e quello della boccola flessibile. Tipicamente, la Circular Spline possiede esattamente \textbf{due denti in più} rispetto al FlexSpline:
 \[
     z_{\text{CS}} - z_{\text{FS}} = 2
     \label{eq:differenza_denti_hd}
 \]
-La Circular Spline possiede due denti in più rispetto al FlexSpline.
-
-Con il Wave Generator posizionato all'interno del FlexSpline:
+Quando il Wave Generator viene montato all'interno del FlexSpline, la deformazione ellittica crea due regioni diametralmente opposte con comportamenti distinti:
 \begin{itemize}
-    \item In corrispondenza dell'\textbf{asse maggiore dell'ellisse}, l'eccentricità porta i denti del FlexSpline a ingranare nei vani della Circular Spline per circa il $30\%$ della dentatura complessiva;
-    \item In corrispondenza dell'\textbf{asse minore dell'ellisse}, la contrazione radiale disimpegna totalmente le dentature, escludendo il contatto.
+    \item \textbf{Sull'Asse Maggiore Dell'Ellisse}: La dilatazione radiale spinge i denti esterni del FlexSpline a ingranare profondamente nei vani della Circular Spline in due zone simmetriche, coinvolgendo simultaneamente circa il $30\%$ dei denti totali.
+    \item \textbf{Sull'Asse Minore Dell'Ellisse}: La contrazione radiale allontana la parete del FlexSpline dalla corona esterna, facendo sì che i denti siano completamente disimpegnati e liberi di muoversi senza contatto.
 \end{itemize}
 
-La rotazione oraria del Wave Generator propaga le due zone di presa. A seguito di una rotazione completa di $360^\circ$ del Wave Generator, il vincolo con la Circular Spline fissa ($z_{\text{FS}} = z_{\text{CS}} - 2$) impone al FlexSpline un arretramento relativo di 2 passi polari.
+Quando il motore mette in rotazione oraria il Wave Generator, l'asse maggiore dell'ellisse ruota con esso, propagando l'onda di deformazione elastica lungo la circonferenza del FlexSpline e spostando progressivamente le zone di ingranamento. Poiché la Circular Spline è bloccata al telaio e possiede due denti in più rispetto alla boccola flessibile ($z_{\text{FS}} = z_{\text{CS}} - 2$), a ogni giro completo ($360^\circ$) del Wave Generator il FlexSpline non si ritrova nella posizione angolare di partenza, ma è costretto a scalare indietro di esattamente \textbf{due denti} rispetto alla corona fissa.
 
-Con Circular Spline fissa, ingresso su Wave Generator e uscita su FlexSpline, il rapporto di trasmissione risulta:
+Nella configurazione standard (con Circular Spline fissa a telaio, ingresso sul Wave Generator e uscita sul FlexSpline), il rapporto di trasmissione $\tau_{\text{HD}}$ è quindi dato dal rapporto tra lo spostamento angolare compiuto dal FlexSpline in un giro (pari a $z_{\text{FS}} - z_{\text{CS}}$ denti) e il numero totale dei suoi denti $z_{\text{FS}}$:
 \[
-    \tau_{\text{HD}} = \frac{\omega_{\text{out}}}{\omega_{\text{in}}} = \frac{\omega_{\text{FS}}}{\omega_{\text{WG}}} = -\frac{z_{\text{CS}} - z_{\text{FS}}}{z_{\text{FS}}} = -\frac{2}{z_{\text{FS}}}
+    \boxed{\tau_{\text{HD}} = \frac{\omega_{\text{out}}}{\omega_{\text{in}}} = \frac{\omega_{\text{FS}}}{\omega_{\text{WG}}} = -\frac{z_{\text{CS}} - z_{\text{FS}}}{z_{\text{FS}}} = -\frac{2}{z_{\text{FS}}}}
     \label{eq:formula_hd}
 \]
-Il segno negativo indica che il FlexSpline d'uscita ruota in verso opposto a quello del motore.
+Il segno negativo evidenzia che l'albero di uscita solidale al FlexSpline ruota in verso opposto rispetto all'albero motore collegato al Wave Generator.
 
-\paragraph{Esempio Numerico di Calcolo}
-Per un'unità con $z_{\text{FS}} = 200$ denti e $z_{\text{CS}} = 202$ denti, l'Eq.~\eqref{eq:formula_hd} fornisce:
+\paragraph{Esempio Analitico Di Calcolo}
+Si consideri un riduttore Harmonic Drive avente un FlexSpline con $z_{\text{FS}} = 200$ denti e una Circular Spline con $z_{\text{CS}} = 202$ denti. Applicando la relazione appena ricavata, il rapporto di trasmissione vale:
 \[
-    \tau_{\text{HD}} = -\frac{2}{200} = -\frac{1}{100} = -0.01
+    \tau_{\text{HD}} = -\frac{202 - 200}{200} = -\frac{2}{200} = -\frac{1}{100} = -0.01
 \]
-Il gruppo realizza un rapporto di riduzione di $100:1$ in un solo stadio, moltiplicando la coppia dell'albero motore di un fattore $100$ al netto delle perdite di rendimento.
+Si osserva che questo dispositivo permette di realizzare un rapporto di riduzione estremamente elevato ($i = 100:1$) in un singolo stadio compatto, riducendo di centoventi o cento volte la velocità del motore e amplificando contemporaneamente la coppia al giunto di un fattore $100$ (al netto del rendimento meccanico $\eta$).
 
 \subsubsection{Pregi E Limiti Progettuali}
-
-Le proprietà funzionali caratteristiche comprendono:
+L'impiego dei riduttori armonici nei manipolatori robotici è dettato da specifiche proprietà funzionali:
 \begin{itemize}
-    \item \textbf{Assenza Strutturale di Gioco Angolare (\textit{Zero Backlash})}: Il precarico radiale lungo l'asse maggiore assicura l'ingranamento simultaneo su entrambi i fianchi dei denti, eliminando il gioco d'inversione e garantendo ripetibilità nell'ordine dell'arco di secondo ($\text{arcsec}$).
-    \item \textbf{Ingombri Assiali e Radiali Minimi}: La conformazione a tazza cava consente il passaggio coassiale di linee di segnale e potenza (\textit{hollow shaft design}).
-    \item \textbf{Compromesso: Cedevolezza Torsionale}: La flessibilità del FlexSpline introduce un comportamento da molla torsionale non lineare di rigidezza $k_{\text{tor}}$, con risonanze a bassa frequenza ($10 \div 30\,\si{\hertz}$) durante interazioni dinamiche rapide. Il loro smorzamento richiede l'adozione di doppi encoder (a monte e a valle del giunto) nell'anello di controllo.
+    \item \textbf{Assenza Strutturale Di Gioco Angolare (\textit{Zero-Backlash})}: Il precarico elastico radiale imposto dal Wave Generator lungo l'asse maggiore garantisce un contatto continuo su entrambi i fianchi dei denti e la presa simultanea di una vasta porzione della dentatura. Ciò elimina alla radice il gioco d'inversione (\textit{backlash}), assicurando una ripetibilità di posizionamento eccellente, nell'ordine del secondo d'arco ($\text{arcsec}$).
+    \item \textbf{Ingombri Assiali E Radiali Minimi}: L'architettura coassiale a singolo stadio offre un rapporto coppia/volume ineguagliabile. Inoltre, realizzando il riduttore con albero passante cavo (\textit{hollow shaft}), è possibile far passare i cavi di alimentazione, i cablaggi dei sensori e i tubi pneumatici direttamente all'interno del giunto, proteggendoli dall'ambiente esterno.
+    \item \textbf{Compromesso Progettuale (Cedevolezza Torsionale)}: La presenza della parete sottile deformabile del FlexSpline introduce nel giunto un'inevitabile elasticità torsionale. Dal punto di vista dinamico, il riduttore si comporta come una molla torsionale non lineare di rigidezza finita $k_{\text{tor}}$, la quale può innescare oscillazioni e risonanze meccaniche a bassa frequenza ($10 \div 30\text{ Hz}$) durante le forti accelerazioni del braccio. Per compensare queste vibrazioni e garantire un controllo di posizione accurato, nei robot avanzati si installano spesso due encoder distinti: uno sull'albero veloce del motore (\textit{motor-side}) e uno a valle del riduttore direttamente sul link (\textit{link-side}).
 \end{itemize}
 
-\newpage
-
 % AA Parte 5 - Attuazione Cedevole E Soft Robotics
-
 \section{Attuazione Cedevole E Soft Robotics}
 
 La robotica industriale convenzionale si basa sul principio della \textbf{massima rigidezza strutturale} per assicurare accuratezze centesimali a carichi massimi, impiegando leghe rigide e azionamenti ad elevata impedenza meccanica. Tuttavia, in contesti di interazione fisica diretta con operatori umani (\textit{physical Human-Robot Interaction}, pHRI) o manipolazione di oggetti fragili in ambienti non strutturati, tale rigidezza presenta vincoli critici di sicurezza.

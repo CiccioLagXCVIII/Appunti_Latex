@@ -20,3 +20,4 @@ statorica
 centro-stella
 decoder
 Decoder
+disalimentato
