@@ -2452,10 +2452,10 @@ In ambito robotico, questa soluzione viene impiegata negli assi lineari dei robo
 \section{Rotismi Epicicloidali (O Planetari)}
 Un \textbf{Rotismo Epicicloidale} (o riduttore planetario, \textit{planetary gear}) è una catena cinematica di ruote dentate in cui gli assi di rotazione di una o più ruote non sono fissi rispetto al telaio, ma \textbf{Sono Mobili Nello Spazio} e orbitano attorno all'asse principale del sistema.
 
-In ambito robotico e industriale, questa particolare topologia costruttiva presenta tre vantaggi principali rispetto ai rotismi ordinari:
+Questa struttura costruttiva presenta tre vantaggi rispetto ai rotismi ordinari:
 \begin{itemize}
-    \item \textbf{Rapporti Di Riduzione Elevati}: Consentono di ottenere rapporti di riduzione compresi tra $3:1$ e $10:1$ in un singolo stadio, arrivando a superare $1\,000:1$ collegando più stadi in cascata all'interno di un'unica cassa coassiale compatta e a simmetria cilindrica.
-    \item \textbf{Elevatissima Densità Di Coppia}: A differenza dei rotismi ordinari in cui il carico è sostenuto da una singola coppia di denti in presa, nei riduttori epicicloidali la coppia d'ingresso viene ripartita simultaneamente su più ruote intermedie (tipicamente 3, 4 o 5 satelliti). Ciò riduce sensibilmente le pressioni di contatto hertziane sui fianchi dei denti e permette di trasmettere coppie molto elevate con ingombri ridotti.
+    \item \textbf{Rapporti Di Riduzione Elevati}: Consentono di ottenere rapporti di riduzione compresi tra $3:1$ e $10:1$ in un singolo stadio, arrivando a superare $1000:1$ collegando più stadi in cascata all'interno di un'unica cassa coassiale compatta e a simmetria cilindrica.
+    \item \textbf{Elevatissima Densità Di Coppia}: A differenza dei rotismi ordinari in cui il carico è sostenuto da una singola coppia di denti in presa, nei riduttori epicicloidali la coppia d'ingresso viene ripartita simultaneamente su più ruote intermedie (tipicamente 3, 4 o 5 satelliti). Ciò riduce sensibilmente le pressioni sui denti e permette di trasmettere coppie molto elevate con ingombri ridotti.
     \item \textbf{Bilanciamento Intrinseco Delle Forze}: La disposizione simmetrica dei satelliti attorno all'albero centrale fa sì che le forze radiali mutue si annullino reciprocamente, eliminando le reazioni vincolari flettenti sui cuscinetti dell'albero motore.
 \end{itemize}
 
@@ -2469,10 +2469,10 @@ Come illustrato nello schema seguente, un rotismo epicicloidale elementare è co
 \end{figure}
 
 \begin{enumerate}
-    \item \textbf{Solare (\textit{Sun Gear}, $s$)}: È la ruota dentata cilindrica centrale a dentatura esterna, tipicamente calettata sull'albero veloce d'ingresso, caratterizzata da un numero di denti $z_s$ e da una velocità angolare $\omega_s$.
+    \item \textbf{Solare (\textit{Sun Gear}, $s$)}: È la ruota dentata cilindrica centrale a dentatura esterna, tipicamente fissata sull'albero d'ingresso, caratterizzata da un numero di denti $z_s$ e da una velocità angolare $\omega_s$.
     \item \textbf{Satelliti (\textit{Planet Gears}, $p$)}: Sono un insieme di $n_p \ge 3$ ruote dentate identiche a dentatura esterna, ciascuna con numero di denti $z_p$, disposte in modo angolarmente equispaziato ($360^\circ/n_p$) attorno al solare. I satelliti ingranano simultaneamente sia all'interno con il solare, sia all'esterno con la corona, combinando il moto di rotazione attorno al proprio asse con il moto di rivoluzione attorno all'asse centrale.
-    \item \textbf{Portasatelliti O Planetario (\textit{Planet Carrier}, $c$)}: È l'elemento strutturale rotante, imperniato sull'asse principale del sistema e animato da velocità angolare $\omega_c$. Esso sostiene i perni eccentrici sui quali ruotano liberamente i satelliti mediante cuscinetti a rullini.
-    \item \textbf{Corona (\textit{Ring Gear}, $r$)}: È un anello circolare esterno rigido, concentrico al solare e provvisto di \textbf{dentatura interna} con numero di denti $z_r$ e velocità angolare $\omega_r$, all'interno del quale alloggiano e ingranano i satelliti.
+    \item \textbf{Portasatelliti (\textit{Planet Carrier}, $c$)}: È l'elemento strutturale rotante, fissato sull'asse principale del sistema su cui sono fissati i satelliti e alimentato con velocità angolare $\omega_c$.
+    \item \textbf{Corona (\textit{Ring Gear}, $r$)}: È un anello circolare esterno rigido, concentrico al solare e provvisto di \textbf{Dentatura Interna} con numero di denti $z_r$ e velocità angolare $\omega_r$, all'interno del quale alloggiano e ingranano i satelliti.
 \end{enumerate}
 
 Affinché il montaggio geometrico dei componenti coassiali sia fisicamente possibile, il raggio primitivo della corona esterna $r_r$ deve essere pari alla somma del raggio primitivo del solare $r_s$ e del diametro primitivo di un satellite $2r_p$ (ovvero, in termini di diametri primitivi, $d_r = d_s + 2d_p$). Poiché tutte le ruote devono avere lo stesso modulo normale $m$ per poter ingranare correttamente ($d_i = m z_i$), la congruenza geometrica impone un vincolo fondamentale sui numeri di denti:
@@ -2481,6 +2481,7 @@ Affinché il montaggio geometrico dei componenti coassiali sia fisicamente possi
 \]
 
 \newpage
+
 \subsection{Formalizzazione Analitica: La Formula Di Willis}
 La mobilità degli assi di rotazione dei satelliti nello spazio impedisce di applicare direttamente le relazioni cinematiche viste per i rotismi ordinari. Per studiare analiticamente il sistema si ricorre quindi al \textbf{Metodo Di Inversione Cinematica Di Willis}: si applica idealmente a tutto il meccanismo una rotazione rigida fittizia uguale e contraria a quella del portasatelliti, ovvero pari a $-\omega_c$.
 
@@ -2539,27 +2540,24 @@ A seconda dell'elemento che viene vincolato alla cassa del riduttore e della sce
 \end{enumerate}
 
 \subsection{Riduttori Speciali Ad Alta Precisione: L'Harmonic Drive}
-Come accennato nella panoramica sulle trasmissioni, i riduttori armonici a onda di deformazione elastica (\textbf{Harmonic Drive} o \textit{strain wave gears}), brevettati da C. Walton Musser nel 1955, rappresentano la soluzione tecnologica dominante per l'attuazione dei giunti rotoidali nei robot antropomorfi industriali, nei robot collaborativi (cobot) e nei sistemi aerospaziali.
-
-\subsubsection{Costituzione Meccanica Ed Elementi Costitutivi}
-A differenza dei rotismi tradizionali basati su corpi rigidi, l'Harmonic Drive sfrutta la deformazione elastica controllata di un componente metallico. Dal punto di vista costruttivo, il meccanismo è formato da tre elementi coassiali (Figura~\ref{fig:harmonic_drive_detail}):
-
+A differenza dei rotismi tradizionali basati su corpi rigidi, l'Harmonic Drive sfrutta la deformazione elastica controllata di un componente metallico. Dal punto di vista costruttivo, il meccanismo è formato da tre elementi coassiali:
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\linewidth]{HarmonicDrive.jpeg}
-    \caption{Componenti Dell'Harmonic Drive: (1) Wave Generator Ellittico, (2) FlexSpline Deformabile A Tazza Con Dentatura Esterna, (3) Circular Spline Rigida A Dentatura Interna.}
+    \includegraphics[width=0.6\linewidth]{HarmonicDrive.jpeg}
+    %\caption{Componenti Dell'Harmonic Drive: (1) Wave Generator Ellittico, (2) FlexSpline Deformabile A Tazza Con Dentatura Esterna, (3) Circular Spline Rigida A Dentatura Interna.}
     \label{fig:harmonic_drive_detail}
 \end{figure}
 
 \begin{enumerate}
-    \item \textbf{Wave Generator (Generatore D'Onda, WG)}: È l'elemento d'ingresso collegato direttamente all'albero veloce del servomotore. È costituito da un disco in acciaio a profilo \textbf{ellittico} (camma), calettato all'interno di uno speciale cuscinetto a sfere a parete sottile radialmente deformabile. La sua rotazione genera un'onda di deformazione meccanica viaggiante.
-    \item \textbf{FlexSpline (Boccola Deformabile Flessibile, FS)}: È un cilindro metallico a parete sottile a forma di tazza, realizzato in acciaio speciale ad altissima resistenza a fatica. Sulla superficie esterna del bordo aperto è ricavata una \textbf{dentatura esterna} con numero di denti $z_{\text{FS}}$, mentre il fondo chiuso della tazza è fissato rigidamente all'albero di uscita del giunto robotico. Quando il Wave Generator viene inserito all'interno del FlexSpline, ne deforma elasticamente il bordo aperto imponendogli una forma ellittica, pur lasciando circolare la base d'uscita.
+    \item \textbf{Wave Generator (Generatore D'Onda, WG)}: È l'elemento d'ingresso collegato direttamente all'albero del servomotore. È costituito da un disco \textbf{ellittico} in acciaio detto \textit{camma}, fissato all'interno di cuscinetto a sfere deformabile. La sua rotazione genera un'onda di deformazione meccanica.
+    \item \textbf{FlexSpline (Boccola Deformabile Flessibile, FS)}: È un cilindro in acciaio ad altissima resistenza, con uno dei due bordi chiusi. Sulla superficie esterna del bordo aperto è ricavata una \textbf{dentatura} con numero di denti $z_{\text{FS}}$, mentre il fondo chiuso è fissato rigidamente all'albero di uscita del giunto robotico. Quando il Wave Generator viene inserito all'interno del FlexSpline, ne deforma elasticamente il bordo aperto imponendogli una forma ellittica, pur lasciando circolare la base d'uscita.
     \item \textbf{Circular Spline (Corona Circolare Rigida, CS)}: È un anello circolare esterno indeformabile, fissato solidalmente alla struttura del manipolatore (telaio), sulla cui superficie interna è ricavata una \textbf{dentatura interna} con numero di denti $z_{\text{CS}}$ avente lo stesso modulo e passo di quella del FlexSpline.
 \end{enumerate}
 
 \newpage
-\subsubsection{Principio Cinematico Di Funzionamento E Derivazione Del Rapporto Di Riduzione}
-Il principio di funzionamento cinematico dell'Harmonic Drive si basa sulla leggera differenza tra il numero di denti della corona rigida e quello della boccola flessibile. Tipicamente, la Circular Spline possiede esattamente \textbf{due denti in più} rispetto al FlexSpline:
+
+\subsubsection{Principio Di Funzionamento E Derivazione Del Rapporto Di Riduzione}
+Il principio di funzionamento cinematico dell'Harmonic Drive si basa sulla leggera differenza tra il numero di denti della corona rigida e quello della FlexSpline. Tipicamente, la Circular Spline possiede esattamente \textbf{Due Denti In Più} rispetto al FlexSpline:
 \[
     z_{\text{CS}} - z_{\text{FS}} = 2
     \label{eq:differenza_denti_hd}
@@ -2567,7 +2565,7 @@ Il principio di funzionamento cinematico dell'Harmonic Drive si basa sulla legge
 Quando il Wave Generator viene montato all'interno del FlexSpline, la deformazione ellittica crea due regioni diametralmente opposte con comportamenti distinti:
 \begin{itemize}
     \item \textbf{Sull'Asse Maggiore Dell'Ellisse}: La dilatazione radiale spinge i denti esterni del FlexSpline a ingranare profondamente nei vani della Circular Spline in due zone simmetriche, coinvolgendo simultaneamente circa il $30\%$ dei denti totali.
-    \item \textbf{Sull'Asse Minore Dell'Ellisse}: La contrazione radiale allontana la parete del FlexSpline dalla corona esterna, facendo sì che i denti siano completamente disimpegnati e liberi di muoversi senza contatto.
+    \item \textbf{Sull'Asse Minore Dell'Ellisse}: La deformazione radiale allontana la parete del FlexSpline dalla corona esterna, facendo sì che i denti siano completamente liberi di muoversi senza contatto.
 \end{itemize}
 
 Quando il motore mette in rotazione oraria il Wave Generator, l'asse maggiore dell'ellisse ruota con esso, propagando l'onda di deformazione elastica lungo la circonferenza del FlexSpline e spostando progressivamente le zone di ingranamento. Poiché la Circular Spline è bloccata al telaio e possiede due denti in più rispetto alla boccola flessibile ($z_{\text{FS}} = z_{\text{CS}} - 2$), a ogni giro completo ($360^\circ$) del Wave Generator il FlexSpline non si ritrova nella posizione angolare di partenza, ma è costretto a scalare indietro di esattamente \textbf{due denti} rispetto alla corona fissa.
@@ -2585,67 +2583,67 @@ Si consideri un riduttore Harmonic Drive avente un FlexSpline con $z_{\text{FS}}
     \tau_{\text{HD}} = -\frac{202 - 200}{200} = -\frac{2}{200} = -\frac{1}{100} = -0.01
 \]
 Si osserva che questo dispositivo permette di realizzare un rapporto di riduzione estremamente elevato ($i = 100:1$) in un singolo stadio compatto, riducendo di centoventi o cento volte la velocità del motore e amplificando contemporaneamente la coppia al giunto di un fattore $100$ (al netto del rendimento meccanico $\eta$).
+\newpage
 
 \subsubsection{Pregi E Limiti Progettuali}
 L'impiego dei riduttori armonici nei manipolatori robotici è dettato da specifiche proprietà funzionali:
 \begin{itemize}
-    \item \textbf{Assenza Strutturale Di Gioco Angolare (\textit{Zero-Backlash})}: Il precarico elastico radiale imposto dal Wave Generator lungo l'asse maggiore garantisce un contatto continuo su entrambi i fianchi dei denti e la presa simultanea di una vasta porzione della dentatura. Ciò elimina alla radice il gioco d'inversione (\textit{backlash}), assicurando una ripetibilità di posizionamento eccellente, nell'ordine del secondo d'arco ($\text{arcsec}$).
+    \item \textbf{Assenza di gioco angolare (\textit{Zero Backlash})}: La deformazione elastica del Flexspline, comporta l'ingranamento simultaneo di numerosi denti e il contatto su entrambi i lati della dentatura della Circolar Spline. Questa caratteristica consente di ridurre praticamente a zero il gioco, garantendo un'elevata precisione e ripetibilità di posizionamento
     \item \textbf{Ingombri Assiali E Radiali Minimi}: L'architettura coassiale a singolo stadio offre un rapporto coppia/volume ineguagliabile. Inoltre, realizzando il riduttore con albero passante cavo (\textit{hollow shaft}), è possibile far passare i cavi di alimentazione, i cablaggi dei sensori e i tubi pneumatici direttamente all'interno del giunto, proteggendoli dall'ambiente esterno.
-    \item \textbf{Compromesso Progettuale (Cedevolezza Torsionale)}: La presenza della parete sottile deformabile del FlexSpline introduce nel giunto un'inevitabile elasticità torsionale. Dal punto di vista dinamico, il riduttore si comporta come una molla torsionale non lineare di rigidezza finita $k_{\text{tor}}$, la quale può innescare oscillazioni e risonanze meccaniche a bassa frequenza ($10 \div 30\text{ Hz}$) durante le forti accelerazioni del braccio. Per compensare queste vibrazioni e garantire un controllo di posizione accurato, nei robot avanzati si installano spesso due encoder distinti: uno sull'albero veloce del motore (\textit{motor-side}) e uno a valle del riduttore direttamente sul link (\textit{link-side}).
+    \item \textbf{Compromesso Progettuale (Cedevolezza Torsionale)}: La presenza della parete deformabile del FlexSpline introduce elasticità torsionale. Dal punto di vista dinamico, si comporta come una molla con rigidezza finita $k_{\text{tor}}$, la quale può innescare oscillazioni e risonanze meccaniche a bassa frequenza ($10 \div 30\text{ Hz}$) durante le forti accelerazioni del braccio. Per compensare queste vibrazioni e garantire un controllo di posizione accurato, nei robot avanzati si installano spesso due encoder distinti: uno sull'albero di ingresso (\textit{motor-side}) e uno a valle del riduttore direttamente sul link (\textit{link-side}).
 \end{itemize}
+\newpage
 
 % AA Parte 5 - Attuazione Cedevole E Soft Robotics
+
 \section{Attuazione Cedevole E Soft Robotics}
 
-La robotica industriale convenzionale si basa sul principio della \textbf{massima rigidezza strutturale} per assicurare accuratezze centesimali a carichi massimi, impiegando leghe rigide e azionamenti ad elevata impedenza meccanica. Tuttavia, in contesti di interazione fisica diretta con operatori umani (\textit{physical Human-Robot Interaction}, pHRI) o manipolazione di oggetti fragili in ambienti non strutturati, tale rigidezza presenta vincoli critici di sicurezza.
-
-La \textbf{Soft Robotics} supera tali limiti integrando meccanismi deformabili, viscoelastici e a cedevolezza passiva calibrata, sulla base di tre motivazioni:
+La \textit{Robotica Industriale}  si basa sul principio della \textbf{Massima Rigidezza Strutturale} per  elevata accuratezza. In contesti di interazione uomo-robot o per la manipolazione di oggetti fragili, tale rigidezza può introdurre vincoli operativi. La \textbf{Soft Robotics} supera questi limiti integrando elementi deformabili e elastici che consentono movimenti più sicuri. I principali vantaggi sono:
 
 \begin{enumerate}
-    \item \textbf{Sicurezza Intrinseca Passiva (\textit{Intrinsic Safety})}: In caso di avaria sensoriale o di controllo, un attuatore a cedevolezza intrinseca dissipa l'energia dell'urto per deformazione strutturale passiva prima dell'intervento dei sistemi elettronici di arresto, prevenendo lo scarico di forze distruttive.
-    \item \textbf{Resilienza e Filtraggio Meccanico dei Sovraccarichi d'Urto}: Nelle collisioni rigide, le decelerazioni generano carichi impulsivi ($F = \Delta p / \Delta t \to \infty$) sui denti dei riduttori. La cedevolezza strutturale opera come filtro passa-basso meccanico, prolungando la durata $\Delta t$ dell'impatto e riducendo il picco di forza trasmesso all'azionamento.
-    \item \textbf{Accumulo e Restituzione ciclica di Energia Elastica}: Ispirandosi all'azione muscolo-tendinea biologica, gli attuatori cedevoli immagazzinano energia potenziale $E = \frac{1}{2} k \Delta x^2$ durante le decelerazioni e la rilasciano nelle accelerazioni, riducendo i consumi di picco e permettendo movimenti esplosivi (salti, lanci) con potenze istantanee superiori a quella nominale del motore.
+    \item \textbf{Sicurezza Intrinseca (\textit{Intrinsic Safety})}: La cedevolezza strutturale permette al robot di assorbire parte dell'energia di un urto attraverso la deformazione passiva dei suoi elementi elastici. In caso di collisione con una persona, questa proprietà contribuisce a ridurre le forze di contatto, aumentando la sicurezza anche in presenza di guasti ai sensori o al sistema di controllo, prima ancora dell'intervento dei sistemi elettronici di emergenza.
+
+    \item \textbf{Attenuazione Dei Carichi Impulsivi}: Durante una collisione con un ostacolo rigido, la rapida decelerazione può generare picchi di forza e coppia che sollecitano gli ingranaggi e gli altri componenti della trasmissione. La cedevolezza meccanica attenua questi picchi, agendo come un filtro passa-basso e riducendo i carichi impulsivi trasmessi all'albero motore, con potenziali benefici in termini di protezione e durata dei componenti.
+
+    \item \textbf{Accumulo E Restituzione Di Energia Elastica}: Analogamente al sistema muscolo-tendineo biologico, gli elementi elastici possono immagazzinare energia potenziale durante la deformazione e restituirla successivamente durante il movimento. L'energia accumulata è espressa da
+    \[
+        E = \frac{1}{2} k \Delta x^2
+    \]
+    dove $k$ è la rigidezza elastica e $\Delta x$ è la deformazione. Il recupero di questa energia può ridurre il fabbisogno energetico dell'attuatore e consentire picchi di potenza meccanica superiori a quelli erogabili istantaneamente dal motore da solo, risultando particolarmente utile nei movimenti dinamici, come salti e lanci.
 \end{enumerate}
 
 \subsection{Muscoli Pneumatici Artificiali (PAM - Pneumatic Artificial Muscles)}
 
-Tra i trasduttori cedevoli figurano i \textbf{Muscoli Pneumatici Artificiali} (\textit{PAM}), noti principalmente come \textbf{muscoli di McKibben}, ideati da Joseph L. McKibben negli anni '50 come dispositivi protesici.
+Tra i principali attuatori cedevoli a fluido si distinguono i \textbf{Muscoli Pneumatici Artificiali} (\textit{PAM}), noti prevalentemente nella configurazione a \textbf{muscoli di McKibben}, originariamente introdotti da Joseph L. McKibben negli anni '50 per applicazioni biomediche e protesiche.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.4\linewidth]{McKibbenMuscle.jpg}
-    \caption{Muscolo Pneumatico Di McKibben}
+    \includegraphics[width=0.3\linewidth]{McKibbenMuscle.jpg}
 \end{figure}
 
 \subsubsection{Costruzione E Cinematica Di Contrazione}
-Il muscolo di McKibben è costituito da:
-\begin{itemize}
-    \item Una \textbf{membrana tubolare interna} pneumatica in elastomero siliconico o lattice;
-    \item Una \textbf{guaina esterna intrecciata a maglia di losanga} in fili polimerici (nylon, Kevlar) o metallici \textbf{inestensibili}.
-\end{itemize}
+L'architettura del muscolo di McKibben è costituita da due componenti coassiali: un \textbf{Struttura Tubolare Interna} realizzata in materiale elastico (come silicone o lattice) e un \textbf{Guaina Esterna Intrecciata} a maglia, realizzata con fili i materiali molto resistenti (come nylon, Kevlar o acciaio).
 
-L'iniezione di aria a pressione relativa $p$ induce la dilatazione radiale della membrana elastomerica. Poiché i fili della guaina sono inestensibili e mutano il loro angolo d'intreccio $\theta_b$, la dilatazione radiale impone la \textbf{contrazione assiale} della struttura; il trasduttore eroga dunque unicamente \textbf{forza di richiamo tensile}.
+L'immissione di aria a pressione $p$ induce la dilatazione radiale della membrana interna, e poiché i fili della maglia esterna sono flessibili ma inestensibili, l'incremento di diametro ne altera solamente l'angolo d'intreccio $\theta_b$. Quindi, l'attuatore lavora solo lungo una direzione, erogando solamente \textbf{Forza Di Richiamo}. La forza traente assiale $F$ sviluppata dal dispositivo è funzione della pressione interna $p$ e della contrazione relativa $\epsilon = (l_0 - l)/l_0$ (con $l_0$ lunghezza nominale a riposo ed $l$ lunghezza istantanea sottocarico)
+\begin{equation}
+    F(p, \epsilon) = \frac{\pi \, d_0^2 \, p}{4} \cdot \left[ \frac{3 \cos^2(\theta_b) - 1}{\sin^2(\theta_{b0})} \right]
+\end{equation}
 
-La forza traente $F$ dipende dalla pressione $p$ e dalla deformazione assiale adimensionale $\epsilon = (l_0 - l)/l_0$, dove $l_0$ è la lunghezza a riposo e $l$ la lunghezza istantanea:
-\[
-    F(p, \epsilon) = \frac{p \cdot d_0^2 \cdot \pi}{4} \cdot \left[ \frac{3 \cos^2(\theta_b) - 1}{\sin^2(\theta_{b0})} \right]
-    \label{eq:forza_mckibben}
-\]
-dove $\theta_b$ è l'angolo di intreccio istantaneo. All'angolo di equilibrio $\theta_b \approx 54^\circ 44'$, il termine tra parentesi si annulla e la forza tensile decade a zero indipendentemente dal valore di $p$. La massima contrazione assiale utile risulta compresa tra il $20\%$ e il $30\%$ di $l_0$.
+Dove $\theta_b$ è l'angolo di intreccio istantaneo e $\theta_{b0}$ quello iniziale a riposo. Al raggiungimento dell'angolo critico di equilibrio cinematico $\theta_b \approx 54^\circ 44'$, il termine geometrico in parentesi si annulla, portando a zero la forza tensile netta per qualsiasi livello di pressione. L'escursione utile di contrazione assiale è limitata al $20\% \div 30\%$ della lunghezza a riposo $l_0$.
 
 \subsubsection{Regimi Operativi Fondamentali}
 
-Il comportamento dell'attuatore si articola in due modalità operative:
+L'equilibrio meccanico del muscolo artificiale si suddivide in due modalità di esercizio:
 
 \noindent
 \begin{minipage}[t]{0.48\textwidth}
     \textbf{Operatività a Carico Costante}
     \par\vspace{0.2cm}
-    Applicata una massa gravante $\bm{M}$, per $p=0$ il muscolo si estende alla lunghezza massima $l_{\text{max}}$. All'aumentare della pressione ($p_2 > p_1$), il diametro si dilata e la lunghezza si riduce ($l_2 < l_1 < l_{\text{max}}$), sollevando il carico di un'altezza corrispondente alla variazione assiale.
+    Applicato un carico sospeso di massa costante $M$, a pressione nulla ($p=0$) il muscolo si estende per trazione fino alla lunghezza massima $l_{\text{max}}$. Incrementando progressivamente la pressione ($p_2 > p_1$), il condotto aumenta di sezione e si contrae assialmente ($l_2 < l_1 < l_{\text{max}}$), sollevando il carico di un'altezza pari alla variazione di lunghezza.
     \begin{figure}[H]
         \centering
-        \includegraphics[width=0.75\linewidth]{CaricoCostante.jpg}
-        \caption{Risposta a carico costante: contrazione all'aumentare della pressione.}
+        \includegraphics[width=0.85\linewidth]{CaricoCostante.jpg}
+        \caption{Risposta a carico costante: contrazione al crescere della pressione.}
         \label{fig:carico_costante}
     \end{figure}
 \end{minipage}
@@ -2653,73 +2651,69 @@ Il comportamento dell'attuatore si articola in due modalità operative:
 \begin{minipage}[t]{0.48\textwidth}
     \textbf{Operatività a Pressione Costante}
     \par\vspace{0.2cm}
-    A pressione $p$ costante, diminuendo il carico applicato da $\bm{M}_1$ a $\bm{M}_2$, la pressione interna incrementa il diametro della calza, inducendo un accorciamento fino al nuovo equilibrio; per $\bm{M}=0$ si ottiene la minima lunghezza $l_{\text{min}}$.
+    Mantenendo costante la pressione di alimentazione $p$, una riduzione del carico applicato (da $M_1$ a $M_2$) consente alla pressione interna di vincere la tensione assiale, dilatando la maglia e contraendo il muscolo verso un nuovo punto di equilibrio; per $M=0$ si raggiunge la corsa di massima contrazione $l_{\text{min}}$.
     \begin{figure}[H]
         \centering
-        \includegraphics[width=0.75\linewidth]{PressioneCostante.jpg}
-        \caption{Risposta a pressione costante: contrazione al diminuire del carico.}
+        \includegraphics[width=0.85\linewidth]{PressioneCostante.jpg}
+        \caption{Risposta a pressione costante: contrazione al decrescere del carico.}
         \label{fig:pressione_costante}
     \end{figure}
 \end{minipage}
 
-\subsubsection{Attuazione Antagonistica E Controllo Disaccoppiato Di Rigidità}
+\subsubsection{Attuazione Antagonistica E Controllo Disaccoppiato Di Rigidezza}
 
-Poiché i PAM esercitano \textbf{esclusivamente trazione}, la movimentazione bidirezionale di un giunto rotante richiede una configurazione a \textbf{coppia antagonista}, analoga al funzionamento dei muscoli scheletrici bicipite-tricipite.
+Poiché i muscoli pneumatici artificiali esercitano \textbf{soltanto forze di trazione}, la movimentazione bidirezionale come la rotazione attorno ad un asse richiede l'accoppiamento di due elementi in \textbf{Configurazione Antagonista}, replicando la cinematica biologica della coppia flessore-estensore.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\linewidth]{FunzAntag.jpeg}
-    \caption{Configurazione antagonista di due muscoli PAM: regolazione simultanea dell'angolo di equilibrio $\theta_j$ del giunto e della rigidezza torsionale $K_{\text{joint}}$.}
+    \includegraphics[width=0.5\linewidth]{FunzAntag.jpeg}
+    \caption{Configurazione antagonista di due muscoli PAM: regolazione disaccoppiata della coordinata di giunto $\theta_j$ e della rigidezza torsionale $K_{\text{joint}}$.}
     \label{fig:funz_antag}
 \end{figure}
 
-Due muscoli PAM ($M_1$ e $M_2$) sono collegati a una puleggia solidale all'asse del giunto (Figura~\ref{fig:funz_antag}). Le pressioni di alimentazione $p_1$ e $p_2$ determinano due parametri indipendenti:
+Due muscoli PAM distinti ($M_1$ e $M_2$) agiscono mediante tiranti su una puleggia fissata all'albero del giunto. Regolando le rispettive pressioni di alimentazione $p_1$ e $p_2$, il controllore gestisce due gradi di libertà fisici:
 \begin{itemize}
-    \item \textbf{Pressione Differenziale ($\Delta p = p_1 - p_2$)}: Produce un momento torcente netto, determinando l'\textbf{angolo di posizione del giunto} $\theta_j$;
-    \item \textbf{Pressione Comune o di Co-attivazione ($p_c = \frac{p_1 + p_2}{2}$)}: Determina il precarico interno. Poiché la rigidezza meccanica della camera d'aria aumenta con la pressione assoluta, incrementare $p_c$ lascia invariata la posizione e \textbf{aumenta la rigidezza torsionale passiva} del giunto ($K_{\text{joint}}$), permettendo di passare da elevata cedevolezza per pHRI ad elevata rigidezza per lavorazioni seriali.
+    \item \textbf{Pressione Differenziale ($\Delta p = p_1 - p_2$)}: Genera un momento torcente risultante non nullo sull'asse, determinando la posizione angolare a regime $\theta_j$ del giunto.
+    \item \textbf{Pressione Comune O Di Co-Attivazione ($p_c = \frac{p_1 + p_2}{2}$)}: La pressione comune permette di regolare la rigidezza torsionale del giunto senza modificarne la posizione angolare. Aumentando la pressione in entrambe le camere pneumatiche, il giunto oppone maggiore resistenza alle rotazioni causate da forze esterne, diventando più rigido. Al contrario, riducendo la pressione, il giunto diventa più cedevole. Questa regolazione consente di adattare il comportamento del robot alle diverse esigenze operative, privilegiando la sicurezza durante l'interazione uomo-robot (\textit{pHRI}) oppure la precisione nelle lavorazioni.
 \end{itemize}
-
-\newpage
 
 \subsection{Attuatori Con Elementi Elastici Intenzionali: SEA E VSA}
 
-Nei manipolatori rigidi tradizionali il controllo di forza viene eseguito tramite anelli di impedenza attiva su celle di carico a flangia, con prestazioni limitate negli urti ad alta frequenza da ritardi d'attuazione e larghezza di banda finita. Nel 1995 Gill Pratt e Matthew Williamson proposero quindi l'integrazione di \textbf{elementi elastici calibrati all'interno della catena cinematica}.
+Nei manipolatori rigidi convenzionali, la regolazione delle forze viene fatta tramite le celle di carico. Durante gli urti, questo approccio è limitato dai ritardi di retroazione. L'introduzione di \textbf{Elementi Elastici All'Interno Della Catena Cinematica} si supera questa criticità
 
-\subsubsection{Attuatori Elastici Seriali (SEA - Serial Elastic Actuators)}
+\subsubsection{Attuatori Elastici Seriali (SEA - Series Elastic Actuators)}
 
-Un \textbf{Attuatore Elastico Seriale} (SEA) incorpora un elemento elastico a rigidezza nota $k$ (molla torsionale o molle a tazza) disposto in serie tra riduttore e carico.
+Un \textbf{Attuatore Elastico Seriale} (SEA) interpone intenzionalmente un componente elastico a rigidezza costante nota $k$ (molle a torsione, barre di torsione o molle a tazza) tra l'albero d'uscita del riduttore e il carico condotto.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.85\textwidth]{SEA.jpeg}
-    \caption{Schema Concettuale A Blocchi Di Un Attuatore Elastico Seriale (SEA): Motore E Riduttore Azionano La Molla In Serie, La Cui Deflessione Elastica Comanda Il Moto Del Carico.}
+    \caption{Schema Funzionale Di Un Attuatore Elastico Seriale (SEA): Il Riduttore Pilota Il Terminale Primario Della Molla, La Cui Deflessione Trasmette Il Moto Al Giunto.}
     \label{fig:sea_concept}
 \end{figure}
 
-L'interposizione della molla introduce tre proprietà funzionali:
+L'introduzione della flessibilità strutturale determina due proprietà primarie:
 \begin{enumerate}
-    \item \textbf{Trasformazione del Controllo di Forza in Controllo di Posizione}: La forza (o coppia) $\tau$ trasmessa al carico è correlata alla deformazione elastica dalla legge di Hooke:
-    \[
+    \item \textbf{Conversione Del Controllo Di Forza In Controllo Di Posizione}: La forza (o coppia) trasmessa al link segue la legge costitutiva di Hooke:
+    \begin{equation}
         F = k \cdot (x_{\text{mot}} - x_{\text{load}}) = k \cdot \Delta x
-        \label{eq:hooke_sea}
-    \]
-    La misura della deflessione differenziale $\Delta x$ tra i capi della molla tramite encoder di posizione fornisce una stima della forza priva del rumore ad alta frequenza tipico di sensori piezoelettrici o estensimetrici.
-    \item \textbf{Tolleranza Strutturale ai Sovraccarichi d'Urto}: La molla isola meccanicamente i denti del riduttore dai carichi impulsivi esterni.
-    \item \textbf{Compromesso sulla Banda Passante}: La presenza dell'elasticità introduce poli complessi coniugati nella funzione di trasferimento, limitando la banda passante in posizione alla frequenza naturale $\omega_n = \sqrt{k/J_L}$.
+    \end{equation}
+    Misurando la deflessione relativa $\Delta x$ ai capi dell'elemento elastico mediante encoder di posizione dedicati, si calcola la forza esercitata con elevata immunità al rumore elettrico, eliminando la necessità di estensimetri o cristalli piezoelettrici.
+    \item \textbf{Protezione Strutturale Dai Transitori D'Urto}: La cedevolezza passiva assorbe meccanicamente gli shock impulsivi esterni, isolando gli ingranaggi del riduttore e prevenendo cedimenti a fatica o rotture dei denti.
 \end{enumerate}
 
-\paragraph{Architettura Elettromeccanica di un SEA Commerciale}
-La figura riporta l'architettura costruttiva di un attuatore lineare SEA basato sullo schema originale di Pratt e Williamson.
+\paragraph{Architettura Elettromeccanica Di Un SEA Industriale}
+La figura descrive la realizzazione costruttiva di un attuatore lineare SEA derivato dal principio di funzionamento proposto da Pratt e Williamson:
 
 \noindent
 \begin{minipage}[t]{0.48\textwidth}
-    La catena cinematica comprende:
+    La catena meccanica è composta da:
     \begin{enumerate}
-        \item Servomotore in corrente continua con riduttore planetario (\textbf{DC motor with gearbox});
+        \item Motore elettrico DC accoppiato a un riduttore epicicloidale (\textbf{DC motor with gearbox});
         \item Vite a ricircolo di sfere (\textbf{ball screw}) e chiocciola flangiata (\textbf{ball nut plate}) per la conversione rotazione-traslazione;
-        \item Carrello mobile (\textbf{moving sub-assembly}) scorrevole lungo aste rettificate di guida (\textbf{guide rods});
-        \item Due molle elicoidali in acciaio precaricate e contrapposte (\textbf{springs}), interposte tra chiocciola e asta d'uscita;
-        \item Asta di spinta d'uscita (\textbf{moving rod}) provvista di terminale per la connessione al carico (\textbf{load connection terminal}).
+        \item Carrello mobile d'azionamento (\textbf{moving sub-assembly}) scorrevole su guide rettificate parallele (\textbf{guide rods});
+        \item Coppia di molle elicoidali in acciaio precaricate e montate in opposizione (\textbf{springs}), interposte tra chiocciola e asta condotta;
+        \item Stelo d'uscita (\textbf{moving rod}) provvisto di testata terminale per il collegamento al carico (\textbf{load connection terminal}).
     \end{enumerate}
 \end{minipage}
 \hfill
@@ -2727,46 +2721,45 @@ La figura riporta l'architettura costruttiva di un attuatore lineare SEA basato 
     \begin{figure}[H]
         \centering
         \includegraphics[width=0.99\linewidth]{SEAStruct.jpg}
-        \caption{Spaccato Costruttivo Di Un Attuatore Lineare SEA A Vite Con Molle Di Richiamo Contrapposte.}
+        \caption{Spaccato costruttivo di attuatore lineare SEA a ricircolo di sfere con molle contrapposte.}
     \end{figure}
 \end{minipage}
-
 \newpage
+\subsubsection{Attuatori A Rigidezza Variabile (VSA - Variable Stiffness Actuators)}
 
-\subsubsection{Attuatori A Rigidità Variabile (VSA - Variable Stiffness Actuators)}
-
-A differenza dei SEA, in cui la rigidezza $k$ è costante, gli \textbf{Attuatori a Rigidità Variabile} (\textit{VSA}) consentono di regolare la rigidezza passiva $k_{\text{var}}$ indipendentemente dalla posizione del giunto.
+A differenza dei SEA, in cui la costante elastica $k$ è geometricamente fissa, negli \textbf{Attuatori a Rigidezza Variabile} (\textit{VSA}) è possibile regolare indipendentemente sia la posizione angolare del giunto, sia la rigidezza meccanica $k_{\text{var}}$.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.85\textwidth]{VSA.jpeg}
-    \caption{Schema Concettuale Di Un Attuatore A Rigidità Variabile (VSA): Un Loop Indipendente Regola L'Angolo Di Equilibrio $\Theta$, Mentre Un Secondo Sottosistema Modula La Rigidità Passiva $\Sigma$.}
+    \caption{Schema Concettuale Di Un Attuatore A Rigidezza Variabile (VSA): Due Anelli Indipendenti Gestiscono Rispettivamente L'Equilibrio Angolare $\Theta$ E Il Gradiente Elastico $\Sigma$.}
     \label{fig:vsa_concept}
 \end{figure}
-Un attuatore VSA dispone di \textbf{due gradi di libertà cinematici interni} gestiti da attuatori indipendenti:
+
+In pratica un attuatore VSA ha \textbf{Due Gradi Di Libertà}, governati da motori distinti:
 \begin{enumerate}
-    \item Il primo attuatore comanda la \textbf{posizione angolare di equilibrio} $\theta_d$;
-    \item Il secondo modula la \textbf{rigidità passiva} $\sigma = \frac{\partial \tau}{\partial \theta}$.
+    \item Il primo attuatore comanda l'\textbf{Angolo} $\theta_d$;
+    \item Il secondo attuatore modula la \textbf{Rigidezza Passiva} $\sigma = \frac{\partial \tau}{\partial \theta}$.
 \end{enumerate}
-La variazione di rigidezza è realizzata prevalentemente mediante due schemi costruttivi:
+Questo principio è ottenuto principalmente secondo due architetture meccaniche differenti:
 \begin{itemize}
-    \item \textbf{Architettura Antagonista Non Lineare}: Due motori azionano il medesimo giunto tramite molle a rigidezza progressiva non lineare (es. $F \propto x^3$). La rotazione concorde comanda la posa del giunto, mentre la rotazione discorde precarica le molle aumentandone la rigidezza tangenziale locale senza alterare l'angolo dell'articolazione.
-    \item \textbf{Architettura a Modulazione Meccanica Parametrica}: Un motore primario (\textit{positioning motor}) aziona la catena cinematica, mentre un motore ausiliario di regolazione (\textit{stiffness motor}) interviene sulla geometria dell'elemento elastico, traslando il fulcro di una leva, variando il precarico di una molla a spirale o alterando la lunghezza libera di una lamina flessibile.
+    \item \textbf{Architettura Antagonista Non Lineare}: Due motori agiscono sullo stesso giunto attraverso elementi elastici non lineari, la cui forza aumenta in modo non proporzionale alla deformazione (ad esempio, $F \propto x^3$). La rotazione concorde dei motori modifica la posizione del giunto, mentre la rotazione opposta aumenta il carico degli elementi elastici e di conseguenza, la rigidezza del sistema, senza modificare la posizione angolare.
+
+    \item \textbf{Architettura A Modulazione Meccanica}: Un motore controlla la posizione del giunto, mentre un secondo motore regola la rigidezza modificando la geometria del sistema elastico. Questo può avvenire, ad esempio, spostando il fulcro di una leva, variando il carico di una molla oppure modificando la lunghezza utile di una balestra.
 \end{itemize}
+\newpage
+\subsection{Panoramica Tassonomica Delle Altre Tecnologie Di Attuazione Morbida}
 
-\subsection{Panoramica Tassonomica Su Altre Tecnologie Di Attuazione Morbida}
-
-Oltre alle soluzioni a fluido (PAM) e con molle meccaniche (SEA/VSA), la Soft Robotics e la microrobotica impiegano trasduttori basati su \textbf{materiali attivi} (\textit{smart materials}):
+Oltre ai sistemi pneumatici elastici (PAM) e alle trasmissioni meccaniche deformabili (SEA/VSA), la Soft Robotics e la microrobotica impiegano trasduttori basati su \textbf{materiali attivi} (\textit{smart materials}):
 
 \begin{itemize}
-    \item \textbf{Attuatori Elettrostatici ed Elettromagnetici}: Basati su forze coulombiane o di Lorentz su microscala; impiegati in dispositivi MEMS (\textit{Micro-Electro-Mechanical Systems}) con tempi di risposta sub-millisecondo e corse microscopiche.
-    \item \textbf{Attuatori Piezoelettrici}: Cristalli ceramici (es. Titanato Zirconato di Piombo, PZT) a deformazione proporzionale al campo elettrico applicato; sviluppano forze elevate ad alta frequenza ($\si{\kilo\hertz}$), indicati per microposizionamento e smorzamento attivo di vibrazioni.
-    \item \textbf{Materiali Elettrostrittivi e Magnetostrittivi}: Leghe (es. Terfenol-D) con deformazione proporzionale al quadrato del campo magnetico o di polarizzazione dielettrica.
-    \item \textbf{Leghe a Memoria di Forma (SMA - Shape Memory Alloys)}: Leghe metalliche binarie (tipicamente Nitinol, Nichel-Titanio) a transizione di fase termomeccanica martensitica reversibile. Il riscaldamento per effetto Joule induce il passaggio dalla fase martensitica a bassa temperatura a quella austenitica ad alta temperatura, ripristinando la geometria originaria con forze specifiche elevate. Presentano rendimento energetico contenuto ($< 2\%$) e tempi di raffreddamento prolungati.
-    \newpage
-    \item \textbf{Polimeri Elettroattivi (EAP - Electroactive Polymers)}: Membrane elastomeriche dielettriche interposte tra elettrodi deformabili. L'applicazione di tensioni elevate ($> \SI{1}{\kilo\volt}$) produce una pressione elettrostatica (pressione di Maxwell) che assottiglia il dielettrico inducendone la dilatazione superficiale, con deformazioni utili del $30 \div 50\%$.
-    \item \textbf{Attuatori a Nanotubi di Carbonio (CNT)}: Basati sull'iniezione elettrochimica di cariche in fogli di grafene, garantiscono elevata resistenza a trazione e compatibilità con ambienti biologici.
-    \item \textbf{Smorzatori Magnetoreologici (MR) e a Dissipazione Controllata}: Dispositivi contenenti microparticelle ferrose sospese in oli minerali. Sotto l'azione di un campo magnetico variabile generato da un solenoide, l'allineamento a dipolo delle particelle muta la viscosità da fluida a semisolida, modulando il coefficiente di smorzamento meccanico per la dissipazione degli impatti.
+    \item \textbf{Attuatori Elettrostatici Ed Elettromagnetici}: Generano movimento sfruttando rispettivamente le forze elettriche tra cariche e le forze magnetiche. Sono utilizzati soprattutto nei sistemi miniaturizzati, come i MEMS (\textit{Micro-Electro-Mechanical Systems}), dove consentono risposte molto rapide, ma con spostamenti ridotti.
+
+    \item \textbf{Attuatori Piezoelettrici}: Sfruttano la deformazione di alcuni materiali, come il PZT, quando viene applicato un campo elettrico. Offrono elevata precisione e tempi di risposta molto rapidi, risultando adatti al micro-posizionamento e al controllo delle vibrazioni.
+
+    \item \textbf{Leghe A Memoria Di Forma (SMA)}: Materiali come il Nitinol si deformano e recuperano la forma memorizzata in seguito a una variazione di temperatura, spesso ottenuta mediante il passaggio di corrente elettrica. Offrono elevate forze rispetto al peso, ma presentano consumi energetici e tempi di risposta relativamente elevati.
+
+    \item \textbf{Polimeri Elettroattivi (EAP)}: Sono materiali che si deformano quando vengono sottoposti a un campo elettrico. Possono raggiungere deformazioni significative e sono interessanti per realizzare attuatori leggeri e flessibili, soprattutto nella robotica biomimetica e nella Soft Robotics.
 \end{itemize}
 
 \end{document}
