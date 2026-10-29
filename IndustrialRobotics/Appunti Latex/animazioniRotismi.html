@@ -1,0 +1,970 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rotismi: animazioni interattive</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#edf1f7;--card:#ffffff;--ink:#111c35;--mut:#58657c;--line:#d1d8e5;--chip:#e1e7f0;
+  --a:#2563eb;--b:#ea6c15;--c:#129460;--d:#8b46cc;--hi:#e11d48;
+}
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0b101b;--card:#131b2c;--ink:#e8edf7;--mut:#92a0b8;--line:#243048;--chip:#1b2538;
+    --a:#60a5fa;--b:#fb923c;--c:#34d399;--d:#c084fc;--hi:#fb7185;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0b101b;--card:#131b2c;--ink:#e8edf7;--mut:#92a0b8;--line:#243048;--chip:#1b2538;
+  --a:#60a5fa;--b:#fb923c;--c:#34d399;--d:#c084fc;--hi:#fb7185;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:840px;margin:0 auto;padding:18px 16px 44px}
+header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px}
+h1{font-size:1.65rem;line-height:1.15;margin:0;letter-spacing:-.015em}
+header p{margin:4px 0 0;color:var(--mut);font-size:.94rem}
+button{font:inherit;color:var(--ink);cursor:pointer}
+button:focus-visible,input:focus-visible,canvas:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+.ic{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--card);flex:none;font-size:1.1rem;display:grid;place-items:center}
+.seg{display:flex;gap:4px;padding:4px;background:var(--chip);border-radius:12px;overflow-x:auto}
+.seg button{flex:1;white-space:nowrap;padding:8px 12px;border:0;border-radius:9px;background:none;font-weight:600;font-size:.93rem;color:var(--mut);transition:background .15s,color .15s}
+.seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.16)}
+.stage{position:relative;margin:14px 0 0;border:1px solid var(--line);border-radius:16px;overflow:hidden;background-color:var(--card);background-image:radial-gradient(var(--line) 1.1px,transparent 1.1px);background-size:20px 20px}
+canvas{width:100%;height:auto;display:block;cursor:grab;touch-action:pan-y;-webkit-user-select:none;user-select:none}
+.hud{position:absolute;left:16px;top:12px;pointer-events:none;font-variant-numeric:tabular-nums;background:color-mix(in srgb,var(--card) 82%,transparent);backdrop-filter:blur(6px);padding:6px 10px;border-radius:10px;border:1px solid var(--line)}
+.hud small{display:block;color:var(--mut);font-size:.8rem;font-weight:500}
+.hud b{font-size:1.75rem;line-height:1.1;font-weight:700}
+.badge-cfg{position:absolute;right:14px;top:12px;pointer-events:none;font-size:.78rem;font-weight:600;color:var(--mut);background:color-mix(in srgb,var(--card) 84%,transparent);backdrop-filter:blur(6px);padding:5px 10px;border-radius:999px;border:1px solid var(--line)}
+.hint{position:absolute;right:14px;bottom:10px;font-size:.78rem;color:var(--mut);pointer-events:none;background:color-mix(in srgb,var(--card) 80%,transparent);padding:2px 8px;border-radius:6px}
+.legend{position:absolute;left:14px;bottom:10px;font-size:.76rem;color:var(--mut);pointer-events:none;display:flex;gap:10px;align-items:center;background:color-mix(in srgb,var(--card) 80%,transparent);padding:2px 8px;border-radius:6px}
+.legend span{display:inline-flex;align-items:center;gap:4px}
+.legend i{display:inline-block;width:10px;height:2px;border-top:2px dashed var(--mut)}
+.legend b{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--hi)}
+.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:12px 0}
+.bar button{padding:7px 13px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-weight:600;font-size:.9rem}
+.bar button.on{border-color:var(--a);color:var(--a);background:color-mix(in srgb,var(--a) 10%,var(--card))}
+.bar label{display:flex;gap:8px;align-items:center;margin-left:auto;color:var(--mut);font-size:.9rem;font-weight:500}
+input[type=range]{accent-color:var(--a)}
+section{border-top:1px solid var(--line);padding:14px 0}
+h2{font-size:.98rem;margin:0 0 10px;display:flex;align-items:center;justify-content:space-between}
+.sl{display:grid;grid-template-columns:68px 1fr 40px;gap:10px;align-items:center;margin:6px 0;font-variant-numeric:tabular-nums;font-size:.93rem}
+.sl output{text-align:right;font-weight:600}
+.cfg-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:8px;margin:10px 0 8px}
+.cfg-btn{text-align:left;padding:10px 12px;border:1px solid var(--line);border-radius:11px;background:var(--card);transition:border-color .15s,background .15s,transform .12s;display:flex;flex-direction:column;gap:2px}
+.cfg-btn:hover{transform:translateY(-1px)}
+.cfg-btn.on{border-color:var(--a);background:color-mix(in srgb,var(--a) 9%,var(--card));box-shadow:0 2px 6px rgba(37,99,235,.12)}
+.cfg-btn strong{font-size:.9rem;color:var(--ink);display:flex;justify-content:space-between;align-items:center}
+.cfg-btn small{font-size:.78rem;color:var(--mut);line-height:1.3}
+.cfg-btn .pill{font-size:.72rem;padding:1px 6px;border-radius:99px;background:var(--chip);color:var(--ink);font-weight:600}
+.cfg-btn.on .pill{background:var(--a);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:8px}
+.rd{display:flex;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);transition:border-color .15s,transform .15s}
+.rd.on{border-color:var(--ink);transform:translateY(-2px)}
+.rd i{width:12px;height:12px;border-radius:50%;flex:none}
+.rd div{display:flex;flex-direction:column;font-size:.82rem;color:var(--mut);min-width:0}
+.rd b{color:var(--ink);font-size:.92rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rd em{margin-left:auto;font-style:normal;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;font-size:.9rem}
+#info p{margin:0 0 10px;font-size:.95rem}
+.fm{padding:11px 14px;background:var(--chip);border-radius:10px;font-variant-numeric:tabular-nums;font-size:.92rem;line-height:1.5}
+</style></head>
+<body><main>
+<header>
+  <div>
+    <h1>Rotismi meccanici</h1>
+    <p>Trascina la scena per ruotare gli ingranaggi, esplora le primitive di contatto e confronta i rapporti di trasmissione.</p>
+  </div>
+  <button class="ic" id="th" aria-label="Cambia tema" title="Cambia tema chiaro/scuro">◐</button>
+</header>
+
+<nav class="seg" id="tabs" role="tablist" aria-label="Tipo di rotismo"></nav>
+
+<div class="stage">
+  <canvas id="cv" tabindex="0" aria-label="Animazione del rotismo"></canvas>
+  <div class="hud" id="tau"></div>
+  <div class="badge-cfg" id="bcfg" hidden></div>
+  <div class="legend" id="leg">
+    <span><i></i> Primitiva</span>
+    <span><b></b> Punto di contatto</span>
+  </div>
+  <div class="hint">Trascina per ruotare · Spazio = Pausa</div>
+</div>
+
+<div class="bar">
+  <button id="pp">❚❚ Pausa</button>
+  <button id="rv">⇄ Inverti</button>
+  <button id="ann" class="on" title="Mostra circonferenze primitive, vettori velocità e punti di contatto">◎ Primitive e vettori</button>
+  <button id="rs">↺ Ripristina</button>
+  <label>Velocità <input type="range" id="sp" min="0.2" max="3" step="0.1" value="1" aria-label="Velocità"></label>
+</div>
+
+<section>
+  <h2 id="sl-title">Parametri geometrici (Numero di denti)</h2>
+  <div id="sl"></div>
+
+  <!-- 3 configurazioni per l'Epicicloidale + Differenziale -->
+  <div id="epc" hidden>
+    <h2 style="margin-top:14px">Configurazione cinematica (3 inversioni + differenziale)</h2>
+    <div class="cfg-cards" id="lk">
+      <button class="cfg-btn" data-l="ring">
+        <strong><span>1. Corona ferma</span><span class="pill">ω<sub>c</sub> = 0</span></strong>
+        <small><b>Epicicloidale:</b> Movente Solare → Cedente Portatreno (riduttore concorde)</small>
+      </button>
+      <button class="cfg-btn" data-l="carrier">
+        <strong><span>2. Portatreno fermo</span><span class="pill">ω<sub>t</sub> = 0</span></strong>
+        <small><b>Stellare (Ordinario):</b> Movente Solare → Cedente Corona (inversione di moto)</small>
+      </button>
+      <button class="cfg-btn" data-l="sun">
+        <strong><span>3. Solare fermo</span><span class="pill">ω<sub>s</sub> = 0</span></strong>
+        <small><b>Solare fisso:</b> Movente Corona → Cedente Portatreno (riduzione lieve)</small>
+      </button>
+      <button class="cfg-btn" data-l="free">
+        <strong><span>Differenziale</span><span class="pill">2 GdL</span></strong>
+        <small><b>Portatreno libero:</b> 2 gradi di libertà, regola ω<sub>t</sub>/ω<sub>s</sub> col cursore</small>
+      </button>
+    </div>
+    <label class="sl" id="fr" hidden>
+      <span>ω<sub>t</sub>/ω<sub>s</sub></span>
+      <input type="range" id="rf" min="-1" max="1" step="0.05" value="0.3">
+      <output id="rfo"></output>
+    </label>
+  </div>
+
+  <!-- Configurazioni per Harmonic Drive -->
+  <div id="hdc" hidden>
+    <h2 style="margin-top:14px">Configurazione Harmonic Drive</h2>
+    <div class="cfg-cards" id="hdlk">
+      <button class="cfg-btn" data-h="cs">
+        <strong><span>1. Corona rigida ferma</span><span class="pill">ω<sub>cs</sub> = 0</span></strong>
+        <small><b>Standard:</b> Ingresso Wave Generator → Uscita Flexspline (moto retrogrado)</small>
+      </button>
+      <button class="cfg-btn" data-h="fs">
+        <strong><span>2. Flexspline ferma</span><span class="pill">ω<sub>fs</sub> = 0</span></strong>
+        <small><b>Alternativa:</b> Ingresso Wave Generator → Uscita Corona rigida (moto concorde)</small>
+      </button>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Velocità angolari e ruoli cinematica</h2>
+  <div class="grid" id="rd"></div>
+</section>
+
+<section id="info"></section>
+</main>
+
+<script>
+const $=id=>document.getElementById(id),cv=$("cv"),ctx=cv.getContext("2d"),W=560,H=390,PI=Math.PI;
+cv.width=W*2;cv.height=H*2;
+
+const NAMES=["Piano","Ordinario","Sferico","Epicicloidale","Harmonic Drive"];
+const DEF=[[16,22,30],[15,32,16,34],[18,28],[24,12],[48]];
+const LIM=[
+  [[10,36,1],[10,36,1],[12,40,1]],
+  [[10,32,1],[16,44,1],[10,32,1],[16,44,1]],
+  [[12,34,1],[12,38,1]],
+  [[16,40,2],[8,20,2]],
+  [[32,76,4]]
+];
+const SYM=[
+  ["z₁ (mov.)","z₂ (oziosa)","z₃ (ced.)"],
+  ["z₁ (mov.)","z₂","z₂′ (coass.)","z₃ (ced.)"],
+  ["z₁ (pign.)","z₂ (corona)"],
+  ["z<sub>s</sub> (solare)","z<sub>p</sub> (satell.)"],
+  ["z<sub>f</sub> (flex)"]
+];
+const INFO=[
+  "<b>Rotismo piano semplice</b>: gli assi sono tutti <i>paralleli</i> e fissi a telaio. Le circonferenze primitive (tratteggiate) rotolano senza strisciare nei punti di contatto (in rosso). La ruota intermedia <b>2 è oziosa</b>: rende concordi i versi di 1 e 3 ma non altera il modulo del rapporto di trasmissione.",
+  "<b>Rotismo ordinario composto</b>: tutti gli assi sono <i>fissi</i> a telaio, ma l’albero intermedio porta calettate <b>due ruote solidali (2 e 2′)</b> unite dal manicotto centrale (stessa velocità angolare ω₂ = ω₂′). Permette forti rapporti di riduzione in spazi compatti.",
+  "<b>Rotismo sferico (conico)</b>: gli assi sono <i>concorrenti</i> nel vertice comune <b>O</b> (qui ortogonali, Σ = 90°). Il moto equivale al rotolamento puro di due <b>coni primitivi</b> con semiangoli di apertura δ₁ e δ₂ tali che tan δ₁ = z₁/z₂ e δ₁ + δ₂ = 90°.",
+  "<b>Rotismo epicicloidale</b>: l’asse dei satelliti (arancio) è <i>mobile</i> perché trascinato dal <b>portatreno</b> (verde). Bloccando a scelta la Corona, il Portatreno o il Solare si ottengono le <b>3 configurazioni fondamentali</b> a 1 grado di libertà, ciascuna con un diverso rapporto di trasmissione ricavabile dalla formula di Willis.",
+  "<b>Harmonic Drive (riduttore armonico)</b>: sfrutta la deformazione elastica controllata. Il <b>Wave Generator</b> ellittico (azzurro, con cuscinetto a sfere) deforma la <b>Flexspline</b> (arancio, flessibile con z<sub>f</sub> denti esterni) facendola ingranare in due zone opposte con la <b>Circular Spline</b> rigida (viola, con z<sub>c</sub> = z<sub>f</sub> + 2 denti interni). Ad ogni giro del Wave Generator la Flexspline arretra di soli 2 denti!"
+];
+
+let tab=0,T=0,run=1,spd=1,dir=1,last=0,K={},hov=-1,drag=0,lx=0;
+let lock="ring",rf=.3,hdLock="cs",showAnn=1,HIT=[],Z=DEF.map(a=>a.slice());
+
+const f=v=>(Math.abs(v)<1e-4?"0.000":(v<0?"−":"+")+(+Math.abs(v).toFixed(3)));
+const nPl=(zs,zp)=>{const s=2*(zs+zp);return s%3==0?3:s%4==0?4:2};
+
+function mod(){
+  const z=Z[tab];let r,lab,val,fm,ref="ω₁",ex={},badge="";
+  if(tab==0){
+    const w=[1,-z[0]/z[1],z[0]/z[2]];
+    r=[
+      {n:"1 Movente",role:"Ingresso",c:"a",z:z[0],w:w[0]},
+      {n:"2 Oziosa",role:"Intermedia",c:"c",z:z[1],w:w[1]},
+      {n:"3 Cedente",role:"Uscita",c:"b",z:z[2],w:w[2]}
+    ];
+    lab="τ = ω₃ / ω₁";val=w[2];
+    fm=`τ = (−1)² · (z₁/z₂)·(z₂/z₃) = +z₁/z₃ = ${z[0]}/${z[2]} = <b>${f(w[2])}</b> (versi concordi)`;
+  }else if(tab==1){
+    const w=[1,-z[0]/z[1],-z[0]/z[1],z[0]*z[2]/(z[1]*z[3])];
+    r=[
+      {n:"1 Movente",role:"Albero 1",c:"a",z:z[0],w:w[0]},
+      {n:"2 Condotta",role:"Albero 2",c:"b",z:z[1],w:w[1]},
+      {n:"2′ Solidale a 2",role:"Albero 2",c:"c",z:z[2],w:w[2]},
+      {n:"3 Cedente",role:"Albero 3",c:"d",z:z[3],w:w[3]}
+    ];
+    lab="τ = ω₃ / ω₁";val=w[3];
+    fm=`τ = (−z₁/z₂) · (−z₂′/z₃) = (${z[0]}·${z[2]}) / (${z[1]}·${z[3]}) = <b>${f(w[3])}</b>`;
+  }else if(tab==2){
+    const t=z[0]/z[1],d1=Math.atan(t)*180/PI,d2=90-d1;
+    r=[
+      {n:"1 Pignone conico",role:`δ₁ = ${d1.toFixed(1)}°`,c:"a",z:z[0],w:1},
+      {n:"2 Corona conica",role:`δ₂ = ${d2.toFixed(1)}°`,c:"b",z:z[1],w:-t}
+    ];
+    lab="|τ| = ω₂ / ω₁";val=t;
+    fm=`|τ| = z₁/z₂ = sin δ₁ / sin δ₂ = tan δ₁ = ${z[0]}/${z[1]} = <b>${+t.toFixed(3)}</b> &nbsp;(δ₁ = ${d1.toFixed(1)}°, δ₂ = ${d2.toFixed(1)}°)`;
+  }else if(tab==3){
+    const zs=z[0],zp=z[1],zc=zs+2*zp,N=nPl(zs,zp),t0=-zs/zc;
+    let ws,wc,wt,roles;
+    if(lock=="ring"){
+      ws=1;wc=0;wt=zs/(zs+zc);
+      ref="ω<sub>s</sub>";lab="τ = ω<sub>t</sub> / ω<sub>s</sub>";val=wt;
+      badge="Config. 1: Corona ferma (Epicicloidale)";
+      roles=["Movente (Ingresso)","Moto planetario","Telaio (Fissa)","Cedente (Uscita)"];
+      fm=`<b>1. Corona ferma (ω<sub>c</sub> = 0):</b> da Willis (ω<sub>c</sub>−ω<sub>t</sub>)/(ω<sub>s</sub>−ω<sub>t</sub>) = −z<sub>s</sub>/z<sub>c</sub> &rArr; <b>τ = ω<sub>t</sub>/ω<sub>s</sub> = z<sub>s</sub>/(z<sub>s</sub>+z<sub>c</sub>)</b> = ${zs}/(${zs}+${zc}) = <b>${f(wt)}</b>`;
+    }else if(lock=="carrier"){
+      ws=1;wt=0;wc=-zs/zc;
+      ref="ω<sub>s</sub>";lab="τ = ω<sub>c</sub> / ω<sub>s</sub>";val=wc;
+      badge="Config. 2: Portatreno fermo (Stellare)";
+      roles=["Movente (Ingresso)","Oziosi (Assi fissi)","Cedente (Uscita)","Telaio (Fermo)"];
+      fm=`<b>2. Portatreno fermo (ω<sub>t</sub> = 0, rotismo stellare):</b> i satelliti agiscono da ruote oziose &rArr; <b>τ = ω<sub>c</sub>/ω<sub>s</sub> = −z<sub>s</sub>/z<sub>c</sub></b> = −${zs}/${zc} = <b>${f(wc)}</b>`;
+    }else if(lock=="sun"){
+      ws=0;wc=1;wt=zc/(zs+zc);
+      ref="ω<sub>c</sub>";lab="τ = ω<sub>t</sub> / ω<sub>c</sub>";val=wt;
+      badge="Config. 3: Solare fermo";
+      roles=["Telaio (Fermo)","Moto planetario","Movente (Ingresso)","Cedente (Uscita)"];
+      fm=`<b>3. Solare fermo (ω<sub>s</sub> = 0):</b> ingresso sulla Corona, uscita sul Portatreno &rArr; <b>τ = ω<sub>t</sub>/ω<sub>c</sub> = z<sub>c</sub>/(z<sub>s</sub>+z<sub>c</sub>)</b> = ${zc}/(${zs}+${zc}) = <b>${f(wt)}</b>`;
+    }else{
+      ws=1;wt=rf;wc=wt-(ws-wt)*zs/zc;
+      ref="ω<sub>s</sub>";lab="ω<sub>t</sub> / ω<sub>s</sub> (2 GdL)";val=wt;
+      badge="Differenziale a 2 gradi di libertà";
+      roles=["Ingresso 1","Moto composto","Uscita","Ingresso 2"];
+      fm=`<b>Formula di Willis generale:</b> (ω<sub>c</sub> − ω<sub>t</sub>)/(ω<sub>s</sub> − ω<sub>t</sub>) = τ₀ = −z<sub>s</sub>/z<sub>c</sub> = −${zs}/${zc} = <b>${f(t0)}</b> &rArr; ω<sub>c</sub> = ${f(wc)} ω<sub>s</sub>`;
+    }
+    const wp=wt-(ws-wt)*zs/zp;
+    ex={ws,wc,wt,wp,N,zc};
+    r=[
+      {n:"Solare (s)",role:roles[0],c:"a",z:zs,w:ws},
+      {n:`Satelliti ×${N} (p)`,role:roles[1],c:"b",z:zp,w:wp},
+      {n:"Corona (c)",role:roles[2],c:"d",z:zc,w:wc},
+      {n:"Portatreno (t)",role:roles[3],c:"c",z:"–",w:wt}
+    ];
+  }else{
+    const zf=z[0],zc=zf+2;
+    let wwg=1,wfs,wcs,roles;
+    if(hdLock=="cs"){
+      wcs=0;wfs=(zf-zc)/zf;
+      ref="ω<sub>wg</sub>";lab="τ = ω<sub>fs</sub> / ω<sub>wg</sub>";val=wfs;
+      badge="Harmonic Drive: Corona rigida ferma";
+      roles=["Movente (Ingresso)","Cedente (Uscita)","Telaio (Fissa)"];
+      fm=`<b>Corona rigida ferma (ω<sub>cs</sub> = 0):</b> τ = ω<sub>fs</sub>/ω<sub>wg</sub> = (z<sub>f</sub> − z<sub>c</sub>)/z<sub>f</sub> = −2/z<sub>f</sub> = −2/${zf} = <b>${f(wfs)}</b> (rapporto <b>1 : ${zf/2}</b> retrogrado)`;
+    }else{
+      wfs=0;wcs=(zc-zf)/zc;
+      ref="ω<sub>wg</sub>";lab="τ = ω<sub>cs</sub> / ω<sub>wg</sub>";val=wcs;
+      badge="Harmonic Drive: Flexspline ferma";
+      roles=["Movente (Ingresso)","Telaio (Fissa)","Cedente (Uscita)"];
+      fm=`<b>Flexspline ferma (ω<sub>fs</sub> = 0):</b> τ = ω<sub>cs</sub>/ω<sub>wg</sub> = (z<sub>c</sub> − z<sub>f</sub>)/z<sub>c</sub> = +2/z<sub>c</sub> = +2/${zc} = <b>${f(wcs)}</b> (rapporto <b>1 : ${zc/2}</b> concorde)`;
+    }
+    ex={wwg,wfs,wcs,zf,zc};
+    r=[
+      {n:"Wave Generator",role:roles[0],c:"a",z:"cam",w:wwg},
+      {n:"Flexspline (fs)",role:roles[1],c:"b",z:zf,w:wfs},
+      {n:"Circular Spline (cs)",role:roles[2],c:"d",z:zc,w:wcs}
+    ];
+  }
+  return{r,lab,val,fm,ref,ex,badge};
+}
+
+function view(x0,x1,h){
+  const s=Math.min(1.65,(W-44)/(x1-x0),(H-88)/(2*h));
+  ctx.save();
+  ctx.translate(W/2-s*(x0+x1)/2,H/2-4);
+  ctx.scale(s,s);
+  ctx.lineWidth=1.4/s;
+  ctx.font=`600 ${12/s}px "IBM Plex Sans",system-ui,sans-serif`;
+  return s;
+}
+
+// Disegna una ruota dentata dettagliata (esterna o interna)
+function gear(x,y,r,z,a,col,inn,id,wRel){
+  const m=2*r/z,tip=inn?r-m*.92:r+m*.92,root=inn?r+1.15*m:r-1.15*m,p=PI/z,h=id===hov,lw=ctx.lineWidth,M=ctx.getTransform();
+  const rimR=inn?root+15:0;
+  HIT.push({id,x:(M.a*x+M.e)/2,y:(M.d*y+M.f)/2,r:r*M.a/2,inn});
+
+  ctx.save();
+  if(h){ctx.lineWidth=lw*1.75;ctx.shadowColor=col;ctx.shadowBlur=14}
+
+  // Profilo denti smussato (simil-evolvente) + eventuale cassa esterna corona
+  ctx.beginPath();
+  if(inn){
+    ctx.arc(x,y,rimR,0,2*PI);
+    // Tacche esterne sulla cassa della corona
+    for(let k=0;k<8;k++){
+      const ang=k*PI/4;
+      ctx.moveTo(x+(rimR+2.5)*Math.cos(ang),y+(rimR+2.5)*Math.sin(ang));
+    }
+  }
+  for(let k=0;k<z;k++){
+    const t=a+2*p*k;
+    const pts=[
+      [root,t-.5*p],
+      [root,t-.36*p],
+      [r,   t-.24*p],
+      [tip, t-.13*p],
+      [tip, t+.13*p],
+      [r,   t+.24*p],
+      [root,t+.36*p],
+      [root,t+.5*p]
+    ];
+    pts.forEach(([q,u],i)=>{
+      const X=x+q*Math.cos(u),Y=y+q*Math.sin(u);
+      (k||i)?ctx.lineTo(X,Y):ctx.moveTo(X,Y);
+    });
+  }
+  ctx.closePath();
+  ctx.fillStyle=K.bg;ctx.fill("evenodd");
+  ctx.globalAlpha=h?.46:.25;ctx.fillStyle=col;ctx.fill("evenodd");ctx.globalAlpha=1;
+  ctx.strokeStyle=col;ctx.stroke();
+  ctx.shadowBlur=0;
+
+  // Dettagli interni: razze / fori di alleggerimento e mozzo
+  if(!inn){
+    if(r>30){
+      const nH=z>=24?4:3,rIn=Math.max(10,r*.28),rOut=root*.72;
+      if(rOut-rIn>8){
+        ctx.save();
+        ctx.strokeStyle=col;ctx.globalAlpha=.45;
+        for(let k=0;k<nH;k++){
+          const g0=a+k*2*PI/nH+.28,g1=a+(k+1)*2*PI/nH-.28;
+          if(g1>g0){
+            ctx.beginPath();
+            ctx.arc(x,y,rOut,g0,g1);
+            ctx.arc(x,y,rIn,g1,g0,true);
+            ctx.closePath();
+            ctx.fillStyle=K.bg;ctx.globalAlpha=.75;ctx.fill();
+            ctx.globalAlpha=.45;ctx.stroke();
+          }
+        }
+        ctx.restore();
+      }
+    }
+    // Mozzo e foro albero
+    const hubR=Math.min(root*.48,Math.max(7,r*.24));
+    ctx.beginPath();ctx.arc(x,y,hubR,0,2*PI);
+    ctx.fillStyle=K.bg;ctx.fill();
+    ctx.globalAlpha=.35;ctx.fillStyle=col;ctx.fill();ctx.globalAlpha=1;
+    ctx.strokeStyle=col;ctx.stroke();
+
+    const boreR=Math.max(3.2,hubR*.45);
+    ctx.beginPath();ctx.arc(x,y,boreR,0,2*PI);
+    ctx.fillStyle=K.bg;ctx.fill();ctx.strokeStyle=K.ink;ctx.stroke();
+
+    // Tacca radiale e pallino di fase
+    const mkR=root*.82;
+    ctx.beginPath();
+    ctx.moveTo(x+boreR*Math.cos(a),y+boreR*Math.sin(a));
+    ctx.lineTo(x+mkR*Math.cos(a),y+mkR*Math.sin(a));
+    ctx.lineWidth=lw*2.1;ctx.strokeStyle=col;ctx.stroke();
+    ctx.beginPath();ctx.arc(x+mkR*Math.cos(a),y+mkR*Math.sin(a),2.4,0,2*PI);
+    ctx.fillStyle=col;ctx.fill();
+  }else{
+    // Tacche di riferimento sulla corona interna
+    for(let k=0;k<4;k++){
+      const ang=a+k*PI/2;
+      ctx.beginPath();
+      ctx.moveTo(x+root*Math.cos(ang),y+root*Math.sin(ang));
+      ctx.lineTo(x+rimR*Math.cos(ang),y+rimR*Math.sin(ang));
+      ctx.lineWidth=k==0?lw*2.4:lw*1.2;
+      ctx.strokeStyle=col;ctx.stroke();
+    }
+    ctx.beginPath();
+    ctx.arc(x+((root+rimR)/2)*Math.cos(a),y+((root+rimR)/2)*Math.sin(a),3,0,2*PI);
+    ctx.fillStyle=col;ctx.fill();
+  }
+
+  // Circonferenza primitiva tratteggiata e freccia di velocità
+  if(showAnn){
+    ctx.save();
+    ctx.setLineDash([4/M.a,3.5/M.a]);
+    ctx.lineWidth=lw*.95;
+    ctx.strokeStyle=K.ink;ctx.globalAlpha=.42;
+    ctx.beginPath();ctx.arc(x,y,r,0,2*PI);ctx.stroke();
+    ctx.restore();
+
+    if(wRel!==undefined && Math.abs(wRel)>0.01){
+      const sgn=wRel*dir>0?1:-1;
+      const arR=inn?rimR-5:Math.max(12,r*.56);
+      const span=Math.min(1.1,Math.max(.32,Math.abs(wRel)*.55))*sgn;
+      const a0=-PI/2-.5*span,a1=-PI/2+.5*span;
+      ctx.save();
+      ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=lw*1.5;
+      ctx.beginPath();ctx.arc(x,y,arR,a0,a1,sgn<0);ctx.stroke();
+      const tx=x+arR*Math.cos(a1),ty=y+arR*Math.sin(a1),tg=a1+sgn*PI/2;
+      const ah=4.5;
+      ctx.beginPath();
+      ctx.moveTo(tx,ty);
+      ctx.lineTo(tx-ah*Math.cos(tg-.5),ty-ah*Math.sin(tg-.5));
+      ctx.lineTo(tx-ah*Math.cos(tg+.5),ty-ah*Math.sin(tg+.5));
+      ctx.closePath();ctx.fill();
+      ctx.restore();
+    }
+  }
+  ctx.restore();
+}
+
+// Simbolo ingegneristico di vincolo a telaio (supporto fisso con tratteggio)
+function fix(x,y,scale=1){
+  const lw=ctx.lineWidth;
+  ctx.save();
+  ctx.translate(x,y);ctx.scale(scale,scale);
+  ctx.beginPath();
+  ctx.moveTo(0,0);ctx.lineTo(-8,14);ctx.lineTo(8,14);ctx.closePath();
+  ctx.fillStyle=K.bg;ctx.fill();
+  ctx.lineWidth=lw/scale;ctx.strokeStyle=K.ink;ctx.stroke();
+  ctx.beginPath();ctx.moveTo(-11,14);ctx.lineTo(11,14);ctx.stroke();
+  for(let i=-9;i<=7;i+=4){
+    ctx.beginPath();ctx.moveTo(i,14);ctx.lineTo(i-3,18.5);ctx.stroke();
+  }
+  ctx.beginPath();ctx.arc(0,0,2.5,0,2*PI);ctx.fillStyle=K.ink;ctx.fill();
+  ctx.restore();
+}
+
+// Punto di contatto (ingranamento tra primitive)
+function meshDot(x,y){
+  if(!showAnn)return;
+  ctx.save();
+  ctx.beginPath();ctx.arc(x,y,3.8,0,2*PI);
+  ctx.fillStyle=K.hi;ctx.fill();
+  ctx.lineWidth=ctx.lineWidth*.9;ctx.strokeStyle=K.bg;ctx.stroke();
+  ctx.restore();
+}
+
+function lab(s,x,y,col){
+  ctx.save();
+  ctx.fillStyle=col||K.ink;ctx.textAlign="center";
+  ctx.fillText(s,x,y);
+  ctx.restore();
+}
+
+// 1. ROTISMO PIANO SEMPLICE
+function planar(){
+  const z=Z[0],r=z.map(q=>q*2),x=[0,r[0]+r[1],r[0]+2*r[1]+r[2]],a=[T];
+  a[1]=PI*(1-1/z[1])-a[0]*z[0]/z[1];
+  a[2]=PI*(1-1/z[2])-a[1]*z[1]/z[2];
+  const w=[1,-z[0]/z[1],z[0]/z[2]];
+  const C=[K.a,K.c,K.b],s=view(-r[0]-14,x[2]+r[2]+14,Math.max(...r)+22);
+
+  // Linea degli assi
+  if(showAnn){
+    ctx.save();ctx.setLineDash([3/s,3/s]);ctx.strokeStyle=K.mut;ctx.globalAlpha=.4;
+    ctx.beginPath();ctx.moveTo(-r[0]-8,0);ctx.lineTo(x[2]+r[2]+8,0);ctx.stroke();
+    ctx.restore();
+  }
+
+  z.forEach((q,i)=>{
+    gear(x[i],0,r[i],q,a[i],C[i],0,i,w[i]);
+    fix(x[i],0,1);
+    lab(`${i+1} (z=${q})`,x[i],r[i]+22/s);
+  });
+  meshDot(r[0],0);
+  meshDot(x[1]+r[1],0);
+  ctx.restore();
+}
+
+// 2. ROTISMO ORDINARIO COMPOSTO
+function ordin(){
+  const z=Z[1],r=z.map(q=>q*2),x=[0,r[0]+r[1],r[0]+r[1],0],a=[T];
+  x[3]=x[1]+r[2]+r[3];
+  a[1]=PI*(1-1/z[1])-a[0]*z[0]/z[1];
+  a[2]=a[1];
+  a[3]=PI*(1-1/z[3])-a[2]*z[2]/z[3];
+  const w=[1,-z[0]/z[1],-z[0]/z[1],z[0]*z[2]/(z[1]*z[3])];
+  const C=[K.a,K.b,K.c,K.d],s=view(-r[0]-14,x[3]+r[3]+14,Math.max(...r)+24);
+
+  if(showAnn){
+    ctx.save();ctx.setLineDash([3/s,3/s]);ctx.strokeStyle=K.mut;ctx.globalAlpha=.4;
+    ctx.beginPath();ctx.moveTo(-r[0]-8,0);ctx.lineTo(x[3]+r[3]+8,0);ctx.stroke();
+    ctx.restore();
+  }
+
+  // Disegna prima la più grande tra 2 e 2' così entrambe sono ben visibili
+  const order=r[1]>=r[2]?[0,1,2,3]:[0,2,1,3];
+  order.forEach(i=>gear(x[i],0,r[i],z[i],a[i],C[i],0,i,w[i]));
+
+  // Manicotto con chiavetta che unisce visivamente 2 e 2' sullo stesso albero
+  const rMin=Math.min(r[1],r[2]);
+  ctx.save();
+  for(let k=0;k<3;k++){
+    const ang=a[1]+k*2*PI/3;
+    const px=x[1]+rMin*.55*Math.cos(ang),py=rMin*.55*Math.sin(ang);
+    ctx.beginPath();ctx.arc(px,py,3,0,2*PI);
+    ctx.fillStyle=K.bg;ctx.fill();ctx.strokeStyle=K.ink;ctx.stroke();
+  }
+  ctx.restore();
+
+  [0,1,3].forEach(i=>fix(x[i],0,1));
+  meshDot(r[0],0);
+  meshDot(x[1]+r[2],0);
+
+  lab(`1 (z=${z[0]})`,x[0],r[0]+22/s);
+  lab(`2 (z=${z[1]}) + 2′ (z=${z[2]}) solidali`,x[1],Math.max(r[1],r[2])+22/s);
+  lab(`3 (z=${z[3]})`,x[3],r[3]+22/s);
+  ctx.restore();
+}
+
+// 3. ROTISMO SFERICO (CONICO)
+function sph(){
+  const[z1,z2]=Z[2],d1=Math.atan(z1/z2),d2=PI/2-d1,L=138,t1=T,t2=-T*z1/z2+PI/z2;
+  const cy=Math.cos(.56),sy=Math.sin(.56),cx=Math.cos(.38),sx=Math.sin(.38);
+  const pr=([x,y,z])=>{const X=x*cy+z*sy,Z=-x*sy+z*cy;return[W/2-42+X,H/2+26-(y*cx-Z*sx)]};
+
+  const poly=(pts,fill,str,w=1,al=1)=>{
+    ctx.save();ctx.beginPath();
+    pts.forEach((p,i)=>{const q=pr(p);i?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1])});
+    if(fill){ctx.globalAlpha=al;ctx.fillStyle=fill;ctx.fill()}
+    if(str){ctx.globalAlpha=1;ctx.strokeStyle=str;ctx.lineWidth=w;ctx.stroke()}
+    ctx.restore();
+  };
+
+  const f1=(p,s)=>[s*L*Math.cos(d1),s*L*Math.sin(d1)*Math.cos(p),s*L*Math.sin(d1)*Math.sin(p)];
+  const f2=(p,s)=>[s*L*Math.sin(d2)*Math.cos(p),s*L*Math.cos(d2),-s*L*Math.sin(d2)*Math.sin(p)];
+
+  // Aree interattive per hover sulle due ruote coniche
+  const c1=pr([L*.8*Math.cos(d1),0,0]),c2=pr([0,L*.8*Math.cos(d2),0]);
+  HIT.push({id:0,x:c1[0],y:c1[1],r:L*Math.sin(d1)*.95,inn:0});
+  HIT.push({id:1,x:c2[0],y:c2[1],r:L*Math.sin(d2)*.95,inn:0});
+
+  const drawBevel=(f,z,t,col,ax,id)=>{
+    const isH=hov===id;
+    // Cono primitivo ombreggiato (da vertice O a base)
+    if(showAnn){
+      const rim=Array.from({length:49},(_,i)=>f(i/48*2*PI,1));
+      poly([[0,0,0],...rim],col,null,1,.10);
+      for(let i=0;i<6;i++)poly([[0,0,0],f(t+i*PI/3,1)],null,col,1,.28);
+    }
+    // Tronco di cono della ruota dentata (tra s=0.76 e s=1.0)
+    const outer=Array.from({length:65},(_,i)=>f(i/64*2*PI,1));
+    const inner=Array.from({length:65},(_,i)=>f(i/64*2*PI,.76));
+    poly(outer,col,col,isH?2.6:1.6,isH?.32:.18);
+    poly(inner,K.bg,col,1.1,.45);
+
+    // Denti 3D lungo la fascia conica
+    for(let k=0;k<z;k++){
+      const p=t+2*PI*k/z,dp=PI/(z*1.7);
+      const q=[f(p-dp,.76),f(p-dp*.65,1.03),f(p+dp*.65,1.03),f(p+dp,.76)];
+      poly(q,k==0?K.ink:col,k==0?K.ink:col,k==0?2.2:1.2,k==0?.85:.55);
+    }
+    // Asse di rotazione
+    poly([[0,0,0],ax],null,K.mut,1.4);
+  };
+
+  const A1=[L*Math.cos(d1)+48,0,0],A2=[0,L*Math.cos(d2)+48,0];
+  drawBevel(f2,z2,t2,K.b,A2,1);
+  drawBevel(f1,z1,t1,K.a,A1,0);
+
+  // Generatrice di contatto comune (lungo cui i due coni primitivi rotolano senza strisciare)
+  const contactEnd=f1(0,1);
+  poly([[0,0,0],contactEnd],null,K.hi,2.2);
+  if(showAnn){
+    const cm=pr(f1(0,.88));
+    meshDot(cm[0],cm[1]);
+  }
+
+  // Vertice comune O dei coni primitivi
+  const o=pr([0,0,0]);
+  ctx.beginPath();ctx.arc(o[0],o[1],4.5,0,2*PI);ctx.fillStyle=K.ink;ctx.fill();
+  ctx.font='600 13px "IBM Plex Sans",system-ui,sans-serif';
+  lab("O (vertice coni)",o[0]-36,o[1]+18);
+
+  const p1=pr(A1),p2=pr(A2);
+  fix(p1[0],p1[1],.9);fix(p2[0],p2[1],.9);
+  lab(`Albero 1 (z₁=${z1}, δ₁=${(d1*180/PI).toFixed(0)}°)`,p1[0]+12,p1[1]-10,K.a);
+  lab(`Albero 2 (z₂=${z2}, δ₂=${(d2*180/PI).toFixed(0)}°)`,p2[0]+10,p2[1]-12,K.b);
+}
+
+// 4. ROTISMO EPICICLOIDALE (CON LE 3 CONFIGURAZIONI)
+function epi(){
+  const[zs,zp]=Z[3],m=mod(),{ws,wc,wt,wp,N,zc}=m.ex;
+  const rs=zs*2,rp=zp*2,rr=zc*2,R=rs+rp;
+  const ts=ws*T,tc=wc*T,tt=wt*T;
+  const s=view(-rr-26,rr+26,rr+40);
+
+  // Calcolo angoli dei satelliti e fase esatta della corona per qualunque configurazione
+  const P=Array.from({length:N},(_,k)=>{
+    const g=tt+2*PI*k/N;
+    const th=g+PI-PI/zp-(ts-g)*zs/zp;
+    return[g,th];
+  });
+  const tr=P[0][0]+(P[0][1]-P[0][0])*zp/zc+PI/zc;
+
+  // 1) Corona a dentatura interna (id=2)
+  gear(0,0,rr,zc,tr,K.d,1,2,wc);
+  // 2) Solare centrale (id=0)
+  gear(0,0,rs,zs,ts,K.a,0,0,ws);
+  // 3) Satelliti (id=1)
+  P.forEach(([g,th])=>gear(R*Math.cos(g),R*Math.sin(g),rp,zp,th,K.b,0,1,wp));
+
+  // 4) Portatreno (id=3): anello portante + razze dal centro + perni sui satelliti
+  HIT.push({id:3,x:W/2,y:H/2-4,r:R*s/2,inn:1});
+  ctx.save();
+  const isHc=hov===3;
+  ctx.strokeStyle=K.c;
+  ctx.lineWidth=(isHc?6.5:4.2)/s;
+  ctx.globalAlpha=isHc?.92:.72;
+  ctx.beginPath();
+  ctx.arc(0,0,R,0,2*PI);
+  P.forEach(([g])=>{ctx.moveTo(0,0);ctx.lineTo(R*Math.cos(g),R*Math.sin(g))});
+  ctx.stroke();
+  ctx.globalAlpha=1;
+
+  // Perni dei satelliti sul portatreno
+  ctx.lineWidth=1.5/s;
+  P.forEach(([g])=>{
+    const px=R*Math.cos(g),py=R*Math.sin(g);
+    ctx.beginPath();ctx.arc(px,py,5,0,2*PI);
+    ctx.fillStyle=K.c;ctx.fill();ctx.strokeStyle=K.bg;ctx.stroke();
+  });
+  ctx.restore();
+
+  // Punti di ingranamento Solare-Satellite e Satellite-Corona
+  if(showAnn){
+    P.forEach(([g])=>{
+      meshDot(rs*Math.cos(g),rs*Math.sin(g));
+      meshDot(rr*Math.cos(g),rr*Math.sin(g));
+    });
+  }
+
+  // Vincoli a telaio visivi a seconda di quale elemento è fermo nelle 3 configurazioni!
+  const rimOuter=rr+1.15*(2*rr/zc)+15;
+  if(Math.abs(wc)<.005){
+    // Config 1: Corona ferma
+    fix(0,rimOuter,1.1);
+    fix(-rimOuter*.86,-rimOuter*.5,.9);
+    fix(rimOuter*.86,-rimOuter*.5,.9);
+    lab("Corona bloccata a telaio (ωc = 0)",0,rimOuter+26/s,K.d);
+  }else if(Math.abs(wt)<.005){
+    // Config 2: Portatreno fermo (Stellare)
+    P.forEach(([g])=>fix(R*Math.cos(g),R*Math.sin(g),.95));
+    lab("Portatreno bloccato a telaio (ωt = 0)",0,rimOuter+24/s,K.c);
+  }else if(Math.abs(ws)<.005){
+    // Config 3: Solare fermo
+    fix(0,0,1.15);
+    lab("Solare bloccato a telaio (ωs = 0)",0,rimOuter+24/s,K.a);
+  }
+  ctx.restore();
+}
+
+// 5. HARMONIC DRIVE (RIDUTTORE ARMONICO)
+function harm(){
+  const m=mod(),{wwg,wfs,wcs,zf,zc}=m.ex;
+  const Rc=122,mMod=2*Rc/zc,Rf=zf*mMod/2;
+  const delta=Rc-Rf; // Eccentricità radiale (pari a 1 modulo: zc - zf = 2)
+  const twg=wwg*T,tfs=wfs*T,tcs=wcs*T;
+  const s=view(-Rc-32,Rc+32,Rc+40);
+  const lw=ctx.lineWidth;
+
+  // 1) Circular Spline (Corona rigida esterna con zc = zf + 2 denti interni, id=2)
+  // Sfasata di PI/zc così sull'asse maggiore un dente della Flexspline entra nel vano della Circular Spline
+  gear(0,0,Rc,zc,tcs+PI/zc,K.d,1,2,wcs);
+
+  // Funzione raggio primitivo deformato ellitticamente della Flexspline
+  const rFlex=ang=>Rf+delta*Math.cos(2*(ang-twg));
+
+  // 2) Wave Generator (Camma ellittica + cuscinetto a sfere sottile, id=0)
+  HIT.push({id:0,x:W/2,y:H/2-4,r:(Rf-16)*s/2,inn:0});
+  ctx.save();
+  const isHwg=hov===0;
+  const wallT=8.5,ballR=4.2,camGap=wallT+ballR*2+1.5;
+
+  // Pista esterna ed interna del cuscinetto + sfere
+  const nBalls=20;
+  for(let k=0;k<nBalls;k++){
+    // Le sfere rotolano a circa metà velocità tra Wave Generator e Flexspline
+    const ba=(twg+tfs)*.5+k*2*PI/nBalls;
+    const br=rFlex(ba)-wallT-ballR-.8;
+    const bx=br*Math.cos(ba),by=br*Math.sin(ba);
+    ctx.beginPath();ctx.arc(bx,by,ballR,0,2*PI);
+    ctx.fillStyle=K.bg;ctx.fill();
+    ctx.lineWidth=lw*.95;ctx.strokeStyle=K.mut;ctx.stroke();
+  }
+
+  // Corpo centrale della camma ellittica (Wave Generator)
+  ctx.beginPath();
+  for(let i=0;i<=120;i++){
+    const u=i/120*2*PI,ru=rFlex(u)-camGap;
+    const X=ru*Math.cos(u),Y=ru*Math.sin(u);
+    i?ctx.lineTo(X,Y):ctx.moveTo(X,Y);
+  }
+  ctx.closePath();
+  ctx.fillStyle=K.bg;ctx.fill();
+  ctx.globalAlpha=isHwg?.45:.26;ctx.fillStyle=K.a;ctx.fill();ctx.globalAlpha=1;
+  ctx.lineWidth=isHwg?lw*1.9:lw*1.3;ctx.strokeStyle=K.a;ctx.stroke();
+
+  // Asse maggiore del Wave Generator (freccia doppia che mostra l'onda di deformazione)
+  const rMaj=Rf+delta-camGap-3;
+  ctx.beginPath();
+  ctx.moveTo(-rMaj*Math.cos(twg),-rMaj*Math.sin(twg));
+  ctx.lineTo(rMaj*Math.cos(twg),rMaj*Math.sin(twg));
+  ctx.lineWidth=lw*2;ctx.strokeStyle=K.a;ctx.stroke();
+  [-1,1].forEach(sg=>{
+    const px=sg*rMaj*Math.cos(twg),py=sg*rMaj*Math.sin(twg);
+    ctx.beginPath();ctx.arc(px,py,3.2,0,2*PI);ctx.fillStyle=K.a;ctx.fill();
+  });
+
+  // Mozzo centrale Wave Generator
+  ctx.beginPath();ctx.arc(0,0,14,0,2*PI);
+  ctx.fillStyle=K.bg;ctx.fill();ctx.strokeStyle=K.a;ctx.stroke();
+  ctx.restore();
+
+  // 3) Flexspline deformabile (z_f denti esterni su curva ellittica, id=1)
+  HIT.push({id:1,x:W/2,y:H/2-4,r:Rf*s/2,inn:1});
+  ctx.save();
+  const isHfs=hov===1,p=PI/zf;
+  ctx.beginPath();
+  for(let k=0;k<zf;k++){
+    const t=tfs+2*p*k;
+    const pts=[
+      [-1.1*mMod,t-.5*p],
+      [-1.1*mMod,t-.35*p],
+      [0,        t-.23*p],
+      [+.9*mMod, t-.12*p],
+      [+.9*mMod, t+.12*p],
+      [0,        t+.23*p],
+      [-1.1*mMod,t+.35*p],
+      [-1.1*mMod,t+.5*p]
+    ];
+    pts.forEach(([dr,u],i)=>{
+      const rad=rFlex(u)+dr;
+      const X=rad*Math.cos(u),Y=rad*Math.sin(u);
+      (k||i)?ctx.lineTo(X,Y):ctx.moveTo(X,Y);
+    });
+  }
+  ctx.closePath();
+  // Parete interna della tazza flessibile (Flexspline)
+  for(let i=120;i>=0;i--){
+    const u=i/120*2*PI,ru=rFlex(u)-wallT;
+    const X=ru*Math.cos(u),Y=ru*Math.sin(u);
+    i==120?ctx.moveTo(X,Y):ctx.lineTo(X,Y);
+  }
+  ctx.closePath();
+
+  ctx.fillStyle=K.bg;ctx.fill("evenodd");
+  ctx.globalAlpha=isHfs?.52:.34;ctx.fillStyle=K.b;ctx.fill("evenodd");ctx.globalAlpha=1;
+  ctx.lineWidth=isHfs?lw*1.8:lw*1.2;ctx.strokeStyle=K.b;ctx.stroke();
+
+  // Razze elastiche / fondello della Flexspline e indicatore arancio per seguirne la lenta rotazione!
+  const cupR=Rf*.54;
+  ctx.save();
+  ctx.setLineDash([4/s,3/s]);ctx.strokeStyle=K.b;ctx.lineWidth=lw*1.2;
+  ctx.beginPath();ctx.arc(0,0,cupR,0,2*PI);ctx.stroke();
+  ctx.restore();
+
+  // Tacca principale sul dente 0 della Flexspline (mostra chiaramente la rotazione lenta retrograda)
+  const r0=rFlex(tfs);
+  ctx.beginPath();
+  ctx.moveTo(cupR*Math.cos(tfs),cupR*Math.sin(tfs));
+  ctx.lineTo((r0-2)*Math.cos(tfs),(r0-2)*Math.sin(tfs));
+  ctx.lineWidth=lw*2.6;ctx.strokeStyle=K.b;ctx.stroke();
+  ctx.beginPath();ctx.arc(cupR*Math.cos(tfs),cupR*Math.sin(tfs),4,0,2*PI);
+  ctx.fillStyle=K.b;ctx.fill();
+
+  // 4 tacche secondarie sul fondello della Flexspline
+  for(let k=1;k<4;k++){
+    const ang=tfs+k*PI/2,rk=rFlex(ang)-wallT;
+    ctx.beginPath();
+    ctx.moveTo(cupR*Math.cos(ang),cupR*Math.sin(ang));
+    ctx.lineTo(rk*Math.cos(ang),rk*Math.sin(ang));
+    ctx.lineWidth=lw*1.1;ctx.globalAlpha=.55;ctx.strokeStyle=K.b;ctx.stroke();
+  }
+  ctx.globalAlpha=1;
+
+  // Primitiva ellittica e zone di ingranamento sull'asse maggiore
+  if(showAnn){
+    ctx.save();
+    ctx.setLineDash([4/s,3.5/s]);ctx.strokeStyle=K.b;ctx.lineWidth=lw*.95;ctx.globalAlpha=.65;
+    ctx.beginPath();
+    for(let i=0;i<=120;i++){
+      const u=i/120*2*PI,ru=rFlex(u);
+      i?ctx.lineTo(ru*Math.cos(u),ru*Math.sin(u)):ctx.moveTo(ru*Math.cos(u),ru*Math.sin(u));
+    }
+    ctx.closePath();ctx.stroke();
+
+    // Evidenziazione delle 2 zone di ingranamento (agli estremi dell'asse maggiore del Wave Generator)
+    [twg,twg+PI].forEach(ang=>{
+      ctx.beginPath();
+      ctx.arc(0,0,Rc,ang-.26,ang+.26);
+      ctx.strokeStyle=K.hi;ctx.lineWidth=lw*2.6;ctx.setLineDash([]);ctx.globalAlpha=.8;
+      ctx.stroke();
+      meshDot(Rc*Math.cos(ang),Rc*Math.sin(ang));
+    });
+    ctx.restore();
+  }
+  ctx.restore();
+
+  // Simbolo di vincolo a telaio sull'elemento bloccato
+  const rimOuter=Rc+1.15*mMod+15;
+  if(hdLock=="cs"){
+    fix(0,rimOuter,1.1);
+    fix(-rimOuter*.86,-rimOuter*.5,.9);
+    fix(rimOuter*.86,-rimOuter*.5,.9);
+    lab(`Circular Spline fissa (z_c = ${zc}) · Flexspline z_f = ${zf}`,0,rimOuter+26/s,K.d);
+  }else{
+    fix(0,cupR,1.05);
+    lab(`Flexspline fissa (z_f = ${zf}) · Circular Spline cedente (z_c = ${zc})`,0,rimOuter+24/s,K.b);
+  }
+  ctx.restore();
+}
+
+function upd(){
+  const m=mod();
+  $("tau").innerHTML=`<small>${m.lab}</small><b>${f(m.val)}</b>`;
+  $("bcfg").hidden=!m.badge;
+  $("bcfg").textContent=m.badge;
+
+  $("rd").innerHTML=m.r.map((q,i)=>{
+    const d=Math.abs(q.w)<.005?"fermo":(q.w*dir>0?"↻":"↺");
+    return`<div class="rd" data-i="${i}">
+      <i style="background:var(--${q.c})"></i>
+      <div><b>${q.n}</b><span>z = ${q.z} · ${q.role||""}</span></div>
+      <em title="ω/${m.ref}">${f(q.w)} ${d}</em>
+    </div>`;
+  }).join("");
+
+  $("rd").querySelectorAll(".rd").forEach(c=>{
+    c.onmouseenter=()=>setHov(+c.dataset.i);
+    c.onmouseleave=()=>setHov(-1);
+  });
+  $("info").innerHTML=`<p>${INFO[tab]}</p><div class="fm">${m.fm}</div>`;
+  setHov(hov);
+}
+
+function setHov(i){
+  hov=i;
+  document.querySelectorAll(".rd").forEach(c=>c.classList.toggle("on",+c.dataset.i===i));
+}
+
+function lkui(){
+  document.querySelectorAll("#lk .cfg-btn").forEach(b=>b.classList.toggle("on",b.dataset.l==lock));
+  $("fr").hidden=lock!="free";
+  $("rfo").textContent=f(rf);
+  document.querySelectorAll("#hdlk .cfg-btn").forEach(b=>b.classList.toggle("on",b.dataset.h==hdLock));
+}
+
+function build(){
+  $("sl").innerHTML=Z[tab].map((v,i)=>{
+    const extra=tab==4?` <small style="color:var(--mut)">(z<sub>c</sub> = ${v+2})</small>`:"";
+    return`<label class="sl">
+      <span>${SYM[tab][i]}</span>
+      <input type="range" data-i="${i}" min="${LIM[tab][i][0]}" max="${LIM[tab][i][1]}" step="${LIM[tab][i][2]}" value="${v}">
+      <output>${v}</output>
+    </label>`;
+  }).join("");
+
+  $("sl").querySelectorAll("input").forEach(n=>n.oninput=()=>{
+    Z[tab][+n.dataset.i]=+n.value;
+    n.nextElementSibling.textContent=n.value;
+    upd();
+  });
+  $("epc").hidden=tab!=3;
+  $("hdc").hidden=tab!=4;
+  lkui();
+}
+
+function setTab(i){
+  tab=i;hov=-1;
+  document.querySelectorAll("#tabs button").forEach((b,j)=>{
+    b.classList.toggle("on",i==j);
+    b.setAttribute("aria-selected",i==j);
+  });
+  build();upd();
+}
+
+NAMES.forEach((n,i)=>{
+  const b=document.createElement("button");
+  b.textContent=n;b.setAttribute("role","tab");
+  b.onclick=()=>setTab(i);
+  $("tabs").appendChild(b);
+});
+
+$("tabs").onkeydown=e=>{
+  const d=e.key=="ArrowRight"?1:e.key=="ArrowLeft"?-1:0;
+  if(d){const i=(tab+d+NAMES.length)%NAMES.length;setTab(i);$("tabs").children[i].focus()}
+};
+
+const pp=()=>{$("pp").textContent=run?"❚❚ Pausa":"▶ Riprendi"};
+$("pp").onclick=()=>{run=!run;pp()};
+$("rv").onclick=()=>{dir=-dir;upd()};
+// $("rl").onclick=()=>{dir=1;upd()};
+$("ann").onclick=()=>{showAnn=!showAnn;$("ann").classList.toggle("on",!!showAnn);$("leg").hidden=!showAnn};
+$("rs").onclick=()=>{
+  Z[tab]=DEF[tab].slice();
+  lock="ring";hdLock="cs";rf=.3;T=0;
+  $("rf").value=rf;
+  build();upd();
+};
+$("sp").oninput=e=>spd=+e.target.value;
+$("rf").oninput=e=>{rf=+e.target.value;lkui();upd()};
+
+document.querySelectorAll("#lk .cfg-btn").forEach(b=>b.onclick=()=>{lock=b.dataset.l;lkui();upd()});
+document.querySelectorAll("#hdlk .cfg-btn").forEach(b=>b.onclick=()=>{hdLock=b.dataset.h;lkui();upd()});
+
+$("th").onclick=()=>{
+  const d=document.documentElement;
+  const dk=d.dataset.theme?d.dataset.theme=="dark":matchMedia("(prefers-color-scheme:dark)").matches;
+  d.dataset.theme=dk?"light":"dark";
+};
+
+addEventListener("keydown",e=>{
+  if(e.code=="Space"&&!/INPUT|BUTTON/.test(e.target.tagName)){e.preventDefault();run=!run;pp()}
+});
+
+function hit(e){
+  const R=cv.getBoundingClientRect(),X=(e.clientX-R.left)/R.width*W,Y=(e.clientY-R.top)/R.height*H;
+  let b=null;
+  HIT.forEach(g=>{
+    const d=Math.hypot(X-g.x,Y-g.y);
+    if(g.inn?d>g.r*.82&&d<g.r*1.22:d<g.r*1.08)if(!b||g.r<b.r)b=g;
+  });
+  return b?b.id:-1;
+}
+
+cv.onpointerdown=e=>{drag=1;lx=e.clientX;cv.setPointerCapture(e.pointerId);cv.style.cursor="grabbing"};
+cv.onpointermove=e=>{
+  if(drag){
+    T+=(e.clientX-lx)/cv.getBoundingClientRect().width*W/50;
+    lx=e.clientX;
+  }else{
+    const i=hit(e);if(i!=hov)setHov(i);
+  }
+};
+cv.onpointerup=cv.onpointercancel=()=>{drag=0;cv.style.cursor="grab"};
+cv.onpointerleave=()=>{if(!drag)setHov(-1)};
+
+function draw(){
+  const v=getComputedStyle(document.documentElement),g=k=>v.getPropertyValue(k).trim();
+  K={bg:g("--card"),ink:g("--ink"),mut:g("--mut"),a:g("--a"),b:g("--b"),c:g("--c"),d:g("--d"),hi:g("--hi")};
+  ctx.setTransform(2,0,0,2,0,0);
+  ctx.clearRect(0,0,W,H);
+  ctx.lineJoin="round";ctx.lineCap="round";
+  HIT=[];
+  [planar,ordin,sph,epi,harm][tab]();
+}
+
+function frame(t){
+  const dt=Math.min((t-last)/1000,.1);last=t;
+  if(run&&!drag)T+=dt*spd*1.2*dir;
+  draw();
+  requestAnimationFrame(frame);
+}
+
+if(matchMedia("(prefers-reduced-motion:reduce)").matches)run=0;
+pp();setTab(0);requestAnimationFrame(frame);
+</script></body></html>

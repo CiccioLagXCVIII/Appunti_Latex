@@ -21,3 +21,5 @@ centro-stella
 decoder
 Decoder
 disalimentato
+propriocettivi
+esterocettivi
