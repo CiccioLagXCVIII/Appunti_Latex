@@ -92,13 +92,13 @@
 \chapter{Introduzione}
 \begin{theorem}
     \textbf{Robot Istitute Of America} (Libro)\\
-    Un robot e una struttura meccanica multifunzionale e riprogrammabile progettato per spostare materiali, parti, utensili o dispositivi specializzati secondo movimenti variabili programmati per l’esecuzione di una varieta di compiti diversi.
+    Un robot è un manipolatore multifunzionale e riprogrammabile progettato per spostare oggetti, utensili o dispositivi specializzati secondo movimenti variabili programmati in modo variabile per l'esecuzione dei compiti specifici
 \end{theorem}
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.5\linewidth]{Schema.png}
 \end{figure}
-Il movimento delle componenti meccaniche è generato da un \textbf{Sistema Di Attuazione}, costituito da servomotori e meccanismi di trasmissione. La percezione dell'ambiente è invece affidata a un \textbf{Sistema Sensoriale}, composto da sensori propriocettivi ed esterocettivi. Infine, un sistema di controllo elabora le informazioni disponibili e genera i comandi per il sistema di attuazione, consentendo al robot di muoversi e interagire con l'ambiente. Il sistema sensoriale permette inoltre di acquisire informazioni sullo stato interno del robot e sulle caratteristiche dell'ambiente circostante.
+Il movimento delle componenti meccaniche è generato da un \textbf{Sistema Di Attuazione}, costituito da servomotori e meccanismi di trasmissione. La percezione dell'ambiente e dello stato interno è invece affidata a un \textbf{Sistema Sensoriale}, composto da sensori propriocettivi ed esterocettivi. Infine, il \textbf{Sistema Di Controllo} elabora le informazioni disponibili e genera i comandi per il sistema di attuazione, consentendo al robot di muoversi e interagire con l'ambiente.
 % AA Altre Definizioni
 \begin{comment}
 \begin{theorem}
@@ -117,7 +117,7 @@ I robot si distinguono in due categorie principali: \textbf{robot a base fissa},
 
 \subsection{Robot A Base Fissa (Manipolatori)}
 La struttura meccanica di un robot manipolatore consiste in un insieme di corpi ridigi (\textit{bracci}) interconnessi tra di loro per mezzo di articolazioni (\textit{giunti}); nel manipolatore si individuano una struttura portante, che ne assicura mobilità, un
-\textit{polso}, che conferisce destrezza, e un \textit{organo terminale} che esegue il compito per cui il robot è utilizzato.\\
+\textit{polso}, che conferisce destrezza, e un \textit{End Effector} che esegue il compito per cui il robot è utilizzato.\\
 \textbf{La struttura fondamentale dei manipolatori è a catena cinematica aperta o seriale}
 
 Dal punto di vista topologico, si distinguono:
@@ -131,11 +131,11 @@ I gradi di libertà devono essere opportunamente distribuiti lungo la struttura
 meccanica in modo da essere in numero sufficiente per l'esecuzione di un dato
 compito. Per operazioni tridimensionali, sono necessari almeno sei gradi di libertà (tre per la posizione e tre per l'orientamento). Un manipolatore con più DoF di quelli strettamente necessari è detto \textbf{ridondante}.\\
 Lo \textit{spazio di lavoro} rappresenta la porzione dell'ambiente circostante a cui
-può accedere l'organo terminale di un manipolatore. La sua forma e il suo volume
+può accedere l'End Effector di un manipolatore. La sua forma e il suo volume
 dipendono dalla struttura del manipolatore.
 \newpage
 \subsubsection{Tipologie di Manipolatori}
-Il compito della \textit{struttura portante} è quello di posizionare il polso che orienterà l'organo terminale. Il tipo e la successione dei gradi di libertà della struttura portante, a partire dall'articolazione alla base, consente di classificare i manipolatori in:
+Il compito della \textit{struttura portante} è quello di posizionare il polso che orienterà l'End Effector. Il tipo e la successione dei gradi di libertà della struttura portante, a partire dall'articolazione alla base, consente di classificare i manipolatori in:
 \begin{itemize}
 	\item \textbf{Manipolatori cartesiani}: Basati su tre giunti prismatici ortogonali, consentono movimenti rettilinei e alta precisione su tutto il volume di lavoro. Ad ogni grado di libertà corrispomde una variabile dello spazio cartesiano e quindi si possono immediatamente definire percorsi rettilinei. La precisione di posizionamento del polso è costante in tutto lo spazio. Lo spazio di lavoro è un parallelepipedo
 
@@ -148,20 +148,20 @@ Il compito della \textit{struttura portante} è quello di posizionare il polso c
 
 	\item \textbf{Manipolatori antropomorfi}: Composti da tre giunti rotoidali (spalla, gomito e polso), simulano la mobilità del braccio umano, garantendo elevata destrezza. L'asse di rotazione del giunto di base è ortogonale agli altri due che sono paralleli tra loro. Si si perde del tutto la corrispondenza tra gradi di libertà e variabili dello spazio cartesiano, nonché la precisione di posizionamento del polso cambia in tutto lo spazio di lavoro
 
-	\item \textbf{Manipolatori paralleli}: Caratterizzati da catene cinematiche chiuse, che connettono la base all'organo terminale. Il vantaggio è l'elevata rigidezza strutturale rispetto ai manipolatori a catena cinematica aperta
+	\item \textbf{Manipolatori paralleli}: Caratterizzati da catene cinematiche chiuse, che connettono la base all'End Effector. Il vantaggio è l'elevata rigidezza strutturale rispetto ai manipolatori a catena cinematica aperta
 \end{itemize}
 
-\subsubsection{Il Polso e l'Organo Terminale}
-Per garantire orientamenti arbitrari in uno spazio tridimensionale, il polso deve possedere \textit{almeno tre gradi di libertà}, realizzati mediante giunti rotoidali. Questi giunti consentono movimenti indipendenti attorno a tre assi, permettendo al manipolatore di raggiungere qualsiasi orientamento desiderato. Tuttavia, poiché il polso costituisce la parte terminale del manipolatore, deve soddisfare requisiti di compattezza che spesso complicano il suo progetto meccanico.\\
-La soluzione più efficace consiste è quella in cui i tre assi di rotazione si intersecano in un unico punto e questa configurazione è detta \textbf{Polso Sferico}. La caratteristica principale è il disaccoppiamento tra posizione e orientamento dell'organo terminale. In altre parole, la struttura portante del manipolatore è responsabile di posizionare il punto di intersezione degli assi del polso, mentre il polso stesso si occupa di determinare l'orientamento finale dell'organo terminale. Tale separazione semplifica notevolmente il coordinamento tra i movimenti della struttura portante e quelli del polso.\\
-L'organo terminale di un manipolatore è scelto in base al compito specifico che il robot deve eseguire. Ad esempio, per compiti di trasporto, l'organo terminale è generalmente costituito da una pinza, per applicazioni di lavorazione o assemblaggio, invece, l'organo terminale può essere un utensile specializzato, come una torcia di saldatura, una fresa, un trapano o un avvitatore.
+\subsubsection{Il Polso Sferico}
+Per garantire orientamenti arbitrari nello spazio tridimensionale, il manipolatore deve possedere \textbf{almeno tre gradi di libertà}, realizzati mediante giunti rotoidali che consentono rotazioni indipendenti attorno a tre assi. Tuttavia, soddisfare i requisiti di ingombro può rendere questa struttura complessa da progettare. Per risolvere questo problema, si può fare in modo che gli assi di rotazione dei giunti si intersechino in un unico punto, detto \textbf{Polso Sferico}. Questa configurazione permette di disaccoppiare la posizione dall'orientamento dell'end-effector: la struttura portante si occupa di posizionare il punto di intersezione degli assi del polso, mentre il polso stesso determina l'orientamento finale dell'End Effector.
+
+L'End Effector di un manipolatore è scelto in base al compito specifico che il robot deve eseguire. Ad esempio, per compiti di trasporto, l'End Effector è generalmente costituito da una pinza, per applicazioni di lavorazione o assemblaggio, invece, l'End Effector può essere un utensile specializzato, come una torcia di saldatura, una fresa, un trapano o un avvitatore.
 
 Un esempio pratico è rappresentato dai robot utilizzati nell'industria automobilistica, dove manipolatori dotati di torce di saldatura eseguono operazioni di giunzione su componenti metallici. In questo caso, la precisione del posizionamento e la capacità del polso di orientare correttamente la torcia sono fattori critici per garantire la qualità del risultato.
 
 % La versatilità e la flessibilità dei robot manipolatori non devono indurre a pensare che tutte le strutture meccaniche siano equivalenti per l'esecuzione di un determinato compito. La scelta di un robot è infatti condizionata dall'applicazione specifica, che impone vincoli riguardanti:
 % \begin{itemize}
 %     \item \textbf{Dimensione e forma dello spazio di lavoro}: Il manipolatore deve essere in grado di raggiungere tutti i punti rilevanti per il compito.
-%     \item \textbf{Portata di carico}: Il robot deve supportare il peso dell'organo terminale e dell'eventuale carico manipolato.
+%     \item \textbf{Portata di carico}: Il robot deve supportare il peso dell'End Effector e dell'eventuale carico manipolato.
 %     \item \textbf{Destrezza}: La capacità del polso di eseguire orientamenti complessi è essenziale per compiti che richiedono alta precisione.
 %     \item \textbf{Precisione di posizionamento}: Errori minimi possono compromettere la qualità del risultato, soprattutto in applicazioni critiche come l'assemblaggio di componenti elettronici.
 %     \item \textbf{Prestazioni dinamiche}: Velocità e accelerazione del manipolatore influenzano l'efficienza del processo produttivo.
@@ -206,9 +206,9 @@ A differenza dei manipolatori, lo spazio di lavoro di un robot mobile può esser
 \newpage
 \subsection{Robotica Industriale}
 
-La robotica industriale si occupa della progettazione, del controllo e delle applicazioni dei robot in ambito produttivo. I robot industriali operano in ambienti strutturati, le cui caratteristiche geometriche e fisiche sono note a priori. Grazie agli sviluppi tecnologici, questa disciplina ha raggiunto un alto grado di maturità, diventando un pilastro dell'automazione moderna.
+La robotica industriale si occupa della progettazione e del controllo dei robot in ambito produttivo. I robot industriali operano in ambienti strutturati, le cui caratteristiche geometriche e fisiche sono note a priori.
 
-L'automazione industriale ha l'obiettivo di sostituire l'uomo in un processo produttivo, non solo nell'esecuzione delle operazioni materiali, ma anche nell'elaborazione intelligente delle informazioni sullo stato del processo. A seconda della flessibilità del sistema, si distinguono tre principali tipologie di automazione:
+A seconda della flessibilità del sistema, si distinguono tre principali tipologie di automazione:
 
 \begin{itemize}
     \item \textbf{Automazione Rigida}: Impiegata in contesti produttivi caratterizzati da elevati volumi di produzione di manufatti con caratteristiche costanti. In questi scenari, la necessità di garantire alta produttività e qualità impone l'uso di macchinari specializzati e sequenze operative prestabilite. Questo tipo di automazione è tipico delle catene di montaggio, in cui la ripetitività e l'efficienza sono prioritarie.
@@ -233,21 +233,21 @@ L'obiettivo di questa analisi è la derivazione di modelli matematici capaci di 
 L'analisi cinematica di un robot si occupa della descrizione del moto rispetto a un sistema di riferimento cartesiano fisso, senza considerare le forze e i momenti che lo generano.
 Essa si distingue in cinematica diretta e inversa:
 \begin{itemize}
-    \item \textbf{Cinematica Diretta}: Determina la posizione e l'orientamento dell'organo terminale a partire dalle coordinate dei giunti.
-    \item \textbf{Cinematica Inversa}: Consente di calcolare i moti dei giunti necessari per raggiungere una specifica posizione e orientamento dell'organo terminale.
+    \item \textbf{Cinematica Diretta}: Determina la posizione e l'orientamento dell'End Effector a partire dalle coordinate dei giunti.
+    \item \textbf{Cinematica Inversa}: Consente di calcolare i moti dei giunti necessari per raggiungere una specifica posizione e orientamento dell'End Effector.
+    \item \textbf{Cinematica Differenziale:}: Consente di descrivere, tramite lo Jacobiano geometrico, la relazione tra la velocità dei giunti e la velocità dell'End Effector, necessaria per dimensionare gli attuatori.
 \end{itemize}
 
-La cinematica differenziale, tramite lo Jacobiano del manipolatore, descrive le relazioni tra le velocità dei giunti e quelle dell'organo terminale. Essa costituisce la base per derivare il modello dinamico del robot, che esprime le equazioni del moto in funzione delle forze e dei momenti applicati. Un modello dinamico accurato è essenziale per dimensionare gli attuatori, progettare strategie di controllo e simulare il comportamento del sistema.
 \begin{comment}
 Nel caso dei robot mobili, la modellistica si differenzia da quella dei manipolatori per la presenza di vincoli cinematici legati alle ruote. Tali vincoli, integrabili o meno a seconda della struttura meccanica, influenzano direttamente la mobilità del robot. Il modello cinematico descrive i moti istantanei ammissibili sotto tali vincoli, mentre il modello dinamico, che include le reazioni vincolari, lega questi moti alle forze generalizzate agenti sul sistema.
 \end{comment}
 \subsection{Pianificazione Del Movimento}
-La pianificazione del moto definisce il movimento da imporre ai giunti o direttamente all'organo terminale. Si distinguono due principali approcci:
+La pianificazione del moto permette di definire il movimento da imporre ai giunti per svolgere il task. Principalmente ci sono due approcci:
 \begin{itemize}
     \item \textbf{Moto Punto-Punto}: Utilizzato in operazioni di trasporto, in cui è sufficiente definire le posizioni di partenza e di arrivo.
-    \item \textbf{Moto Su Percorso Assegnato}: Impiegato in lavorazioni, dove l'organo terminale deve seguire una traiettoria specifica.
+    \item \textbf{Moto Su Percorso Assegnato}: Impiegato in lavorazioni, dove l'End Effector deve seguire una traiettoria specifica.
 \end{itemize}
-Il problema di pianificazione nei robot mobili consiste nel generare traiettorie che conducano il veicolo da una configurazione iniziale a una finale. Se lo spazio di lavoro contiene ostacoli, la pianificazione deve garantire l'assenza di collisioni.Tale problema, noto come \textit{pianificazione del moto}, si può formulare in modo valido tanto per i manipolatori quanto per i robot mobili utilizzando il concetto di spazio delle configurazioni.
+Il problema di pianificazione nei robot mobili consiste nel generare traiettorie che conducano il veicolo da una configurazione iniziale a una finale. Se lo spazio di lavoro contiene ostacoli, la pianificazione deve garantire l'assenza di collisioni. Tale problema, noto come \textit{pianificazione del moto}, si può formulare in modo valido tanto per i manipolatori quanto per i robot mobili utilizzando il concetto di spazio delle configurazioni.
 
 \subsection{Controllo del Movimento}
 Il controllo di un robot richiede l'uso di attuatori e sensori per garantire l'esecuzione delle traiettorie pianificate, che costituiscono gli ingressi di riferimento per il sistema di controllo. Il problema principale nel controllo di un manipolatore è determinare le forze e le coppie che gli attuatori devono applicare ai giunti per seguire tali traiettorie. Questo compito è complesso poiché i manipolatori sono sistemi articolati in cui il moto di un braccio influenza quello degli altri. Le equazioni del moto evidenziano, tranne nel caso di strutture cartesiane ad assi ortogonali, accoppiamenti dinamici tra i giunti. La sintesi delle forze e coppie non può basarsi solo sul modello dinamico, poiché esso non descrive completamente la struttura reale. Pertanto, il controllo si affida alla retroazione: valutando lo scostamento tra i riferimenti e le misure dei sensori propriocettivi, un sistema in retroazione soddisfa le specifiche di precisione richieste.
@@ -258,11 +258,11 @@ Il controllo di un robot mobile differisce sostanzialmente da quello dei manipol
 
 \chapter{Cineamatica}
 \section{Posa di un Corpo Rigido}
-La \textbf{posa} di un corpo rigido descrive la sua \textbf{posizione} e il suo \textbf{orientamento} rispetto a una terna di riferimento.
 
-Prendendo come riferimento il sistema di coordinate $ RF_A $
+La \textbf{posa} di un corpo rigido descrive la sua \textbf{posizione} e il suo \textbf{orientamento} rispetto a una terna di riferimento.\\
+Prendendo come riferimento il sistema di coordinate $RF_A$, e considerando un punto $B$ nello spazio:
 \begin{center}
-    \begin{tikzpicture}
+    \begin{tikzpicture}[scale=0.8, >=stealth]
         % Disegna gli assi
         \draw[->] (0,0,0) -- (2,0,0) node[anchor=north east] {\textbf{x}};
         \draw[->] (0,0,0) -- (0,2,0) node[anchor=north west] {\textbf{y}};
@@ -272,69 +272,89 @@ Prendendo come riferimento il sistema di coordinate $ RF_A $
         \filldraw[black] (2,2,2) circle (1.5pt) node[anchor=south east] {${B}$};
     \end{tikzpicture}
 \end{center}
-La posizione del punto $ B $ rispetto al sistema di riferimento $ RF_{A} $ può essere rappresentata tramite le coordinate cartesiane $ x_{A}, y_{A}, z_{A} $. Queste coordinate sono espresse rispetto alla terna di assi $ \mathbf{x}_A, \mathbf{y}_A, \mathbf{z}_A $, con origine nel punto $ A $, che è l'origine di $ RF_{A} $.
+La posizione del punto $B$ rispetto al sistema di riferimento $RF_A$ può essere rappresentata tramite le coordinate cartesiane $x_A, y_A, z_A$, espresse rispetto alla terna di assi $\mathbf{x}_A, \mathbf{y}_A, \mathbf{z}_A$, avente origine nel punto $A$.
 
-Il vettore $ ^{A}\mathbf{p}_{AB} $ rappresenta lo spostamento necessario per andare dall'origine $ A $ del sistema di riferimento $ RF_{A} $ al punto $ B $.
+Il vettore $^{A}\mathbf{p}_{AB}$ rappresenta lo spostamento necessario per andare dall'origine $A$ del sistema di riferimento $RF_A$ al punto $B$.
 
-\fbox{Questo vettore descrive la posizione del punto $ B $ rispetto al sistema di riferimento $ RF_A $.}
+\[
+    ^{A}\mathbf{p}_{AB} =
+    \begin{bmatrix}
+        x_A \\
+        y_A \\
+        z_A
+    \end{bmatrix}
+\]
 
-Tale vettore è espresso come:
+% Dove $x_A, y_A, z_A$ sono le componenti del vettore lungo gli assi $\mathbf{x}_A, \mathbf{y}_A, \mathbf{z}_A$, rispettivamente.
 
-$$
-^{A}\mathbf{p}_{AB} =
-\begin{bmatrix}
-x_A \\
-y_A \\
-z_A
-\end{bmatrix},
-$$
+\fbox{Questo Vettore Descrive La Posizione Del Punto $B$ Rispetto Al Sistema Di Riferimento $RF_A$.}
 
-Dove, $ x_{A} $, $ y_{A} $, $ z_{A} $ sono le componenti (coordinate) del vettore lungo gli assi $ \mathbf{x}_A $, $ \mathbf{y}_A $, $ \mathbf{z}_A $, rispettivamente.
-
-Questo vettore è un \textit{vettore applicato}, poiché descrive lo spostamento necessario per andare dall'origine di $ RF_A $ al punto $ B $. In altre parole, sono specificati
+Questo vettore è un \textit{Vettore Applicato}, poiché descrive lo spostamento dall'origine di $RF_A$ al punto $B$. In altre parole, sono specificati:
 \begin{itemize}
-    \item Il \textbf{Punto Di Applicazione} di $^{A}\mathbf{p}_{AB}$ che è l'origine di RFA
-    \item La \textbf{Direzione} e il \textbf{Modulo} di $^{A}\mathbf{p}_{AB}$ che indicano rispettivamente la direzione e la distanza tra l'origine di $ RF_A $ e il punto $ B $
+    \item Il \textbf{Punto Di Applicazione} di $^{A}\mathbf{p}_{AB}$, che è l'origine $A$ di $RF_A$.
+    \item La \textbf{Direzione} e il \textbf{Modulo} di $^{A}\mathbf{p}_{AB}$, che indicano rispettivamente la direzione e la distanza tra l'origine di $RF_A$ e il punto $B$.
 \end{itemize}
 
-Per caratterizzare l'\textbf{orientamento} del corpo rigido, si introduce un secondo riferimento $ RF_B $ solidale al corpo rigido e avente origine in $ B $ e siano $ \mathbf{x}_B, \mathbf{y}_B, \mathbf{z}_B $ i versori degli assi di $ RF_B $.
+Per rappresentare l'\textbf{orientamento} del corpo rigido, si introduce un secondo sistema di riferimento $RF_B$, solidale al corpo rigido e avente origine nel punto $B$. Siano $\mathbf{x}_B, \mathbf{y}_B, \mathbf{z}_B$ i versori dei suoi assi.
+
 \begin{center}
-    \begin{tikzpicture}
-        % Disegna gli assi
-        \draw[->] (0,0,0) -- (3,0,0) node[anchor=north east] {\textbf{x}};
-        \draw[->] (0,0,0) -- (0,3,0) node[anchor=north west] {\textbf{y}};
-        \draw[->] (0,0,0) -- (0,0,3) node[anchor=south] {\textbf{z}};
+    \begin{tikzpicture}[scale=0.8, >=stealth]
+        % Sistema di riferimento RFA
+        \draw[->] (0,0,0) -- (3,0,0)
+            node[anchor=north east, xshift=5pt, yshift=-2pt] {\textbf{x}};
 
-        \filldraw[black] (0,0,0) circle (1.5pt) node[anchor=south east] {${A}$};
-        \filldraw[black] (2,2,2) circle (1.5pt) node[anchor=south east] {${B}$};
+        \draw[->] (0,0,0) -- (0,3,0)
+            node[anchor=north west, xshift=-15pt, yshift=-3pt] {\textbf{y}};
 
-        % Nuovo sistema di riferimento con origine in B
+        \draw[->] (0,0,0) -- (0,0,3)
+            node[anchor=south, xshift=-5pt, yshift=4pt] {\textbf{z}};
+
+        % Origine A e punto B
+        \filldraw[black] (0,0,0) circle (1.5pt)
+            node[anchor=north east, xshift=-2pt, yshift=10pt] {$A$};
+
+        \filldraw[black] (2,2,2) circle (1.5pt)
+            node[anchor=south east, xshift=11pt, yshift=3pt] {$B$};
+
+        % Sistema di riferimento RFB con origine in B
         \begin{scope}[shift={(2,2,2)}]
-            % Disegna i nuovi assi con orientamento diverso
-            \draw[red,->] (0,0,0) -- (1,0.5,0) node[anchor=north east] {\textbf{x'}};
-            \draw[red,->] (0,0,0) -- (-0.5,1,0) node[anchor=north west] {\textbf{y'}};
-            \draw[red,->] (0,0,0) -- (0,-0.5,1) node[anchor=south] {\textbf{z'}};
+            \draw[red,->] (0,0,0) -- (1,0.5,0)
+                node[anchor=west, xshift=5pt, yshift=-2pt] {\textbf{x'}};
+
+            \draw[red,->] (0,0,0) -- (-0.5,1,0)
+                node[anchor=south east, xshift=5pt, yshift=-5pt] {\textbf{y'}};
+
+            \draw[red,->] (0,0,0) -- (0,-0.5,1)
+                node[anchor=west, xshift=5pt, yshift=5pt] {\textbf{z'}};
         \end{scope}
     \end{tikzpicture}
+
 \end{center}
 
-Si può indicare la posizione di un punto del corpo rigido rispetto al riferimento solidale tramite il vettore espresso come
-$$
+Una volta introdotto il riferimento solidale al corpo, è possibile esprimere la posizione di un generico punto del corpo rigido rispetto a tale riferimento tramite il vettore:
+
+\[
     ^{B}\mathbf{p} =
     \begin{bmatrix}
-    x_B \\
-    y_B \\
-    z_B
-    \end{bmatrix},
-$$
+        x_B \\
+        y_B \\
+        z_B
+    \end{bmatrix}
+\]
+
+Dove $x_B, y_B, z_B$ sono le componenti del vettore rispetto agli assi $\mathbf{x}_B, \mathbf{y}_B, \mathbf{z}_B$, rispettivamente.
 \newpage
 \subsection{Matrice Di Rotazione}
+
 % $^{0}\mathbf{R}_{1}$ la matrice che uso per trasformare una terna espressa nelle coordinate $\mathbf{RF_{0}}$ in una terna espressa in coordinate della terna di $\mathbf{RF_{1}}$
-Per descrivere l'orientamento di $ RF_{B} $ rispetto a $ RF_{A} $, si considerano i versori degli assi di $ RF_{B} $ ($ \mathbf{x}_{B}, \mathbf{y}_{B}, \mathbf{z}_{B} $) e si esprimono come combinazione lineari dei versori degli assi di $ RF_{A} $ ($ \mathbf{x}_{A}, \mathbf{y}_{A}, \mathbf{z}_{A} $)\\
+
+Per descrivere l'orientamento di $RF_{B}$ rispetto a $RF_{A}$, si considerano i versori degli assi di $RF_{B}$ ($\mathbf{x}_{B}, \mathbf{y}_{B}, \mathbf{z}_{B}$) e si esprimono come combinazioni lineari dei versori degli assi di $RF_{A}$ ($\mathbf{x}_{A}, \mathbf{y}_{A}, \mathbf{z}_{A}$).
+
 % Versori Di RFA
 % i_{A} = [1 0 0]       j_{A} = [0 1 0]       k_{A} = [0 0 1]
 % Versore X             Versore Y             Versore Z
-Si avrà quindi
+
+Quindi:
 \[
     \begin{cases}
         \mathbf{x}_B = x_{B_x} \mathbf{x}_A + x_{B_y} \mathbf{y}_A + x_{B_z} \mathbf{z}_A\\
@@ -342,71 +362,101 @@ Si avrà quindi
         \mathbf{z}_B = z_{B_x} \mathbf{x}_A + z_{B_y} \mathbf{y}_A + z_{B_z} \mathbf{z}_A
     \end{cases}
 \]
+
 Dove:
 \begin{itemize}
-    \item $\mathbf{x}_A, \mathbf{y}_A, \mathbf{z}_A$ sono i versori, rispettivamente, dell'asse $x_{A}$, dell'asse $y_{A}$ e dell'asse $z_{A}$ di RFA
-    \item $x_{B_x}$, $x_{B_y}$, $x_{B_z}$ sono le componenti del versore di $x_{B}$ rispetto alla base RFA (Incognite)
-    \item $y_{B_x}$, $y_{B_y}$, $z_{B_z}$ sono le componenti del versore di $y_{B}$ rispetto alla base RFA (Incognite)
-    \item $z_{B_x}$, $z_{B_y}$, $z_{B_z}$ sono le componenti del versore di $x_{B}$ rispetto alla base RFA (Incognite)
+    \item $\mathbf{x}_A, \mathbf{y}_A, \mathbf{z}_A$ sono i versori, rispettivamente, dell'asse $x_A$, dell'asse $y_A$ e dell'asse $z_A$ di $RF_A$.
+    \item $x_{B_x}$, $x_{B_y}$, $x_{B_z}$ sono le componenti del versore $\mathbf{x}_B$ rispetto alla base $RF_A$ (incognite).
+    \item $y_{B_x}$, $y_{B_y}$, $y_{B_z}$ sono le componenti del versore $\mathbf{y}_B$ rispetto alla base $RF_A$ (incognite).
+    \item $z_{B_x}$, $z_{B_y}$, $z_{B_z}$ sono le componenti del versore $\mathbf{z}_B$ rispetto alla base $RF_A$ (incognite).
 \end{itemize}
-Utilizzando una notazione compatta, i tre versori che esprimono l'orientamento del corpo rispetto alla terna di riferimento ($RF_{A}$) possono essere combinati in una matrice
+
+Supponendo di voler ricavare la componente $x_{B_x}$, si effettua il prodotto scalare di entrambi i membri della prima equazione del sistema per il versore $\mathbf{x}_A$:
 \[
-    R =
-    \begin{bmatrix}
-        x_{B_x} & x_{B_y} & x_{B_z}\\
-        y_{B_x} & y_{B_y} & y_{B_z} \\
-        z_{B_x} & z_{B_y} & z_{B_z}
-    \end{bmatrix}
+    \mathbf{x}_B \cdot \mathbf{x}_A =
+    x_{B_x} (\mathbf{x}_A \cdot \mathbf{x}_A) +
+    x_{B_y} (\mathbf{y}_A \cdot \mathbf{x}_A) +
+    x_{B_z} (\mathbf{z}_A \cdot \mathbf{x}_A)
 \]
-Le componenti dei versori di $ RF_B $ rispetto alla base di $ RF_A $ possono essere calcolate usando il prodotto scalare.\\
-Quindi, ad esempio:
+
+Poiché i versori di un sistema di riferimento cartesiano ortonormale sono ortogonali (il prodotto scalare tra due versori diversi è nullo) e normalizzati (il prodotto scalare di un versore per se stesso è uguale a uno), si ottiene:
+\begin{align*}
+    \mathbf{x}_B \cdot \mathbf{x}_A &= x_{B_x} \cdot 1 + x_{B_y} \cdot 0 + x_{B_z} \cdot 0 \\
+    &= x_{B_x} + 0 + 0\\
+    &= x_{B_x}
+\end{align*}
+
+Lo stesso ragionamento si applica a tutte le componenti e ai versori $\mathbf{y}_B$ e $\mathbf{z}_B$. In generale, ciascuna componente può essere ricavata mediante il prodotto scalare tra il versore di $RF_B$ e il versore di $RF_A$ su cui si vuole proiettare.
+
+Inoltre, ricordando che il prodotto scalare tra due vettori può essere espresso come somma dei prodotti delle rispettive componenti rispetto alla stessa base, si nota che:
 \[
-    x_{B_x} = \mathbf{x}_B \cdot \mathbf{x}_A = x_{B_{x}}x_{A_{x}} + x_{B_{y}}x_{A_{y}} + x_{B_{z}}x_{A_{z}}
+    \mathbf{x}_B \cdot \mathbf{x}_A =
+    x_{B_x}x_{A_x} + x_{B_y}x_{A_y} + x_{B_z}x_{A_z}
 \]
-Lo stesso ragionamento si applica a tutte le componenti e ai versori $ \mathbf{y}_B $ e $ \mathbf{z}_B $\\
-Si nota che
-\[
-    x_{B_{x}}x_{A_{x}} + x_{B_{y}}x_{A_{y}} + x_{B_{z}}x_{A_{z}} = \mathbf{x}_B^{T}\mathbf{x}_A
-\]
-La relazione precedente, in forma matriciale, è detta \textbf{Matrice di Rotazione} ed è definita come:
+Utilizzando una notazione compatta, i tre versori che esprimono l'orientamento del corpo rispetto alla terna di riferimento ($RF_A$) possono essere combinati in una matrice:
 \[
     \mathbf{R} =
     \begin{bmatrix}
-        \mathbf{x}_B^{T}\mathbf{x}_A & \mathbf{y}_B^{T}\mathbf{x}_A & \mathbf{z}_B^{T}\mathbf{x}_A\\
-        \mathbf{x}_B^{T}\mathbf{y}_A & \mathbf{y}_B^{T}\mathbf{y}_A & \mathbf{z}_B^{T}\mathbf{y}_A\\
-        \mathbf{x}_B^{T}\mathbf{z}_A & \mathbf{y}_B^{T}\mathbf{z}_A & \mathbf{z}_B^{T}\mathbf{z}_A
+        x_{B_x} & y_{B_x} & z_{B_x}\\
+        x_{B_y} & y_{B_y} & z_{B_y}\\
+        x_{B_z} & y_{B_z} & z_{B_z}
+    \end{bmatrix}
+\]
+Questa matrice è detta \textbf{Matrice di Rotazione} ed è definita come:
+\[
+    \mathbf{R} =
+    \begin{bmatrix}
+        \mathbf{x}_B \cdot \mathbf{x}_A & \mathbf{y}_B \cdot \mathbf{x}_A & \mathbf{z}_B \cdot \mathbf{x}_A\\
+        \mathbf{x}_B \cdot \mathbf{y}_A & \mathbf{y}_B \cdot \mathbf{y}_A & \mathbf{z}_B \cdot \mathbf{y}_A\\
+        \mathbf{x}_B \cdot \mathbf{z}_A & \mathbf{y}_B \cdot \mathbf{z}_A & \mathbf{z}_B \cdot \mathbf{z}_A
     \end{bmatrix}
     =
     \begin{bmatrix}
-        ^{A}\mathbf{x}_{B} & ^{A}\mathbf{y}_{B} & ^{A}\mathbf{z}_{B}
+        {}^{A}\mathbf{x}_{B} & {}^{A}\mathbf{y}_{B} & {}^{A}\mathbf{z}_{B}
     \end{bmatrix}
 \]
-Dove ciascun \textit{vettore colonna} rappresenta i \textbf{coseni direttori} degli assi di \(RF_{B}\) nelle coordinate di \(RF_{A}\)
+
+Dove ciascun \textit{Vettore Colonna} rappresenta i \textbf{Coseni Direttori} degli assi di $RF_B$ nelle coordinate di $RF_A$.
+\newpage
 \subsubsection{Proprietà Matrice Di Rotazione}
-È significativo notare che i vettori colonna della matrice \textbf{R} essendo rappresentativi di una terna ortonormale, sono ortogonali tra di loro:
+
+È significativo notare che i vettori colonna della matrice di rotazione $\mathbf{R}$, essendo rappresentativi dei versori di una terna ortonormale, sono ortogonali tra di loro. Di conseguenza, il prodotto scalare tra due vettori colonna distinti è nullo:
 \[
-    \mathbf{x}_{B}^{T} \; \mathbf{y}_{B} = 0 \qquad \mathbf{y}_{B}^{T} \; \mathbf{z}_{B} = 0 \qquad \mathbf{z}_{B}^{T} \; \mathbf{x}_{B} = 0
+    ({}^{A}\mathbf{x}_{B})^{T} \, {}^{A}\mathbf{y}_{B} = 0
+    \qquad
+    ({}^{A}\mathbf{y}_{B})^{T} \, {}^{A}\mathbf{z}_{B} = 0
+    \qquad
+    ({}^{A}\mathbf{z}_{B})^{T} \, {}^{A}\mathbf{x}_{B} = 0
 \]
-Inoltre, hanno modulo unitario:
+
+Inoltre, essendo dei versori, hanno modulo unitario:
 \[
-    \mathbf{x}_{B}^{T} \; \mathbf{x}_{B} = 1 \qquad \mathbf{y}_{B}^{T} \; \mathbf{y}_{B} = 1 \qquad \mathbf{z}_{B}^{T} \; \mathbf{z}_{B} = 1
+    ({}^{A}\mathbf{x}_{B})^{T} \, {}^{A}\mathbf{x}_{B} = 1
+    \qquad
+    ({}^{A}\mathbf{y}_{B})^{T} \, {}^{A}\mathbf{y}_{B} = 1
+    \qquad
+    ({}^{A}\mathbf{z}_{B})^{T} \, {}^{A}\mathbf{z}_{B} = 1
 \]
-La matrice di rotazione R risulta \textit{ortogonale}, ovvero
+
+Queste proprietà indicano che le colonne della matrice di rotazione sono ortonormali. La matrice di rotazione $\mathbf{R}$ risulta quindi \textit{ortogonale}, ovvero:
 \[
     \mathbf{R}^{T}\mathbf{R} = \mathbf{I}_{3}
 \]
-Dove $\mathbf{I}_{3}$ è la matrice di identità $3 \times 3$
+Dove $\mathbf{I}_{3}$ è la matrice identità $3 \times 3$.
 
-Moltiplicando per $\mathbf{R}^{-1}$ da destra ambo i membri la precedente si ottiene che
+Moltiplicando per $\mathbf{R}^{-1}$ da destra ambo i membri della precedente equazione, si ottiene:
 \[
     \mathbf{R}^{T} = \mathbf{R}^{-1}
 \]
-Inoltre
+
+Inoltre, poiché la matrice rappresenta una rotazione propria, il suo determinante è pari a 1:
 \[
     \det(\mathbf{R}) = 1
 \]
-Quindi, si può dire che la matrice di rotazione appartiene al \textbf{\textit{Gruppo Speciale Ortonormale}} $SO(m)$ delle matrici reali $ m \times m$ con colonne ortonormali e determinante pari a 1
+
+Quindi, si può dire che la matrice di rotazione appartiene al \textbf{\textit{Gruppo Speciale Ortogonale}} $SO(3)$, costituito dalle matrici reali $3 \times 3$ ortogonali e con determinante pari a 1.
 \newpage
+
 \subsubsection{Rotazioni Elementari}
 
 Consideriamo una rotazione elementare partendo da un sistema di riferimento $ RF_A $, caratterizzato dalla terna cartesiana $ O\text{-}xyz $. Supponiamo di ruotare il sistema di un angolo $\alpha$ intorno all'asse $z$, ottenendo una nuova terna $ O\text{-}x'y'z' $.
@@ -600,7 +650,6 @@ Le rappresentazioni più usate sono
 Il cambiamento di coordinate (rotazione) avviene tramite la matrice $R(\theta, r)$ che effetua la rotazione attorno a \(\mathbf{r}\) dell'angolo \(\theta\)\\
 Gode delle seguenti proprietà:
 \begin{enumerate}
-    \item \(r = R(\theta, r) \cdot r\)
     \item Se \(r\) coincide con l'asse coordinato, allora \(R(\theta, r)\) è l'operatore di una rotazione elementare
     \item \((\theta, r) \quad \longrightarrow \quad R(\theta, r)\) non è iniettiva
     \item \(\det(R(\theta, r)) = 1\)
@@ -627,11 +676,12 @@ Un metodo per ottenere questa matrice consiste nel comporre opportunamente delle
 
     \item \textbf{Ripristino Del Sistema Di Riferimento Originale}: È necessario annullare la trasformazione iniziale, riportando il sistema di riferimento alla sua configurazione originale. Questo si ottiene applicando la trasformazione inversa, che è semplicemente \(\mathbf{C}^{T}\) poiché \(\mathbf{C}\) è una matrice ortogonale (essendo una matrice di rotazione).
 \end{enumerate}
+\newpage
 Quindi, la matrice di rotazione finale è data da:
 \[
     \mathbf{R}(\theta, \mathbf{r}) = \underbrace{\mathbf{C}}_{1} \; \underbrace{\mathbf{R}_Z(\theta)}_{2} \; \underbrace{\mathbf{C}^{T}}_{3}
 \]
-Dove la matrice \(\mathbf{C}\) è formata dagli autovettori ortonormali del sistema trasformato:
+Dove la matrice \(\mathbf{C}\) è formata dai versori del sistema trasformato:
 
 \[
     \mathbf{C} =
@@ -646,66 +696,63 @@ Dove \(\mathbf{n}\) e \(\mathbf{s}\) sono scelti in modo che siano ortogonali tr
 \]
 La matrice \(\mathbf{C}\) è una matrice di rotazione, quindi è ortonormale e di conseguenza si ha che \(\mathbf{C^{-1}} = \mathbf{C^{T}}\), quindi
 \[
-    \mathbf{C} \cdot \mathbf{C}^{T} = I \qquad\longrightarrow\qquad
-    \mathbf{r}\mathbf{r}^{T} + \mathbf{s}\mathbf{s}^{T} + \mathbf{n}\mathbf{n}^{T} = I
-\]
-
-\[
+    \mathbf{C} \cdot \mathbf{C}^{T} = I \quad\longrightarrow\quad
+    \mathbf{r}\mathbf{r}^{T} + \mathbf{s}\mathbf{s}^{T} + \mathbf{n}\mathbf{n}^{T} = I \quad\longrightarrow\quad
     \mathbf{s}\mathbf{s}^{T} + \mathbf{n}\mathbf{n}^{T} = I - \mathbf{r}\mathbf{r}^{T}
 \]
-Dato che \(\mathbf{n} \times \mathbf{s} = \mathbf{r}\) si ha che
-\[
-\mathbf{n} \times \mathbf{s} =
-\begin{bmatrix}
-    n_{Y} \; s_{Z} - s_{Y} \; n_{Z}\\
-    n_{Z} \; s_{X} - s_{Z} \; n_{X}\\
-    n_{X} \; s_{Y} - s_{X} \; n_{Y}
-\end{bmatrix}
-= \mathbf{r}
-\]
-Ricordando che $\mathbf{n}$ e $\mathbf{s}$ sono vettori colonna, la precedente matrice si può scrivere come
-\[
-    \mathbf{s}\mathbf{n}^{T} - \mathbf{n}\mathbf{s}^{T}
-\]
-La precedente, per definizione, è $\mathbf{S}(r)$ detta \texttt{Skew Matrix} (Matrice Antisimmetrica) ed è:
-\[
-    S(\mathbf{r}) =
-    \begin{bmatrix}
-        0 & -r_{Z} & r_{Y}\\
-        r_{Z} & 0 & -r_{X}\\
-        -r_{Y} & r_{X} & 0
-    \end{bmatrix}
-\]
 Quindi si ha che
-\[
-    \mathbf{R}(\theta, \mathbf{r}) = \mathbf{C} \; \mathbf{R}_Z(\theta) \; \mathbf{C}^{T} =
-\]
-
-\[
-    =
-    \;
+\begin{align*}
+    \mathbf{R}(\theta, \mathbf{r}) = \mathbf{C} \; \mathbf{R}_Z(\theta) \; \mathbf{C}^{T} &=
     \begin{bmatrix}
         \mathbf{n} & \mathbf{s} & \mathbf{r}
     \end{bmatrix}
-    \;
     \begin{bmatrix}
        \cos(\theta) & -\sin(\theta) & 0 \\
        \sin(\theta) &  \cos(\theta) & 0 \\
        0 & 0 & 1
     \end{bmatrix}
-    \;
     \begin{bmatrix}
         \mathbf{n}^{T}\\
         \mathbf{s}^{T}\\
         \mathbf{r}^{T}
-    \end{bmatrix}
-    \;
-    =
-\]
+    \end{bmatrix}\\
+    &= \mathbf{r}\mathbf{r}^{T} + (\mathbf{n}\mathbf{n}^{T} + \mathbf{s}\mathbf{s}^{T})\cos(\theta) + (\mathbf{s}\mathbf{n}^{T} - \mathbf{n}\mathbf{s}^{T})\sin(\theta)
+\end{align*}
+Dove, come visto prima $\mathbf{s}\mathbf{s}^{T} + \mathbf{n}\mathbf{n}^{T} = I - \mathbf{r}\mathbf{r}^{T}$, inoltre ricordando che  \(\mathbf{n} \times \mathbf{s} = \mathbf{r}\), si ha che:
+% n × s si ricava calcolando il determinante di una matrice 3x3, costruita mettendo i versori dei tre assi cartesiani nella prima riga e le componenti dei due vettori nelle altre due. Si fa con i minori: tolgo prima riga e prima colonna e calcolo determinante 2x2 per il pivot (i per la prima riga, j per la seconda, k per la tersa)
 \[
-    = \mathbf{r}\mathbf{r}^{T} + (\mathbf{n}\mathbf{n}^{T} + \mathbf{s}\mathbf{s}^{T})\cos(\theta) + (\mathbf{s}\mathbf{n}^{T} - \mathbf{n}\mathbf{s}^{T})\sin(\theta)
+\mathbf{n} \times \mathbf{s} =
+\begin{bmatrix}
+    n_{Y} s_{Z} - s_{Y} n_{Z}\\
+    n_{Z} s_{X} - s_{Z} n_{X}\\
+    n_{X} s_{Y} - s_{X} n_{Y}
+\end{bmatrix}
+=
+\begin{bmatrix}
+    r_{X}\\
+    r_{Y}\\
+    r_{Z}
+\end{bmatrix}
 \]
-Facendo le dovute sostituzioni si ottiene:
+Svolgendo $\mathbf{s}\mathbf{n}^T - \mathbf{n}\mathbf{s}^T$ si ottiene la matrice
+\[
+    \begin{bmatrix}
+        0 & s_{x} n_{y} - n_{x} s_{y} & s_{x} n_{z} - n_{x} s_{z} \\
+        s_{y} n_{x} - n_{y} s_{x} & 0 & s_{y} n_{z} - n_{y} s_{z} \\
+        s_{z} n_{x} - n_{z} s_{x} & s_{z} n_{y} - n_{z} s_{y} & 0
+    \end{bmatrix}
+\]
+Dove, si nota che gli elementi della matrice ottenuta corrispondono alle componenti di $\mathbf{r}$ quindi
+\[
+    \mathbf{s}\mathbf{n}^T - \mathbf{n}\mathbf{s}^T =
+    \begin{bmatrix}
+        0 & -r_{Z} & r_{Y}\\
+        r_{Z} & 0 & -r_{X}\\
+        -r_{Y} & r_{X} & 0
+    \end{bmatrix}
+    = S(\mathbf{r})
+\]
+Questa, per definizione è detta \textbf{Matrice Antisimmetrica} (Skew Matrix). Facendo le dovute sostituzioni si ottiene:
 \[
     \boxed{\mathbf{R}(\theta, \mathbf{r}) = \mathbf{r}\mathbf{r}^{T} + (I \; - \; \mathbf{r}\mathbf{r}^{T}) \; \cos(\theta) + S(\mathbf{r}) \; \sin(\theta)}
 \]
@@ -731,13 +778,10 @@ Sapendo che il $\cos$ è una funzione pari mentre il $\sin$ è una funzione disp
 \]
 
 \underline{Trasposta Matrice Per Tornare Indietro}
-\[
-    \mathbf{R}^{T}(\theta, \mathbf{r}) = (\mathbf{r}\mathbf{r}^{T})^{T} + (I \; - \; \mathbf{r}\mathbf{r}^{T})^{T} \; \cos(\theta) + S(\mathbf{r})^{T} \; \sin(\theta)
-\]
-
-\[
-    = \mathbf{r}^{T}(\mathbf{r}^{T})^{T} + (I^{T} \; - \; \mathbf{r}^{T}(\mathbf{r}^{T})^{T}) \; \cos(\theta) + S(\mathbf{r})^{T} \; \sin(\theta)
-\]
+\begin{align*}
+    \mathbf{R}^{T}(\theta, \mathbf{r}) &= (\mathbf{r}\mathbf{r}^{T})^{T} + (I \; - \; \mathbf{r}\mathbf{r}^{T})^{T} \; \cos(\theta) + S(\mathbf{r})^{T} \; \sin(\theta)\\
+    &= \mathbf{r}^{T}(\mathbf{r}^{T})^{T} + (I^{T} \; - \; \mathbf{r}^{T}(\mathbf{r}^{T})^{T}) \; \cos(\theta) + S(\mathbf{r})^{T} \; \sin(\theta)
+\end{align*}
 Essendo $S(\mathbf{r})$ la Skew Matrix si ha che $S(\mathbf{r})^{T} = - S(\mathbf{r})$
 \[
     \mathbf{R}^{T}(\theta, \mathbf{r}) = \mathbf{r}\mathbf{r}^{T} + (I \; - \; \mathbf{r}\mathbf{r}^{T}) \; \cos(\theta) + (- S(\mathbf{r}) )\; \sin(\theta)
@@ -764,16 +808,13 @@ Sapendo che \(\text{trace}(AB) = \text{trace}(BA)\) (Permutazione Ciclica)
 \[
     \text{trace}(\mathbf{\mathbf{R}(\theta, \mathbf{r})}) = 1 + 2\cos(\theta)
 \]
-\underline{Rotazione Di $\theta$ Del Vettore $\mathbf{r}$ Lungo L'Asse $\mathbf{r}$}
-\[
-    \mathbf{\mathbf{R}(\theta, \mathbf{r})} \; \mathbf{r} = \mathbf{r}
-\]
-La matrice di rotazione \( \mathbf{R} \) è una matrice \textbf{ortogonale} con \( \det(\mathbf{R}) = 1 \).\\
-Qualsiasi siano \(r\) e \(\theta\) ha un autovettore della matrice di rotazione con autovalore \( \lambda_{1} = 1 \), perché la matrice non lo altera (lo ruota ma non lo dilata o riduce). Quindi si può scrivere il sistema
+\underline{$\lambda_{i}$ Tutti Uguali a 1}
+
+Qualsiasi siano \(r\) e \(\theta\) la matrice di rotazione ha un autovettore con autovalore \( \lambda_{1} = 1 \), perché la matrice non lo altera (lo ruota ma non lo dilata o riduce). Quindi si può scrivere il sistema
 \[
     \begin{cases}
         \lambda_{1}\lambda_{2}\lambda_{3} = 1 & \text{(Determinante)} \\
-        \lambda_{1} + \lambda_{2} + \lambda_{3} = 1 & \text{(Traccia)}
+        \lambda_{1} + \lambda_{2} + \lambda_{3} = 1 + 2\cos(\theta) & \text{(Traccia)}
     \end{cases}
 \]
 
@@ -1529,19 +1570,19 @@ Un manipolatore robotico è un sistema meccanico costituito da un insieme di cor
     \item \textbf{Giunti Rotoidali}, che permettono una rotazione relativa tra due bracci adiacenti.
     \item \textbf{Giunti Prismatici}, che consentono una traslazione lungo una direzione specifica.
 \end{itemize}
-L'insieme di questi bracci e giunti forma una struttura detta \emph{catena cinematica}. Un'estremità della catena è ancorata a una base fissa, mentre l'altra estremità è connessa a un \emph{Organo Terminale} (End-Effector), il quale può essere, ad esempio, una pinza o un utensile, utilizzato per manipolare oggetti nello spazio.
+L'insieme di questi bracci e giunti forma una struttura detta \emph{catena cinematica}. Un'estremità della catena è ancorata a una base fissa, mentre l'altra estremità è connessa a un \emph{End Effector} (End-Effector), il quale può essere, ad esempio, una pinza o un utensile, utilizzato per manipolare oggetti nello spazio.
 
 Da un punto di vista topologico, una catena cinematica può essere:
 \begin{itemize}
-    \item \textbf{Aperta}, quando esiste un'unica sequenza di bracci che connette la base all'organo terminale.
+    \item \textbf{Aperta}, quando esiste un'unica sequenza di bracci che connette la base all'End Effector.
     \item \textbf{Chiusa}, quando una sequenza di bracci forma un anello, creando una struttura con più vincoli.
 \end{itemize}
 
 La configurazione di un manipolatore è determinata dal numero di \emph{Gradi Di Libertà} (DoF, Degrees of Freedom), i quali corrispondono alle variabili indipendenti necessarie per descrivere completamente la sua postura. Ogni grado di libertà è tipicamente associato a un giunto e rappresenta una \textit{variabile di giunto.}
 
-L'obiettivo della \textbf{Cinematica Diretta} \textbf{è determinare la posizione e l'orientazione dell'organo terminale del manipolatore in funzione dei valori assunti dalle variabili di giunto}. In altri termini, si tratta di trovare la relazione tra le coordinate dei giunti e la posa finale dell'organo terminale nello spazio.
+L'obiettivo della \textbf{Cinematica Diretta} \textbf{è determinare la posizione e l'orientazione dell'End Effector del manipolatore in funzione dei valori assunti dalle variabili di giunto}. In altri termini, si tratta di trovare la relazione tra le coordinate dei giunti e la posa finale dell'End Effector nello spazio.
 
-La posa di un corpo rigido viene descritta rispetto a un sistema di riferimento fisso, detto \textit{Terna Base} ($RF_{B} - x_{B}y_{B}z_{B}$). Per rappresentare la posa dell'organo terminale, si definisce una seconda terna, detta \textit{Terna Utensile}, solidale con esso. La relazione matematica che lega la Terna Utensile alla Terna Base è espressa dalla \textbf{matrice di trasformazione omogenea}.
+La posa di un corpo rigido viene descritta rispetto a un sistema di riferimento fisso, detto \textit{Terna Base} ($RF_{B} - x_{B}y_{B}z_{B}$). Per rappresentare la posa dell'End Effector, si definisce una seconda terna, detta \textit{Terna Utensile}, solidale con esso. La relazione matematica che lega la Terna Utensile alla Terna Base è espressa dalla \textbf{matrice di trasformazione omogenea}.
 \[
     ^{B}\mathbf{T}_{E}(\mathbf{q}) =
     \begin{bmatrix}
@@ -1567,7 +1608,7 @@ Dove:
     \item $^{B}\mathbf{p}_{E}(\mathbf{q})$, rappresenta la posizione dell'origine del riferimento utensile rispetto all'origine della Terna Base.
 \end{itemize}
 Da notare che i vettori componenti la matrice sono tutti funzioni del vettore $\mathbf{q}$ delle variabili di giunto.\\
-La Terna Utensile si sceglie in maniera conveniente alla situazione. Nel caso in cui l'organo terminale sia una pinza, l'origine si pone tipicamente al centro delle dita e i versori seguono una convenzione:
+La Terna Utensile si sceglie in maniera conveniente alla situazione. Nel caso in cui l'End Effector sia una pinza, l'origine si pone tipicamente al centro delle dita e i versori seguono una convenzione:
 \begin{itemize}
     \item Il versore $\mathbf{a}_{E}$ (Approccio) si sceglie nella direzione di avvicinamento a un oggetto.
     \item Il versore $\mathbf{s}_{E}$ (Scivolamento) si sceglie normale al versore $\mathbf{a}_{E}$, lungo il piano di chiusura della pinza.
@@ -1587,7 +1628,7 @@ Per descrivere lo stato di un robot si definiscono due spazi concettuali:
 
     Questa comprende il vettore \(\mathbf{d} = [x, y, z]^T\) che definisce la posizione in coordinate cartesiane, e la matrice \(R \in SO(3)\) che definisce l'orientamento nello spazio tridimensionale.
 \end{itemize}
-La \textbf{cinematica diretta} (analisi) consiste nello stabilire la posa dell'organo terminale a partire da una data configurazione dei giunti. Si può vedere come una funzione:
+La \textbf{cinematica diretta} (analisi) consiste nello stabilire la posa dell'End Effector a partire da una data configurazione dei giunti. Si può vedere come una funzione:
 \[
     f(\mathbf{q}) : \mathbb{R}^{n} \quad \longrightarrow \quad \mathbb{R}^{m}
 \]
@@ -1603,8 +1644,8 @@ Questa funzione può ammettere nessuna, una o molteplici soluzioni.
 All'interno dello \textbf{Spazio Operativo}, lo \textbf{Spazio di Lavoro} (Workspace) è definito come l'insieme dei punti che l'origine della terna utensile può raggiungere.
 Si distinguono due categorie principali:
 \begin{itemize}
-    \item \textbf{Workspace Raggiungibile (Primario)}: È l'insieme dei punti che l'origine della terna utensile può raggiungere assumendo almeno un orientamento ammissibile dell'organo terminale.
-    \item \textbf{Workspace Destro (Secondario)}: È il sottoinsieme del workspace raggiungibile in cui l'origine della terna utensile può essere posizionata mantenendo qualsiasi orientamento desiderato dell'organo terminale.
+    \item \textbf{Workspace Raggiungibile (Primario)}: È l'insieme dei punti che l'origine della terna utensile può raggiungere assumendo almeno un orientamento ammissibile dell'End Effector.
+    \item \textbf{Workspace Destro (Secondario)}: È il sottoinsieme del workspace raggiungibile in cui l'origine della terna utensile può essere posizionata mantenendo qualsiasi orientamento desiderato dell'End Effector.
 \end{itemize}
 
 \newpage
@@ -1619,7 +1660,7 @@ Per ottenere la trasformazione complessiva dalla base (terna $0$) all'ultimo bra
 \[
     ^{0}\mathbf{T}_{n}(\mathbf{q}) = \; ^{0}\mathbf{A}_{1}(q_{1}) \; ^{1}\mathbf{A}_{2}(q_{2}) \dots \; ^{n-1}\mathbf{A}_{n}(q_{n}) = \prod_{i=1}^{n} {}^{i-1}\mathbf{A}_{i}(q_{i})
 \]
-Per una descrizione completa, è necessario includere il posizionamento della base del robot e la geometria dell'organo terminale. La trasformazione omogenea che descrive la posa della \textbf{Terna Utensile} ($E$) rispetto alla \textbf{Terna Base} ($B$) è data da:
+Per una descrizione completa, è necessario includere il posizionamento della base del robot e la geometria dell'End Effector. La trasformazione omogenea che descrive la posa della \textbf{Terna Utensile} ($E$) rispetto alla \textbf{Terna Base} ($B$) è data da:
 \[
     ^{b}\mathbf{T}_{e}(\mathbf{q}) = \; ^{B}\mathbf{T}_{0} \; ^{0}\mathbf{T}_{n}(\mathbf{q}) \; ^{n}\mathbf{T}_{E}
 \]
@@ -1798,7 +1839,7 @@ I parametri DH (\(a_{i}\), \(d_{i}\), \(\alpha_{i}\), \(\theta_{i}\)) permettono
     \end{bmatrix}
 \]
 \newpage
-Una volta definita la matrice di trasformazione omogenea \(^{i-1}\mathbf{A}_{i}\) per un singolo link, è possibile risolvere il problema della cinematica diretta, ovvero determinare la posa (posizione e orientamento) dell'organo terminale (end-effector) rispetto al sistema di riferimento di base (\(RF_0\)).
+Una volta definita la matrice di trasformazione omogenea \(^{i-1}\mathbf{A}_{i}\) per un singolo link, è possibile risolvere il problema della cinematica diretta, ovvero determinare la posa (posizione e orientamento) dell'End Effector (end-effector) rispetto al sistema di riferimento di base (\(RF_0\)).
 
 È fondamentale notare che la matrice \(^{i-1}\mathbf{A}_{i}\) è funzione di un'unica variabile di giunto \(q_i\), mentre i restanti tre parametri DH sono costanti definite dalla geometria del manipolatore.
 \[
@@ -2100,7 +2141,7 @@ La \textbf{cinematica inversa} di un robot definisce il problema di calcolare i 
     \item \textbf{Assenza Di Soluzioni Ammissibili}: È possibile che non esista alcuna configurazione di giunto in grado di raggiungere la posa desiderata. Questo si verifica quando il punto target si trova al di fuori dello spazio di lavoro del robot, a causa di limitazioni fisiche e geometriche intrinseche alla sua struttura.
 \end{enumerate}
 
-La risoluzione della cinematica inversa rappresenta una sfida fondamentale in robotica e viene affrontata con diversi approcci, tra cui metodi analitici, numerici, scelti in base alla complessità del manipolatore. In sintesi, data la posa desiderata dell'organo terminale, espressa dalla matrice di trasformazione omogenea:
+La risoluzione della cinematica inversa rappresenta una sfida fondamentale in robotica e viene affrontata con diversi approcci, tra cui metodi analitici, numerici, scelti in base alla complessità del manipolatore. In sintesi, data la posa desiderata dell'End Effector, espressa dalla matrice di trasformazione omogenea:
 \[
     \bm{T} =
     \begin{bmatrix}
@@ -3092,7 +3133,7 @@ In questo caso, l'angolo \(q_2\) non appare più nelle equazioni di posizione. Q
 
 \newpage
 \paragraph{\(\bullet\) Caso \(\mathbf{(\hat{^{0}\mathbf{d}_{3}})^{T} (\hat{^{0}\mathbf{d}_{3}}) = d_{2}^{2}}\)}
-Questa condizione di singolarità si verifica quando il modulo quadro del vettore posizione è uguale al quadrato della lunghezza del secondo braccio, \(d_2\). Geometricamente, questo implica che il centro del polso si trova sulla superficie di una sfera di raggio \(d_2\), il cui centro è l'origine di \(RF_{1}\). Tale situazione impone un vincolo cinematico che porta il parametro \(q_3\) ad assumere un unico valore, ovvero \(\mathbf{q_3 = 0}\). Di conseguenza, la configurazione del manipolatore acquisisce un grado di libertà aggiuntivo, poiché la variabile di giunto \(q_2\) può assumere un valore arbitrario senza modificare la posizione dell'organo terminale. Per una data posizione, è comunque possibile determinare il valore di \(q_1\) tramite la relazione trigonometrica:
+Questa condizione di singolarità si verifica quando il modulo quadro del vettore posizione è uguale al quadrato della lunghezza del secondo braccio, \(d_2\). Geometricamente, questo implica che il centro del polso si trova sulla superficie di una sfera di raggio \(d_2\), il cui centro è l'origine di \(RF_{1}\). Tale situazione impone un vincolo cinematico che porta il parametro \(q_3\) ad assumere un unico valore, ovvero \(\mathbf{q_3 = 0}\). Di conseguenza, la configurazione del manipolatore acquisisce un grado di libertà aggiuntivo, poiché la variabile di giunto \(q_2\) può assumere un valore arbitrario senza modificare la posizione dell'End Effector. Per una data posizione, è comunque possibile determinare il valore di \(q_1\) tramite la relazione trigonometrica:
 \[
     q_{1} = \text{atan2}(-\hat{d}_{1}, \hat{d}_{2})
 \]
@@ -3236,14 +3277,14 @@ Il problema della cinematica inversa consiste nel determinare i valori delle var
 In questo scenario, il numero di giunti del robot corrisponde esattamente al numero di variabili necessarie per descrivere il compito. Anche in questa condizione di equilibrio, la natura delle soluzioni può variare significativamente.
 \begin{itemize}
     \item \textit{Nessuna Soluzione}: Si verifica quando la posa desiderata si trova al di fuori dello spazio di lavoro del manipolatore, a causa di limiti strutturali o per la presenza di ostacoli.
-    \item \textit{Soluzioni Multiple In Numero Finito}: È il caso più comune. Esistono diverse configurazioni dei giunti, dette \textit{posture} (ad esempio "gomito alto" e "gomito basso"), che permettono di raggiungere la stessa posa dell'organo terminale.
+    \item \textit{Soluzioni Multiple In Numero Finito}: È il caso più comune. Esistono diverse configurazioni dei giunti, dette \textit{posture} (ad esempio "gomito alto" e "gomito basso"), che permettono di raggiungere la stessa posa dell'End Effector.
     \item \textit{Soluzioni Infinite}: Questa situazione si verifica quando il manipolatore si trova in una \textbf{configurazione singolare}. In questo caso il robot perde alcuni gradi di libertà effettivi, il che può limitare i movimenti in certe direzioni o, consentire movimenti indefiniti di alcuni giunti senza che la posa dell'end-effector cambi.
 \end{itemize}
 \subsubsection*{\(\bullet\) Caso Ridondante ($n > m$)}
 Un manipolatore è definito ridondante quando possiede più gradi di libertà di quelli  necessari per eseguire il compito. La ridondanza offre maggiore versatilità, poiché permette di eseguire compiti secondari come l'evitamento di ostacoli, ma introduce ulteriori complessità nella scelta della soluzione.
 \begin{itemize}
     \item \textit{Nessuna Soluzione}: Nonostante i gradi di libertà aggiuntivi, la posa richiesta potrebbe comunque risultare irraggiungibile per vincoli strutturali o ambientali.
-    \item \textit{Soluzioni Infinite}: Se una soluzione esiste, ne esistono tipicamente infinite. I gradi di libertà in eccesso possono essere utilizzati per riconfigurare internamente il robot (auto-movimento) mantenendo fissa la posa dell'organo terminale.
+    \item \textit{Soluzioni Infinite}: Se una soluzione esiste, ne esistono tipicamente infinite. I gradi di libertà in eccesso possono essere utilizzati per riconfigurare internamente il robot (auto-movimento) mantenendo fissa la posa dell'End Effector.
     \item \textit{Singolarità Con Soluzioni Finite O Infinite}: Anche i robot ridondanti possono incontrare configurazioni singolari, con conseguente perdita di controllabilità o instabilità nei movimenti.
 \end{itemize}
 
@@ -4247,7 +4288,7 @@ La relazione tra le velocità dei giunti \(\dot{\bm{q}} = [\dot{q}_1, \dot{q}_2]
     \begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix} \dot{q}_2
     = \begin{bmatrix} 0 \\ 0 \\ \dot{q}_1 + \dot{q}_2 \end{bmatrix}
 \]
-Queste equazioni mostrano esplicitamente come la velocità di ciascun giunto contribuisca al moto dell'organo terminale. La velocità angolare totale, ad esempio, è semplicemente la somma delle velocità angolari dei due giunti, come è logico attendersi in un sistema planare.
+Queste equazioni mostrano esplicitamente come la velocità di ciascun giunto contribuisca al moto dell'End Effector. La velocità angolare totale, ad esempio, è semplicemente la somma delle velocità angolari dei due giunti, come è logico attendersi in un sistema planare.
 
 \newpage
 \subsection{Relazione tra Singolarità e Jacobiano}
@@ -4737,7 +4778,7 @@ Queste proprietà garantiscono che \(\bm{J}^\dagger\) agisca come la migliore ap
 \begin{minipage}[c]{0.48\textwidth}
 Per comprendere a fondo le implicazioni di una configurazione singolare, consideriamo un semplice robot planare a due bracci (RR), ciascuno di lunghezza unitaria ($l_1 = l_2 = 1$). Analizziamo il caso di una \textbf{singolarità di bordo}, una delle configurazioni singolari più intuitive, che si verifica quando il secondo giunto ha un angolo nullo ($q_2 = 0$). In questa situazione, i due bracci sono completamente estesi e allineati, formando un'unica linea retta.
 
-Il legame tra le velocità dei giunti ($\dot{\bm{q}}$) e la velocità dell'organo terminale ($\bm{v}_e$) è descritto dalla matrice Jacobiana. Quando $q_2 = 0$, e utilizzando le notazioni $s_1 = \sin(q_1)$ e $c_1 = \cos(q_1)$, lo Jacobiano assume la seguente forma:
+Il legame tra le velocità dei giunti ($\dot{\bm{q}}$) e la velocità dell'End Effector ($\bm{v}_e$) è descritto dalla matrice Jacobiana. Quando $q_2 = 0$, e utilizzando le notazioni $s_1 = \sin(q_1)$ e $c_1 = \cos(q_1)$, lo Jacobiano assume la seguente forma:
 \end{minipage}
 \[
     \bm{J}(q_1, 0) = \begin{bmatrix} -l_1s_1 - l_2s_1 & -l_2s_1 \\ l_1c_1 + l_2c_1 & l_2c_1 \end{bmatrix} = \begin{bmatrix} -2s_1 & -s_1 \\ 2c_1 & c_1 \end{bmatrix}
