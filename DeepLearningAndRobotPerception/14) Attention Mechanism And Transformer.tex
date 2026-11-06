@@ -1,0 +1,632 @@
+﻿\documentclass[11pt, a4paper]{article}
+
+%---------------------------------------------------------
+% Lingua E Codifica
+%---------------------------------------------------------
+\usepackage[italian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+%---------------------------------------------------------
+% Layout Di Pagina E Tipografia
+%---------------------------------------------------------
+\usepackage[margin=2cm, top=1.5cm, bottom=1.5cm]{geometry}
+\usepackage{parskip}
+\usepackage{microtype}
+
+%---------------------------------------------------------
+% Gestione Dei Colori
+%---------------------------------------------------------
+\usepackage[table]{xcolor}
+\definecolor{darkgreen}{RGB}{0,100,0}
+
+%---------------------------------------------------------
+% Matematica E Simboli
+%---------------------------------------------------------
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{mathtools}
+\usepackage{siunitx}
+
+% BB OTTIMIZZAZIONE MATRICI LUNGHE PER LA STAMPA
+\setlength{\arraycolsep}{10pt}
+\usepackage{bm}
+\usepackage{arydshln}
+
+
+%---------------------------------------------------------
+% Grafica, Immagini E Tabelle
+%---------------------------------------------------------
+\usepackage{graphicx}
+\graphicspath{{./Images/Attention Mechanism And Transformer/}}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, patterns, angles, quotes, calc}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+
+%---------------------------------------------------------
+% Link, Riferimenti Ed Elenchi
+%---------------------------------------------------------
+\usepackage[unicode]{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+    citecolor=blue,
+    pdftitle={Capitolo 14 - Attention Mechanism And Transformer},
+    pdfauthor={Francesco Lo Verde},
+    pdfpagemode=FullScreen,
+}
+\usepackage{bookmark}
+\usepackage{enumitem}
+\setlist{noitemsep}
+
+%---------------------------------------------------------
+% Personalizzazione Titoli E Altri Pacchetti
+%---------------------------------------------------------
+\usepackage{titlesec}
+\titleformat{\section}{\normalfont\LARGE\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\Large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalfont\large\bfseries}{\thesubsubsection}{1em}{}
+
+\usepackage{comment}
+\newtheorem{theorem}{Definizione}
+
+% Pacchetto per gli algoritmi
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+
+\SetKwData{Dati}{Input}
+\SetKwData{Risultato}{Output}
+\SetKw{Inizializza}{Inizializza}
+\SetKwFor{For}{for}{do}{endfor}
+\SetKwComment{Commento}{// }{}
+
+\author{Francesco Lo Verde}
+\begin{document}
+\section{Sequence-to-Sequence Con Reti Neurali Ricorrenti}
+
+Nel contesto dell'apprendimento sequenziale, l'obiettivo delle architetture \textbf{Sequence-to-Sequence (Seq2Seq)} consiste nel mappare una sequenza di input di lunghezza variabile $\bm{x}_1, \dots, \bm{x}_T$ in una sequenza di output, anch'essa potenzialmente di lunghezza differente, $\bm{y}_1, \dots, \bm{y}_{T'}$. Questa classe di modelli trova applicazione naturale in compiti complessi come la traduzione automatica o la sintesi di testo.
+
+L'approccio classico, introdotto da Sutskever et al. (2014), si basa sull'utilizzo di due macro-componenti ricorrenti: un \textbf{Encoder} e un \textbf{Decoder}.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "1-21"] Diagramma dell'architettura Sequence-to-Sequence standard basata su RNN (Encoder-Decoder) con vettore di contesto statico. — Slide 2 / Pagina 2 del PDF
+
+L'Encoder elabora l'intera sequenza di input un passo alla volta. Ad ogni istante temporale $t$, l'Encoder aggiorna il proprio stato nascosto ricorrente $\bm{h}_t$ combinando l'input corrente $\bm{x}_t$ con lo stato nascosto precedente $\bm{h}_{t-1}$ tramite una funzione non lineare parametrizzata $f_W$:
+\[ \bm{h}_t = f_W(\bm{x}_t, \bm{h}_{t-1}) \]
+
+Una volta completata l'elaborazione dell'intera sequenza di input (ovvero al passo $T$), l'ultimo stato nascosto $\bm{h}_T$ dovrebbe idealmente racchiudere l'intera informazione semantica dell'input. Da questo stato finale vengono predetti:
+\begin{itemize}
+    \item Lo stato iniziale del Decoder: $\bm{s}_0$
+    \item Un \textbf{vettore di contesto} statico $\bm{c}$ (spesso definito direttamente pari all'ultimo stato nascosto dell'encoder, ossia $\bm{c} = \bm{h}_T$).
+\end{itemize}
+
+Il Decoder ha il compito di generare la sequenza di output passo dopo passo. Lo stato del decoder $\bm{s}_t$ all'istante $t$ viene aggiornato tramite una funzione ricorrente $g_U$, la quale riceve in input l'elemento precedentemente predetto $\bm{y}_{t-1}$, lo stato interno precedente $\bm{s}_{t-1}$ e il vettore di contesto statico $\bm{c}$:
+\[ \bm{s}_t = g_U(\bm{y}_{t-1}, \bm{s}_{t-1}, \bm{c}) \]
+Il processo inizia fornendo un token speciale di avvio $\bm{y}_0 = \text{[START]}$ e prosegue in maniera autoregressiva fino a quando il modello non genera un token di terminazione $\text{[STOP]}$.
+
+\subsubsection{Il Problema Del Collo Di Bottiglia}
+
+Nonostante l'efficacia teorica, questo schema presenta un limite fondamentale intrinseco: la presenza di un \textbf{collo di bottiglia} (\emph{bottleneck}). Tutta l'informazione contenuta nella sequenza di input, a prescindere dalla sua lunghezza originaria $T$, deve essere necessariamente compressa e rappresentata all'interno di un unico vettore di contesto $\bm{c}$ di dimensione fissa.
+
+Se la sequenza di input è molto lunga (ad esempio, con un numero di elementi $T = 1000$), le capacità rappresentative di un singolo vettore statico non sono sufficienti per preservare i dettagli informativi necessari, portando a un rapido degrado delle prestazioni del modello durante la decodifica.
+
+Per risolvere questa criticità, l'idea chiave consiste nell'evitare l'uso di un unico vettore di contesto statico per tutta la generazione, introducendo invece la possibilità di calcolare e utilizzare un \textbf{nuovo vettore di contesto specifico per ciascun passo di decodifica}.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "1-21"] Diagramma concettuale che propone l'introduzione di vettori di contesto dinamici a ogni passo temporale del decoder. — Slide 3 / Pagina 3 del PDF
+
+\newpage
+
+\section{Sequence-to-Sequence Con RNN E Attenzione}
+
+Per implementare l'idea di un contesto dinamico e variabile nel tempo, Bahdanau et al. (2015) hanno introdotto il \textbf{meccanismo di attenzione}. Questo approccio consente al Decoder di selezionare dinamicamente e in modo pesato a quali parti della sequenza di input "prestare attenzione" durante la generazione di ciascun token di output.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "1-21"] Schema dettagliato del calcolo dei punteggi di allineamento e dei pesi di attenzione per il primo passo di decodifica. — Slide 4 / Pagina 4 del PDF
+
+Il calcolo del vettore di contesto dinamico $\bm{c}_t$ al passo generico $t$ del Decoder avviene attraverso una procedura interamente differenziabile strutturata nei seguenti passaggi:
+
+\begin{enumerate}
+    \item \textbf{Calcolo dei punteggi di allineamento (\emph{alignment scores})}:
+    Si valuta l'affinità o la rilevanza tra lo stato precedente del decoder $\bm{s}_{t-1}$ e ciascuno degli stati nascosti dell'encoder $\bm{h}_i$ (per $i = 1, \dots, T$). Questa similarità viene espressa tramite un valore scalare $e_{t,i}$ calcolato da una funzione di allineamento $f_{\text{att}}$, tipicamente implementata come una piccola rete neurale feed-forward (\textbf{MLP}):
+    \[ e_{t,i} = f_{\text{att}}(\bm{s}_{t-1}, \bm{h}_i) \]
+
+    \item \textbf{Normalizzazione tramite Softmax}:
+    I punteggi di allineamento così ottenuti vengono normalizzati per generare una distribuzione di probabilità sull'intera sequenza di input. Si applica la funzione softmax sull'indice spaziale/temporale dell'input $i$:
+    \[ a_{t,i} = \frac{\exp(e_{t,i})}{\sum_{k=1}^{T} \exp(e_{t,k})} \]
+    I valori risultanti $a_{t,i}$ sono chiamati \textbf{pesi di attenzione} (\emph{attention weights}) e soddisfano rigorosamente le proprietà di una distribuzione di probabilità:
+    \[ 0 < a_{t,i} < 1 \quad \text{e} \quad \sum_{i=1}^{T} a_{t,i} = 1 \]
+
+    \item \textbf{Calcolo del vettore di contesto}:
+    Il vettore di contesto dinamico $\bm{c}_t$ viene calcolato come combinazione lineare degli stati nascosti dell'encoder $\bm{h}_i$, utilizzando i pesi di attenzione come coefficienti di ponderazione:
+    \[ \bm{c}_t = \sum_{i=1}^{T} a_{t,i} \bm{h}_i \]
+
+    \item \textbf{Aggiornamento dello stato del Decoder}:
+    Il vettore di contesto $\bm{c}_t$ così ottenuto viene fornito in input al Decoder per aggiornare lo stato corrente $\bm{s}_t$ e produrre l'output $\bm{y}_t$:
+    \[ \bm{s}_t = g_U(\bm{y}_{t-1}, \bm{s}_{t-1}, \bm{c}_t) \]
+\end{enumerate}
+
+Questo meccanismo presenta la straordinaria proprietà di essere \textbf{interamente differenziabile}. Di conseguenza, non è necessaria alcuna supervisione diretta sui pesi di attenzione: il modello impara autonomamente a focalizzarsi sulle parti corrette della sequenza di input unicamente tramite l'algoritmo di backpropagation applicato alla loss finale della rete.
+
+\subsubsection{Evoluzione Temporale Dell'Attenzione}
+
+Nel corso della decodifica, il processo viene ripetuto ad ogni passo temporale. Per generare l'output successivo $\bm{y}_2$, lo stato corrente del decoder $\bm{s}_1$ viene utilizzato per calcolare un nuovo set di punteggi di allineamento $e_{2,i}$, da cui derivano i pesi $a_{2,i}$ e il nuovo vettore di contesto $\bm{c}_2$.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "1-21"] Schema del calcolo dell'attenzione al secondo passo di decodifica, evidenziando lo spostamento dei pesi di attenzione. — Slide 5 / Pagina 5 del PDF
+
+\textbf{Intuizione fisica ed esempio}:
+Si consideri il compito di tradurre la frase inglese \emph{"we are eating bread"} nella corrispondente frase spagnola \emph{"estamos comiendo pan"}.
+\begin{itemize}
+    \item Durante la generazione del primo token $\bm{y}_1 = \emph{"estamos"}$, l'attenzione deve focalizzarsi sul soggetto e sull'ausiliare inglese \emph{"we are"}. Pertanto, i pesi di attenzione si distribuiranno concentrandosi sulle prime due posizioni dell'input, ad esempio con $a_{1,1} \approx 0.45$, $a_{1,2} \approx 0.45$, lasciando valori trascurabili ($a_{1,3} \approx 0.05, a_{1,4} \approx 0.05$) per il resto della frase.
+    \item Al passo successivo, per generare $\bm{y}_2 = \emph{"comiendo"}$ (traduzione di \emph{"eating"}), il decoder sfrutterà lo stato $\bm{s}_1$ per ricalcolare i pesi di attenzione. In questo caso, la distribuzione si sbilancerà fortemente sul terzo termine dell'input, ottenendo ad esempio $a_{2,3} \approx 0.8$ e valori vicini allo zero per le altre posizioni.
+\end{itemize}
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "1-21"] Rappresentazione globale dell'architettura Sequence-to-Sequence completa con meccanismo di attenzione. — Slide 6 / Pagina 6 del PDF
+
+Grazie a questo approccio, la sequenza di input non deve più essere condensata in un solo vettore statico, garantendo scalabilità anche per sequenze molto lunghe, in quanto il decoder può accedere dinamicamente a diverse parti dell'input a ogni passo.
+
+\subsubsection{Analisi E Visualizzazione Dei Pesi Di Attenzione}
+
+Una delle caratteristiche più apprezzate del meccanismo di attenzione è la sua intrinseca interpretabilità. Rappresentando graficamente i valori dei pesi di attenzione $a_{t,i}$ sotto forma di matrice (dove le righe corrispondono alle parole di output e le colonne alle parole di input), è possibile analizzare visivamente le relazioni apprese dal modello.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "1-21"] Matrice di allineamento dell'attenzione per una traduzione dall'inglese al francese, con evidenza delle inversioni d'ordine e delle coniugazioni verbali. — Slide 7 / Pagina 7 del PDF
+
+Dall'analisi di queste matrici emergono chiaramente diversi comportamenti linguistici:
+\begin{itemize}
+    \item \textbf{Allineamento diagonale}: Indica una corrispondenza sequenziale ordinata uno-a-uno tra i termini delle due lingue.
+    \item \textbf{Gestione di ordinamenti differenti}: Il modello impara a invertire l'ordine dei termini quando necessario. Ad esempio, nel mappare l'inglese \emph{"European Economic Area"} nel francese \emph{"la zone économique européenne"}, la matrice di attenzione mostra un'inversione della diagonale, dimostrando che il modello ha appreso la differente struttura sintattica (aggettivo-sostantivo vs sostantivo-aggettivo).
+    \item \textbf{Coniugazione verbale}: Strutture verbali complesse distribuite su più parole (come l'inglese \emph{"was signed"}) vengono correttamente mappate e condensate nella forma verbale francese corrispondente (\emph{"a été signé"}), attivando simultaneamente i pesi di attenzione sulle posizioni corrette.
+\end{itemize}
+
+\subsubsection{Proprietà Di Invarianza All'Ordine Degli Input}
+
+Un'osservazione teorica di fondamentale importanza riguarda il modo in cui il Decoder interagisce con gli stati nascosti dell'Encoder.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "1-21"] Schema di decodifica che evidenzia come il decoder tratti gli stati dell'encoder come un insieme non ordinato. — Slide 8 / Pagina 8 del PDF
+
+Il Decoder non sfrutta in alcun modo l'informazione che gli stati $\bm{h}_i$ formino una sequenza ordinata nel tempo. Dal punto di vista matematico della computazione dell'attenzione, l'insieme degli stati dell'encoder viene trattato esclusivamente come un \textbf{insieme non ordinato} di vettori $\{\bm{h}_i\}$.
+
+Questa proprietà implica che la medesima architettura può essere applicata senza alcuna modifica concettuale per operare su qualsiasi insieme di vettori, svincolandoci dalla necessità di avere dati strutturati in sequenze temporali.
+
+\newpage
+
+\section{Image Captioning Con RNN E Attenzione}
+
+La possibilità di applicare l'attenzione a un insieme non ordinato di vettori trova immediato riscontro nell'attività di \textbf{Image Captioning} (ovvero la generazione automatica di didascalie per immagini), formalizzata da Xu et al. (2015).
+
+Invece di utilizzare una rete ricorrente (RNN) per estrarre le caratteristiche di una sequenza temporale di input, si impiega una rete neurale convoluzionale (\textbf{CNN}) per elaborare l'immagine di input. La CNN estrae una griglia di caratteristiche spaziali di dimensioni $H \times W$, dove ogni elemento della griglia rappresenta un vettore di caratteristiche associato a una specifica regione locale dell'immagine:
+\[ \{\bm{h}_{i,j}\} \quad \text{con } i \in \{1,\dots,H\}, \, j \in \{1,\dots,W\} \]
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "1-21"] Architettura di Image Captioning con estrazione di caratteristiche spaziali tramite CNN e calcolo iniziale dei punteggi di allineamento su griglia. — Slide 9 / Pagina 9 del PDF
+
+Il meccanismo di attenzione viene esteso alla griglia spaziale bidimensionale secondo le seguenti equazioni:
+
+\begin{align*}
+e_{t,i,j} &= f_{\text{att}}(\bm{s}_{t-1}, \bm{h}_{i,j}) \\
+a_{t,:,:} &= \text{softmax}(e_{t,:,:}) \\
+\bm{c}_t &= \sum_{i=1}^{H} \sum_{j=1}^{W} a_{t,i,j} \bm{h}_{i,j}
+\end{align*}
+
+In questo modo, il vettore di contesto $\bm{c}_t$ viene generato selezionando e pesando le caratteristiche delle aree dell'immagine spazialmente più rilevanti per la parola in fase di generazione.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "1-21"] Generazione del primo token descrittivo ("cat") focalizzando l'attenzione spaziale sulla regione dell'immagine contenente il gatto. — Slide 10 / Pagina 10 del PDF
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "1-21"] Processo completo di generazione sequenziale della didascalia con mappe di attenzione spaziale aggiornate dinamicamente ad ogni passo. — Slide 11 / Pagina 11 del PDF
+
+A ogni passo temporale del decoder, viene calcolato un differente vettore di contesto che "guarda" regioni diverse dell'immagine di input per guidare la predizione della parola successiva fino alla generazione del token $\text{[STOP]}$.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "1-21"] Visualizzazione sequenziale delle mappe di attenzione spaziale associate alle parole di una didascalia generata per un'immagine contenente un uccello acquatico. — Slide 12 / Pagina 12 del PDF
+
+La visualizzazione delle mappe di attenzione spaziale $a_{t,:,:}$ evidenzia come, ad esempio, durante la generazione della parola \emph{"bird"} la densità di probabilità si concentri strettamente sulla sagoma dell'animale, per poi spostarsi uniformemente sulla parte inferiore dell'immagine in corrispondenza del termine \emph{"water"}.
+
+\newpage
+
+\section{Il Layer Di Attenzione (Attention Layer)}
+
+L'astrazione e la generalizzazione matematica dei concetti descritti precedentemente consentono di definire l'\textbf{Attention Layer} come un blocco computazionale a sé stante, svincolato da specifiche architetture RNN o CNN.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "1-21"] Confronto tra la struttura di attenzione spaziale e la formalizzazione astratta del Layer di Attenzione basato su Scaled Dot-Product. — Slide 13 / Pagina 13 del PDF
+
+\subsection{Formulazione Con Prodotto Scalare Scalato}
+
+Consideriamo una formulazione semplificata che prevede i seguenti elementi in input:
+\begin{itemize}
+    \item Un vettore di interrogazione, denominato \textbf{Query} ($\bm{q}$), di dimensione $D_Q$.
+    \item Una matrice di vettori di input ($\bm{X}$), di dimensioni $N_X \times D_Q$, dove ogni riga rappresenta un vettore $\bm{X}_i$ di dimensione $D_Q$.
+\end{itemize}
+
+Per misurare la somiglianza tra la query $\bm{q}$ e i vettori $\bm{X}_i$, si adotta comunemente il prodotto scalare. Tuttavia, all'aumentare della dimensionalità spaziale $D_Q$, il valore numerico del prodotto scalare tende a crescere in modulo.
+
+Si consideri che il prodotto scalare tra due vettori $\bm{a}$ e $\bm{b}$ risente della magnitudo delle loro norme:
+\[ \bm{a} \cdot \bm{b} = \|\bm{a}\| \|\bm{b}\| \cos(\theta) \]
+Ipotizzando che $\bm{a}$ e $\bm{b}$ siano vettori le cui componenti sono costanti e di ordine di grandezza $a$, la loro norma geometrica scala in base alla radice quadrata della dimensione $D$:
+\[ \|\bm{a}\| = \left( \sum_{k=1}^{D} a^2 \right)^{1/2} = a\sqrt{D} \]
+Se il prodotto scalare assume valori molto elevati, la successiva applicazione della funzione softmax subirà un fenomeno di saturazione. Le derivate della funzione softmax in regioni sature sono estremamente prossime a zero, determinando il problema del \textbf{gradiente svanente} (\emph{vanishing gradients}) che impedisce l'addestramento della rete.
+
+Per risolvere questo problema, si introduce un fattore di scala pari alla radice quadrata della dimensione della query, definendo la funzione di similarità come \textbf{prodotto scalare scalato} (\emph{scaled dot product}).
+
+I passaggi computazionali sono pertanto:
+\begin{align*}
+\text{Similarità scalate:} \quad e_i &= \frac{\bm{q} \cdot \bm{X}_i}{\sqrt{D_Q}} \quad (\text{Formato del vettore } \bm{e}: N_X) \\
+\text{Pesi di attenzione:} \quad a_i &= \text{softmax}(\bm{e})_i = \frac{\exp(e_i)}{\sum_k \exp(e_k)} \quad (\text{Formato del vettore } \bm{a}: N_X) \\
+\text{Vettore di output:} \quad \bm{y} &= \sum_{i=1}^{N_X} a_i \bm{X}_i \quad (\text{Formato del vettore di output } \bm{y}: D_Q)
+\end{align*}
+
+\subsection{Formulazione Generale Con Queries, Keys E Values}
+
+Nella formulazione matematica generale dell'Attention Layer, l'interazione tra i vettori non avviene direttamente sui vettori di input grezzi. Si definiscono invece tre matrici di proiezione lineare che mappano gli input in tre spazi distinti, mutuando la terminologia dai sistemi di reperimento dei database: \textbf{Queries} ($\bm{Q}$), \textbf{Keys} ($\bm{K}$) e \textbf{Values} ($\bm{V}$).
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "1-21"] Flusso completo dei dati e calcoli matriciali all'interno del Layer di Attenzione generale con matrici di proiezione. — Slide 14 / Pagina 14 del PDF
+
+Siano definiti i seguenti input:
+\begin{itemize}
+    \item Matrice delle Query: $\bm{Q}$ di dimensioni $N_Q \times D_Q$ (dove $N_Q$ è il numero di query).
+    \item Matrice dei vettori di input: $\bm{X}$ di dimensioni $N_X \times D_X$.
+    \item Matrice dei pesi per le Chiavi (\emph{Key matrix}): $\bm{W}_K$ di dimensioni $D_X \times D_Q$.
+    \item Matrice dei pesi per i Valori (\emph{Value matrix}): $\bm{W}_V$ di dimensioni $D_X \times D_V$.
+\end{itemize}
+
+La computazione si sviluppa rigorosamente secondo le seguenti equazioni matriciali:
+
+\begin{enumerate}
+    \item Proiezione lineare dei vettori di input $\bm{X}$ per ottenere la matrice delle chiavi $\bm{K}$ e dei valori $\bm{V}$:
+    \[ \bm{K} = \bm{X} \bm{W}_K \quad (\text{Dimensioni}: N_X \times D_Q) \]
+    \[ \bm{V} = \bm{X} \bm{W}_V \quad (\text{Dimensioni}: N_X \times D_V) \]
+
+    \item Calcolo della matrice di similarità $\bm{E}$ tramite prodotto scalare scalato tra tutte le query e tutte le chiavi:
+    \[ \bm{E} = \frac{\bm{Q}\bm{K}^T}{\sqrt{D_Q}} \quad (\text{Dimensioni}: N_Q \times N_X) \]
+    Ciascun elemento della matrice rappresenta l'allineamento tra la query $i$-esima e la chiave $j$-esima:
+    \[ E_{i,j} = \frac{\bm{Q}_i \cdot \bm{K}_j}{\sqrt{D_Q}} \]
+
+    \item Normalizzazione per riga tramite l'operatore softmax per ottenere la matrice dei pesi di attenzione $\bm{A}$:
+    \[ \bm{A} = \text{softmax}(\bm{E}, \text{dim}=1) \quad (\text{Dimensioni}: N_Q \times N_X) \]
+
+    \item Calcolo della matrice di output finale $\bm{Y}$ come combinazione lineare dei vettori dei valori pesati dall'attenzione:
+    \[ \boxed{\bm{Y} = \bm{A}\bm{V}} \quad (\text{Dimensioni}: N_Q \times D_V) \]
+    Il generico vettore di output $i$-esimo è dato da:
+    \[ \bm{Y}_i = \sum_{j=1}^{N_X} A_{i,j} \bm{V}_j \]
+\end{enumerate}
+
+\newpage
+
+\section{Il Layer Di Self-Attention}
+
+Il layer di \textbf{Self-Attention} (o autovalutazione) costituisce un caso speciale, ma di straordinaria rilevanza, in cui le Query non provengono da una sorgente esterna, bensì sono calcolate a partire dallo stesso set di vettori di input $\bm{X}$. In questa configurazione, ogni elemento dell'input viene utilizzato sia come Query, sia come Chiave, sia come Valore, permettendo alla rete di analizzare le relazioni reciproche tra tutti i componenti dell'insieme.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "1-21"] Struttura del Layer di Self-Attention in cui Queries, Keys e Values derivano interamente dallo stesso insieme di input X. — Slide 15 / Pagina 15 del PDF
+
+\subsection{Formulazione Matematica}
+
+Sia data la matrice di input $\bm{X}$ di dimensioni $N_X \times D_X$. Introduciamo tre matrici di parametri apprendibili:
+\begin{itemize}
+    \item Matrice dei pesi per le Query: $\bm{W}_Q$ di dimensioni $D_X \times D_Q$.
+    \item Matrice dei pesi per le Chiavi: $\bm{W}_K$ di dimensioni $D_X \times D_Q$.
+    \item Matrice dei pesi per i Valori: $\bm{W}_V$ di dimensioni $D_X \times D_V$.
+\end{itemize}
+
+I passaggi matematici per il calcolo dell'output sono definiti come segue:
+\begin{align*}
+\bm{Q} &= \bm{X} \bm{W}_Q \quad (\text{Dimensioni}: N_X \times D_Q) \\
+\bm{K} &= \bm{X} \bm{W}_K \quad (\text{Dimensioni}: N_X \times D_Q) \\
+\bm{V} &= \bm{X} \bm{W}_V \quad (\text{Dimensioni}: N_X \times D_V) \\
+\bm{E} &= \frac{\bm{Q}\bm{K}^T}{\sqrt{D_Q}} \quad (\text{Dimensioni}: N_X \times N_X) \\
+\bm{A} &= \text{softmax}(\bm{E}, \text{dim}=1) \quad (\text{Dimensioni}: N_X \times N_X) \\
+\bm{Y} &= \bm{A}\bm{V} \quad (\text{Dimensioni}: N_X \times D_V)
+\end{align*}
+
+Ciascun vettore di output viene calcolato come combinazione lineare dei valori di tutti gli altri elementi dell'insieme:
+\[ \boxed{\bm{Y}_i = \sum_{j=1}^{N_X} A_{i,j} \bm{V}_j} \]
+
+\subsection{Equivarianza Per Permutazione}
+
+Un aspetto teorico fondamentale del layer di Self-Attention risiede nella sua \textbf{equivarianza per permutazione} (\emph{permutation equivariance}).
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "1-21"] Dimostrazione visiva dell'equivarianza per permutazione nel layer di Self-Attention quando si varia l'ordine degli input. — Slide 16 / Pagina 16 del PDF
+
+Sia $s(\cdot)$ un operatore di permutazione che modifica l'ordine dei vettori di input all'interno della matrice $\bm{X}$. Denotando con $f(\bm{X})$ la trasformazione operata dal layer di Self-Attention, si dimostra che:
+\[ \boxed{f(s(\bm{X})) = s(f(\bm{X}))} \]
+Se l'input viene permutato, l'output risultante subirà la medesima ed esatta permutazione, senza alterare i valori numerici calcolati. Ciò evidenzia che il layer opera intrinsecamente su \textbf{insiemi} privi di una nozione geometrica di ordine spaziale o temporale.
+
+\subsection{Codifica Posizionale (\emph{Positional Encoding})}
+
+Poiché in molti contesti pratici (come l'elaborazione del linguaggio naturale) l'ordine sequenziale degli elementi è cruciale ai fini della semantica, l'invarianza all'ordine del Self-Attention rappresenta un limite.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "1-21"] Integrazione delle codifiche posizionali per rendere l'elaborazione del Self-Attention sensibile alla sequenza temporale. — Slide 17 / Pagina 17 del PDF
+
+Per rendere l'architettura consapevole dell'ordinamento sequenziale, si introduce una \textbf{codifica posizionale} $\bm{E}(i)$ associata in modo univoco alla posizione $i$ di ciascun elemento. Questa informazione viene iniettata direttamente sommando o concatenando il vettore di codifica posizionale al rispettivo vettore di input:
+\[ \bm{x}_i \leftarrow \bm{x}_i + \bm{E}(i) \]
+La funzione di codifica $\bm{E}$ può essere implementata tramite una tabella di parametri interamente apprendibile (\emph{learned lookup table}) oppure impostata come una funzione matematica fissa a base sinusoidale.
+
+\newpage
+
+\section{Masked Self-Attention}
+
+Durante la fase di modellazione autoregressiva del linguaggio (\emph{language modeling}), in cui l'obiettivo è predire il token successivo a partire dalla sequenza storica precedente, è indispensabile impedire che il modello possa "guardare nel futuro". Le query associate a una determinata posizione temporale non devono avere accesso alle chiavi e ai valori delle posizioni successive.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "1-21"] Funzionamento del Masked Self-Attention in cui i coefficienti futuri vengono forzatamente azzerati impostando i punteggi a meno infinito. — Slide 18 / Pagina 18 del PDF
+
+Per imporre questo vincolo di causalità preservando la parallelizzazione del calcolo, si adotta il \textbf{Masked Self-Attention Layer}.
+
+Prima dell'applicazione del softmax sulla matrice delle similarità $\bm{E}$, i punteggi relativi a coppie in cui l'indice della chiave $j$ è strettamente maggiore dell'indice della query $i$ ($j > i$) vengono forzatamente impostati al valore $-\infty$:
+\[ E_{i,j} = \begin{cases}
+\frac{\bm{Q}_i \cdot \bm{K}_j}{\sqrt{D_Q}} & \text{se } j \le i \\
+-\infty & \text{se } j > i
+\end{cases} \]
+
+Poiché dal punto di vista matematico si ha che $\lim_{x \to -\infty} \exp(x) = 0$, la successiva applicazione del softmax azzera in modo esatto i pesi di attenzione associati alle posizioni future:
+\[ A_{i,j} = 0 \quad \text{per ogni } j > i \]
+
+Ciò garantisce che l'output alla posizione $i$ dipenda unicamente dagli elementi passati o presenti della sequenza:
+\[ \bm{Y}_i = \sum_{j=1}^{i} A_{i,j} \bm{V}_j \]
+
+\newpage
+
+\section{Multihead Self-Attention}
+
+Per permettere al modello di catturare contemporaneamente diversi tipi di relazioni semantiche o spaziali a differenti livelli di astrazione, si estende l'architettura introducendo il \textbf{Multihead Self-Attention}.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "1-21"] Flusso computazionale del Multihead Self-Attention con suddivisione del calcolo in H teste parallele e successiva ricombinazione lineare. — Slide 19 / Pagina 19 del PDF
+
+Invece di calcolare un singolo set di Query, Key e Value di grandi dimensioni, l'input viene suddiviso ed elaborato in parallelo da $H$ differenti \textbf{"teste d'attenzione"} (\emph{attention heads}) indipendenti.
+
+Ogni testa $h \in \{1, \dots, H\}$ possiede un proprio set esclusivo di matrici di proiezione apprendibili $\bm{W}_Q^{(h)}$, $\bm{W}_K^{(h)}$ e $\bm{W}_V^{(h)}$. Ciascuna testa calcola in autonomia la propria rappresentazione di output:
+\[ \bm{Y}^{(h)} = \text{Attention}\left(\bm{X}\bm{W}_Q^{(h)}, \, \bm{X}\bm{W}_K^{(h)}, \, \bm{X}\bm{W}_V^{(h)}\right) \]
+
+I vettori di output generati da ciascuna delle $H$ teste vengono successivamente concatenati lungo la dimensione del canale:
+\[ \bm{Y}_{\text{concat}} = \left[ \bm{Y}^{(1)} ; \, \bm{Y}^{(2)} ; \, \dots ; \, \bm{Y}^{(H)} \right] \]
+
+Infine, si applica una proiezione lineare tramite una matrice di pesi $\bm{W}_O$ per riportare il vettore concatenato alla dimensione desiderata e fondere l'informazione estratta dalle diverse teste:
+\[ \bm{Y} = \bm{Y}_{\text{concat}} \bm{W}_O \]
+
+\newpage
+
+\section{Esempio: CNN Con Self-Attention}
+
+Il layer di Self-Attention può essere proficuamente integrato all'interno di architetture convoluzionali classiche per superare i limiti dei campi ricettivi locali tipici dei filtri convoluzionali, come proposto ad esempio da Zhang et al. (2018) nel contesto dei modelli generativi (SAGAN).
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "1-21"] Schema a blocchi dettagliato di un modulo di Self-Attention inserito all'interno di una rete convoluzionale (CNN). — Slide 20 / Pagina 20 del PDF
+
+Dato un tensore di caratteristiche generato da un livello convoluzionale avente forma $C \times H \times W$ (canali, altezza, larghezza), il modulo si articola come segue:
+\begin{enumerate}
+    \item Si applicano tre convoluzioni indipendenti con kernel di dimensione $1 \times 1$ per proiettare il tensore di input in tre rappresentazioni corrispondenti a Query, Key e Value, riducendo opzionalmente il numero di canali a $C'$.
+    \item I tensori di Query e Key vengono risagomati per appiattire le dimensioni spaziali in un unico vettore di lunghezza $H \times W$. Attraverso la moltiplicazione matriciale (previa trasposizione del tensore delle Key) e l'applicazione della funzione softmax, si ottiene una matrice di attenzione spaziale di dimensioni $(H \times W) \times (H \times W)$.
+    \item Tale matrice viene moltiplicata per il tensore dei Value, anch'esso appiattito a dimensione $C' \times (H \times W)$, determinando una combinazione spaziale globale delle caratteristiche.
+    \item L'output viene riportato alla dimensione originaria $C \times H \times W$ tramite un'ultima convoluzione $1 \times 1$.
+    \item Per preservare il flusso informativo locale e stabilizzare l'apprendimento, si applica una \textbf{connessione residua} (\emph{residual connection}) sommando il tensore di input iniziale all'output ottenuto dal blocco di attenzione.
+\end{enumerate}
+
+\newpage
+
+\section{L'Architettura Transformer}
+
+L'architettura del \textbf{Transformer}, introdotta da Vaswani et al. (2017) nel celebre articolo \emph{"Attention is all you need"}, ridefinisce completamente la modellazione di dati sequenziali, eliminando qualsiasi struttura ricorrente o convoluzionale in favore del solo meccanismo di attenzione.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "1-21"] Architettura interna completa del blocco Transformer elementare con dettagli sulle connessioni skip e i livelli di normalizzazione. — Slide 21 / Pagina 21 del PDF
+
+La componente fondamentale è il \textbf{Transformer Block}, il quale accetta in input un insieme di vettori $\bm{x}$ e restituisce in output un insieme di vettori $\bm{y}$ preservandone la cardinalità. Il blocco è composto internamente da elementi strutturati secondo una sequenza ben definita:
+
+\begin{enumerate}
+    \item \textbf{Layer di Self-Attention}: Rappresenta l'\textbf{unico momento di interazione} tra i diversi vettori dell'insieme. Qui l'informazione viene scambiata globalmente tra tutti gli elementi della sequenza o del set di input.
+    \item \textbf{Primo blocco Residuo e Layer Normalization}: All'output del modulo di Self-Attention viene sommato l'input originale, applicando successivamente una normalizzazione per livelli (\emph{Layer Normalization}):
+    \[ \bm{x}' = \text{LayerNorm}(\bm{x} + \text{Self-Attention}(\bm{x})) \]
+    \item \textbf{Multi-Layer Perceptron (MLP)}: Una rete fully-connected che viene applicata a ciascun vettore in modo \textbf{completamente indipendente} e parallelo. Non vi è alcuna condivisione o interazione informativa tra vettori diversi in questa fase.
+    \item \textbf{Secondo blocco Residuo e Layer Normalization}: L'output finale del blocco $\bm{y}$ viene calcolato sommando la rappresentazione intermedia $\bm{x}'$ all'output del modulo MLP, seguito da una seconda normalizzazione:
+    \[ \bm{y} = \text{LayerNorm}(\bm{x}' + \text{MLP}(\bm{x}')) \]
+\end{enumerate}
+
+\subsubsection{Proprietà Di Scalabilità E Parallelizzazione}
+
+L'architettura Transformer presenta straordinari vantaggi computazionali rispetto alle reti ricorrenti tradizionali:
+\begin{itemize}
+    \item \textbf{Elaborazione parallela}: Non essendoci ricorrenza temporale, tutti i passi della sequenza vengono elaborati simultaneamente durante le fasi di calcolo delle Query, Key e Value.
+    \item \textbf{Efficienza computazionale}: Le uniche interazioni tra vettori diversi avvengono tramite operazioni di moltiplicazione matriciale globale altamente ottimizzabili su hardware moderno (GPU/TPU).
+    \item \textbf{Scalabilità}: L'indipendenza computazionale del blocco MLP su ciascun elemento consente di scalare agevolmente il modello su sequenze di grandissime dimensioni e architetture con un numero massivo di parametri.
+\end{itemize}
+
+\section{L'Architettura Transformer}
+L'architettura **Transformer**, introdotta da Vaswani et al. (2017) nel celebre articolo \emph{``Attention is all you need''}, ha ridefinito lo stato dell'arte nella modellazione di sequenze. A differenza dei modelli ricorrenti tradizionali (RNN), che elaborano le sequenze parola per parola in modo intrinsecamente sequenziale, il Transformer consente di elaborare l'intera sequenza in parallelo. Questa proprietà lo rende una struttura computazionale altamente scalabile ed estremamente parallelizzabile, ottimale per l'addestramento su moderni hardware di calcolo.
+
+\subsection{Struttura Generale E Blocchi Fondamentali}
+
+Un modello Transformer è composto essenzialmente da una sequenza di blocchi funzionali elementari denominati **Transformer Blocks**.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "22-42"] Schema strutturale di una sequenza di blocchi Transformer con Layer Normalization, blocchi MLP e moduli di Self-Attention — Slide 1 / Pagina 1 del PDF
+
+La definizione formale del comportamento di un singolo blocco Transformer prevede:
+\begin{itemize}
+    \item \textbf{Input:} Un insieme di vettori di dimensionalità nota, indicato con $x$.
+    \item \textbf{Output:} Un corrispondente insieme di vettori elaborati, indicato con $y$.
+\end{itemize}
+
+All'interno di ciascun blocco Transformer, si distinguono tre dinamiche principali:
+\begin{enumerate}
+    \item \textbf{Autointensità (Self-Attention):} Costituisce l'unico meccanismo di interazione tra i vettori che compongono la sequenza. Consente a ciascun vettore di scambiare informazioni e relazionarsi con tutti gli altri vettori della sequenza.
+    \item \textbf{Layer Normalization (Layer Norm):} Agisce in modo indipendente su ciascun vettore per stabilizzare la varianza delle attivazioni durante l'addestramento.
+    \item \textbf{Multilayer Perceptron (MLP):} Una rete neurale \emph{feed-forward} che opera in modo del tutto indipendente e parallelo su ciascun singolo vettore dell'insieme, applicando la medesima trasformazione non lineare.
+\end{enumerate}
+
+Nell'implementazione originale proposta da Vaswani et al., l'architettura di riferimento prevede l'impiego di una sequenza di \textbf{12 blocchi}, caratterizzati da una dimensionalità latente $D_Q = 512$ e dall'utilizzo di \textbf{6 teste} di attenzione.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "22-42"cture"] Modello completo dell'architettura Transformer con Encoder e Decoder affiancati — Slide 3 / Pagina 3 del PDF
+
+\subsection{L'Embedding Dei Vettori Di Input}
+
+Il primo passaggio per elaborare una frase o una sequenza testuale consiste nella traduzione dei simboli discreti (le parole) in rappresentazioni continue. Questo processo è definito **Input Embedding** ed ha lo scopo di mappare ogni parola appartenente a un qualsiasi linguaggio naturale in un vettore ad alta dimensionalità all'interno di uno spazio geometrico coerente (\textbf{Embedding Space}).
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "22-42"] Rappresentazione geometrica dello spazio di embedding e della similarità semantica tra parole — Slide 5 / Pagina 5 del PDF
+
+Il principio fondamentale dello spazio di embedding è la conservazione delle relazioni semantiche:
+\begin{itemize}
+    \item Parole dotate di significato o contesto d'uso simile (come \emph{``cat''} e \emph{``kitty''}) saranno mappate in punti geometricamente molto vicini dello spazio vettoriale.
+    \item Parole semanticamente distanti o prive di correlazione diretta (come \emph{``cat''} ed \emph{``emotion''}) si troveranno in regioni spaziali fra loro distanti.
+\end{itemize}
+
+\subsection{La Codifica Posizionale (Positional Encoding)}
+
+Poiché il Transformer elabora l'intera sequenza di vettori simultaneamente in parallelo, l'architettura di base non possiede alcuna nozione intrinseca sull'ordine o sulla sequenzialità dei dati in ingresso. Se le parole di una frase venissero fornite al Transformer solo in forma di embedding vettoriali, il modello le tratterebbe come un semplice insieme non ordinato (un cosiddetto \emph{``bag of words''}), perdendo completamente il significato sintattico legato alla struttura della frase.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "22-42"] Schema di dettaglio della sezione inferiore dell'Encoder con Input Embedding e Positional Encoding — Slide 4 / Pagina 4 del PDF
+
+Per ovviare a questo problema, è necessario definire esplicitamente la posizione di ciascuna parola nella frase introducendo un vettore aggiuntivo chiamato **codifica posizionale** (Positional Encoding). Questo vettore racchiude informazioni contestuali uniche legate alla specifica posizione occupata dal token nella sequenza.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "22-42"] Rappresentazione della somma vettoriale tra il vettore di Input Embedding e il vettore di Positional Embedding — Slide 6 / Pagina 6 del PDF
+
+La codifica posizionale viene sommata elemento per elemento direttamente al vettore di embedding della parola prima di alimentare la rete di attenzione:
+\[
+\bm{x}_{\text{final}} = \bm{x}_{\text{embedding}} + \bm{x}_{\text{positional}}
+\]
+
+Nel caso specifico di input testuali, una tipica codifica posizionale si ottiene alternando funzioni trigonometriche di seno e coseno a frequenze variabili, calcolate secondo le seguenti formule:
+\begin{align*}
+PE_{(pos, 2i)} &= \sin\left(\frac{pos}{10000^{\frac{2i}{d_{\text{model}}}}}\right) \\
+PE_{(pos, 2i+1)} &= \cos\left(\frac{pos}{10000^{\frac{2i}{d_{\text{model}}}}}\right)
+\end{align*}
+dove $pos$ rappresenta la posizione fisica del token nella sequenza, $i$ individua l'indice della specifica dimensione del vettore di embedding, e $d_{\text{model}}$ denota la dimensionalità totale dello spazio di rappresentazione del modello.
+
+\subsection{Il Meccanismo Di Attenzione Multi-Head}
+
+Il cuore del blocco Transformer è rappresentato dal meccanismo di **Multi-Head Attention**. Questo modulo riceve in ingresso una sequenza di vettori (rappresentanti la frase) e calcola l'intensità di relazione tra ogni specifica posizione e tutte le altre posizioni della sequenza.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "22-42"] Confronto strutturale tra un generico blocco di attenzione e lo schema dello Scaled Dot-Product Attention — Slide 8 / Pagina 8 del PDF
+
+Per realizzare ciò, ad ogni embedding di parola vengono associati tre vettori fondamentali calcolati tramite proiezioni lineari dedicate (Linear Layers):
+\begin{itemize}
+    \item \textbf{Queries} ($Q$, interrogazioni): Rappresentano l'elemento corrente che cerca informazioni all'interno della sequenza.
+    \item \textbf{Keys} ($K$, chiavi): Forniscono un'indicazione del contenuto informativo racchiuso in ciascuna posizione della sequenza, per facilitarne il recupero da parte delle query.
+    \item \textbf{Values} ($V$, valori): Racchiudono l'effettivo valore informativo associato a ciascun elemento della sequenza, che verrà aggregato nel calcolo finale.
+\end{itemize}
+
+Il meccanismo elementare di calcolo è lo **Scaled Dot-Product Attention**, espresso dalla seguente relazione matematica:
+\[
+\text{Attention}(Q, K, V) = \text{SoftMax}\left(\frac{Q K^T}{\sqrt{d_k}}\right)V
+\]
+dove il fattore $\sqrt{d_k}$ serve a scalare il prodotto scalare al fine di evitare che i gradienti della funzione \emph{Softmax} si azzerino in presenza di valori molto elevati della dimensionalità delle chiavi $d_k$.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "22-42"] Schema di dettaglio del modulo Multi-Head Attention con flussi paralleli e concatenazione finale — Slide 9 / Pagina 9 del PDF
+
+Anziché calcolare una singola funzione di attenzione con una sola combinazione di parametri, la \textbf{Multi-Head Attention} esegue in parallelo $h$ differenti proiezioni lineari su query, chiavi e valori. Ognuna di queste proiezioni costituisce una ``testa di attenzione'' (\emph{head}) indipendente, permettendo al modello di catturare correlazioni differenti in diversi sottospazi di rappresentazione.
+
+Tutte le uscite calcolate dalle $h$ teste di attenzione parallele vengono infine concatenate (\emph{concatenate}) e proiettate nuovamente tramite uno strato lineare finale (\emph{Linear Layer}) per restituire l'output aggregato. Questo approccio consente di combinare contesti complessi e dinamici con un'efficacia nettamente superiore rispetto ad un singolo blocco di attenzione standard.
+
+\subsection{Connessione Residua E Normalizzazione (Add \& Norm)}
+
+Ogni blocco Transformer integra al suo interno dei moduli di stabilizzazione chiamati **Add \& Norm**, posizionati sia dopo lo strato di attenzione che dopo lo strato di feed-forward.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "22-42"] Rappresentazione della connessione residua combinata con il modulo Add \& Norm — Slide 10 / Pagina 10 del PDF
+
+Il modulo \textbf{Add \& Norm} svolge le seguenti operazioni sequenziali:
+\begin{enumerate}
+    \item Riceve una connessione residua (\emph{residual connection}) che trasporta il vettore di embedding originale (prima dell'applicazione dell'attenzione o della rete feed-forward).
+    \item Somma questo vettore originale al vettore risultante dall'elaborazione corrente.
+    \item Applica una normalizzazione a livello di strato (\emph{Layer Normalization}) per garantire che le attivazioni abbiano media pari a zero e varianza pari a 1.
+\end{enumerate}
+
+Questo output viene inviato a un blocco \textbf{Feed-Forward} che applica una rete neurale non lineare in maniera indipendente per ogni vettore, la cui uscita è regolata a sua volta da un secondo modulo residuo di \textbf{Add \& Norm}. Questa sequenza di calcoli (Multi-Head Attention, Add \& Norm, Feed-Forward, Add \& Norm) viene ripetuta per $n$ volte (dove $n$ rappresenta un iperparametro del modello) all'interno dell'Encoder del Transformer.
+
+\newpage
+
+\section{Il Blocco Decoder E Meccanismi Di Traduzione}
+
+Il modello Transformer si basa su un'architettura **Encoder-Decoder** flessibile. Mentre l'Encoder si occupa di codificare l'intera sequenza di input in vettori di embedding ricchi di contesto, il Decoder ha l'obiettivo di generare la sequenza di output in modo progressivo e autoregressivo.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "22-42"] Dettaglio delle connessioni e del passaggio di informazioni dall'Encoder al Decoder — Slide 2 / Pagina 2 del PDF
+
+\subsection{Funzionamento Del Decoder}
+
+L'output complessivo generato dall'Encoder è una sequenza di embedding (uno per ciascuna posizione), dove ogni singolo elemento racchiude sia l'informazione semantica della parola originaria sia il contesto relazionale appreso tramite l'attenzione.
+
+Questa sequenza viene data in pasto al modulo **Decoder**. Nel contesto di un problema di traduzione automatica (ad esempio dall'inglese al francese), l'Encoder elabora l'intera frase in inglese, mentre il Decoder genera progressivamente la rispettiva traduzione in francese. È importante osservare che per applicazioni di tipo non generico o non sequenziale, il Decoder può non essere necessario.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "22-42"] Schema strutturale del Decoder con indicazione dei flussi e dei blocchi interni — Slide 11 / Pagina 11 del PDF
+
+La generazione delle parole nel Decoder avviene in modalità sequenziale ed è guidata da diverse interazioni chiave:
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "22-42"] Suddivisione funzionale del Decoder: Self-Attention mascherata, Cross-Attention e testa di classificazione — Slide 12 / Pagina 12 del PDF
+
+\begin{enumerate}
+    \item \textbf{Autointensità della frase di destinazione:} La sequenza di output (spostata a destra di una posizione per predirne l'elemento successivo, \emph{shifted right}) viene convertita in embedding, sommata alla codifica posizionale e processata da un blocco di \textbf{Masked Multi-Head Attention}. Questo garantisce che la rappresentazione di ciascuna parola dipenda solo dalle parole generate in precedenza.
+    \item \textbf{Interazione tra Encoder e Decoder (Cross-Attention):} Il Decoder integra un secondo strato di Multi-Head Attention volto a far interagire le informazioni provenienti dalle due lingue. Le query ($Q$) provengono direttamente dallo strato di attenzione interna del Decoder, mentre le chiavi ($K$) e i valori ($V$) sono forniti dall'output dell'Encoder (corrispondente al flusso delle parole della lingua d'origine).
+    \item \textbf{Generazione probabilistica delle parole:} Le attivazioni finali fluiscono attraverso una rete neurale Feed-Forward, uno strato lineare (\emph{Linear Layer}) ed una funzione \emph{Softmax} per produrre una distribuzione di probabilità sull'intero vocabolario e selezionare il termine tradotto con la massima probabilità.
+\end{enumerate}
+
+\subsection{Attenzione Multi-Head Mascherata (Masked Multi-Head Attention)}
+
+Un vincolo fondamentale durante l'addestramento del Decoder è che la predizione di una parola all'istante temporale $t$ non deve in alcun modo dipendere dalle parole che compaiono negli istanti successivi $t+1, t+2, \dots$ (informazioni future). Per implementare questa limitazione in fase di addestramento parallelo, si applica una maschera che oscura i valori futuri.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "22-42"] Rappresentazione della matrice di mascheramento causale e annullamento delle probabilità future — Slide 13 / Pagina 13 del PDF
+
+La formulazione matematica della \textbf{Masked Attention} prevede l'aggiunta di una matrice di mascheramento $M$ prima dell'applicazione dell'operatore Softmax:
+\[
+\boxed{\text{Masked Attention}(Q, K, V) = \text{SoftMax}\left(\frac{Q K^T + M}{\sqrt{d_k}}\right)V}
+\]
+
+La matrice di mascheramento $M$ è costituita da coefficienti impostati a $0$ per le posizioni consentite (parole passate e correnti) e a $-\infty$ per le posizioni future che devono essere nascoste. Quando viene applicata la funzione esponenziale contenuta nella Softmax, i termini addizionati con $-\infty$ tendono a zero, eliminando di fatto qualsiasi contributo informativo o probabilità di selezione da parte delle posizioni future oscurate:
+\begin{align*}
+e^{x - \infty} &\to 0
+\end{align*}
+
+\newpage
+
+\section{I Vision Transformer (ViT)}
+
+Il paradigma dei Transformer, inizialmente concepito per l'elaborazione del linguaggio naturale, è stato esteso con successo ai problemi di computer vision grazie al lavoro pionieristico di Dosovitskiy et al. (2020) con l'introduzione dei **Vision Transformer (ViT)** per la classificazione di immagini (\emph{``An Image is Worth 16x16 Words''}).
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "22-42"] Architettura generale del Vision Transformer applicato alla classificazione d'immagini — Slide 14 / Pagina 14 del PDF
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "22-42"_diagram"] Diagramma a blocchi dettagliato del flusso dei token in un Vision Transformer — Slide 15 / Pagina 15 del PDF
+
+\subsection{Suddivisione In Patch E Tokenizzazione Dell'Immagine}
+
+I modelli Transformer operano nativamente su sequenze discrete di token. Per poter applicare la medesima struttura logica alle immagini, si rende necessario un processo di scomposizione e tokenizzazione dell'immagine di input.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "22-42"sempio di immagine di input suddivisa geometricamente tramite una griglia spaziale — Slide 16 / Pagina 16 del PDF
+
+Il ViT effettua questa operazione dividendo l'immagine di input di altezza $H$, larghezza $W$ e numero di canali $C$ in un insieme di sotto-regioni locali disgiunte chiamate **patch**, ciascuna di dimensione spaziale $P \times P$.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "22-42"s"] Griglia d'immagine con patch numerate in sequenza per l'estrazione dei token — Slide 17 / Pagina 17 del PDF
+
+Questo processo consente di rimodellare (\emph{reshape}) l'immagine bidimensionale in una sequenza monodimensionale composta da $N$ patch distinte. Ciascuna di queste patch viene successivamente appiattita (\emph{flattened}) in un vettore ed elaborata tramite uno strato lineare apprendibile denominato **Linear Projection**.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "22-42"ion_scheme"] Schema della proiezione lineare per la riduzione dimensionale delle patch piatte — Slide 18 / Pagina 18 del PDF
+
+Questa proiezione lineare modifica la lunghezza della rappresentazione vettoriale di ciascuna patch proiettandola in una dimensionalità uniforme, coerente con lo spazio di embedding richiesto dal Transformer Encoder.
+
+\subsection{Il Token Di Predizione E La Codifica Posizionale}
+
+Prima di alimentare i blocchi dell'Encoder, la sequenza dei token estratti dalle patch dell'immagine viene integrata con due componenti essenziali:
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "22-42"] Schema di concatenazione del Prediction Token e successiva somma del Position Embedding — Slide 19 / Pagina 19 del PDF
+
+\begin{enumerate}
+    \item \textbf{Prediction Token (Token di Predizione):} Viene anteposto (\emph{prepended}) alla sequenza delle patch un token fittizio aggiuntivo. Questo token, inizializzato con un vettore di soli zeri, ha l'obiettivo di accumulare progressivamente le informazioni contestuali provenienti da tutte le altre patch dell'immagine durante i passaggi nei blocchi di self-attention. Al termine dell'elaborazione, l'attivazione finale associata unicamente a questo token verrà impiegata per effettuare la predizione della classe dell'immagine.
+    \item \textbf{Position Embedding (Codifica Posizionale):} Poiché l'ordine spaziale delle patch è cruciale per interpretare correttamente un'immagine, viene sommata una codifica posizionale unidimensionale a ciascun token della sequenza. Anche in questo caso, l'operazione consiste in una somma vettoriale elemento per elemento e non in una concatenazione.
+\end{enumerate}
+
+\subsection{Blocco Di Codifica E Processo Di Predizione}
+
+La sequenza combinata di token (Prediction Token + Patch Embeddings con codifiche posizionali) viene inviata all'**Encoding Block**.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "22-42"] Schema strutturale dell'Encoding Block interno al Vision Transformer — Slide 20 / Pagina 20 del PDF
+
+La struttura dell'Encoding Block ricalca esattamente quella impiegata per i dati testuali nel dominio NLP. Ogni blocco si compone di:
+\begin{itemize}
+    \item Uno strato di Normalizzazione seguito da un modulo di Attenzione.
+    \item Una connessione residua con somma vettoriale.
+    \item Un secondo strato di Normalizzazione seguito da una rete neurale (\emph{NN}) di tipo feed-forward.
+    \item Una connessione residua finale con somma vettoriale.
+\end{itemize}
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "22-42"] Schema di estrazione del Prediction Token e classificazione finale tramite testa lineare — Slide 21 / Pagina 21 del PDF
+
+Al termine dell'elaborazione attraverso i vari blocchi di codifica dell'Encoder, si effettua la separazione (\emph{split off}) del Prediction Token da tutti gli altri token relativi alle patch dell'immagine. Grazie alle interazioni di self-attention, i valori originariamente nulli del Prediction Token hanno incorporato la conoscenza e le relazioni spaziali globali dell'intera immagine.
+
+Infine, questo token viene inoltrato a una testa di classificazione (**MLP Head**) per formulare la predizione finale delle classi d'interesse (ad esempio \emph{``Bird''}, \emph{``Ball''}, \emph{``Car''}):
+\begin{itemize}
+    \item Durante la fase di pre-addestramento (\textbf{pretraining}), la MLP Head è tipicamente costituita da un perceptron multistrato contenente un singolo strato nascosto (\emph{one hidden layer}).
+    \item Durante la fase di calibrazione fine (\textbf{fine tuning}), la MLP Head viene semplificata e implementata mediante un singolo strato lineare (\emph{single linear layer}).
+\end{itemize}
+\end{document}

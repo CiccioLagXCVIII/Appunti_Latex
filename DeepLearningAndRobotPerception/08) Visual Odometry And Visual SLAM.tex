@@ -1,0 +1,488 @@
+﻿\documentclass[11pt, a4paper]{article}
+
+%---------------------------------------------------------
+% Lingua E Codifica
+%---------------------------------------------------------
+\usepackage[italian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+%---------------------------------------------------------
+% Layout Di Pagina E Tipografia
+%---------------------------------------------------------
+\usepackage[margin=2cm, top=1.5cm, bottom=1.5cm]{geometry}
+\usepackage{parskip}
+\usepackage{microtype}
+
+%---------------------------------------------------------
+% Gestione Dei Colori
+%---------------------------------------------------------
+\usepackage[table]{xcolor}
+\definecolor{darkgreen}{RGB}{0,100,0}
+
+%---------------------------------------------------------
+% Matematica E Simboli
+%---------------------------------------------------------
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{mathtools}
+\usepackage{siunitx}
+
+% BB OTTIMIZZAZIONE MATRICI LUNGHE PER LA STAMPA
+\setlength{\arraycolsep}{10pt}
+\usepackage{bm}
+\usepackage{arydshln}
+
+
+%---------------------------------------------------------
+% Grafica, Immagini E Tabelle
+%---------------------------------------------------------
+\usepackage{graphicx}
+\graphicspath{{./Images/Visual Odometry And Visual SLAM/}}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, patterns, angles, quotes, calc}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+
+%---------------------------------------------------------
+% Link, Riferimenti Ed Elenchi
+%---------------------------------------------------------
+\usepackage[unicode]{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+    citecolor=blue,
+    pdftitle={Capitolo 8 - Visual Odometry And Visual SLAM},
+    pdfauthor={Francesco Lo Verde},
+    pdfpagemode=FullScreen,
+}
+\usepackage{bookmark}
+\usepackage{enumitem}
+\setlist{noitemsep}
+
+%---------------------------------------------------------
+% Personalizzazione Titoli E Altri Pacchetti
+%---------------------------------------------------------
+\usepackage{titlesec}
+\titleformat{\section}{\normalfont\LARGE\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\Large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalfont\large\bfseries}{\thesubsubsection}{1em}{}
+
+\usepackage{comment}
+\newtheorem{theorem}{Definizione}
+
+% Pacchetto per gli algoritmi
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+
+\SetKwData{Dati}{Input}
+\SetKwData{Risultato}{Output}
+\SetKw{Inizializza}{Inizializza}
+\SetKwFor{Ripeti}{ripeti}{fai}{fine}
+\SetKwComment{Commento}{// }{}
+
+% Definizione degli operatori matematici mancanti
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\author{Francesco Lo Verde}
+\begin{document}
+% [IMMAGINE RIF FILE NOMIMATO "1-22"] Schema geometrico del vincolo epipolare e della proiezione prospettica con viste sinistra (Left view) e destra (Right view) — Slide 1 / Pagina 1 del PDF
+
+\section{Introduzione All'Odometria Visuale E Confronto Sensoriale}
+
+La percezione robotica e la stima del movimento rappresentano elementi cardine per la navigazione autonoma. Per comprendere l'\textbf{odometria visuale (VO)}, è utile richiamare i concetti fondamentali della geometria stereoscopica con camere calibrate. Ispirandoci ai contributi scientifici di Karel Zimmermann e Davide Scaramuzza, consideriamo inizialmente una coppia di immagini stereoscopiche di cui sono noti i parametri estrinseci di rotazione $\bm{R}$ e traslazione $\bm{T}$.
+
+% [IMMAGINE RIF FILE NOMIMATO "1-22"] Esempio di corrispondenze di feature e linee epipolari su immagini reali e schema di triangolazione 3D — Slide 2 / Pagina 2 del PDF
+
+Il processo standard di ricostruzione stereoscopica prevede le seguenti fasi sequenziali:
+\begin{enumerate}
+    \item Rilevamento delle caratteristiche geometriche (\emph{features}) all'interno della coppia di immagini.
+    \item Calcolo della \textbf{matrice essenziale} $\bm{E}$.
+    \item Associazione (\emph{matching}) delle feature rilevate sfruttando il vincolo epipolare e altri vincoli di consistenza geometrica o fotometrica.
+    \item Triangolazione dei punti accoppiati per determinarne la struttura tridimensionale (3D).
+\end{enumerate}
+
+Mentre nella visione stereoscopica classica l'obiettivo è accoppiare feature tra immagini acquisite simultaneamente da telecamere diverse, la matrice essenziale $\bm{E}$ racchiude informazioni sulla trasformazione spaziale tra una coppia generica di immagini, non limitatamente a una configurazione stereo rigida. Questo concetto introduce una domanda fondamentale: è possibile sfruttare questa proprietà per calcolare il movimento di una singola telecamera stimando la trasformazione geometrica tra fotogrammi acquisiti in istanti temporali consecutivi? La risposta è affermativa e costituisce il principio di funzionamento dell'odometria visuale.
+
+Per comprendere il valore dell'odometria visuale, è opportuno analizzare i vantaggi e gli svantaggi dei sensori comunemente impiegati per la localizzazione robotica:
+
+\begin{itemize}
+    \item \textbf{GPS (Global Positioning System)}:
+    \begin{itemize}
+        \item \emph{Svantaggi}: Risulta intrinsecamente inaccurato per scopi di navigazione locale di precisione e non funziona in ambienti chiusi (\emph{indoor}).
+    \end{itemize}
+    \item \textbf{IMU (Unità di Misura Inerziale)}: Comprende accelerometri, giroscopi e magnetometri.
+    \begin{itemize}
+        \item \emph{Vantaggi}: Consente la fusione dei dati sensoriali per ottenere la stima a 6 gradi di libertà (6DOF) tramite integrazione temporale (\emph{dead-reckoning}).
+        \item \emph{Svantaggi}: È affetta da deriva cumulativa (\emph{drift}) sistematica nel tempo, che rende la stima a lungo termine inaffidabile senza correzioni esterne.
+    \end{itemize}
+    \item \textbf{Wi-Fi}:
+    \begin{itemize}
+        \item \emph{Principio}: Richiede la mappatura preliminare dei router nell'ambiente per stimarne la posizione in base agli ID e all'intensità del segnale ricevuto.
+        \item \emph{Svantaggi}: Non funziona se l'infrastruttura di rete non è disponibile ed è caratterizzato da una scarsa accuratezza spaziale.
+    \end{itemize}
+    \item \textbf{Odometria Meccanica (su ruote)}:
+    \begin{itemize}
+        \item \emph{Principio}: Integra il movimento delle ruote e l'angolo di sterzata mediante un modello cinematico del veicolo.
+        \item \emph{Svantaggi}: Non è applicabile su terreni sdrucciolevoli o soggetti a slittamento (\emph{slippage}), ed è soggetta a fenomeni di deriva e inaccuratezza.
+    \end{itemize}
+    \item \textbf{Telecamere (Camere ottiche)}:
+    \begin{itemize}
+        \item \emph{Vantaggi}: Rappresentano una soluzione economica e leggera, sono integrate in quasi tutti i moderni dispositivi mobili e garantiscono un'elevata frequenza di acquisizione dei fotogrammi (\emph{high frame-rate}).
+    \end{itemize}
+    \item \textbf{Sensori di Profondità Alternativi}: Oltre alle telecamere stereo tradizionali, includono sensori a luce strutturata (es. Microsoft Kinect) e sensori a tempo di volo (\emph{time-of-flight}, es. LiDAR Velodyne).
+\end{itemize}
+
+L'odometria visuale si configura quindi come un sistema che accetta in \textbf{input} una sequenza di immagini catturate da una telecamera e restituisce in \textbf{output} la stima in tempo reale della traiettoria e della posizione del robot nello spazio tridimensionale.
+
+% [IMMAGINE RIF FILE NOMIMATO "1-22"] Esempio reale di input (immagine da telecamera omnidirezionale) e output (nuvola di punti 3D con traiettoria stimata in rosso) — Slide 6 / Pagina 6 del PDF
+
+\newpage
+
+\section{Formulazione Matematica Dell'Odometria Visuale}
+
+Si consideri un agente che si muove in un ambiente tridimensionale acquisendo immagini tramite un sistema di telecamere rigidamente solidale ad esso a istanti temporali discreti $k$.
+
+Nel caso di un \textbf{sistema monoculare}, l'insieme delle immagini catturate dall'istante iniziale $0$ fino all'istante corrente $n$ viene denotato con:
+\[ I_{0:n} = \{I_0, \dots, I_n\} \]
+
+Nel caso di un \textbf{sistema stereo}, si definiscono due insiemi distinti di immagini per i canali sinistro ($l$) e destro ($r$):
+\begin{align*}
+I_{l,0:n} &= \{I_{l,0}, \dots, I_{l,n}\} \\
+I_{r,0:n} &= \{I_{r,0}, \dots, I_{r,n}\}
+\end{align*}
+In questa configurazione, senza perdita di generalità, il sistema di coordinate locale della telecamera sinistra viene adottato come origine del sistema di riferimento.
+
+% [IMMAGINE RIF FILE NOMIMATO "1-22"] Rappresentazione geometrica dello spostamento di un sistema stereo nel tempo — Slide 7 / Pagina 7 del PDF
+
+L'insieme delle pose della telecamera nel tempo è definito da $C_{0:n} = \{C_0, \dots, C_n\}$, dove ciascuna posa $C_k$ rappresenta la trasformazione omogenea della telecamera rispetto al sistema di riferimento iniziale impostato a $k=0$.
+
+% [IMMAGINE RIF FILE NOMIMATO "1-22"] Traiettoria della telecamera composta da pose consecutive C_k e trasformazioni relative T_{k, k-1} — Slide 8 / Pagina 8 del PDF
+
+La posa corrente della telecamera all'istante $n$, indicata con $C_n$, può essere calcolata matematicamente concatenando tutte le trasformazioni relative $T_k$ stimate tra fotogrammi consecutivi:
+\[ \boxed{C_n = C_{n-1} T_n} \]
+La posa iniziale $C_0$ all'istante $k=0$ rappresenta la condizione iniziale del sistema e può essere definita arbitrariamente dall'utente.
+
+L'obiettivo primario dell'odometria visuale consiste dunque nello stimare la trasformazione relativa $T_k$ a partire dalle immagini successive $I_{k-1}$ e $I_k$, per poi concatenare tali stime e ricostruire l'intera traiettoria $C_{0:n}$. La stima del percorso avviene in modo incrementale, posa dopo posa.
+
+% [IMMAGINE RIF FILE NOMIMATO "1-22"] Catena incrementale di trasformazioni T_k tra pose C_k lungo l'asse temporale k — Slide 9 / Pagina 9 del PDF
+
+Il primo passo per stimare lo spostamento relativo consiste nel determinare le corrispondenze di punti omologhi tra due fotogrammi consecutivi.
+
+% [IMMAGINE RIF FILE NOMIMATO "1-22"] Corrispondenza geometrica tra un punto u nel piano d'immagine C1 e un punto v nel piano d'immagine C2 — Slide 10 / Pagina 10 del PDF
+
+Assumendo che l'ambiente circostante sia rigorosamente \textbf{statico} e che le corrispondenze individuate siano \textbf{corrette}, è possibile stimare il moto della telecamera (espresso dalla rotazione $\bm{R}$ e dalla traslazione $\bm{t}$) e la ricostruzione 3D del punto dello spazio $\bm{X}$ minimizzando l'errore di riproiezione.
+
+% [IMMAGINE RIF FILE NOMIMATO "1-22"] Proiezione geometrica di un punto 3D X sui piani d'immagine C1 e C2 con parametri di movimento R e t — Slide 11 / Pagina 11 del PDF
+
+Tuttavia, gli scenari operativi reali presentano elementi di dinamicità e le corrispondenze stimate contengono inevitabilmente errori e accoppiamenti errati (\emph{outliers}). Di conseguenza, è fondamentale integrare nella pipeline di stima un metodo di ottimizzazione robusto quale l'algoritmo \textbf{RANSAC} (\emph{RANdom Sample Consensus}).
+
+\newpage
+
+\section{Il Pipeline Dell'Odometria Visuale E Trattamento Delle Caratteristiche}
+
+La struttura algoritmica di un sistema di odometria visuale basato su caratteristiche (\emph{feature-based VO}) assume che il sensore sia preventivamente calibrato. Il flusso operativo è descritto dall'Algoritmo~\ref{alg:vo_pipeline}.
+
+\begin{algorithm}[H]
+\DontPrintSemicolon
+\caption{Pipeline dell'Odometria Visuale}
+\label{alg:vo_pipeline}
+\Dati{Sequenza di immagini della telecamera}
+\Risultato{Traiettoria della telecamera $C_{0:n}$ e ricostruzione 3D dei punti $\bm{X}$}
+\Inizializza{Posa iniziale $C_0$, indice temporale $k=1$}
+\Ripeti{per ogni nuovo fotogramma}{
+    Acquisisci l'immagine corrente $I_k$\;
+    Calcola le corrispondenze tra l'immagine precedente $I_{k-1}$ e quella corrente $I_k$ (mediante \emph{feature matching} o \emph{feature tracking})\;
+    Identifica le corrispondenze corrette (\emph{inliers}) ed escludi gli \emph{outliers}, calcolando contestualmente la matrice essenziale $\bm{E}$\;
+    Decomponi la matrice essenziale $\bm{E}$ per estrarre la rotazione $\bm{R}_k$ e la direzione di traslazione $\bm{t}_k$\;
+    Ricostruisci il modello 3D determinando le coordinate spaziali dei punti $\bm{X}$\;
+    Riscala il vettore di traslazione $\bm{t}_k$ sulla base del fattore di scala relativo $r$\;
+    Aggiorna lo stato temporale: $k \leftarrow k + 1$\;
+}
+\end{algorithm}
+
+Analizziamo nel dettaglio le prime due fasi principali relative alla gestione dei punti di interesse:
+
+\subsection{Rilevamento Delle Caratteristiche (Feature Detection)}
+Questa operazione consiste nell'individuare un insieme di caratteristiche geometriche locali $f_k$ all'interno dell'immagine all'istante $k$. L'approccio generale si basa sull'estrazione di aree ad alto contrasto (quali angoli o bordi marcati) che risultino stabili e facilmente identificabili anche a seguito di variazioni del punto di vista o dell'illuminazione.
+
+\subsection{Accoppiamento O Tracciamento Delle Caratteristiche (Feature Matching / Tracking)}
+Questa fase stabilisce le corrispondenze spaziali tra i set di caratteristiche $f_{k-1}$ e $f_k$ estratti da immagini temporalmente contigue. Esistono due metodologie principali per effettuare tale operazione:
+\begin{itemize}
+    \item \textbf{Tracciamento (Tracking)}: Consiste nell'effettuare una ricerca locale di ciascuna feature del fotogramma precedente all'interno del fotogramma corrente. Questo approccio sfrutta modelli di predizione del moto e tecniche di correlazione locale della patch di pixel che circonda la feature.
+    \item \textbf{Accoppiamento (Matching)}: Prevede il rilevamento indipendente delle caratteristiche in ciascuna immagine. Successivamente, le corrispondenze vengono stabilite calcolando una metrica di similarità nello spazio dei descrittori matematici delle feature (sfruttando algoritmi quali SIFT, SURF, ORB, ecc.).
+\end{itemize}
+
+\newpage
+
+\section{Stima Della Matrice Essenziale}
+
+Ipotizziamo momentaneamente di non aver ancora calcolato le corrispondenze tra le immagini. Date due telecamere calibrate posizionate in $C_1$ e $C_2$ (di cui si conoscono i rispettivi orientamenti) e dato un punto proiettato $\bm{u}$ sul primo piano immagine, l'obiettivo è determinare la posizione del corrispondente punto proiettato $\bm{v}$ sul secondo piano d'immagine.
+
+% [IMMAGINE RIF FILE NOMIMATO "1-22"] Rappresentazione geometrica della linea epipolare generata dal raggio di proiezione del punto u — Slide 17 / Pagina 17 del PDF
+
+La posizione esatta di $\bm{v}$ dipende dalla profondità del punto reale 3D $\bm{X}$ nello spazio. Poiché la profondità di $\bm{X}$ non è nota a priori, il punto $\bm{X}$ può trovarsi in una qualsiasi posizione lungo la retta d'osservazione passante per il centro ottico di $C_1$ e per il punto proiettato $\bm{u}$. Di conseguenza, la proiezione di questo raggio sul secondo piano immagine definisce una retta geometrica chiamata \textbf{linea epipolare}. Tutti i possibili punti di corrispondenza $\bm{v}$ devono necessariamente giacere su tale linea, soddisfacendo la relazione algebrica:
+\[ \{ \bm{v} \mid \bm{u}^T \bm{E} \bm{v} = 0 \} \]
+
+% [IMMAGINE RIF FILE NOMIMATO "1-22"] Rappresentazione geometrica tridimensionale del piano epipolare (in giallo) contenente i centri ottici e il punto 3D X — Slide 18 / Pagina 18 del PDF
+
+In merito a questa formulazione geometrica valgono le seguenti proprietà:
+\begin{itemize}
+    \item Il vincolo epipolare $\bm{u}^T \bm{E} \bm{v} = 0$ è valido esclusivamente se la matrice di calibrazione intrinseca della camera $\bm{K}$ è pari alla matrice identità. Qualora non lo fosse, i punti immagine $\bm{u}$ e $\bm{v}$ devono essere preventivamente decalibrati (ovvero normalizzati rispetto ai parametri intrinseci).
+    \item L'unione di tutti i raggi proiettivi generati dai possibili punti spaziali $\bm{X}$ definisce un piano nello spazio tridimensionale denominato \textbf{piano epipolare} (evidenziato in giallo nello schema geometrico).
+    \item Esiste una decomposizione unica per la matrice essenziale nella forma:
+    \[ \bm{E} = [\bm{t}]_{\times}\bm{R} \]
+    Questa relazione lega direttamente la matrice essenziale ai parametri del moto della telecamera, ovvero la rotazione $\bm{R}$ e la matrice antisimmetrica $[\bm{t}]_{\times}$ associata al vettore di traslazione $\bm{t}$.
+\end{itemize}
+
+\subsection{Derivazione Matematica Del Sistema Lineare}
+Sotto l'assunzione di disporre di un insieme di corrispondenze puntuali, la matrice essenziale $\bm{E}$ può essere determinata risolvendo un sistema lineare omogeneo.
+
+Sia la matrice $\bm{E}$ rappresentata tramite i suoi tre vettori riga trasposti $\bm{e}_1^T, \bm{e}_2^T, \bm{e}_3^T$:
+\[ \bm{E} = \begin{bmatrix} \bm{e}_1^T \\ \bm{e}_2^T \\ \bm{e}_3^T \end{bmatrix} \]
+
+Per ogni coppia di punti corrispondenti $\bm{u} = [u_1, u_2, u_3]^T$ e $\bm{v} = [v_1, v_2, v_3]^T$, sviluppiamo analiticamente il prodotto matriciale del vincolo epipolare:
+\begin{align*}
+\bm{u}^T \bm{E} \bm{v} &= \bm{u}^T \left( \begin{bmatrix} \bm{e}_1^T \\ \bm{e}_2^T \\ \bm{e}_3^T \end{bmatrix} \bm{v} \right) \\
+&= \bm{u}^T \begin{bmatrix} \bm{e}_1^T \bm{v} \\ \bm{e}_2^T \bm{v} \\ \bm{e}_3^T \bm{v} \end{bmatrix} \\
+&= u_1 (\bm{e}_1^T \bm{v}) + u_2 (\bm{e}_2^T \bm{v}) + u_3 (\bm{e}_3^T \bm{v})
+\end{align*}
+
+Poiché il prodotto scalare $\bm{e}_i^T \bm{v}$ è un valore scalare, esso equivale al suo trasposto $\bm{v}^T \bm{e}_i$. Possiamo quindi riscrivere l'equazione lineare isolando gli elementi incogniti della matrice essenziale, organizzati nel vettore colonna $\bm{e} = [\bm{e}_1^T, \bm{e}_2^T, \bm{e}_3^T]^T \in \mathbb{R}^9$:
+\begin{align*}
+\bm{u}^T \bm{E} \bm{v} &= u_1 \bm{v}^T \bm{e}_1 + u_2 \bm{v}^T \bm{e}_2 + u_3 \bm{v}^T \bm{e}_3 \\
+&= \begin{bmatrix} u_1 \bm{v}^T & u_2 \bm{v}^T & u_3 \bm{v}^T \end{bmatrix} \begin{bmatrix} \bm{e}_1 \\ \bm{e}_2 \\ \bm{e}_3 \end{bmatrix} = 0
+\end{align*}
+
+Questo vincolo deve essere soddisfatto per ogni coppia di punti omologhi $\bm{u}_i, \bm{v}_i$. Impilando le equazioni relative a tutte le corrispondenze disponibili, si ottiene il seguente sistema lineare omogeneo:
+\[ \begin{bmatrix} u_{11}\bm{v}_1^T & u_{12}\bm{v}_1^T & u_{13}\bm{v}_1^T \\ u_{21}\bm{v}_2^T & u_{22}\bm{v}_2^T & u_{23}\bm{v}_2^T \\ & \vdots & \end{bmatrix} \begin{bmatrix} \bm{e}_1 \\ \bm{e}_2 \\ \bm{e}_3 \end{bmatrix} = \bm{0} \]
+che può essere espresso in forma compatta come:
+\[ \boxed{\bm{A}\bm{e} = \bm{0}} \]
+
+\subsection{Ottimizzazione Con Vincolo Di Norma}
+Per escludere la soluzione banale $\bm{e}_1 = \bm{e}_2 = \bm{e}_3 = \bm{0}$ (che corrisponderebbe a una matrice essenziale nulla, priva di significato geometrico), si formula un problema di ottimizzazione ai minimi quadrati vincolati (LSQ):
+\[ \boxed{\argmin_{\bm{e}} \lVert \bm{A}\bm{e} \rVert \quad \text{soggetto a} \quad \lVert \bm{e} \rVert = 1} \]
+
+La soluzione a questo problema di ottimizzazione vincolata corrisponde al singol-vettore destro di $\bm{A}$ associato al valore singolare più piccolo. Computazionalmente, tale vettore può essere determinato tramite la decomposizione a valori singolari (\textbf{SVD}) della matrice $\bm{A}$, oppure calcolando gli autovettori e autovalori della matrice simmetrica $\bm{A}\bm{A}^T$.
+
+\newpage
+
+\section{Decomposizione Della Matrice Essenziale E Ambiguità Di Scala}
+
+Una volta calcolata la matrice essenziale $\bm{E}$, il passo successivo consiste nell'estrarre i parametri cinematici della telecamera effettuando la decomposizione della matrice stessa.
+
+Applicando la decomposizione SVD alla matrice essenziale si ottiene:
+\[ \bm{E} = \bm{U}\bm{\Sigma}\bm{V}^T \]
+
+A partire dalle matrici ortogonali $\bm{U}$ e $\bm{V}$ e dalla matrice dei valori singolari $\bm{\Sigma}$, le componenti del moto $[\bm{t}]_{\times}$ e $\bm{R}$ possono essere stimate mediante l'introduzione di una opportuna matrice ausiliaria $\bm{W}$:
+\begin{align*}
+[\bm{t}]_{\times} &= \bm{V}\bm{W}\bm{\Sigma}\bm{V}^T \\
+\bm{R} &= \bm{U}\bm{W}^{-1}\bm{V}^T
+\end{align*}
+
+Un limite intrinseco di questa formulazione geometrica riguarda l'impossibilità di recuperare la scala metrica assoluta del movimento. Da un punto di vista algebrico, si osservi che se un generico vettore soddisfa un sistema omogeneo (ovvero $\bm{A}\bm{e} = \bm{0}$), allora anche qualsiasi suo multiplo scalare soddisfa la medesima equazione:
+\[ \bm{A}(r\bm{e}) = \bm{0} \quad \forall r \in \mathbb{R} \]
+
+Di conseguenza, il vettore di traslazione $\bm{t}$ può essere determinato solo a meno di un fattore di scala globale $r$.
+
+% [IMMAGINE RIF FILE NOMIMATO "1-22"] Schema geometrico di triangolazione con indicazione dell'ambiguità di scala r che influenza la profondità z e la distanza d — Slide 22 / Pagina 22 del PDF
+
+Questa ambiguità di scala si ripercuote direttamente sulla ricostruzione tridimensionale dello spazio. Come mostrato nello schema geometrico di triangolazione, la reale posizione dei punti nello spazio (es. i punti generici $\bm{Y}$ e $\bm{X}$) e le relative distanze e profondità (indicate come $r\cdot\bm{d}$ e $r\cdot\bm{z}$) risultano scalate del medesimo fattore incognito $r$ applicato al vettore di traslazione $r\cdot\bm{t}$.
+Per risolvere questa ambiguità metrica e determinare il valore effettivo di $r$ è necessario introdurre informazioni aggiuntive esterne alla telecamera monoculare, quali la conoscenza geometrica della linea di base del sistema stereo o l'integrazione con altri sensori di localizzazione.
+
+\section{Stima Di R, t E Decomposizione Della Matrice Essenziale}
+
+Nel contesto dell'odometria visuale, una volta calcolata la matrice essenziale $\bm{E}$, il passo successivo consiste nell'estrarre i parametri di rotazione $\bm{R}$ e traslazione $\bm{t}$ che descrivono il movimento relativo della telecamera tra due fotogrammi consecutivi. Tuttavia, la scomposizione matematica della matrice essenziale tramite la decomposizione a valori singolari (SVD) non fornisce un'unica soluzione deterministica, bensì genera quattro possibili combinazioni matematiche per la coppia $(\bm{R}, \bm{t})$.
+
+Per risolvere questa ambiguità e determinare quale sia l'unica coppia fisicamente corretta tra le quattro disponibili, si applica una procedura basata sulla triangolazione dei punti tridimensionali. Per ciascuna delle quattro combinazioni di rotazione e traslazione, si effettua la triangolazione di un insieme di punti di corrispondenza 3D. Successivamente, si esamina la posizione spaziale dei punti ricostruiti rispetto alle due viste della telecamera.
+
+La soluzione corretta viene selezionata applicando il cosiddetto vincolo di chiralità (\emph{cheirality constraint}): si sceglie la combinazione che presenta il maggior numero di punti ricostruiti situati spazialmente davanti a entrambe le telecamere (considerati \emph{inliers}). Le altre tre configurazioni errate posizioneranno la maggior parte dei punti dietro ad almeno una delle due telecamere, il che è fisicamente impossibile per punti che sono stati effettivamente proiettati e registrati sui sensori d'immagine.
+
+\newpage
+
+\section{La Pipeline Dell'Odometria Visuale E Triangolazione 3D}
+
+% [IMMAGINE RIF FILE NOMIMATO "23-43"] Diagramma della pipeline di odometria visuale con evidenziata in rosso la fase 5 di calcolo del modello 3D (punti X) — Slide 2 / Pagina 2 del PDF
+
+Per comprendere come si inserisce la ricostruzione geometrica all'interno del flusso di lavoro complessivo dell'odometria visuale, esaminiamo la pipeline sequenziale in cui la fase di calcolo del modello 3D dei punti spaziali $\bm{X}$ (Fase 5) gioca un ruolo centrale per collegare le proiezioni bidimensionali alla struttura dello spazio reale.
+
+Il fine della triangolazione consiste nel recuperare le coordinate 3D di un punto dello spazio a partire dalla sua rappresentazione sul piano immagine e dalla conoscenza della matrice di proiezione della telecamera. Dalla geometria proiettiva classica, sappiamo che la trasformazione di un punto espresso in coordinate omogenee del mondo reale, $\bm{X} \in \mathbb{R}^4$, nella sua corrispondente proiezione sul piano d'immagine, $\bm{x} \in \mathbb{R}^3$, è governata dalla relazione lineare:
+\[ \bm{x} = \bm{P}\bm{X} \]
+
+In questa espressione, le grandezze sono così definite:
+\begin{itemize}
+    \item $\bm{x} = \begin{bmatrix} x \\ y \\ w \end{bmatrix}$ rappresenta il punto espresso in coordinate omogenee sul piano immagine.
+    \item $\bm{P} = \bm{K}[\bm{R} \mid \bm{t}]$ è la matrice di proiezione prospettica di dimensioni $3 \times 4$, definita tramite la matrice dei parametri intrinseci $\bm{K}$ e i parametri estrinseci di rotazione $\bm{R}$ e traslazione $\bm{t}$.
+    \item $\bm{X} = \begin{bmatrix} X \\ Y \\ Z \\ W \end{bmatrix}$ è il punto tridimensionale espresso in coordinate omogenee nel sistema di riferimento globale.
+\end{itemize}
+
+Poiché il vettore $\bm{x}$ e il vettore proiettato $\bm{P}\bm{X}$ sono equivalenti a meno di un fattore di scala, essi risultano paralleli nello spazio proiettivo. Di conseguenza, il loro prodotto vettoriale deve essere nullo:
+\[ \bm{x} \times \bm{P}\bm{X} = \bm{0} \]
+
+Questa formulazione matematica ci permette di eliminare il fattore di scala incognito e impostare un sistema di equazioni lineari per la stima delle coordinate di $\bm{X}$.
+
+Per sviluppare esplicitamente il prodotto vettoriale, possiamo ricorrere alla rappresentazione tramite matrice antisimmetrica (skew-symmetric matrix). Data una generica terna $\bm{a} = [a_1, a_2, a_3]^T$, la matrice antisimmetrica associata $[\bm{a}_{\times}]$ utile a calcolare il prodotto vettoriale è definita come:
+\[ [\bm{a}_{\times}] = \begin{bmatrix} 0 & -a_3 & a_2 \\ a_3 & 0 & -a_1 \\ -a_2 & a_1 & 0 \end{bmatrix} \]
+
+Applicando questo operatore al prodotto vettoriale $\bm{x} \times \bm{P}\bm{X} = \bm{0}$, e denotando con $\bm{p}_0^T, \bm{p}_1^T, \bm{p}_2^T$ i tre vettori riga (ciascuno di dimensioni $1 \times 4$) che compongono la matrice di proiezione $\bm{P}$, otteniamo il seguente sistema di tre equazioni lineari:
+\begin{align*}
+-w \bm{p}_1^T \bm{X} + y \bm{p}_2^T \bm{X} &= 0 \\
+w \bm{p}_0^T \bm{X} - x \bm{p}_2^T \bm{X} &= 0 \\
+x \bm{p}_1^T \bm{X} - y \bm{p}_0^T \bm{X} &= 0
+\end{align*}
+
+Analizzando la struttura di questo sistema, si osserva che la prima equazione (prima riga) può essere espressa come una combinazione lineare delle rimanenti due. Di conseguenza, ciascuna vista fornisce soltanto due equazioni linearmente indipendenti a fronte di tre incognite indipendenti (le coordinate non omogenee $X, Y, Z$ del punto spaziale $\bm{X}$). Questo risultato teorico è coerente con la natura del problema: non è possibile determinare univocamente la posizione 3D di un punto da una singola proiezione bidimensionale; occorre necessariamente disporre di almeno una seconda vista per poter triangolare la posizione spaziale.
+
+Disponendo di due proiezioni corrispondenti $\bm{x}$ (nella prima immagine) e $\bm{x}'$ (nella seconda immagine) associate al medesimo punto dello spazio $\bm{X}$, è possibile combinare le equazioni linearmente indipendenti di ciascuna vista in un unico sistema lineare omogeneo della forma:
+\[ \bm{A}\bm{X} = \bm{0} \]
+
+La matrice dei coefficienti $\bm{A}$, di dimensioni $4 \times 4$, assume la struttura dettagliata:
+\[ \bm{A} = \begin{bmatrix} w \bm{p}_0^T - x \bm{p}_2^T \\ x \bm{p}_1^T - y \bm{p}_0^T \\ w' \bm{p}'_0{}^T - x' \bm{p}'_2{}^T \\ x' \bm{p}'_1{}^T - y' \bm{p}'_0{}^T \end{bmatrix} \]
+dove $\bm{p}_i^T$ e $\bm{p}'_i{}^T$ sono rispettivamente le righe delle matrici di proiezione della prima e della seconda telecamera.
+
+Questo metodo di stima lineare (noto come DLT, \emph{Direct Linear Transformation}) può essere esteso qualora si disponga di corrispondenze dello stesso punto in più di due immagini. In tal caso, la matrice $\bm{A}$ viene estesa accodando ulteriori righe di equazioni derivate dalle viste aggiuntive. L'introduzione di vincoli ridondanti consente di formulare un problema sovradeterminato risolvibile ai minimi quadrati, aumentando la precisione complessiva della ricostruzione del punto 3D.
+
+\newpage
+
+\section{Allineamento Della Scala E Gestione Della Deriva}
+
+% [IMMAGINE RIF FILE NOMIMATO "23-43"] Diagramma della pipeline di odometria visuale con evidenziata in rosso la fase 6 di riscalamento del vettore di traslazione — Slide 6 / Pagina 6 del PDF
+
+Una volta completata la ricostruzione 3D locale dei punti dello spazio (Fase 5), sorge la necessità di raccordare metricamente i diversi passi della stima del movimento (Fase 6), risolvendo le discrepanze di scala intrinseche alle ricostruzioni monoculari.
+
+La gestione della scala e della stima del movimento nel tempo è vincolata da tre fattori fondamentali:
+\begin{enumerate}
+    \item Utilizzando unicamente sensori ottici monoculari, è impossibile ricavare la scala metrica assoluta della scena senza l'ausilio di un oggetto di calibrazione dalle dimensioni note a priori.
+    \item Se si effettua la stima del moto e la relativa ricostruzione 3D in modo indipendente prima da una coppia di viste $(\bm{C}_1, \bm{C}_2)$ e successivamente dalla coppia successiva $(\bm{C}_2, \bm{C}_3)$, le due stime presenteranno scale metriche arbitrarie e potenzialmente differenti.
+    \item Per garantire la coerenza della traiettoria globale stimata, è necessario uniformare le ricostruzioni mantenendo lo stesso fattore di scala relativo $r$ tramite il riscalamento del vettore di traslazione $\bm{t}$ e dei punti 3D ad esso associati.
+\end{enumerate}
+
+% [IMMAGINE RIF FILE NOMIMATO "23-43"] Diagramma geometrico del riscalamento relativo tramite triangolazione dei punti X e Y da tre pose consecutive della telecamera — Slide 7 / Pagina 7 del PDF
+
+Per calcolare il corretto fattore di riscalamento $r$ tra due passi consecutivi della pipeline, si individua una coppia di punti dello spazio stabili, qui denominati $\bm{X}$ e $\bm{Y}$, che siano stati ricostruiti in entrambi i passi di stima. Calcolando il rapporto tra la distanza spaziale dei punti stimata al passo corrente $k$ (indicata con $d_k$) e quella stimata al passo precedente $k-1$ (indicata con $d_{k-1}$), si ricava il fattore di scala relativo:
+\[ \boxed{r = \frac{d_k}{d_{k-1}} = \frac{\lVert \bm{X}_k - \bm{Y}_k \rVert}{\lVert \bm{X}_{k-1} - \bm{Y}_{k-1} \rVert}} \]
+
+Questo fattore di scala permette di riscalare linearmente la traslazione corrente in modo che risulti coerente con la metrica adottata all'inizio della stima della traiettoria.
+
+Un problema strutturale di qualsiasi approccio odometrico incrementale è l'accumulazione sistematica degli errori di stima nel tempo. Questo fenomeno, noto come \textbf{deriva} (\emph{drift}), fa sì che la traiettoria calcolata devii progressivamente da quella reale. Per contenere ed eliminare la deriva, è necessario implementare un modulo di \textbf{chiusura del ciclo} (\emph{loop-closure}), in grado di riconoscere quando il robot transita in un luogo già visitato in precedenza e correggere l'intera traiettoria accumulata.
+
+% [IMMAGINE RIF FILE NOMIMATO "23-43"] Rappresentazione della propagazione dell'incertezza (ellissi tratteggiate) lungo le pose della telecamera C_{k-1}, C_k, C_{k+1} — Slide 8 / Pagina 8 del PDF
+
+Un'ulteriore strategia fondamentale per ridurre l'accumulo di errore è la selezione dei fotogrammi chiave (\textbf{keyframes}). Anziché stimare il movimento tra ogni coppia di fotogrammi consecutivi, si scelgono solo fotogrammi significativi distanziati nello spazio o nel tempo. Questo approccio evita di effettuare la stima del moto in presenza di spostamenti estremamente ridotti o rotazioni pure, condizioni geometricamente degenerate che introdurrebbero rumore numerico e instabilità nella stima.
+
+% [IMMAGINE RIF FILE NOMIMATO "23-43"] Confronto visivo di una traiettoria stimata prima (sinistra) e dopo (destra) l'ottimizzazione tramite loop-closing — Slide 9 / Pagina 9 del PDF
+
+A seconda del modo in cui vengono trattate la consistenza temporale e la stima della mappa, si distinguono tre paradigmi principali di ricostruzione geometrica:
+\begin{itemize}
+    \item \textbf{SFM (Structure From Motion)}: Consiste nella ricostruzione 3D della scena a partire da un insieme di immagini non ordinate, tipicamente elaborato in modalità offline.
+    \item \textbf{VO (Visual Odometry)}: Si occupa della stima sequenziale e in tempo reale del movimento locale della telecamera, concentrandosi sulla coerenza tra fotogrammi consecutivi.
+    \item \textbf{VSLAM (Visual Simultaneous Localization and Mapping)}: Rappresenta l'estensione dell'odometria visuale tramite l'integrazione di un modulo di loop-closing e di ottimizzazione globale della mappa (tramite algoritmi di \emph{bundle adjustment}).
+\end{itemize}
+
+\newpage
+
+\section{Structure From Motion E Introduzione Al Bundle Adjustment}
+
+Mentre l'odometria visuale si concentra sulla stima incrementale della posa istante per istante elaborando sequenze ordinate di immagini (paradigma noto come \textbf{Two-view geometry}), la ricostruzione globale di mappe dense o sparse richiede l'adozione del paradigma di \textbf{Multiple view geometry}.
+
+La tecnica di \textbf{Structure from Motion (SFM)} si propone di risolvere questo problema generale accettando come input un insieme di immagini, anche prive di ordine temporale, e restituendo come output la struttura 3D della scena e le pose di tutte le telecamere che l'hanno registrata.
+
+% [IMMAGINE RIF FILE NOMIMATO "23-43""] Esempio di pipeline SFM: da un insieme di immagini disordinate (sinistra) alla ricostruzione tridimensionale a nuvola di punti del Colosseo (destra) — Slide 10 / Pagina 10 del PDF
+
+La differenza fondamentale tra SFM e l'odometria visuale risiede nel trattamento dei dati e nei vincoli di ottimizzazione:
+\begin{itemize}
+    \item SFM opera su insiemi non ordinati di immagini, mentre l'odometria visuale assume che i fotogrammi appartengano a una sequenza temporale ordinata.
+    \item Per garantire l'ottimalità geometrica su molteplici viste, la pipeline di SFM include una fase di ottimizzazione congiunta chiamata \textbf{Bundle Adjustment (BA)}.
+    \item Il compito del Bundle Adjustment è ottimizzare simultaneamente le posizioni dei punti 3D nello spazio e i parametri delle telecamere (pose) che hanno osservato tali punti, minimizzando gli errori di proiezione accumulati.
+\end{itemize}
+
+% [IMMAGINE RIF FILE NOMIMATO "23-43""] Diagramma di flusso dettagliato della pipeline SFM: estrazione delle feature, matching, stima pose, triangolazione dei punti 3D, ottimizzazione tramite Bundle Adjustment e output finale — Slide 12 / Pagina 12 del PDF
+
+Il concetto intuitivo alla base del Bundle Adjustment consiste nel correggere l'orientamento dei raggi di proiezione (i cosiddetti "raggi del fascio", o \emph{bundle rays}) che collegano i centri ottici delle diverse telecamere ai rispettivi punti nello spazio tridimensionale, eliminando le discrepanze geometriche dovute a rumore e imprecisioni di stima.
+
+% [IMMAGINE RIF FILE NOMIMATO "23-43""] Rappresentazione schematica dell'allineamento dei fasci di raggi proiettivi prima (approssimazione) e dopo l'applicazione del Bundle Adjustment — Slide 13 / Pagina 13 del PDF
+
+% [IMMAGINE RIF FILE NOMIMATO "23-43""] Schema geometrico delle proiezioni di un punto spaziale X su tre telecamere C1, C2, C3 con evidenziati in rosso gli errori di riproiezione indotti dalle matrici di proiezione approssimate — Slide 14 / Pagina 14 del PDF
+
+L'algoritmo ottimizza congiuntamente la struttura e il movimento imponendo un vincolo di mutua consistenza geometrica derivante dalle relazioni di proiezione tra le molteplici viste disponibili.
+
+\newpage
+
+\section{Formulazione Matematica E Algoritmi Di Bundle Adjustment}
+
+La formulazione matematica del Bundle Adjustment si configura come un problema di ottimizzazione non lineare che mira a minimizzare la somma dei quadrati degli errori di riproiezione per ciascun punto 3D visibile in ciascuna camera.
+
+% [IMMAGINE RIF FILE NOMIMATO "23-43""] Rappresentazione schematica dell'errore di riproiezione su due piani d'immagine contrapposti — Slide 15 / Pagina 15 del PDF
+
+Il problema di ottimizzazione si esprime formalmente tramite la seguente espressione:
+\[ \boxed{\argmin_{\hat{\bm{P}}, \hat{\bm{X}}} \sum_{m=1}^{M} \sum_{n=1}^{N} D(\bm{x}_{m,n}, \hat{\bm{P}}_m \hat{\bm{X}}_n)^2} \]
+
+All'interno di questa formulazione:
+\begin{itemize}
+    \item $M$ è il numero totale di viste (camere), mentre $N$ rappresenta il numero complessivo di punti 3D mappati.
+    \item $\bm{x}_{m,n} = \bm{P}_m \bm{X}_n$ costituisce la coordinata reale misurata della proiezione del punto $n$-esimo sulla camera $m$-esima.
+    \item $\hat{\bm{x}}_{m,n} = \hat{\bm{P}}_m \hat{\bm{X}}_n$ rappresenta la coordinata stimata della proiezione, calcolata applicando la matrice di proiezione stimata $\hat{\bm{P}}_m$ al punto 3D stimato $\hat{\bm{X}}_n$.
+    \item $D(\cdot, \cdot)$ indica la distanza euclidea valutata direttamente sul piano d'immagine.
+\end{itemize}
+
+Per risolvere numericamente questo problema di ottimizzazione, si definisce un unico vettore di parametri globale $\bm{p}$, che concatena tutti i parametri incogniti del sistema (le matrici di proiezione $\bm{P}_m$ di ciascuna camera e le coordinate $\bm{X}_n$ di ciascun punto spaziale):
+\[ \bm{p} = [\bm{P}_1, \bm{P}_2, \dots, \bm{P}_M, \bm{X}_1, \bm{X}_2, \dots, \bm{X}_N]^T \]
+
+Introduciamo quindi la funzione vettoriale non lineare $f(\bm{p}) = \bm{P}\bm{X}$ (che modella il processo di proiezione prospettica). Questa funzione mette in relazione la stima proiettata $\hat{\bm{x}}_{n,m}$ con i parametri correnti del sistema. L'obiettivo consiste nel minimizzare il problema dei minimi quadrati non lineari:
+\[ \boxed{\argmin_{\bm{p}} \lVert \bm{x}_{n,m} - \hat{\bm{x}}_{n,m} \rVert^2 = \argmin_{\bm{p}} \lVert \bm{x}_{n,m} - f(\bm{p}) \rVert^2} \]
+
+La soluzione iterativa di questo problema è determinata risolvendo il sistema di equazioni normali associato:
+\[ \boxed{\bm{J}^T \bm{J} \Delta\bm{p} = \bm{J}^T \bm{e}} \]
+
+In questa espressione:
+\begin{itemize}
+    \item $\bm{J}$ rappresenta la matrice Jacobiana, contenente le derivate parziali di primo ordine della funzione di proiezione $f(\bm{p})$ rispetto al vettore dei parametri $\bm{p}$.
+    \item $\Delta\bm{p}$ definisce il vettore di correzione da applicare ai parametri correnti per ottimizzare l'errore di riproiezione.
+    \item $\bm{e} = \bm{x}_{n,m} - \hat{\bm{x}}_{n,m}$ rappresenta il vettore dei residui di riproiezione.
+\end{itemize}
+
+\subsection{Risoluzione Tramite Algoritmo Di Gauss-Newton}
+L'algoritmo di Gauss-Newton rappresenta una metodologia classica per la risoluzione iterativa del sistema lineare. I passaggi fondamentali sono descritti di seguito:
+\begin{enumerate}
+    \item Si definisce una stima iniziale del vettore dei parametri, indicata con $\bm{p}_0$.
+    \item Si risolve l'equazione normale per calcolare l'incremento ottimale $\Delta\bm{p}$.
+    \item Si aggiorna lo stato dei parametri ponendo $\bm{p}_1 = \bm{p}_0 + \Delta\bm{p}$.
+\end{enumerate}
+Questo approccio risulta computazionalmente adeguato per modelli semplici, ma presenta forti limitazioni pratiche in quanto può fallire o divergere qualora la stima iniziale sia lontana dal minimo globale.
+
+\subsection{Risoluzione Tramite Algoritmo Di Levenberg-Marquardt}
+Per ovviare ai problemi di divergenza del metodo di Gauss-Newton, l'algoritmo di Levenberg-Marquardt introduce una regolarizzazione modificando le equazioni normali tramite un termine di smorzamento (\emph{damping}). Si ottiene così l'equazione normale aumentata:
+\[ \boxed{(\bm{J}^T \bm{J} + \lambda \bm{I})\Delta\bm{p} = \bm{J}^T \bm{e}} \]
+
+In questa espressione, $\lambda$ rappresenta il parametro di Marquardt (o fattore di smorzamento, \emph{damping factor}), mentre $\bm{I}$ indica la matrice identità. La presenza del termine $\lambda \bm{I}$ controlla l'ampiezza e la direzione del passo di aggiornamento:
+\begin{itemize}
+    \item Se l'errore complessivo si riduce a seguito dell'aggiornamento, il parametro $\lambda$ viene ridotto, avvicinando il comportamento dell'algoritmo a quello rapido di Gauss-Newton.
+    \item Se l'errore aumenta, si incrementa il valore di $\lambda$, impostando un passo più conservativo orientato lungo la direzione del gradiente (\emph{Gradient Descent}) per garantire la convergenza locale.
+\end{itemize}
+
+\newpage
+
+\section{Sistemi Completi Di Visual SLAM}
+
+Combinando in modo sinergico le metodologie di stima locale dell'odometria visuale (VO) e le tecniche di ottimizzazione globale proprie di Structure from Motion (SFM), è possibile realizzare un sistema completo di \textbf{Visual SLAM} (\emph{Simultaneous Localization and Mapping}).
+
+Un sistema di Visual SLAM si propone di eseguire simultaneamente la localizzazione dell'agente e la mappatura dell'ambiente circostante, ottimizzando congiuntamente le stime di posa della telecamera e la struttura tridimensionale della mappa ricostruita.
+
+% [IMMAGINE RIF FILE NOMIMATO "23-43""] Ricostruzione tridimensionale ed elaborazione della traiettoria (in verde) prodotta dal sistema LSD-SLAM (Large-Scale Direct Monocular SLAM) — Slide 20 / Pagina 20 del PDF
+
+Per contrastare la deriva sistematica della traiettoria, i sistemi VSLAM integrano un modulo di chiusura del ciclo (\emph{loop closing}). Quando viene rilevato il passaggio in un luogo già mappato, l'algoritmo attiva una fase di ottimizzazione globale che corregge sia la geometria della traiettoria sia la struttura della mappa. Tale rilevamento viene tipicamente implementato sfruttando tecniche di indicizzazione visiva basate su Bag of Words (\textbf{BoW}).
+
+% [IMMAGINE RIF FILE NOMIMATO "23-43""] Schema logico della pipeline di un sistema di Visual SLAM: interazione tra thread locale (Local SLAM estimation) e thread globale di loop closing e Global Bundle Adjustment — Slide 21 / Pagina 21 del PDF
+
+La struttura architetturale tipica di un sistema di Visual SLAM è suddivisa in due livelli di stima concorrenti:
+\begin{itemize}
+    \item \textbf{Stima Locale (Local SLAM Estimation)}: Gestisce in tempo reale la ricezione dei fotogrammi, l'estrazione e l'accoppiamento delle feature, la stima della posa e la selezione dei fotogrammi chiave (\emph{keyframes}). Questa fase esegue un'ottimizzazione locale (\emph{Local Bundle Adjustment}) per mantenere stabile la navigazione a breve termine.
+    \item \textbf{Ottimizzazione Globale (Global Bundle Adjustment)}: Opera in background gestendo la rilevazione dei cicli (\emph{loop closing}). Al rilevamento di una chiusura, esegue un'ottimizzazione globale sull'intera mappa e sulla traiettoria storica del robot, eliminando la deriva accumulata e garantendo la coerenza topologica globale.
+\end{itemize}
+\end{document}

@@ -1,0 +1,101 @@
+﻿\documentclass{article}
+
+\usepackage[active,tightpage]{preview}
+\setlength{\PreviewBorder}{0pt}
+
+\usepackage[italian]{babel}
+\usepackage[utf8]{inputenc}
+
+\usepackage{bm}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+
+\PreviewEnvironment{tikzpicture}
+
+\author{Francesco Lo Verde}
+\begin{document}
+
+\begin{tikzpicture}
+  \node{
+    \begin{tabular}{|c|c|c|c|c|c|}
+        \hline
+        \textbf{Trasformazione} & \textbf{\# Link} & \(\bm{\theta}\) & \(\bm{d}\) & \(\bm{\alpha}\) & \(\bm{a}\) \\
+        \hline
+        $RF_{0} \to RF_{1}$ & 1 & $\theta_{1}$ & $0$ & $-\frac{\pi}{2}$ & 0 \\
+        \hline
+        $RF_{1} \to RF_{2}$ & 2 & $\theta_{2}$ & $d_{2}$ & $\frac{\pi}{2}$ & 0 \\
+        \hline
+        $RF_{2} \to RF_{3}$ & 3 & $0$ & $d_{3}$ & 0 & 0 \\
+        \hline
+        $RF_{3} \to RF_{4}$ & 4 & $\theta_{4}$ & $0$ & $-\frac{\pi}{2}$ & 0\\
+        \hline
+        $RF_{4} \to RF_{5}$ & 5 & $\theta_{5} $ & $0$ & $\frac{\pi}{2}$ & 0\\
+        \hline
+        $RF_{5} \to RF_{6}$ & 6 & $\theta_{6}$ & $d_6$ & 0 & 0\\
+        \hline
+    \end{tabular}
+  };
+\end{tikzpicture}
+
+\begin{tikzpicture}[>=Stealth, line width=1pt]
+  \node[above=8pt, align=center] at (0,0.2) {Manipolatore Sferico};
+\end{tikzpicture}
+
+\begin{tikzpicture}[>=Stealth, line width=1pt]
+  \draw[->] (0,0) -- (2.5,0)   node[right] {$x_0$};
+  \draw[->] (0,0) -- (0,2.5)   node[above] {$z_0$};
+  \draw (0,0) circle (0.2);
+  \node[below=8pt, align=center] at (0,-0.2) {$y_0$ \\ \small ENTRANTE};
+\end{tikzpicture}
+
+\begin{tikzpicture}[>=Stealth, line width=1pt]
+  \draw[->] (0,0) -- (2.5,0)   node[right] {$x_1$};
+  \draw[->] (0,0) -- (0,-2.5)   node[above] at (0, -3){$y_1$};
+  \draw (0,0) circle (0.2);
+  \node[below=8pt, align=center] at (0,1.25) {$z_1$ \\ \small ENTRANTE};
+\end{tikzpicture}
+
+\begin{tikzpicture}[>=Stealth, line width=1pt]
+  \draw[->] (0,0) -- (0, 2.5)  node[left]  {$z_2$};
+  \draw[->] (0,0) -- (2.5,0)  node[below] {$x_2$};
+  \draw (0,0) circle (0.2);
+  \node[above=8pt, align=center] at (0,-1.5) {$y_2$ \\ \small ENTRANTE};
+\end{tikzpicture}
+
+\begin{tikzpicture}[>=Stealth, line width=1pt]
+  \node[above=8pt, align=center] at (0,0.2) {Polso Sferico};
+\end{tikzpicture}
+
+\begin{tikzpicture}[>=Stealth, line width=1pt]
+  \draw[->] (0,0) -- (0, 2.5)  node[left]  {$z_3$};
+  \draw[->] (0,0) -- (2.5,0)  node[below] {$x_3$};
+  \draw (0,0) circle (0.2);
+  \node[above=8pt, align=center] at (0,-1.5) {$y_3$ \\ \small ENTRANTE};
+\end{tikzpicture}
+
+\begin{tikzpicture}[>=Stealth, line width=1pt]
+  \draw[->] (0,0) -- (2.5,0)  node[below] {$x_4$};
+  \draw[->] (0,0) -- (0,-2.5)  node[above] at (0, -3) {$y_4$};
+  \draw (0,0) circle (0.2);
+  \node[below=8pt, align=center] at (0,1.5) {$z_4$ \\ \small ENTRANTE};
+\end{tikzpicture}
+
+\begin{tikzpicture}[>=Stealth, line width=1pt]
+  \draw[->] (0,0) -- (2.5,0)   node[right] {$x_5$};
+  \draw[->] (0,0) -- (0,2.5)  node[below] at (0,3) {$z_5$};
+  \draw (0,0) circle (0.2);
+  \node[above=8pt, align=center] at (0,-1.5) {$y_5$ \\ \small ENTRANTE};
+\end{tikzpicture}
+
+\begin{tikzpicture}[>=Stealth, line width=1pt]
+  \draw[->] (0,0) -- (2.5,0)   node[right] {$x_6$};
+  \draw[->] (0,0) -- (0,2.5)  node[below] at (0,3) {$z_6$};
+  \draw (0,0) circle (0.2);
+  \node[above=8pt, align=center] at (0,-1.5) {$y_6$ \\ \small ENTRANTE};
+\end{tikzpicture}
+
+
+\newpage
+
+
+\end{document}

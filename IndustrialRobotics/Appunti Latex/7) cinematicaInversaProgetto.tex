@@ -1,0 +1,897 @@
+% AA IMPOSTAZIONI DI BASE DEL DOCUMENTO E MOTORE TIPOGRAFICO
+
+\documentclass[11pt, a4paper]{report}
+
+% BB Localizzazione e Codifica
+\usepackage[italian]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+% BB Famiglie Tipografiche
+\usepackage{newpxtext}
+\usepackage[scaled=0.92]{helvet}
+\usepackage[scaled=0.88]{zi4}
+
+% BB Microtipografia e Spaziatura Paragrafi
+\usepackage[protrusion=true, expansion=false]{microtype}
+\usepackage{parskip}
+
+% AA GEOMETRIA DI PAGINA E DISTRIBUZIONE SPAZI
+
+% BB Margini e Layout
+\usepackage{geometry}
+\geometry{
+    a4paper,
+    left=2.3cm,
+    right=2.3cm,
+    top=2.5cm,
+    bottom=2.5cm,
+    headheight=22pt,
+    footskip=30pt
+}
+
+% AA PALETTE COLORI E DESIGN SYSTEM
+
+\usepackage[table]{xcolor}
+
+% BB Colori del Documento (Identità Aziendale/Tecnica)
+\definecolor{primaryNavy}{RGB}{20, 52, 85}     % Colore Per Titoli
+\definecolor{accentBlue}{RGB}{41, 128, 185}    % Colore Secondario
+\definecolor{slateGray}{RGB}{108, 117, 125}    % Grigio Tecnico
+\definecolor{softBg}{RGB}{248, 249, 250}       % Sfondo Codice E Box
+\definecolor{borderGray}{RGB}{222, 226, 230}   % Bordo Separatori
+
+% BB Colori Matematici per le Dimostrazioni
+\definecolor{mathBlue}{RGB}{31, 119, 180}
+\definecolor{mathRed}{RGB}{214, 39, 40}
+\definecolor{mathGreen}{RGB}{44, 160, 44}
+
+% AA Header E Footer
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}              % Reset Impostazioni
+
+% BB Testata Pagine
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{borderGray}\leaders\hrule height \headrulewidth\hfill}}
+\fancyhead[L]{\sffamily\footnotesize\color{slateGray}\leftmark}
+\fancyhead[R]{\sffamily\footnotesize\bfseries\color{primaryNavy}manipolatoreRRP}
+
+% BB Piè di Pagina Pagine
+\renewcommand{\footrulewidth}{0pt}
+\fancyfoot[C]{\sffamily\footnotesize\color{primaryNavy}\thepage}
+
+% BB Ridefinizione Stile Plain
+\fancypagestyle{plain}{
+    \fancyhf{}
+    \renewcommand{\headrulewidth}{0pt}
+    \fancyfoot[C]{\sffamily\footnotesize\color{primaryNavy}\thepage}
+}
+
+% AA Struttura Gerarchica Dei Titoli
+
+\usepackage{titlesec}
+
+% BB Formato Dei Capitoli
+\titleformat{\chapter}[display]
+  {\normalfont\sffamily}
+  {\flushright\fontsize{46}{46}\selectfont\bfseries\color{primaryNavy!25}\thechapter}
+  {-20pt}
+  {\huge\bfseries\color{primaryNavy}}
+  [\vspace{4pt}{\color{primaryNavy!40}\titlerule[1pt]}]
+
+\titlespacing*{\chapter}{0pt}{10pt}{25pt}
+
+% BB Formato Sezioni, Sottosezioni e Paragrafi
+\titleformat{\section}
+  {\normalfont\sffamily\LARGE\bfseries\color{primaryNavy}}{\thesection}{1em}{}
+
+\titleformat{\subsection}
+  {\normalfont\sffamily\Large\bfseries\color{primaryNavy!90}}{\thesubsection}{1em}{}
+
+\titleformat{\subsubsection}
+  {\normalfont\sffamily\large\bfseries\color{slateGray}}{\thesubsubsection}{1em}{}
+
+% AA Strumenti Matematici, Grafici E Tabelle
+
+% BB Pacchetti Matematici
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{mathtools}
+\usepackage{newpxmath}
+\usepackage{bm}
+\usepackage{cancel}
+\usepackage{siunitx}
+\setlength{\arraycolsep}{10pt}
+
+% BB Grafica E Diagrammi
+\usepackage{graphicx}
+\usepackage{float}
+\graphicspath{{./Images/Tesina/}{./Images/Appunti/}}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc, quotes}
+
+% BB Tabelle
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{tabularx}
+\renewcommand{\arraystretch}{1.25}
+
+% AA Collegamenti Riferimenti Ed Elenchi
+
+% BB Collegamenti Ipertestuali
+\usepackage[unicode]{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=primaryNavy,
+    urlcolor=accentBlue,
+    citecolor=accentBlue,
+    pdftitle={Cinematica Inversa e Analisi Singolarità - Manipolatore RRP},
+    pdfauthor={Francesco Lo Verde},
+    pdfpagemode=UseOutlines,
+}
+\usepackage{bookmark}
+
+% BB Riferimenti Incrociati Ed Elenchi
+\usepackage[italian,capitalize]{cleveref}
+\usepackage{enumitem}
+\setlist{noitemsep, topsep=4pt, leftmargin=1.5em}
+
+\begin{document}
+
+% --- Pagina del Titolo ---
+\begin{titlepage}
+    \centering
+    \sffamily
+
+    % --- SEZIONE SUPERIORE: LOGO E UNIVERSITÀ ---
+    \vspace*{0.2cm}
+    \includegraphics[width=0.34\textwidth]{Images/Tesina/LogoUnipg.png}\par
+    \vspace{0.8cm}
+
+    {\scshape\Large\bfseries\color{primaryNavy} Università degli Studi di Perugia\par}
+    \vspace{0.25cm}
+    {\large\bfseries\color{slateGray} Dipartimento di Ingegneria\par}
+
+    \vfill
+
+    % --- SEZIONE CENTRALE: CORSO E TITOLO ---
+    {\Large\bfseries\color{accentBlue} CORSO DI INDUSTRIAL ROBOTICS\par}
+    \vspace{0.6cm}
+
+    \begin{minipage}{0.95\linewidth}
+        \centering
+        {\fontsize{22}{28}\selectfont \bfseries \color{primaryNavy} Analisi Della Cinematica Inversa, Spazio Operativo E Studio Delle Singolarità Di Un Manipolatore RRP (3 DOF)\par}
+    \end{minipage}
+
+    \vspace{0.7cm}
+    {\color{accentBlue}\rule{0.65\linewidth}{1.4pt}}\par
+
+    \vfill
+
+    % --- SEZIONE INFERIORE: DATI DELLO STUDENTE ---
+    \begin{minipage}{0.85\linewidth}
+        \large
+        \begin{tabular}{@{} l l}
+            \multicolumn{2}{l}{\textbf{\color{primaryNavy}Studente:}} \\
+            \addlinespace[0.4em]
+            Nome:  & \textbf{Francesco Lo Verde} \\
+            Email: & \texttt{francesco.loverde@studenti.unipg.it} \\
+        \end{tabular}
+    \end{minipage}
+
+    \vspace{1.5cm}
+
+    % --- PIÈ DI PAGINA: ANNO ACCADEMICO ---
+    {\large\bfseries\color{slateGray} Anno Accademico 2025--2026\par}
+    \vspace*{0.2cm}
+
+\end{titlepage}
+
+\tableofcontents
+\cleardoublepage
+
+% AA CAPITOLO 1
+
+\chapter{Risoluzione Analitica Della Cinematica Inversa}
+\label{chap:cinematica_inversa}
+
+\section{Coordinate Del Target E Decomposizione Matriciale}
+Le coordinate target sono espresse originariamente rispetto al sistema di riferimento globale $\text{RF}_{\text{world}}$, e devono pertanto essere trasformate nel sistema di riferimento del primo giunto ($\text{RF}_0$). Rispetto a $\text{RF}_{\text{world}}$, l'origine del primo giunto $\text{RF}_0$ è posizionata a $+2.0\text{ m}$ lungo l'asse $X$ e sollevata di $+\text{baseHeight} = +0.05\text{ m}$ lungo l'asse $Z$. Di conseguenza, le coordinate del target espresse rispetto a $\text{RF}_0$ si ottengono sottraendo tali offset:
+\begin{align*}
+x &= x_{\text{Target}} - 2.0 \\
+y &= y_{\text{Target}} \\
+z &= z_{\text{Target}} - 0.05
+\end{align*}
+
+Dall'equazione ${}^{0}T_{\text{EE}} = {}^{0}T_{1} \cdot {}^{1}T_{2} \cdot {}^{2}T_{\text{EE}} = {}^{0}T_{2} \cdot {}^{2}T_{\text{EE}}$, svolgendo il prodotto matriciale a blocchi, si ottiene che ${}^{0}d_{\text{EE}}$ (la posizione dell'end-effector rispetto a $\text{RF}_0$, corrispondente all'input cartesiano traslato) è data da:
+\[
+{}^{0}d_{\text{EE}} = {}^{0}R_{2} \cdot {}^{2}d_{\text{EE}} + {}^{0}d_{2}
+\]
+
+Poiché ${}^{0}R_{2}(q_1, q_2) = {}^{0}R_{1}(q_1){}^{1}R_{2}(q_2)$, sostituendo si ottiene:
+\[
+{}^{0}d_{\text{EE}} = {}^{0}R_{1}(q_1){}^{1}R_{2}(q_2) \cdot {}^{2}d_{\text{EE}} + {}^{0}d_{2}(q_1, q_2)
+\]
+
+Sapendo che ${}^{2}d_{\text{EE}}(q_3)$ rappresenta il vettore di posizione (pura traslazione $3 \times 1$, distinto dalla posa completa che include l'orientamento) dell'End-Effector espresso nel sistema di riferimento locale $\text{RF}_2$, e che ${}^{1}R_{2}(q_2)$ è la matrice di rotazione da $\text{RF}_2$ a $\text{RF}_1$, il prodotto ${}^{1}R_{2}(q_2) \cdot {}^{2}d_{\text{EE}}(q_3)$ esprime tale vettore di posizione orientato rispetto agli assi del frame $\text{RF}_1$.
+
+Nel nostro caso la posizione dell'$\text{EE}$ rispetto a $\text{RF}_2$ corrisponde a una traslazione di $q_3 - \left(l_3 + \frac{\text{boxSize}}{2}\right)$ lungo $Z_{2}$ (asse $Z$ di $\text{RF}_2$) e quindi:
+\[
+{}^{2}d_{\text{EE}}(q_3) = \begin{bmatrix} 0 \\ 0 \\ q_3 - \left(l_3 + \frac{\text{boxSize}}{2}\right) \end{bmatrix}
+\]
+
+Infatti, con $q_{2} = 0$, ovvero prima che venga applicata la rotazione di $q_{2}$ attorno all'asse $Z_{1}$ (asse $Z$ di $\text{RF}_1$ nella convenzione DH, corrispondente all'asse di beccheggio $Y$ del modello URDF), l'$\text{EE}$ si trova a una distanza pari a $l_3 + \frac{\text{boxSize}}{2}$ lungo $Z_{2}$ da $\text{RF}_2$ (lunghezza del link 3 + metà della lunghezza del lato del box lungo la direzione negativa di $Z_{2}$).
+
+Andando a sostituire:
+\[
+{}^{0}d_{\text{EE}} = {}^{0}R_{1}(q_1) \, {}^{1}R_{2}(q_2) \begin{bmatrix} 0 \\ 0 \\ q_3 - \left(l_3 + \frac{\text{boxSize}}{2}\right) \end{bmatrix} + {}^{0}d_{2}
+\]
+Ricordando che la formulazione standard della matrice di trasformazione DH $A_i$ (ovvero ${}^{i-1}T_{i}$) per un giunto $i$ generico è:
+\[
+\scalebox{0.8}{$
+^{i - 1}\bm{A}_{i}(q_{i}) =
+    \begin{bmatrix}
+        \cos(\theta_i) & -\sin(\theta_i)\cos(\alpha_{i}) & \sin(\theta_i)\sin(\alpha_{i}) & a_{i}\cos(\theta_{i})\\
+        \sin(\theta_i) & \cos(\theta_i)\cos(\alpha_{i}) & -\cos(\theta_i)\sin(\alpha_{i}) & a_{i}\sin(\theta_{i})\\
+        0 & \sin(\alpha_{i}) & \cos(\alpha_{i}) & d_{i}\\
+        0 & 0 & 0 & 1
+    \end{bmatrix}
+$}
+\]
+Si possono calcolare:
+\[
+\scalebox{0.8}{$
+^{0}\bm{A}_{1}(q_{1}) =
+    \begin{bmatrix}
+        \cos(q_1) & -\sin(q_1)\cos(\frac{-\pi}{2}) & \sin(q_1)\sin(\frac{-\pi}{2}) & 0\cdot\cos(q_{1})\\
+        \sin(q_1) & \cos(q_1)\cos(\frac{-\pi}{2}) & -\cos(q_1)\sin(\frac{-\pi}{2}) & 0\cdot\sin(q_{1})\\
+        0 & \sin(\frac{-\pi}{2}) & \cos(\frac{-\pi}{2}) & 2\text{jointRadius} + l_{1} + \text{jointRadius}\\
+        0 & 0 & 0 & 1
+    \end{bmatrix}
+$}
+\]
+\[
+\scalebox{0.8}{$
+^{1}\bm{A}_{2}(q_{2}) =
+    \begin{bmatrix}
+        \cos(q_2) & -\sin(q_2)\cos(\frac{\pi}{2}) & \sin(q_2)\sin(\frac{\pi}{2}) & \left(\text{jointRadius} + l_{2} + \frac{\text{boxSize}}{2}\right)\cos(q_{2})\\
+        \sin(q_2) & \cos(q_2)\cos(\frac{\pi}{2}) & -\cos(q_2)\sin(\frac{\pi}{2}) & \left(\text{jointRadius} + l_{2} + \frac{\text{boxSize}}{2}\right)\sin(q_{2})\\
+        0 & \sin(\frac{\pi}{2}) & \cos(\frac{\pi}{2}) & 0\\
+        0 & 0 & 0 & 1
+    \end{bmatrix}
+$}
+\]
+\[
+\scalebox{0.8}{$
+^{2}\bm{A}_{\text{EE}}(q_{3}) =
+    \begin{bmatrix}
+        \cos(0) & -\sin(0)\cos(-\pi) & \sin(0)\sin(-\pi) & 0\cdot\cos(0)\\
+        \sin(0) & \cos(0)\cos(-\pi) & -\cos(0)\sin(-\pi) & 0\cdot\sin(0)\\
+        0 & \sin(-\pi) & \cos(-\pi) & q_{3} - \left(l_{3} + \frac{\text{boxSize}}{2}\right)\\
+        0 & 0 & 0 & 1
+    \end{bmatrix}
+$}
+\]
+Ovvero, sostituendo i valori di $\alpha_{i}$:
+\[
+\scalebox{0.75}{$
+^{0}\bm{A}_{1}(q_{1}) =
+\begin{bmatrix}
+    \cos(q_1) & 0 & -\sin(q_1) & 0\\
+    \sin(q_1) & 0 & \cos(q_1) & 0\\
+    0 & -1 & 0 & 3\text{jointRadius} + l_{1}\\
+    0 & 0 & 0 & 1
+\end{bmatrix}
+\quad
+^{1}\bm{A}_{2}(q_{2}) =
+\begin{bmatrix}
+    \cos(q_2) & 0 & \sin(q_2) & \left(\text{jointRadius} + l_{2} + \frac{\text{boxSize}}{2}\right)\cos(q_{2})\\
+    \sin(q_2) & 0 & -\cos(q_2) & \left(\text{jointRadius} + l_{2} + \frac{\text{boxSize}}{2}\right)\sin(q_{2})\\
+    0 & 1 & 0 & 0\\
+    0 & 0 & 0 & 1
+\end{bmatrix}
+$}
+\]
+\[
+\scalebox{0.8}{$
+^{2}\bm{A}_{\text{EE}}(q_{3}) =
+\begin{bmatrix}
+    1 & 0 & 0 & 0\\
+    0 & -1 & 0 & 0\\
+    0 & 0 & -1 & q_{3} - \left(l_{3} + \frac{\text{boxSize}}{2}\right)\\
+    0 & 0 & 0 & 1
+\end{bmatrix}
+$}
+\]
+Da cui si può calcolare la matrice ${}^{0}T_{2}(q_{1}, q_{2}) = {}^{0}A_{1}(q_{1}) \cdot {}^{1}A_{2}(q_{2})$:
+\[
+\scalebox{0.8}{$
+^{0}\bm{A}_{2}(q_{1}, q_{2}) =
+\begin{bmatrix}
+    \cos(q_1)\cos(q_2) & -\sin(q_1) & \sin(q_2)\cos(q_1) & \left(\frac{\text{boxSize}}{2} + \text{jointRadius} + l_2\right)\cos(q_1)\cos(q_2) \\
+    \sin(q_1)\cos(q_2) & \cos(q_1) & \sin(q_1)\sin(q_2) & \left(\frac{\text{boxSize}}{2} + \text{jointRadius} + l_2\right)\sin(q_1)\cos(q_2) \\
+    -\sin(q_2) & 0 & \cos(q_2) & 3\text{jointRadius} + l_1 - \left(\frac{\text{boxSize}}{2} + \text{jointRadius} + l_2\right)\sin(q_2) \\
+    0 & 0 & 0 & 1
+\end{bmatrix}
+$}
+\]
+Estraendo le prime 3 righe della quarta colonna di ${}^{0}A_{2}(q_{1}, q_{2})$ si ottiene il vettore posizione ${}^{0}d_{2}(q_1, q_2)$ del frame $\text{RF}_2$ rispetto a $\text{RF}_0$; estraendo analogamente le prime 3 righe della quarta colonna di ${}^{2}A_{\text{EE}}(q_{3})$ si ottiene il vettore posizione ${}^{2}d_{\text{EE}}(q_3)$ dell'End-Effector rispetto a $\text{RF}_2$:
+\[
+\scalebox{0.8}{$
+^{0}\bm{d}_{2}(q_{1}, q_{2}) =
+\begin{bmatrix}
+    \left(\frac{\text{boxSize}}{2} + \text{jointRadius} + l_2\right)\cos(q_1)\cos(q_2) \\
+    \left(\frac{\text{boxSize}}{2} + \text{jointRadius} + l_2\right)\sin(q_1)\cos(q_2) \\
+    3\text{jointRadius} + l_1 - \left(\frac{\text{boxSize}}{2} + \text{jointRadius} + l_2\right)\sin(q_2)
+\end{bmatrix}
+\quad
+^{2}\bm{d}_{\text{EE}}(q_{3}) =
+\begin{bmatrix}
+    0\\
+    0\\
+    q_{3} - \left(l_{3} + \frac{\text{boxSize}}{2}\right)
+\end{bmatrix}
+$}
+\]
+Estraendo le prime 3 righe e 3 colonne di ${}^{0}A_{1}$ e ${}^{1}A_{2}$ si ricavano rispettivamente le matrici di rotazione ${}^{0}R_{1}(q_1)$ e ${}^{1}R_{2}(q_2)$:
+\[
+\scalebox{0.8}{$
+^{0}\bm{R}_{1}(q_{1}) =
+\begin{bmatrix}
+    \cos(q_1) & 0 & -\sin(q_1) \\
+    \sin(q_1) & 0 & \cos(q_1) \\
+    0 & -1 & 0
+\end{bmatrix}
+\quad
+^{1}\bm{R}_{2}(q_{2}) =
+\begin{bmatrix}
+    \cos(q_2) & 0 & \sin(q_2) \\
+    \sin(q_2) & 0 & -\cos(q_2) \\
+    0 & 1 & 0
+\end{bmatrix}
+$}
+\]
+Mettendo tutto insieme si ottiene:
+\[
+\scalebox{0.75}{$
+{}^{0}d_{EE} =
+\underbrace{\begin{bmatrix}
+    \cos(q_1) & 0 & -\sin(q_1) \\
+    \sin(q_1) & 0 & \cos(q_1) \\
+    0 & -1 & 0
+\end{bmatrix}}_{^{0}\bm{R}_{1}(q_{1})}
+\underbrace{\begin{bmatrix}
+    \cos(q_2) & 0 & \sin(q_2) \\
+    \sin(q_2) & 0 & -\cos(q_2) \\
+    0 & 1 & 0
+\end{bmatrix}}_{^{1}\bm{R}_{2}(q_{2})}
+\underbrace{\begin{bmatrix}
+    0\\
+    0\\
+    q_{3} - (l_{3} + \frac{\text{boxSize}}{2})
+\end{bmatrix}}_{^{2}\bm{d}_{\text{EE}}(q_{3})}
++
+\underbrace{\begin{bmatrix}
+    \left(\frac{\text{boxSize}}{2} + \text{jointRadius} + l_2\right)\cos(q_1)\cos(q_2) \\
+    \left(\frac{\text{boxSize}}{2} + \text{jointRadius} + l_2\right)\sin(q_1)\cos(q_2) \\
+    3\text{jointRadius} + l_1 - \biggl(\frac{\text{boxSize}}{2} + \text{jointRadius} + l_2\biggr)\sin(q_2)
+\end{bmatrix}}_{^{0}\bm{d}_{2}(q_{1}, q_{2})}
+$}
+\]
+Quindi ponendo:
+\begin{align*}
+    d_{1} &= 2\text{jointRadius} + l_{1} + \text{jointRadius} = 3\text{jointRadius} + l_{1} \\
+    a_{2} &= \text{jointRadius} + l_{2} + \frac{\text{boxSize}}{2} \\
+    d_{3} &= q_{3} - \left(l_{3} + \frac{\text{boxSize}}{2}\right)
+\end{align*}
+la precedente equazione diventa:
+\[
+\scalebox{0.8}{$
+{}^{0}d_{EE} =
+\begin{bmatrix}
+    \cos(q_1) & 0 & -\sin(q_1) \\
+    \sin(q_1) & 0 & \cos(q_1) \\
+    0 & -1 & 0
+\end{bmatrix}
+\begin{bmatrix}
+    \cos(q_2) & 0 & \sin(q_2) \\
+    \sin(q_2) & 0 & -\cos(q_2) \\
+    0 & 1 & 0
+\end{bmatrix}
+\begin{bmatrix}
+    0\\
+    0\\
+    d_{3}
+\end{bmatrix}
++
+\begin{bmatrix}
+   a_{2}\cos(q_1)\cos(q_2) \\
+   a_{2}\sin(q_1)\cos(q_2) \\
+    d_{1} - a_{2}\sin(q_2)
+\end{bmatrix}
+$}
+\]
+Svolgendo i calcoli si ottiene un vettore in cui ogni elemento è funzione di $q_1$, $q_2$ e $q_3$, consentendo di formulare il sistema di equazioni per risalire ai valori dei giunti partendo dalle coordinate cartesiane dell'End-Effector:
+\[
+\scalebox{0.8}{$
+\begin{aligned}
+    {}^{0}d_{EE} & =
+    \begin{bmatrix}
+        \cos(q_1)\cos(q_2) & -\sin(q_1) & \sin(q_2)\cos(q_1) \\
+        \sin(q_1)\cos(q_2) & \cos(q_1) & \sin(q_1)\sin(q_2) \\
+        -\sin(q_2) & 0 & \cos(q_2)
+    \end{bmatrix}
+    \begin{bmatrix}
+        0\\
+        0\\
+        d_{3}
+    \end{bmatrix}
+    +
+    \begin{bmatrix}
+    a_{2}\cos(q_1)\cos(q_2) \\
+    a_{2}\sin(q_1)\cos(q_2) \\
+    d_{1} - a_{2}\sin(q_2)
+    \end{bmatrix}\\
+    &=
+    \begin{bmatrix}
+    d_3 \sin(q_2) \cos(q_1) + a_2 \cos(q_1) \cos(q_2)\\
+    d_3 \sin(q_1) \sin(q_2) + a_2 \sin(q_1) \cos(q_2) \\
+    d_3 \cos(q_2) + d_1 - a_2 \sin(q_2)
+    \end{bmatrix}
+\end{aligned}
+$}
+\]
+Partendo \textbf{sempre} da questo sistema di equazioni non lineari in tre incognite ($q_1, q_2, q_3$), per risolvere la cinematica inversa occorre applicare manipolazioni algebriche mirate a disaccoppiare progressivamente le variabili, isolandone una per volta.
+
+\section{Calcolo Di $q_3$ (Giunto Prismatico)}
+Ricordando che la norma quadra di un vettore è data da $|| \bm{v} ||^2 = x^2 + y^2 + z^2$, calcolandola per le prime due componenti cartesiane si ottiene:
+\begin{align*}
+    \biggl[d_3 \sin(q_2) \cos(q_1) + a_2 \cos(q_1) \cos(q_2)\biggr]^{2} &=\biggl[ \biggl(d_3 \sin(q_2) + a_2 \cos(q_2)\biggr) \cos(q_1) \biggr]^{2} = \\
+    &= \biggl(d_3 \sin(q_2) + a_2 \cos(q_2)\biggr)^{2} \cos^2(q_1) \\
+    \biggl[d_3 \sin(q_1) \sin(q_2) + a_2 \sin(q_1) \cos(q_2)\biggr]^{2} &= \biggl[ \biggl(d_3 \sin(q_2) + a_2 \cos(q_2)\biggr) \sin(q_1) \biggr]^{2} = \\
+    &= \biggl(d_3 \sin(q_2) + a_2 \cos(q_2)\biggr)^{2} \sin^2(q_1)
+\end{align*}
+Sommando queste due componenti:
+\begin{align*}
+    x^{2} + y^{2} &= \biggl(d_3 \sin(q_2) + a_2 \cos(q_2)\biggr)^{2} \cos^2(q_1) + \biggl(d_3 \sin(q_2) + a_2 \cos(q_2)\biggr)^{2} \sin^2(q_1) = \\
+    &= \biggl(d_3 \sin(q_2) + a_2 \cos(q_2)\biggr)^{2} \overbrace{\biggl(\cos^2(q_1) + \sin^2(q_1)\biggr)}^{\text{Identità}} = \\
+    &= \textcolor{mathBlue}{d_{3}^{2}\sin^{2}(q_{2})} + \textcolor{mathRed}{2d_{3}a_{2}\sin(q_{2})\cos(q_{2})} + \textcolor{mathGreen}{a_{2}^{2}\cos^{2}(q_{2})}
+\end{align*}
+Inoltre, si nota che:
+\begin{align*}
+    (z - d_{1})^{2} &= \biggl[d_3 \cos(q_2) + d_1 - a_2 \sin(q_2) - d_{1}\biggr]^2 =\\
+    &= \biggl[d_3 \cos(q_2) - a_2 \sin(q_2)\biggr]^{2} =\\
+    &= d_{3}^{2} \cos^{2}(q_{2}) + a_{2}^{2} \sin^{2}(q_{2}) - 2 d_{3} a_{2} \cos(q_{2}) \sin(q_{2})
+\end{align*}
+Sommando le tre componenti al quadrato, si ricava:
+\begin{align*}
+    x^{2} + y^{2} + (z - d_{1})^{2} &= \textcolor{mathBlue}{d_{3}^{2}\sin^{2}(q_{2})} + \cancel{\textcolor{mathRed}{2d_{3}a_{2}\sin(q_{2})\cos(q_{2})}} + \textcolor{mathGreen}{a_{2}^{2}\cos^{2}(q_{2})}\\
+    & \quad + \textcolor{mathBlue}{d_{3}^{2} \cos^{2}(q_{2})} + \textcolor{mathGreen}{a_{2}^{2} \sin^{2}(q_{2})} - \cancel{\textcolor{mathRed}{2 d_{3} a_{2} \cos(q_{2}) \sin(q_{2})}} =\\
+    &= d_{3}^{2} \underbrace{\biggl(\sin^{2}(q_{2}) + \cos^{2}(q_{2})\biggr)}_{\text{Identità}} + a_{2}^{2} \underbrace{\biggl(\cos^{2}(q_{2}) + \sin^{2}(q_{2})\biggr)}_{\text{Identità}} =\\
+    &= d_{3}^{2} + a_{2}^{2}
+\end{align*}
+La quantità $x^2 + y^2 + (z - d_1)^2$ rappresenta la \textbf{distanza al quadrato} tra l'End-Effector e il centro del secondo giunto ($\text{RF}_1$, posto a quota $d_1$). Poiché i giunti 1 e 2 sono rotatori, qualsiasi rotazione attorno ad essi ($q_1$ e $q_2$) varia l'orientamento spaziale del braccio, ma non la distanza assoluta tra il giunto 2 e l'organo terminale. Nel riferimento locale del secondo link, dopo la rotazione $q_2$, l'End-Effector si trova semplicemente traslato di una quota fissa $a_2$ lungo l'asse del braccio e di una coordinata variabile $d_3$ lungo l'asse di scorrimento prismatico.
+
+Sostituendo la relazione $d_3 = q_3 - \left(l_3 + \frac{\text{boxSize}}{2}\right)$:
+\begin{align*}
+    x^2 + y^2 + (z - d_1)^2 &= \biggl(q_3 - \biggl(l_3 + \frac{\text{boxSize}}{2}\biggr) \biggr)^{2} + a_{2}^{2}\\
+    \biggl[q_3 - \biggl(l_3 + \frac{\text{boxSize}}{2}\biggr) \biggr]^{2} &= x^2 + y^2 + (z - d_1)^2 - a_{2}^{2}
+\end{align*}
+Affinché esista una soluzione reale per il giunto prismatico, il secondo membro deve risultare non negativo. Ciò impone che l'End-Effector non possa trovarsi ad una distanza dal giunto 2 inferiore ad $a_2 = \text{jointRadius} + l_{2} + \frac{\text{boxSize}}{2}$, corrispondente alla lunghezza fisica rigida del braccio.
+
+Se tale condizione di ammissibilità geometrica è soddisfatta, si ricava:
+\[
+    q_3 - \biggl(l_3 + \frac{\text{boxSize}}{2}\biggr) = \pm \sqrt{x^2 + y^2 + (z - d_1)^2 - a_{2}^{2}}
+\]
+\[
+    \fcolorbox{primaryNavy!40}{softBg}{$\displaystyle
+        q_3 = \biggl(l_3 + \frac{\text{boxSize}}{2}\biggr) \pm \sqrt{x^2 + y^2 + (z - d_1)^2 - \biggl( \text{jointRadius} + l_{2} + \frac{\text{boxSize}}{2} \biggr)^{2}}
+    $}
+\]
+A livello implementativo, per prevenire instabilità numeriche dovute ad arrotondamenti floating-point in prossimità del confine del workspace, il codice adotta una soglia di tolleranza pari a $10^{-6}$, forzando l'argomento del radicale a risultare non negativo mediante l'operazione $\max\bigl(0.0, \, x^2 + y^2 + (z - d_1)^2 - a_2^2\bigr)$.
+
+Algebricamente si ottengono due soluzioni ($q_{3P}$ con il segno $+$ e $q_{3N}$ con il segno $-$ davanti al radicale). Poiché in questo manipolatore il link 3 scorre verso il basso con coordinata $d_3 \le -0.05\text{ m}$, la soluzione positiva comporterebbe:
+\[
+q_{3P} = \left(l_3 + \frac{\text{boxSize}}{2}\right) + \sqrt{\dots} \ge 0.40\text{ m} > l_3
+\]
+violando in ogni circostanza la corsa fisica massima consentita ($0.35\text{ m}$). Di conseguenza, l'unica soluzione fisicamente ammissibile compresa nell'intervallo $[0, \; l_3]$ è quella associata al segno negativo del radicale ($q_{3N}$):
+\[
+    \fcolorbox{primaryNavy!40}{softBg}{$\displaystyle
+        q_3 = \biggl(l_3 + \frac{\text{boxSize}}{2}\biggr) - \sqrt{x^2 + y^2 + (z - d_1)^2 - a_{2}^{2}}
+    $}
+\]
+
+\section{Calcolo Di $q_2$ (Giunto Di Spalla)}
+Avendo determinato univocamente $q_3$, è noto anche il valore associato dell'offset $d_3 = q_3 - \left(l_3 + \frac{\text{boxSize}}{2}\right)$.
+
+Quadrando e sommando le prime due componenti del vettore ${}^{0}d_{\text{EE}}$:
+\begin{align*}
+    x^{2} + y^{2} &= \biggl(d_3 \sin(q_2) + a_2 \cos(q_2)\biggr)^{2} \cos^2(q_1) + \biggl(d_3 \sin(q_2) + a_2 \cos(q_2)\biggr)^{2} \sin^2(q_1) = \\
+    &= \biggl(d_3 \sin(q_2) + a_2 \cos(q_2)\biggr)^{2} \overbrace{\biggl(\cos^2(q_1) + \sin^2(q_1)\biggr)}^{\text{Identità}} = \\
+    &= \biggl(d_3 \sin(q_2) + a_2 \cos(q_2)\biggr)^{2}
+\end{align*}
+Estraendo la radice quadrata ad ambo i membri si ottiene:
+\[
+    \pm\sqrt{x^{2} + y^{2}} = d_3 \sin(q_2) + a_2 \cos(q_2)
+\]
+Dalla terza componente del vettore ${}^{0}d_{\text{EE}}$, isolando il dislivello rispetto a $d_1$ (costante costruttiva del robot), si ricava:
+\[
+    z - d_1 = d_3 \cos(q_2) - a_2 \sin(q_2)
+\]
+Mettendo a sistema queste due equazioni lineari nelle incognite $\sin(q_2)$ e $\cos(q_2)$:
+\[
+    \begin{cases}
+        d_{3} \sin(q_2) + a_2 \cos(q_2) = \pm\sqrt{x^{2} + y^{2}}\\
+        -a_{2} \sin(q_2) + d_{3} \cos(q_2) = z - d_1
+    \end{cases}
+\]
+In notazione matriciale compatta:
+\[
+    \begin{bmatrix}
+        d_{3} & a_{2} \\
+        -a_{2} & d_{3}
+    \end{bmatrix}
+    \begin{bmatrix}
+        \sin(q_2)\\
+        \cos(q_2)
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        \pm \sqrt{x^2+y^2} \\
+        z - d_1
+    \end{bmatrix}
+\]
+
+Il determinante della matrice dei coefficienti risulta:
+\begin{align*}
+    \det \begin{bmatrix}
+        d_{3} & a_{2} \\
+        -a_{2} & d_{3}
+    \end{bmatrix} &= [d_{3} \cdot d_{3}] - [a_{2} \cdot (- a_{2})] =\\
+    & = d_{3}^{2} - (-a_{2}^{2}) = d_{3}^{2} + a_{2}^{2}
+\end{align*}
+Poiché $a_2 > 0$ e $d_3 \le -0.05 < 0$, la quantità $d_{3}^{2} + a_{2}^{2}$ è strettamente positiva. La matrice è pertanto sempre invertibile, garantendo una soluzione unica per la coppia $(\sin(q_2), \cos(q_2))$:
+\[
+    \begin{bmatrix}
+        \sin(q_2)\\
+        \cos(q_2)
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        d_{3} & a_{2} \\
+        -a_{2} & d_{3}
+    \end{bmatrix}^{-1}
+    \begin{bmatrix}
+        \pm \sqrt{x^2+y^2} \\
+        z - d_1
+    \end{bmatrix}
+\]
+Ricordando che l'inversa di una matrice generica $2 \times 2$ invertibile è data da:
+\[
+A=\begin{bmatrix}
+a & b\\
+c & d
+\end{bmatrix}
+\quad\longrightarrow\quad
+A^{-1}=
+\frac{1}{ad-bc}
+\begin{bmatrix}
+    d & -b \\
+    -c & a
+\end{bmatrix}
+\]
+Si ottiene:
+\[
+    \begin{bmatrix}
+        \sin(q_2)\\
+        \cos(q_2)
+    \end{bmatrix}
+    =
+    \frac{1}{d_{3}^{2} + a_{2}^{2}}
+    \begin{bmatrix}
+        d_{3} & -a_{2} \\
+        a_{2} & d_{3}
+    \end{bmatrix}
+    \begin{bmatrix}
+        \pm \sqrt{x^2+y^2} \\
+        z - d_1
+    \end{bmatrix}
+\]
+Esplicitando le componenti:
+\[
+    \boxed{
+        \sin(q_{2}) = \frac{1}{d_{3}^{2} + a_{2}^{2}} \biggl[d_{3} (\pm \sqrt{x^2+y^2}) - a_{2} (z - d_1)\biggr]
+    }
+\]
+\[
+    \boxed{
+        \cos(q_{2}) = \frac{1}{d_{3}^{2} + a_{2}^{2}} \biggl[a_{2} (\pm \sqrt{x^2+y^2}) + d_{3} (z - d_1)\biggr]
+    }
+\]
+
+Essendo entrambi i membri noti, è possibile calcolare $q_{2}$ mediante l'arcotangente a quattro quadranti. Inoltre, poiché il coefficiente moltiplicativo $\frac{1}{d_{3}^{2} + a_{2}^{2}}$ è una quantità scalare strettamente positiva e la funzione arcotangente a quattro quadranti è invariante rispetto a fattori di scala positivi, è possibile eliminare il denominatore comune dagli argomenti. Si ottiene quindi:
+\[
+    \fcolorbox{primaryNavy!40}{softBg}{$\displaystyle
+        q_2 = \text{atan2}\biggl(d_{3} (\pm \sqrt{x^2+y^2}) - a_{2} (z - d_1), \; a_{2} (\pm \sqrt{x^2+y^2}) + d_{3} (z - d_1)\biggr)
+    $}
+\]
+in cui la funzione $\text{atan2}(Y, X)$ accetta come primo argomento la componente associata al seno e come secondo la componente legata al coseno (conformemente all'implementazione Python \texttt{np.arctan2(y, x)}).
+
+Nel calcolo di $r = \sqrt{x^2 + y^2}$, le due determinazioni di segno ($+r$ e $-r$) individuano due configurazioni geometriche distinte per il secondo giunto:
+\begin{itemize}
+    \item \textbf{Configurazione Frontale ($q_{2,\text{Front}}$ con $+r$):} Si verifica quando il Giunto 1 orienta il Link 2 concordemente alla direzione del target. In questa condizione il braccio opera nel semispazio anteriore e l'angolo $q_2$ assume l'espressione:
+    \[
+        q_{2,\text{Front}} = \text{atan2}\biggl(d_{3} \cdot r - a_{2} (z - d_1), \; a_{2} \cdot r + d_{3} (z - d_1)\biggr)
+    \]
+    \item \textbf{Configurazione All'Indietro ($q_{2,\text{Back}}$ con $-r$):} Si verifica quando il Giunto 1 orienta il Link 2 nella direzione opposta a quella del punto target. Per raggiungere ugualmente il punto alle proprie spalle, il Giunto 2 dovrebbe ruotare verso valori fortemente positivi (superando i $+90^\circ$ verso il basso) per agganciare il target da tergo:
+    \[
+        q_{2,\text{Back}} = \text{atan2}\biggl(d_{3} (-r) - a_{2} (z - d_1), \; a_{2} (-r) + d_{3} (z - d_1)\biggr)
+    \]
+\end{itemize}
+Poiché in questo manipolatore il giunto 2 è vincolato nell'intervallo operativo $[-\frac{\pi}{2}, \; \frac{\pi}{4}]$, l'unica configurazione fisicamente realizzabile per intercettare il target consiste nell'orientare il Link 2 frontalmente verso di esso ($q_{2,\text{Front}}$).
+
+Infatti, per qualsiasi punto appartenente al workspace con quota al di sotto della spalla ($z \le d_1$), l'argomento associato al seno della soluzione all'indietro:
+\[
+Y_{\text{Back}} = -d_3 r - a_2(z - d_1)
+\]
+è strettamente positivo (essendo $-d_3 > 0$, $r > 0$, $a_2 > 0$ e $z - d_1 \le 0$). Di conseguenza l'angolo $q_{2,\text{Back}}$ assume valori strettamente positivi compresi nel secondo quadrante ($q_{2,\text{Back}} \in [90^\circ, 180^\circ]$), violando ampiamente il limite massimo superiore del giunto ($q_{2,\max} = \frac{\pi}{4} = +45^\circ$). La soluzione $q_{2,\text{Back}}$ non è pertanto fisicamente raggiungibile, ma viene conservata nel codice per rigore algebrico.
+
+\section{Calcolo Di $q_1$ (Giunto Di Base)}
+Avendo ricavato $q_{2}$, si procede alla determinazione di $q_{1}$ impiegando le prime due componenti cartesiane del vettore ${}^{0}d_{\text{EE}}$:
+\begin{align*}
+    x &= d_3 \sin(q_2) \cos(q_1) + a_2 \cos(q_1) \cos(q_2)\\
+    & = \biggl(d_3 \sin(q_2) + a_2 \cos(q_2)\biggr) \cos(q_1)
+\end{align*}
+Da cui si ricava:
+\[
+    \boxed{
+        \cos(q_1) = \frac{x}{d_3 \sin(q_2) + a_2 \cos(q_2)}
+    }
+\]
+Analogamente, dalla componente lungo l'asse $Y$:
+\begin{align*}
+    y &= d_3 \sin(q_1) \sin(q_2) + a_2 \sin(q_1) \cos(q_2)\\
+    &= \biggl(d_3 \sin(q_2) + a_2 \cos(q_2)\biggr) \sin(q_1)
+\end{align*}
+Da cui:
+\[
+    \boxed{
+        \sin(q_1) = \frac{y}{d_3 \sin(q_2) + a_2 \cos(q_2)}
+    }
+\]
+Poiché il fattore scalare $\text{denom} = d_3 \sin(q_2) + a_2 \cos(q_2)$ è comune a entrambi gli argomenti, ai fini del calcolo tramite arcotangente a quattro quadranti rileva esclusivamente il suo segno algebrico $\text{sgn}(\text{denom})$.
+
+Nel caso singolare in cui $|\text{denom}| < 10^{-6}$ (singolarità di spalla con target allineato sull'asse verticale $Z_0$), l'angolo azimutale $q_1$ risulta cinematicamente indeterminato e viene impostato per convenzione di default a $0.0\text{ rad}$. In tutti gli altri casi ammissibili, per garantire stabilità numerica ed evitare divisioni per grandezze prossime a zero, si estrae il segno del denominatore determinando $q_1$ come:
+\[
+    \fcolorbox{primaryNavy!40}{softBg}{$\displaystyle
+        q_1 = \text{atan2}\bigl(y \cdot \text{sgn}(d_3 \sin(q_2) + a_2 \cos(q_2)), \; x \cdot \text{sgn}(d_3 \sin(q_2) + a_2 \cos(q_2))\bigr)
+    $}
+\]
+
+
+% AA CAPITOLO 2
+
+\chapter{Analisi Dello Spazio Di Lavoro E Ammissibilità}
+\label{chap:spazio_lavoro}
+
+\section{Spazio Operativo Primario ($WS_{1}$)}
+Lo \textbf{Spazio Operativo Primario} $WS_{1}$ (Spazio Raggiungibile) rappresenta l'insieme di tutti i punti cartesiani che l'End-Effector può intercettare con almeno una configurazione ammissibile dei giunti. Poiché il primo giunto rotatorio consente una rotazione completa attorno all'asse verticale ($q_1 \in [-\pi, \pi]$), lo spazio operativo $WS_{1}$ presenta una simmetria cilindrica perfetta rispetto all'asse $Z_0$.
+
+Lo spazio tridimensionale è pertanto generato dalla rotazione completa attorno all'asse $Z_0$ di una sezione piana descritta nel piano verticale $(r, z)$, dove $r = \sqrt{x^2 + y^2}$ rappresenta la distanza radiale dall'asse verticale di rotazione e $z$ identifica la quota rispetto all'origine del frame locale $\text{RF}_0$.
+
+Dalle definizioni geometriche costruttive del manipolatore:
+\begin{align*}
+    d_{1} &= 2\text{jointRadius} + l_{1} + \text{jointRadius} = 3\text{jointRadius} + l_1 \\
+    a_{2} &= \text{jointRadius} + l_{2} + \frac{\text{boxSize}}{2} \\
+    d_{3} &= q_{3} - \left(l_{3} + \frac{\text{boxSize}}{2}\right)
+\end{align*}
+La distanza euclidea $R_{d}$ tra il centro del secondo giunto ($\text{RF}_1$, posto ad altezza $d_1$ sull'asse verticale) e l'End-Effector è espressa da:
+\[
+  R_{d} = \sqrt{a_2^2 + d_3^2} = \sqrt{\biggl[ \text{jointRadius} + l_{2} + \frac{\text{boxSize}}{2} \biggr]^{2} +  \biggl[ q_{3} - \left(l_{3} + \frac{\text{boxSize}}{2}\right) \biggr]^{2}}
+\]
+Tale distanza dipende unicamente dalla coordinata del giunto prismatico $q_{3} \in [0, l_{3}]$. Di conseguenza, la sezione verticale dello spazio operativo primario $WS_1$ è delimitata da due archi circolari concentrici di raggio minimo $R_{d,\min}$ e raggio massimo $R_{d,\max}$, entrambi centrati nell'origine del giunto di spalla posta in $(r=0, z=d_1)$:
+\begin{itemize}
+  \item \textbf{Circonferenza Esterna ($R_{d,\max}$):} Corrisponde alla massima estensione dello stelo prismatico, ottenuta quando il giunto si trova al limite inferiore di scorrimento ($q_3 = 0$):
+    \begin{align*}
+      R_{d,\max} &= \sqrt{\biggl[ \text{jointRadius} + l_{2} + \frac{\text{boxSize}}{2} \biggr]^{2} +  \biggl[ 0 - \left(l_{3} + \frac{\text{boxSize}}{2}\right) \biggr]^{2}} =\\
+      &= \sqrt{\biggl[ \text{jointRadius} + l_{2} + \frac{\text{boxSize}}{2} \biggr]^{2} +  \biggl[ l_{3} + \frac{\text{boxSize}}{2} \biggr]^{2}}
+    \end{align*}
+  \item \textbf{Circonferenza Interna ($R_{d,\min}$):} Corrisponde alla minima estensione dello stelo, ossia quando il giunto prismatico è completamente retratto ($q_3 = l_3$):
+    \begin{align*}
+      R_{d,\min} &= \sqrt{\biggl[ \text{jointRadius} + l_{2} + \frac{\text{boxSize}}{2} \biggr]^{2} +  \biggl[ l_{3} - \left(l_{3} + \frac{\text{boxSize}}{2}\right) \biggr]^{2}} = \\
+      &= \sqrt{\biggl[ \text{jointRadius} + l_{2} + \frac{\text{boxSize}}{2} \biggr]^{2} +  \biggl[ \cancel{l_{3}} - \cancel{l_{3}} - \frac{\text{boxSize}}{2} \biggr]^{2}} =\\
+      & = \sqrt{\biggl[ \text{jointRadius} + l_{2} + \frac{\text{boxSize}}{2} \biggr]^{2} +  \biggl[\frac{\text{boxSize}}{2} \biggr]^{2}}
+    \end{align*}
+\end{itemize}
+
+Il giunto 2 è limitato nell'intervallo angolare $q_{2} \in \left[-\frac{\pi}{2}, \frac{\pi}{4}\right]$. Questo moto rotatorio di elevazione trascina solidalmente sia il link 2 che il link 3 (il quale si estende ortogonalmente rispetto all'asse longitudinale del braccio):
+\begin{itemize}
+  \item Per $q_{2} = -\frac{\pi}{2}$, il secondo braccio si dispone in posizione verticale verso l'alto (parallelo all'asse del Link 1). Il box prismatico si orienta quindi in direzione orizzontale. L'End-Effector trasla lungo un segmento orizzontale a quota costante $z = d_1 + a_2$. Poiché il moto avviene nel verso negativo di $Z_{2}$, l'offset $d_{3}$ varia nell'intervallo negativo $[d_{3,\min}, d_{3,\max}]$, dove:
+  \begin{align*}
+    d_{3,\min} &= 0 - \left(l_{3} + \frac{\text{boxSize}}{2}\right) = - \left(l_{3} + \frac{\text{boxSize}}{2}\right) \\
+    d_{3,\max} &= l_3 - \left(l_{3} + \frac{\text{boxSize}}{2}\right) = - \frac{\text{boxSize}}{2}
+  \end{align*}
+  Di conseguenza, la distanza radiale $r = |d_3| = -d_{3}$ varia nell'intervallo:
+  \[
+    r \in \left[ -d_{3,\max}, -d_{3,\min} \right] = \left[ \frac{\text{boxSize}}{2}, l_3 + \frac{\text{boxSize}}{2} \right]
+  \]
+  \item Per $q_{2} = \frac{\pi}{4}$, il secondo braccio è inclinato di $45^\circ$ verso il basso rispetto all'orizzontale. Proiettando la posa dell'End-Effector sulle coordinate cilindriche $(r, z)$ si ricavano:
+  \begin{align*}
+    r &= a_{2}\cos(q_{2}) + d_{3} \sin(q_{2}) = a_{2}\cos\left(\frac{\pi}{4}\right) + d_{3} \sin\left(\frac{\pi}{4}\right) = \frac{\sqrt{2}}{2} (a_{2} + d_{3})\\
+    z &= d_{1} - a_{2} \sin(q_{2}) + d_{3} \cos(q_{2}) = d_{1} - a_{2} \sin\left(\frac{\pi}{4}\right) + d_{3} \cos\left(\frac{\pi}{4}\right) = d_{1} + \frac{\sqrt{2}}{2} (d_{3} - a_{2})
+  \end{align*}
+\end{itemize}
+Sottraendo la costante $d_1$ alla seconda equazione, quadrando e sommando:
+\begin{align*}
+  r^2 &= a_2^2 \cos^2(q_2) + d_3^2 \sin^2(q_2) + 2 a_2 d_3 \sin(q_2) \cos(q_2)\\
+  (z - d_1)^2 &= a_2^2 \sin^2(q_2) + d_3^2 \cos^2(q_2) - 2 a_2 d_3 \sin(q_2) \cos(q_2)
+\end{align*}
+Sommando membro a membro, i doppi prodotti si elidono:
+\begin{align*}
+  r^2 + (z - d_1)^2 &= a_2^2 \bigl(\cos^2(q_2) + \sin^2(q_2)\bigr) + d_3^2 \bigl(\sin^2(q_2) + \cos^2(q_2)\bigr) = a_2^2 + d_3^2
+\end{align*}
+Da cui, estraendo la radice quadrata:
+\[
+  \sqrt{r^2 + (z - d_1)^2} = \sqrt{a_2^2 + d_3^2} = R_d
+\]
+Lo spazio operativo complessivo $WS_1$ può essere descritto formalmente dall'insieme:
+\[
+  WS_1 = \left\{ (r, z) \in \mathbb{R}^2 \ \Big|\ R_{d,\min} \le \sqrt{r^2 + (z - d_1)^2} \le R_{d,\max}, \quad r \ge \frac{\text{boxSize}}{2}, \quad -\frac{\pi}{2} \le q_2(r, z) \le \frac{\pi}{4} \right\}
+\]
+in cui l'angolo $q_{2}(r, z)$ corrisponde alla configurazione frontale della cinematica inversa:
+\[
+  q_2 = \text{atan2}\biggl(d_{3} \cdot r - a_{2} (z - d_1), \; a_{2} \cdot r + d_{3} (z - d_1)\biggr)
+\]
+
+\section{Soluzioni Ammissibili Per $q_3$}
+La variabile $q_{3}$ definisce la traslazione dello stelo prismatico, limitata superiormente dalla lunghezza fisica del link $l_3 = 0.35\text{ m}$:
+\[
+    q_3 \in [0, \; l_{3}] \quad\longrightarrow\quad q_{3} \in [0, \; 0.35]\text{ m}
+\]
+Il limite inferiore $q_3 = 0$ identifica la massima estensione utile, mentre $q_3 = 0.35\text{ m}$ corrisponde alla posizione completamente retratta. L'offset locale $d_{3}$ lungo $Z_{2}$ è dato da:
+\[
+    d_{3} = q_{3} - \biggl(l_3 + \frac{\text{boxSize}}{2}\biggr) = q_{3} - \biggl(0.35 + \frac{0.10}{2}\biggr) = q_{3} - 0.40\text{ m}
+\]
+Sostituendo i valori limite di $q_3$:
+\begin{align*}
+    q_{3, \min} = 0\text{ m} &\quad\longrightarrow\quad d_{3, \min} = 0 - 0.40 = -0.40\text{ m}\\
+    q_{3, \max} = 0.35\text{ m} &\quad\longrightarrow\quad d_{3, \max} = 0.35 - 0.40 = -0.05\text{ m}
+\end{align*}
+Ne consegue che l'offset $d_3$ appartiene strettamente all'intervallo:
+\[
+    d_{3} \in [-0.40, \; -0.05]\text{ m}
+\]
+assumendo valori unicamente negativi. Ciò garantisce che l'End-Effector si trovi costantemente al di sotto del box prismatico, rispettando un franco minimo di $0.05\text{ m}$ e uno sbraccio massimo di $0.40\text{ m}$.
+
+\section{Soluzioni Ammissibili Per $q_2$}
+La variabile $q_{2}$ individua la rotazione della spalla attorno all'asse $Z_{1}$ della convenzione DH (asse locale $Y$ in URDF). I limiti imposti sono:
+\[
+    q_2 \in \left[-\frac{\pi}{2}, \; \frac{\pi}{4}\right]\text{ rad} \quad\longrightarrow\quad q_{2} \in [-1.571, \; 0.785]\text{ rad} \quad ([-90^\circ, \; 45^\circ])
+\]
+Il limite inferiore $q_{2, \min} = -\frac{\pi}{2}$ ($-90^\circ$) corrisponde al braccio orientato verticalmente verso l'alto (parallelo alla colonna Link 1), eliminando ridondanze cinematiche poiché ogni punto nello spazio retrostante viene coperto ruotando la base azimutale $q_1$. Il limite superiore $q_{2, \max} = \frac{\pi}{4}$ ($+45^\circ$) arresta l'inclinazione del braccio verso il basso per prevenire urti e auto-collisioni con la colonna, escludendo contemporaneamente la soluzione all'indietro $q_{2,\text{Back}}$.
+
+\section{Soluzioni Ammissibili Per $q_1$}
+La variabile $q_{1}$ definisce l'angolo di rotazione del giunto azimutale di base attorno all'asse verticale $Z_0$:
+\[
+    q_1 \in [-\pi, \; \pi]\text{ rad} \quad\longrightarrow\quad q_{1} \in [-3.142, \; 3.142]\text{ rad} \quad ([-180^\circ, \; 180^\circ])
+\]
+La posizione di Home $q_1 = 0$ allinea il robot lungo la direzione positiva dell'asse globale $X_{\text{world}}$. L'intervallo garantisce un'escursione completa di $360^\circ$ per presidiare l'intero piano di lavoro circostante, bloccando tuttavia avvolgimenti plurimi che comporterebbero torsioni critiche sul cablaggio interno.
+
+
+% AA CAPITOLO 3
+
+\chapter{Analisi Delle Singolarità Cinematiche}
+\label{chap:singolarita}
+
+\section{Matrice Jacobiana Posizionale}
+I punti di singolarità cinematica rappresentano configurazioni nello spazio dei giunti in cui il manipolatore subisce una caduta locale di rango, perdendo la capacità di sviluppare velocità cartesiane lungo determinate direzioni dello spazio operativo. In tali condizioni le velocità di giunto necessarie per inseguire una traiettoria cartesiana regolare tenderebbero teoricamente a infinito.
+
+Tali condizioni si individuano esaminando la \textbf{matrice Jacobiana Posizionale} $\bm{J}_p(\bm{q})$, la quale mappa le velocità dei giunti $\bm{\dot{q}} = [\dot{q}_1, \dot{q}_2, \dot{q}_3]^T$ nelle velocità lineari del TCP $\bm{\dot{p}} = [\dot{x}, \dot{y}, \dot{z}]^T$:
+\[
+    \bm{\dot{p}} = \bm{J}_p(\bm{q}) \bm{\dot{q}}
+\]
+
+Essendo la matrice quadrata ($3 \times 3$), la singolarità corrisponde all'annullamento del suo determinante:
+\[
+    \det(\bm{J}_p(\bm{q})) = 0
+\]
+
+Dalle equazioni della cinematica diretta:
+\begin{align*}
+    {}^{0}\mathbf{d}_{\text{EE}} =
+    \begin{bmatrix}
+        d_3 \sin(q_2) \cos(q_1) + a_2 \cos(q_1) \cos(q_2)\\
+        d_3 \sin(q_1) \sin(q_2) + a_2 \sin(q_1) \cos(q_2) \\
+        d_3 \cos(q_2) + d_1 - a_2 \sin(q_2)
+    \end{bmatrix}
+    \quad\longrightarrow\quad
+    \begin{cases}
+        x = d_3 \sin(q_2) \cos(q_1) + a_2 \cos(q_1) \cos(q_2)\\
+        y = d_3 \sin(q_1) \sin(q_2) + a_2 \sin(q_1) \cos(q_2) \\
+        z = d_3 \cos(q_2) + d_1 - a_2 \sin(q_2)
+    \end{cases}
+\end{align*}
+Calcolando le derivate parziali rispetto a ciascuna coordinata di giunto:
+\begin{align*}
+    \frac{\partial x}{\partial q_1} &= d_{3}\sin(q_{2})(-\sin(q_{1})) + a_2\cos(q_{2})(-\sin(q_{1})) = -\bigl[\textcolor{mathRed}{d_{3}\sin(q_{2}) + a_{2}\cos(q_{2})}\bigr]\sin(q_{1})\\
+    \frac{\partial x}{\partial q_2} &= d_{3}\cos(q_{1})\cos(q_{2}) + a_{2}\cos(q_{1})(-\sin(q_{2})) = \bigl[\textcolor{mathBlue}{d_{3}\cos(q_{2}) - a_{2}\sin(q_{2})}\bigr]\cos(q_{1}) \\
+    \frac{\partial x}{\partial q_3} &= \sin(q_{2})\cos(q_{1})\frac{\partial d_3}{\partial q_3} = \sin(q_{2})\cos(q_{1})\\
+    \frac{\partial y}{\partial q_1} &= d_{3}\sin(q_{2})\cos(q_{1}) + a_{2}\cos(q_{2})\cos(q_{1}) = \bigl[\textcolor{mathRed}{d_{3}\sin(q_{2}) + a_{2}\cos(q_{2})}\bigr]\cos(q_{1}) \\
+    \frac{\partial y}{\partial q_2} &= d_3 \sin(q_1) \cos(q_2) + a_2 \sin(q_1) (-\sin(q_2)) = \bigl[\textcolor{mathBlue}{d_{3}\cos(q_{2}) - a_{2}\sin(q_{2})}\bigr] \sin(q_1) \\
+    \frac{\partial y}{\partial q_3} &= \sin(q_{1})\sin(q_{2})\frac{\partial d_3}{\partial q_3} = \sin(q_{1})\sin(q_{2}) \\
+    \frac{\partial z}{\partial q_1} &= 0\\
+    \frac{\partial z}{\partial q_2} &= d_{3}(-\sin(q_{2})) - a_{2}\cos(q_{2}) = -\bigl[\textcolor{mathRed}{d_{3}\sin(q_{2}) + a_{2}\cos(q_{2})}\bigr]\\
+    \frac{\partial z}{\partial q_3} &= \cos(q_{2})\frac{\partial d_3}{\partial q_3} = \cos(q_{2})
+\end{align*}
+Ponendo per brevità algebrica $\textcolor{mathRed}{A = d_{3}\sin(q_{2}) + a_{2}\cos(q_{2})}$ e $\textcolor{mathBlue}{B = d_{3}\cos(q_{2}) - a_{2}\sin(q_{2})}$, la matrice assume la forma:
+\[
+\bm{J}_p(\bm{q}) =
+\begin{bmatrix}
+    -A \, \sin(q_{1}) & B \, \cos(q_{1}) & \sin(q_2) \cos(q_1) \\
+    A \, \cos(q_{1}) & B \, \sin(q_{1}) & \sin(q_2) \sin(q_1) \\
+    0 & -A & \cos(q_2)
+\end{bmatrix}
+\]
+Sviluppando il determinante lungo la terza riga:
+\[
+    \det(\bm{J}_p(\bm{q})) = - A \bigl(A \sin(q_{2}) + B \cos(q_{2})\bigr).
+\]
+Sostituendo le definizioni di $A$ e $B$:
+\begin{align*}
+    \det(\bm{J}_p(\bm{q})) &= - \bigl[d_{3}\sin(q_{2}) + a_{2}\cos(q_{2})\bigr] \Bigl([d_{3}\sin(q_{2}) + a_{2}\cos(q_{2})] \sin(q_{2}) + [d_{3}\cos(q_{2}) - a_{2}\sin(q_{2})] \cos(q_{2})\Bigr) =\\
+    &= - \bigl[d_{3}\sin(q_{2}) + a_{2}\cos(q_{2})\bigr] \Bigl(d_{3}\sin^{2}(q_{2}) \cancel{+ a_{2}\cos(q_{2})\sin(q_{2})} + d_{3}\cos^{2}(q_{2}) \cancel{- a_{2}\sin(q_{2})\cos(q_{2})}\Bigr) =\\
+    &= - \bigl[d_{3}\sin(q_{2}) + a_{2}\cos(q_{2})\bigr] \underbrace{\Bigl(d_{3}[\sin^{2}(q_{2}) + \cos^{2}(q_{2})]\Bigr)}_{\text{Identità}} =\\
+    &= - d_{3}\bigl[d_{3}\sin(q_{2}) + a_{2}\cos(q_{2})\bigr]
+\end{align*}
+L'annullamento del determinante produce due condizioni di singolarità indipendenti:
+\begin{align*}
+    \text{Condizione 1 (Singolarità prismatica):} \quad & d_3 = 0 \\
+    \text{Condizione 2 (Singolarità di spalla):} \quad & d_3 \sin(q_2) + a_2 \cos(q_2) = 0
+\end{align*}
+\newpage
+\section{Analisi Della Singolarità Del Giunto Prismatico ($d_3 = 0$)}
+La prima condizione $d_3 = 0$ corrisponderebbe geometricamente all'annullamento della distanza tra l'origine di $\text{RF}_{\text{EE}}$ e l'origine di $\text{RF}_2$.
+
+Considerando i vincoli fisici dello stelo ($q_3 \in [0, \; 0.35]\text{ m}$):
+\[
+    d_3 = q_3 - \biggl(l_3 + \frac{\text{boxSize}}{2}\biggr) = q_3 - 0.40\text{ m} \quad\longrightarrow\quad d_3 \in [-0.40, \; -0.05]\text{ m}
+\]
+Poiché il valore massimo ammissibile è pari a $-0.05\text{ m}$ (in battuta sul box), la coordinata $d_3$ è strettamente negativa e \textbf{non può mai annullarsi}. Tale singolarità risulta pertanto \textbf{fisicamente non raggiungibile}.
+
+\section{Analisi Della Singolarità Di Allineamento ($r = 0$)}
+La seconda condizione si manifesta quando la proiezione radiale sul piano orizzontale si annulla:
+\[
+d_3 \sin(q_2) + a_2 \cos(q_2) = 0
+\]
+Geometricamente, ciò accade quando il target giace esattamente lungo l'asse azimutale $Z_0$. In tale configurazione qualsiasi rotazione attorno a $q_1$ produce unicamente una rotazione del TCP su se stesso senza causare traslazione, riducendo di uno i gradi di mobilità cartesiana.
+
+Esplicitando la tangente dell'angolo critico:
+\begin{alignat*}{3}
+    & d_3 \sin(q_2) + a_2 \cos(q_2) = 0 &\quad\longrightarrow\quad & d_3 \sin(q_2) = - a_2 \cos(q_2) \\
+    & \frac{\sin(q_{2})}{\cos(q_{2})} = - \frac{a_{2}}{d_{3}} &\quad\longrightarrow\quad & \tan(q_{2}) = - \frac{a_{2}}{d_{3}}
+\end{alignat*}
+Poiché $a_2 = 0.55\text{ m} > 0$ e $d_3 \in [-0.40, \; -0.05]\text{ m} < 0$, il rapporto $-\frac{a_2}{d_3}$ è strettamente positivo, imponendo un angolo di singolarità positivo ($q_2 > 0$).
+
+Il valore minimo dell'angolo critico si ottiene alla massima estensione ($d_3 = -0.40\text{ m}$):
+\[
+    \tan(q_{2,\text{sing}}) = -\frac{0.55}{-0.40} = 1.375 \quad\longrightarrow\quad q_{2,\text{sing}} = \arctan(1.375) \approx 0.942\text{ rad} \ (\approx 53.97^\circ)
+\]
+Il valore massimo si registra invece a stelo completamente retratto ($d_3 = -0.05\text{ m}$):
+\[
+    \tan(q_{2,\text{sing}}) = -\frac{0.55}{-0.05} = 11.0 \quad\longrightarrow\quad q_{2,\text{sing}} = \arctan(11.0) \approx 1.480\text{ rad} \ (\approx 84.81^\circ)
+\]
+L'intervallo delle configurazioni singolari risulta:
+\[
+    q_{2,\text{sing}} \in [53.97^\circ, \; 84.81^\circ]
+\]
+I vincoli fisici imposti sul giunto di spalla limitano l'escursione all'intervallo:
+\[
+    q_2 \in \left[-\frac{\pi}{2}, \; \frac{\pi}{4}\right] \quad\longrightarrow\quad q_2 \in [-90^\circ, \; 45^\circ]
+\]
+Essendo il limite fisico massimo pari a $+45^\circ$, l'angolo minimo di singolarità di spalla ($53.97^\circ$) si colloca interamente all'esterno dello spazio di lavoro del manipolatore.
+
+La singolarità di spalla risulta pertanto \textbf{fisicamente non raggiungibile}, confermando che la progettazione dei limiti di corsa garantisce la piena regolarità cinematica del manipolatore in ogni punto ammissibile.
+
+\end{document}

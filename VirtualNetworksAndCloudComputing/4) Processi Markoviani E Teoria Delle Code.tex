@@ -1,0 +1,2690 @@
+﻿% AA Classe Del Documento
+\documentclass[11pt, a4paper]{article}
+
+% AA Tipografia E Lingua
+% BB Lingua E Codifica Font
+\usepackage[italian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+% BB Geometria Pagina E Microtipografia
+\usepackage[margin=2cm, top=1.5cm, bottom=1.5cm]{geometry}
+\usepackage{parskip}
+\usepackage{microtype}
+
+% AA Gestione Dei Colori
+% BB Pacchetto Colori
+\usepackage[table]{xcolor}
+
+% BB Palette Colori Personalizzata
+\definecolor{darkgreen}{RGB}{0,100,0}
+\definecolor{theoryblue}{RGB}{0,84,147}
+\definecolor{backcolour}{RGB}{245,245,245}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+
+\definecolor{codebg}{HTML}{F8F9FA}
+\definecolor{codeframe}{HTML}{E2E8F0}
+\definecolor{codekeywords}{HTML}{7C3AED}
+\definecolor{codedocker}{HTML}{0284C7}
+\definecolor{codecomments}{HTML}{64748B}
+\definecolor{codestrings}{HTML}{0D9488}
+\definecolor{codenumbers}{HTML}{94A3B8}
+\definecolor{codetext}{HTML}{1E293B}
+
+% AA Matematica E Notazione Scientifica
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{mathtools}
+\usepackage{siunitx}
+
+% BB OTTIMIZZAZIONE MATRICI LUNGHE PER LA STAMPA
+\setlength{\arraycolsep}{10pt}
+\usepackage{bm}
+
+% AA Tabelle Ed Allineamenti
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{arydshln}
+
+% AA Grafica E Disegno Vettoriale
+% BB Gestione Figure E Posizionamento
+\usepackage{graphicx}
+\graphicspath{{./Images/Orchestrazione/}}
+\usepackage{subcaption}
+\usepackage{float}
+
+% BB TikZ E Pgfplots
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, patterns, angles, quotes, calc}
+\usetikzlibrary{positioning}
+\usetikzlibrary{shapes.geometric}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+% AA Listati Di Codice (Listings)
+% BB Configurazione Generale
+\usepackage{listings}
+\usepackage{upquote}
+
+% BB Configurazione Generale
+\lstset{
+    basicstyle=\ttfamily\footnotesize\color{codetext},
+    backgroundcolor=\color{codebg},
+    frame=single,
+    rulecolor=\color{codeframe},
+    framesep=6pt,
+    xleftmargin=8pt,
+    xrightmargin=8pt,
+    breaklines=true,
+    breakatwhitespace=true,
+    showstringspaces=false,
+    keepspaces=true,
+    columns=flexible,
+    upquote=true,
+    tabsize=2,
+    captionpos=b,
+    % Stili e Colori Predefiniti Globali
+    keywordstyle=\bfseries\color{codekeywords},
+    commentstyle=\itshape\color{codecomments},
+    stringstyle=\color{codestrings}
+}
+
+% BB Definizione Dei Linguaggi
+
+% CC YAML
+\lstdefinelanguage{yaml}{
+    keywords={true,false,null,yes,no,on,off},
+    keywordstyle=\bfseries\color{codekeywords},
+    comment=[l]{\#},
+    commentstyle=\itshape\color{codecomments},
+    stringstyle=\color{codestrings},
+    morestring=[b]',
+    morestring=[b]",
+    sensitive=false
+}
+
+% CC Dockerfile
+\lstdefinelanguage{dockerfile}{
+    keywords={FROM, RUN, CMD, LABEL, EXPOSE, ENV, ADD, COPY, ENTRYPOINT,
+              VOLUME, USER, WORKDIR, ARG, ONBUILD, STOPSIGNAL, HEALTHCHECK,
+              SHELL, AS},
+    keywordstyle=\bfseries\color{codedocker},
+    comment=[l]{\#},
+    commentstyle=\itshape\color{codecomments},
+    stringstyle=\color{codestrings},
+    morestring=[b]",
+    morestring=[b]',
+    sensitive=true
+}
+
+% CC INI
+\lstdefinelanguage{ini}{
+    comment=[l]{\#},
+    morecomment=[l]{;},
+    commentstyle=\itshape\color{codecomments},
+    stringstyle=\color{codestrings},
+    morestring=[b]",
+    morestring=[b]',
+    keywordstyle=\bfseries\color{codekeywords},
+    sensitive=false
+}
+
+% CC JSON
+\lstdefinelanguage{json}{
+    keywords={true,false,null},
+    keywordstyle=\bfseries\color{codekeywords},
+    comment=[l]{//},
+    morecomment=[s]{/*}{*/},
+    commentstyle=\itshape\color{codecomments},
+    stringstyle=\color{codestrings},
+    morestring=[b]",
+    sensitive=true
+}
+
+% CC PYTHON (Dialetto nativo pulito)
+\lstset{defaultdialect=[3]Python}
+\lstdefinelanguage{python}[]{Python}{
+    morekeywords={as, async, await, True, False, None},
+    sensitive=true
+}
+
+% CC BASH / SHELL
+\lstdefinelanguage{bash}[]{sh}{
+    morekeywords={docker, cd, run, build, stop, rm, rmi, push, pull, network, compose, openstack, rq, worker, keystone-manage, time, sleep, echo, exit, sudo, export, systemctl},
+    sensitive=true
+}
+
+% CC HTML (Autonomo, previene il loop infinito del parser XML/HTML)
+\lstdefinelanguage{html}{
+    keywords={img, src, alt, class, id, div, span, table, tr, td, th, href, a, p, h1, h2, h3, form, input, button},
+    keywordstyle=\bfseries\color{codekeywords},
+    comment=[s]{<!--}{-->},
+    commentstyle=\itshape\color{codecomments},
+    stringstyle=\color{codestrings},
+    morestring=[b]",
+    morestring=[b]',
+    sensitive=false
+}
+
+% CC SQL / CYPHER (Autonomo con supporto per // di Cypher)
+\lstdefinelanguage{sql}{
+    keywords={MATCH, RETURN, DETACH, DELETE, WHERE, CREATE, SET, WITH, ORDER, BY, ASC, DESC, LIMIT, SELECT, INSERT, INTO, VALUES, FROM, UPDATE, DROP, TABLE, JOIN, ON, AND, OR, NOT},
+    keywordstyle=\bfseries\color{codekeywords},
+    comment=[l]{//},
+    morecomment=[l]{--},
+    commentstyle=\itshape\color{codecomments},
+    stringstyle=\color{codestrings},
+    morestring=[b]',
+    morestring=[b]",
+    sensitive=false
+}
+
+% AA Algoritmi E Pseudocodice
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+\SetKwData{Dati}{Input}
+\SetKwData{Risultato}{Output}
+\SetKw{Inizializza}{Inizializza}
+\SetKwFor{Per}{per}{fare}{fine per}
+\SetKwComment{Commento}{// }{}
+
+% AA Struttura, Titoli Ed Ambienti
+% BB Personalizzazione Titoli Sezioni
+\usepackage{titlesec}
+\titleformat{\section}{\normalfont\LARGE\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\Large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalfont\large\bfseries}{\thesubsubsection}{1em}{}
+
+% BB Teoremi Ed Ambienti Ausiliari
+\usepackage{comment}
+\newtheorem{theorem}{Definizione}
+
+% BB Liste Ed Elenchi Puntati
+\usepackage{enumitem}
+\setlist{noitemsep}
+\usepackage{pifont}
+
+% AA Riferimenti, Link Ipertestuali E Segnalibri
+\usepackage[unicode]{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+    citecolor=blue,
+    pdftitle={3.3) Orchestrazione Delle Risorse In Sistemi Distribuiti},
+    pdfauthor={Francesco Lo Verde},
+    pdfpagemode=FullScreen,
+}
+\usepackage{bookmark}
+
+% AA Metadati Del Documento
+\title{3.3) Orchestrazione Delle Risorse In Sistemi Distribuiti}
+
+\date{\today}
+
+\author{Francesco Lo Verde}
+\begin{document}
+\maketitle
+
+
+% AA Markov_Processes [1-33]     ------------------------------------------------------------
+% CAPITOLO: PROCESSI MARKOVIANI E TEORIA DELLE CODE NEI SISTEMI DISTRIBUITI
+
+\section{Introduzione e Motivazioni Ingegneristiche Nel Cloud Computing}
+
+Nei moderni paradigmi di calcolo distribuito, virtualizzazione e architetture \emph{cloud-native}, l'allocazione efficiente delle risorse condivise rappresenta la sfida progettuale cardine. Che si tratti di istanze di calcolo in esecuzione su cluster Kubernetes, di funzioni \emph{Serverless} attivate all'estremo della rete (\emph{edge computing}), o di tabelle di flusso programmate nei commutatori tramite \emph{Software-Defined Networking} (SDN), il comportamento del sistema è intrinsecamente dinamico e soggetto a variabilità stocastica.
+
+La \textbf{teoria delle code} costituisce il quadro formale primario per modellare, analizzare e dimensionare analiticamente le infrastrutture in cui flussi discreti di richieste competono per accedere a un insieme finito di servitori. In assenza di un approccio quantitativo rigoroso, la gestione delle risorse oscilla inevitabilmente tra due scenari deleteri: il \emph{sovradimensionamento cronico} (\emph{over-provisioning}), che comporta un'esplosione insostenibile dei costi operativi (OpEx), e il \emph{sottodimensionamento} (\emph{under-provisioning}), che genera congestione, code incontrollate, decadimento delle prestazioni e violazione sistematica degli accordi sui livelli di servizio (\emph{Service Level Agreements}, SLA).
+
+\subsection{Obiettivi Della Modellazione Matematica}
+
+L'applicazione sistematica della teoria delle code garantisce quattro vantaggi operativi fondamentali nell'ingegneria del software e delle infrastrutture cloud:
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Predittività}: consente di anticipare con precisione analitica il comportamento, i tempi di risposta e l'accumulo di carico del sistema sotto regimi di traffico variabili o picchi transitori imprevisti.
+    \item \textbf{Ottimizzazione}: fornisce le formulazioni chiuse per determinare la configurazione ottima delle risorse fisiche e virtuali (capacità di calcolo, memoria, ampiezza di banda, dimensione dei buffer), minimizzando il footprint infrastrutturale a parità di vincoli prestazionali.
+    \item \textbf{Affidabilità e Resilienza}: permette l'identificazione precoce dei colli di bottiglia (\emph{bottlenecks}) architetturali, dei punti singoli di fallimento e dei meccanismi di propagazione a cascata dei ritardi lungo le catene di microservizi.
+    \item \textbf{Efficienza Economica}: abilita politiche di autoscaling predittivo volte a massimizzare l'utilizzazione dei servitori, riducendo le risorse dormienti e ottimizzando l'allocazione orizzontale e verticale.
+\end{enumerate}
+
+Nell'ingegneria dei sistemi, tali modelli analitici (spesso risolti in forma chiusa o numerica mediante ambienti computazionali avanzati quali \texttt{Mathematica} o \texttt{MATLAB}) non operano in modo isolato. Essi si integrano a valle con \textbf{strumenti di simulazione stocastica ad eventi discreti} (quali le librerie Python \texttt{SimPy} o suite come \texttt{AnyLogic}), indispensabili per validare scenari topologici eterogenei privi di trattabilità puramente analitica. Infine, il ciclo di vita ingegneristico si chiude con l'alimentazione e la calibrazione dei modelli attraverso piattaforme di telemetria e \textbf{osservabilità moderna} basate sullo standard \texttt{Prometheus} e cruscotti di visualizzazione \texttt{Grafana}, confrontando le distribuzioni teoriche ricavate a priori con le metriche raccolte sul campo.
+
+\subsection{Casi Applicativi Reali Nelle Architetture Distribuite}
+
+Per cogliere l'impatto applicativo della teoria delle code, è opportuno esaminare alcuni problemi sistemistici concreti tipici dell'ingegneria delle reti e del cloud:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Offloading in Architetture Hybrid Cloud}: dimensionare la soglia di accodamento locale e la capacità computazionale del data center privato in modo tale che la probabilità di saturazione e conseguente reindirizzamento (\emph{cloud bursting} o \emph{offloading}) verso il provider pubblico rimanga rigorosamente inferiore a un valore limite prefissato $\epsilon$.
+    \item \textbf{Intermediazione di Messaggi (\emph{Broker}) nei Sistemi Distribuiti}: quantificare analiticamente l'impatto introdotto dall'inserimento di un message broker asincrono (ad esempio, cluster Kafka o RabbitMQ) sulla latenza media e sul novantanovesimo percentile del tempo di accesso a un servizio rispetto a un paradigma sincrono RPC/REST punto-a-punto.
+    \item \textbf{Dimensionamento dei Pool di Server Multi-Tenant}: determinare il numero minimo di macchine virtuali o container attivi all'interno di un \emph{tenant} per garantire che le richieste in arrivo siano servite immediatamente, senza accumulo in coda, con una probabilità pari ad almeno il $99.9\%$.
+    \item \textbf{Allocazione di Indirizzi IP nei Servizi DHCP e SDN}: dimensionare la dimensione del blocco CIDR di una subnet cloud in modo che, dato il tasso medio di allocazione e la durata media del \emph{lease}, la probabilità che un'istanza virtuale freshly-spawned fallisca l'assegnazione per esaurimento del pool sia inferiore a una soglia trascurabile.
+    \item \textbf{Tuning dell'Autoscaling in Kubernetes}: determinare con precisione i valori minimi e massimi di repliche (\texttt{minReplicas} e \texttt{maxReplicas}) nel manifest di un \textbf{Horizontal Pod Autoscaler} (HPA), legando il target di utilizzazione della CPU al tempo di risposta medio tollerabile dagli endpoint esposti dal cluster.
+    \item \textbf{Ottimizzazione dei Connection Pool tra Frontend e Backend}: calcolare la cardinalità minima delle connessioni persistenti TCP nel layer intermedio affinché la probabilità di saturazione del socket pool da parte delle sessioni concorrenti risulti rigidamente circoscritta.
+    \item \textbf{Sistemi Function-as-a-Service (FaaS) all'Edge}: stimare il tasso massimo sostenibile di invocazioni concorrenti di una funzione serverless affinché la somma del tempo di \emph{cold start}, del ritardo di accodamento e del tempo puro di esecuzione rispetti il vincolo temporale rigido dettato dall'applicazione robotica o industriale.
+\end{itemize}
+
+\subsection{Parametri e Metriche di Prestazione Fondamentali}
+
+La valutazione quantitativa del comportamento di un sistema dinamico (concentrato o distribuito) si articola lungo cinque dimensioni prestazionali:
+\begin{enumerate}
+    \item \textbf{Efficienza}: capacità di convertire le risorse computazionali allocate in lavoro utile senza sovradimensionamenti parassiti.
+    \item \textbf{Utilizzazione}: frazione di tempo in cui i servitori fisici o virtuali risultano effettivamente impegnati nell'elaborazione del carico.
+    \item \textbf{Ritardo}: tempo trascorso dalle entità nel sistema, scomponibile nel tempo di pura attesa e nel tempo netto di servizio.
+    \item \textbf{Perdita}: frazione o probabilità di richieste scartate (\emph{dropped}) a causa dell'indisponibilità di servitori liberi o dell'esaurimento dei buffer.
+    \item \textbf{Indisponibilità (\emph{Downtime})}: percentuale di tempo in cui il sistema transita in stati di congestione irreversibile o guasto funzionale.
+\end{enumerate}
+
+\newpage
+
+% SEZIONE: MODELLO ASTRATTO DI SERVIZIO E TASSONOMIA DELLE CODE
+
+\section{Modello Astratto Del Sistema Di Servizio}
+
+Per condurre un'analisi rigorosa e indipendente dalle specificità implementative (siano esse socket di rete, thread di un sistema operativo o processi distribuite), è necessario astrarre il funzionamento dell'infrastruttura attraverso un \textbf{modello di servizio} universale, composto da sorgenti di richieste, uno o più elementi di accodamento (\emph{buffer}) e un insieme di servitori.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Markov processes and Markovian queues.pdf"] Diagramma del modello di servizio: sorgenti di richieste, processo di arrivo, regole di gestione della coda di capacità L e processo di servizio con m servitori paralleli — Slide 6 / Pagina 6 del PDF
+
+Come schematizzato nella figura logica del sistema, l'architettura si articola nei seguenti blocchi funzionali:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Insieme degli Utenti o Sorgenti di Richieste (\emph{Set of Customers})}: l'insieme delle entità esterne che generano le istanze di lavoro.
+    \item \textbf{Processo di Arrivo (\emph{Arrival Process})}: la caratterizzazione stocastica con cui le richieste si presentano all'ingresso del sistema.
+    \item \textbf{Buffer e Regole di Gestione (\emph{Queue/Queues \& Management Rules})}: le strutture di memorizzazione temporanea che accolgono le richieste quando tutti i servitori sono occupati, unitamente alla disciplina di estrazione (\emph{scheduling}) adottata.
+    \item \textbf{Processo di Servizio (\emph{Service Process})}: la dinamica di completamento del carico di lavoro erogato da una batteria di $m$ servitori indipendenti o coordinati.
+\end{itemize}
+
+\subsection{Risoluzione Delle Contese e Classificazione Dei Sistemi}
+
+In qualunque sistema a risorse finite, quando il tasso di arrivo supera temporaneamente la capacità complessiva dei servitori, si genera una contesa. La modalità con cui tale contesa viene risolta determina la natura strutturale del sistema:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Sistemi a Perdita Pura (\emph{Pure Loss Systems})}: caratterizzati dall'assenza totale di capacità di accodamento ($L = 0$). Ogni richiesta che giunge quando tutti i servitori sono occupati viene immediatamente rigettata (\emph{blocked and cleared}) e persa per sempre. Tipico esempio sono i sistemi telefonici tradizionali e i canali di comunicazione TDM senza buffering.
+    \item \textbf{Sistemi Orientati Alla Perdita (\emph{Loss-Oriented Systems})}: possiedono un buffer di dimensione finita limitata ($L$ piccolo). Le richieste in eccesso possono sostare in coda fino a saturazione della capacità massima; ogni ulteriore arrivo a buffer saturo subisce lo scarto (\emph{packet drop}).
+    \item \textbf{Sistemi Orientati Al Ritardo (\emph{Delay-Oriented Systems})}: dispongono di una capacità di memorizzazione molto elevata ($L$ grande), dimensionata in modo tale da rendere la frequenza di scarto statisticamente trascurabile a scapito di un aumento del tempo medio di attesa.
+    \item \textbf{Sistemi con Ritardo Senza Perdita (\emph{Lossless Delay Systems})}: buffer idealmente infinito ($L \to \infty$) o capacità tale da poter ospitare l'intera popolazione generatrice finita di utenti ($L \ge n - m$). Nessuna richiesta viene mai scartata dal sistema; l'unica degradazione osservabile risiede nell'incremento della latenza di accodamento.
+\end{itemize}
+
+I parametri prestazionali salienti differiscono radicalmente a seconda della tipologia:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Metriche per sistemi a perdita}:
+    \begin{itemize}
+        \item Frequenza o probabilità di rifiuto delle richieste (\emph{blocking probability}).
+        \item Frequenza effettiva di richieste completate con successo (\emph{throughput}).
+        \item Durata temporale media e varianza dei periodi di congestione (\emph{busy periods}).
+    \end{itemize}
+    \item \textbf{Metriche per sistemi ad attesa}:
+    \begin{itemize}
+        \item Tempo medio di attesa in coda ($W$).
+        \item Tempo medio totale trascorso nel sistema ($T$).
+        \item Numero medio di richieste in coda ($N_q$) e presenti globalmente nell'intero sistema ($N$).
+    \end{itemize}
+\end{itemize}
+
+\subsection{Elementi Descrittivi Fondamentali e Regole Di Accodamento}
+
+Un sistema di code è univocamente formalizzato dai seguenti elementi strutturali:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Cardinalità della Popolazione ($n$)}: può essere \textbf{infinita} (il tasso di arrivo delle nuove richieste non risente del numero di utenti già in trattamento o in attesa) oppure \textbf{finita} (il tasso effettivo di generazione decresce man mano che gli utenti si accumulano nel sistema, introducendo un fenomeno di retroazione intrinseco).
+    \item \textbf{Processo degli Arrivi}: quantificato dalla frequenza media $\lambda$, dalla distribuzione dei tempi di interarrivo e dai relativi momenti statistici superiori.
+    \item \textbf{Capacità del Sistema ($C$)}: definita come la somma tra il numero di servitori attivi $m$ e la massima capacità di memorizzazione della coda $L$:
+    \[
+        \boxed{C = m + L}
+    \]
+    \item \textbf{Numero di Servitori ($m$)}: cardinalità degli agenti elaborativi operanti in parallelo ($m=1$ per singolo servitore, $m>1$ per architetture multi-servitore).
+    \item \textbf{Disciplina di Accodamento (\emph{Service Discipline})}: la regola deterministica o probabilistica con cui le entità in attesa vengono assegnate al primo servitore disponibile:
+    \begin{itemize}
+        \item \textbf{FCFS} (\emph{First-Come, First-Served}): la richiesta servita per prima è quella arrivata per prima (standard per le code FIFO).
+        \item \textbf{SJF} (\emph{Shortest Job First}): priorità al compito con la minima richiesta di lavoro residua, ottima per minimizzare il tempo medio di attesa a patto di conoscere a priori la durata del task.
+        \item \textbf{Classi di Priorità}: differenziazione del traffico con preemption (\emph{preemptive priority}) o senza interruzione del servizio corrente (\emph{non-preemptive}).
+        \item Altre discipline: \textbf{LCFS} (\emph{Last-Come, First-Served}), \textbf{PS} (\emph{Processor Sharing}, tipico del time-sharing nei kernel dei sistemi operativi).
+    \end{itemize}
+\end{itemize}
+
+Incrociando la cardinalità della popolazione generatrice $n$ e la capacità complessiva del sistema $C = m + L$, si ottiene la classificazione analitica riassunta nello schema seguente:
+\begin{align*}
+    n \le C \;\land\; L = 0 &\implies \textbf{Sistema Senza Ritardo e Senza Perdita} \; (\text{No Delay, No Losses}) \\
+    n \le C \;\land\; L > 0 &\implies \textbf{Sistema a Ritardo Senza Perdita} \; (\text{Delay System, No Losses}) \\
+    n > C \;\land\; L = 0 &\implies \textbf{Sistema a Perdita Pura} \; (\text{Pure Loss System, No Waiting Time}) \\
+    n > C \;\land\; L > 0 &\implies \textbf{Sistema Orientato Alla Perdita} \; (\text{Loss-Oriented System, With Waiting})
+\end{align*}
+
+\subsection{Cronologia Temporale Delle Richieste}
+
+Per seguire puntualmente l'evoluzione microscopica del sistema, consideriamo la sequenza discreta degli istanti temporali di arrivo delle singole richieste, denotata con $(\tau_i)_{i=1, 2, \dots}$.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Markov processes and Markovian queues.pdf"] Diagramma temporale del processo di arrivo: istanti di arrivo tau_i e intervalli di interarrivo t_i — Slide 9 / Pagina 9 del PDF
+
+Gli istanti di arrivo $\tau_i$ costituiscono un insieme numerabile distribuito lungo l'asse dei tempi reali. Si definisce \textbf{tempo di interarrivo} $i$-esimo l'intervallo temporale trascorso tra l'arrivo della richiesta precedente $\tau_{i-1}$ e la richiesta corrente $\tau_i$:
+\[
+    \boxed{t_i = \tau_i - \tau_{i-1}, \quad i = 1, 2, \dots}
+\]
+con la convenzione $\tau_0 = 0$.
+
+Ciascuna richiesta $i$-esima introduce nel sistema una quantità intrinseca di lavoro da erogare, denotata con $L_i$. Se ciascuno degli $m$ servitori eroga lavoro a una velocità nominale costante $\gamma$ (espressa come quantità di lavoro completata per unità di tempo), il \textbf{tempo netto di servizio} $x_i$ necessario per espletare la richiesta $i$-esima risulta:
+\[
+    \boxed{x_i = \frac{L_i}{\gamma}, \quad i = 1, 2, \dots}
+\]
+
+Il ciclo di vita completo del cliente o richiesta $C_i$ all'interno del sistema di elaborazione è tracciato mediante il diagramma cronologico dei tempi.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Markov processes and Markovian queues.pdf"] Cronogramma del tempo di sistema: istanti di arrivo tau_i, inizio del servizio, attesa in coda w_i, servizio x_i e tempo totale di sistema s_i — Slide 11 / Pagina 11 del PDF
+
+La dinamica operativa evidenzia le seguenti variabili temporali per ciascun cliente $C_i$:
+\begin{itemize}[leftmargin=*]
+    \item $\tau_i$: istante esatto di arrivo nel sistema.
+    \item $w_i$: \textbf{tempo di attesa in coda} (\emph{queue waiting time}), ossia il lasso di tempo intercorso tra l'istante di arrivo $\tau_i$ e l'effettivo inizio del trattamento sul primo servitore resosi disponibile. Se all'arrivo vi è almeno un servitore inattivo, $w_i = 0$.
+    \item $x_i$: tempo di servizio effettivo.
+    \item $s_i$: \textbf{tempo totale di permanenza nel sistema} (\emph{system time} o \emph{turnaround latency}), dato rigorosamente dalla somma algebrica:
+    \[
+        \boxed{s_i = w_i + x_i}
+    \]
+\end{itemize}
+
+\subsection{Ipotesi Sui Processi Stocastici e Distribuzioni Limite}
+
+Le sequenze ordinate dei tempi di interarrivo $\{t_i\}_{i \ge 1}$ e dei tempi di servizio $\{x_i\}_{i \ge 1}$ costituiscono le realizzazioni di due processi stocastici distinti. Nel framework della teoria classica delle code, si assumono le seguenti ipotesi fondamentali:
+\begin{enumerate}
+    \item I processi $\{t_i\}$ e $\{x_i\}$ sono \textbf{stazionari}, o quantomeno stazionari in senso lato (\emph{Wide Sense Stationary}, WSS), implicando che media e correlazione temporale siano invarianti rispetto a traslazioni dell'asse temporale.
+    \item I processi di arrivo e di servizio sono reciprocamente \textbf{statisticamente indipendenti}.
+\end{enumerate}
+
+Sotto tali assunzioni di ergodicità e stazionarietà, all'aumentare indefinito del numero di eventi ($n \to \infty$), le variabili aleatorie discrete convergono a distribuzioni limite indipendenti dall'indice temporale:
+\begin{align*}
+    \tilde{t} &= \lim_{n \to \infty} t_n \implies P[\tilde{t} \le t] = A(t), \quad E[\tilde{t}] = \bar{t} = \frac{1}{\lambda} \\
+    \tilde{w} &= \lim_{n \to \infty} w_n \implies E[\tilde{w}] = \bar{w} = W \\
+    \tilde{x} &= \lim_{n \to \infty} x_n \implies E[\tilde{x}] = \bar{x} = \frac{1}{\mu} \\
+    \tilde{s} &= \lim_{n \to \infty} s_n \implies E[\tilde{s}] = \bar{s} = T
+\end{align*}
+dove:
+\begin{itemize}[leftmargin=*]
+    \item $\lambda$ rappresenta la \textbf{frequenza media degli arrivi} (richieste per unità di tempo), con valor medio del tempo di interarrivo pari a $\bar{t} = 1/\lambda$.
+    \item $\mu$ rappresenta il \textbf{tasso medio di servizio del singolo servitore} (capacità di smaltimento per unità di tempo), con durata media del servizio pari a $\bar{x} = 1/\mu$.
+    \item $W$ è il \textbf{tempo medio di attesa in coda a regime}.
+    \item $T$ è il \textbf{tempo medio totale di sistema a regime}, legato a $W$ dalla linearità dell'operatore di speranza matematica:
+    \[
+        \boxed{T = W + \bar{x} = W + \frac{1}{\mu}}
+    \]
+\end{itemize}
+
+\subsection{Notazione Sintetica Di Kendall}
+
+Per classificare in forma compatta e non ambigua qualsiasi configurazione di accodamento, si ricorre alla notazione simbolica standard introdotta da David G. Kendall:
+\[
+    \textbf{A / B / m / L / n}
+\]
+i cui campi corrispondono ordinatamente a:
+\begin{itemize}[leftmargin=*]
+    \item $\mathbf{A}$: Distribuzione di probabilità dei tempi di interarrivo ($A(t)$).
+    \item $\mathbf{B}$: Distribuzione di probabilità dei tempi di servizio erogati dai servitori ($B(t)$).
+    \item $\mathbf{m}$: Numero di servitori operanti in parallelo ($m \in \mathbb{N}^+$).
+    \item $\mathbf{L}$: Dimensione della capacità di memoria del buffer di accodamento (spesso intesa come capacità complessiva del sistema $C = m+L$; nei testi classici, qualora omessa, si intende implicitamente infinita, $L = \infty$).
+    \item $\mathbf{n}$: Cardinalità della popolazione generatrice delle richieste (se omessa, assunta infinita, $n = \infty$).
+\end{itemize}
+
+I descrittori standard per i campi $\mathbf{A}$ e $\mathbf{B}$ assumono i seguenti valori convenzionali:
+\begin{itemize}[leftmargin=*]
+    \item $\mathbf{M}$ (\emph{Markovian} o \emph{Memoryless}): distribuzione esponenziale negativa per i tempi continui (processo degli arrivi poissoniano puro).
+    \item $\mathbf{D}$ (\emph{Deterministic}): intervalli perfettamente regolari o costanti a varianza nulla.
+    \item $\mathbf{E_k}$ (\emph{Erlangian}): distribuzione Erlang con $k$ fasi sequenziali identiche esponenziali.
+    \item $\mathbf{H_k}$ (\emph{Hyper-exponential}): distribuzione iper-esponenziale ottenuta dalla combinazione convessa di $k$ rami esponenziali indipendenti con deviazione standard superiore alla media.
+    \item $\mathbf{G}$ (\emph{General}): distribuzione generale o non specificata, trattata analiticamente esclusivamente tramite i primi due momenti (media e varianza).
+\end{itemize}
+
+\newpage
+
+% SEZIONE: LEGGE DI LITTLE E FATTORE DI UTILIZZAZIONE
+
+\section{Legge Di Little e Stabilit\`a Dei Sistemi}
+
+La \textbf{Legge di Little} costituisce un teorema pilastro dell'ingegneria del traffico. La sua rilevanza risiede nel fatto che essa stabilisce un legame deterministico e rigoroso tra quantità medie a regime senza imporre alcun vincolo sulla forma funzionale delle distribuzioni di arrivo $A(t)$, di servizio $B(t)$ o sul numero di servitori $m$.
+
+\subsection{Dimostrazione Rigorosa Del Teorema}
+
+L'unica condizione di validità del teorema risiede nell'\textbf{assenza di perdite} (\emph{lossless system}), ovvero nell'ipotesi che ogni richiesta che fa il suo ingresso nel sistema prima o poi venga servita e rilasciata, senza scarti o abbandoni parassiti.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Markov processes and Markovian queues.pdf"] Curva cumulativa degli arrivi alpha(t) e delle partenze delta(t) con evidenziazione dell'area tra le curve gamma(t) — Slide 15 / Pagina 15 del PDF
+
+Consideriamo un orizzonte temporale $[0, t]$ e definiamo le seguenti quantità operative:
+\begin{itemize}[leftmargin=*]
+    \item $\alpha(t)$: numero intero cumulativo di richieste arrivate nel sistema nell'intervallo $[0, t]$.
+    \item $\delta(t)$: numero intero cumulativo di richieste uscite (completate) dal sistema nell'intervallo $[0, t]$.
+    \item $N(t)$: numero istantaneo di clienti presenti nel sistema al tempo $t$, definito banalmente come la differenza tra ingressi e uscite:
+    \[
+        N(t) = \alpha(t) - \delta(t)
+    \]
+    \item $\gamma(t)$: area geometrica racchiusa tra la curva cumulativa degli arrivi $\alpha(\tau)$ e la curva cumulativa dei rilasci $\delta(\tau)$ nell'intervallo $\tau \in [0, t]$:
+    \[
+        \gamma(t) = \int_0^t N(\tau)\,d\tau = \int_0^t [\alpha(\tau) - \delta(\tau)]\,d\tau
+    \]
+\end{itemize}
+Dal punto di vista fisico, ciascuna striscia orizzontale racchiusa tra il gradino di arrivo di un cliente e il relativo gradino di partenza rappresenta esattamente il tempo totale $s_i$ trascorso da quel cliente nell'infrastruttura. Di conseguenza, l'integrale $\gamma(t)$ rappresenta la \textbf{somma complessiva del tempo speso da tutti gli utenti nel sistema} nell'intervallo di osservazione $[0, t]$.
+
+Possiamo ora definire i valori medi campionari sull'orizzonte finito $[0, t]$:
+\begin{align}
+    \text{Frequenza media di arrivo:} \quad &\lambda_t = \frac{\alpha(t)}{t} \label{eq:lambda_t} \\
+    \text{Tempo medio di permanenza per utente:} \quad &T_t = \frac{\gamma(t)}{\alpha(t)} \label{eq:Tt} \\
+    \text{Numero medio di clienti presenti:} \quad &N_t = \frac{\gamma(t)}{t} \label{eq:Nt}
+\end{align}
+Manipolando algebricamente l'equazione \eqref{eq:Nt}, moltiplicando e dividendo per il numero totale di arrivi $\alpha(t)$, otteniamo:
+\[
+    N_t = \frac{\gamma(t)}{t} = \frac{\gamma(t)}{\alpha(t)} \cdot \frac{\alpha(t)}{t}
+\]
+Sostituendo direttamente le relazioni \eqref{eq:lambda_t} e \eqref{eq:Tt} nell'identità precedente, emerge una prima formulazione esatta a tempo finito:
+\[
+    N_t = T_t \cdot \lambda_t
+\]
+Assumendo che il sistema sia ergodico e operi in condizioni di stazionarietà, facciamo tendere l'intervallo temporale all'infinito ($t \to \infty$). Esistono allora finiti i limiti operativi:
+\[
+    \lambda = \lim_{t \to \infty} \lambda_t = \lim_{t \to \infty} \frac{\alpha(t)}{t}, \qquad T = \lim_{t \to \infty} T_t = \lim_{t \to \infty} \frac{\gamma(t)}{\alpha(t)}
+\]
+Passando al limite per $t \to \infty$ su entrambi i membri, otteniamo la formulazione canonica della \textbf{Legge di Little}:
+\[
+    \boxed{\bar{N} = \lambda T}
+\]
+
+\subsection{Decomposizione Di Little per Coda e Servitori}
+
+La potenza strutturale della Legge di Little deriva dalla sua applicabilità a qualsiasi sottosistema arbitrario, purché rispetti il vincolo conservativo di assenza di perdite. In particolare, possiamo decomporre il sistema globale nella serie di due sottosistemi logici:
+\begin{enumerate}
+    \item \textbf{Il sottosistema Coda (\emph{Waiting Queue})}: dove le richieste sostano in attesa di un servitore libero.
+    \item \textbf{Il sottosistema Servizio (\emph{Service Facility})}: dove le richieste vengono attivamente elaborate dagli $m$ servitori.
+\end{enumerate}
+
+Applicando la Legge di Little isolatamente ai due stadi, deriviamo:
+\begin{align*}
+    \bar{N}_q &= \lambda W \quad \text{(Numero medio di richieste in attesa nella coda)} \\
+    \bar{N}_s &= \lambda \bar{x} = \frac{\lambda}{\mu} \quad \text{(Numero medio di richieste correntemente sotto servizio)}
+\end{align*}
+Poiché il numero totale medio di clienti presenti è pari alla somma delle entità in coda e di quelle in elaborazione ($\bar{N} = \bar{N}_q + \bar{N}_s$), e il tempo totale medio soddisfa $T = W + \bar{x}$, verifichiamo la totale consistenza additiva:
+\[
+    \boxed{\bar{N} = \lambda T = \lambda (W + \bar{x}) = \lambda W + \lambda \bar{x} = \bar{N}_q + \bar{N}_s}
+\]
+
+\subsection{Fattore Di Utilizzazione e Condizione Di Stabilit\`a}
+
+Il \textbf{fattore di utilizzazione} $\rho$ misura il rapporto tra il tasso di lavoro in ingresso nel sistema e la capacità di elaborazione massima erogabile dalla batteria di servitori:
+\[
+    \rho = \frac{\text{frequenza di ingresso del lavoro}}{\text{frequenza massima di lavoro erogabile dai servitori}}
+\]
+A seconda della cardinalità $m$ dei servitori, formalizziamo:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Caso a Singolo Servitore ($m = 1$)}:
+    \[
+        \boxed{\rho = \frac{\lambda}{\mu} = \lambda \bar{x}}
+    \]
+    \item \textbf{Caso a Servitori Multipli ($m \ge 1$)}:
+    \[
+        \boxed{\rho = \frac{\lambda}{m \mu} = \frac{\lambda \bar{x}}{m}}
+    \]
+\end{itemize}
+Il rapporto $A = \lambda / \mu = \lambda \bar{x}$ esprime la frequenza di arrivo normalizzata alla capacità del singolo servitore e prende il nome di \textbf{intensità di traffico offerto}, la cui unità di misura adimensionale è l'\textbf{Erlang}. Il fattore di utilizzazione corrisponde quindi a $\rho = A / m$.
+
+Perché un sistema a coda infinita ($L = \infty$) ammetta una distribuzione di probabilità a regime stazionaria e non diverga accumulando una quantità illimitata di richieste, deve valere rigorosamente la \textbf{condizione di stabilità}:
+\[
+    \boxed{0 \le \rho < 1}
+\]
+Sotto tale ipotesi, $\rho$ ammette un'interpretazione fisica precisa: esso rappresenta la \textbf{frazione media di tempo in cui i servitori sono occupati} o, dualmente, la probabilità che un generico servitore stia attivamente processando lavoro.
+
+\subsubsection{Bilancio Asintotico Nei Sistemi Generali \texorpdfstring{$G/G/m$}{G/G/m}}
+
+Nel caso generale $G/G/m$, la relazione tra stabilità e probabilità di inattività può essere ricavata mediante un bilanciamento asintotico. Consideriamo un intervallo di tempo $\tau$ sufficientemente ampio ($\tau \to \infty$). Per la legge dei grandi numeri:
+\begin{itemize}[leftmargin=*]
+    \item Il numero totale di richieste giunte al sistema nell'intervallo converge deterministicamente con probabilità tendente ad 1 al valore:
+    \[
+        N_{\text{arr}}(\tau) \cong \lambda \tau
+    \]
+    \item Se definiamo con $p_0$ la probabilità asintotica di trovare un generico servitore libero all'interno dell'intervallo, la durata complessiva in cui ciascun servitore risulta attivamente impegnato è data da $\tau(1 - p_0)$.
+    \item Di conseguenza, il numero totale di utenti effettivamente smaltiti dagli $m$ servitori paralleli operanti a tasso $\mu$ nel lasso temporale $\tau$ risulta:
+    \[
+        N_{\text{serv}}(\tau) \cong m \cdot \tau (1 - p_0) \mu
+    \]
+\end{itemize}
+Affinché il sistema operi in equilibrio stazionario senza accumulare richieste all'infinito né svuotarsi permanentemente con servitori inerti, il numero di arrivi deve eguagliare il numero di compiti serviti ($N_{\text{arr}}(\tau) \cong N_{\text{serv}}(\tau)$):
+\[
+    \lambda \tau = m(\tau - \tau p_0)\mu
+\]
+Semplificando la durata arbitraria $\tau$ da ambo i membri:
+\[
+    \lambda = m (1 - p_0) \mu \implies \frac{\lambda}{m \mu} = 1 - p_0
+\]
+Ricordando la definizione di $\rho = \frac{\lambda}{m\mu}$, deduciamo immediatamente il legame formale con la probabilità di servitore inattivo:
+\[
+    \boxed{\rho = 1 - p_0 \iff p_0 = 1 - \rho}
+\]
+
+\newpage
+
+% SEZIONE: FONDAMENTI DEI PROCESSI MARKOVIANI A TEMPO CONTINUO
+
+\section{Il Concetto Di Stato e Le Catene Di Markov}
+
+La modellazione dinamica di una rete a code richiede la definizione rigorosa dello \textbf{stato del sistema}. Intuitivamente, la qualità del servizio e il ritardo percepito da un nuovo utente non privilegiato che fa il suo ingresso nell'infrastruttura dipendono in maniera determinante da quante entità già popolano il buffer o si trovano sotto elaborazione.
+
+Ciò implica che l'evoluzione pregressa del sistema ha lasciato un'impronta nella memoria dell'infrastruttura. Chiamiamo tale impronta \textbf{stato del sistema}, ovvero l'informazione minima e sufficiente che riassume la storia trascorsa ed è in grado di condizionare univocamente l'evoluzione probabilistica futura.
+
+\subsection{Formalizzazione Dello Spazio Degli Stati}
+
+Definiamo il processo stocastico $X(t)$ come la variabile aleatoria che descrive lo stato del sistema all'istante continuo $t \ge 0$. Nel nostro contesto trattiamo processi:
+\begin{itemize}
+    \item \textbf{Continui nel tempo}: il parametro temporale $t$ varia nell'insieme continuo dei reali non negativi ($t \in \mathbb{R}^+$).
+    \item \textbf{Discreti nelle realizzazioni}: lo spazio degli stati $\mathcal{S}$ è un insieme discreto, finito o al più numerabile, tipicamente coincidente con il numero di clienti presenti ($\mathcal{S} = \{0, 1, 2, \dots\}$).
+\end{itemize}
+
+Indichiamo la probabilità marginale che il sistema occupi il generico stato discreto $j$ al tempo $t$ con il simbolo:
+\[
+    \Pi_j(t) = P[X(t) = j]
+\]
+Valendo l'assioma di normalizzazione della misura di probabilità, per ogni istante $t$ deve sussistere:
+\[
+    \boxed{\sum_{j \in \mathcal{S}} \Pi_j(t) = 1, \quad \forall t \ge 0}
+\]
+
+\subsection{La Propriet\`a Di Markov e L'Assenza Di Memoria}
+
+Un processo stocastico a stati discreti $X(t)$ è detto \textbf{Catena di Markov} se soddisfa la \textbf{proprietà markoviana} (o assenza di memoria nel passato remoto). In termini operativi: la probabilità di transizione verso un qualsiasi stato futuro dipende unicamente dallo stato occupato nell'istante presente, rendendo totalmente irrilevante la traiettoria o la sequenza di stati intermedi attraversati nel passato.
+
+\begin{theorem}[Proprietà di Markov a Tempo Continuo]
+Sia data una sequenza temporale arbitraria strettamente crescente $t_1 < t_2 < \dots < t_n < t_{n+1}$. Il processo $X(t)$ è una catena di Markov a tempo continuo se e solo se vale la condizione di indipendenza condizionale:
+\[
+    \boxed{P[X(t_{n+1}) = j \mid X(t_n) = i_n, X(t_{n-1}) = i_{n-1}, \dots, X(t_1) = i_1] = P[X(t_{n+1}) = j \mid X(t_n) = i_n]}
+\]
+\end{theorem}
+
+L'implicazione cardine di questa proprietà riguarda la distribuzione del \textbf{tempo di permanenza} (\emph{holding time}) in un determinato stato: conoscere da quanto tempo il sistema permane nello stato corrente non fornisce alcuna informazione probabilistica su quando avverrà la transizione verso il prossimo stato.
+
+Nell'ambito dei processi a stati discreti:
+\begin{itemize}[leftmargin=*]
+    \item Nelle catene a \textbf{tempo discreto} (\emph{Discrete-Time Markov Chains}, DTMC), la sola distribuzione priva di memoria è la distribuzione geometrica:
+    \[
+        p_N(n) = (1 - p)^{n-1} p, \quad n \ge 1
+    \]
+    \item Nelle catene a \textbf{tempo continuo} (\emph{Continuous-Time Markov Chains}, CTMC), l'unica distribuzione statistica continua dotata della proprietà \emph{memoryless} è la \textbf{distribuzione esponenziale negativa}:
+    \[
+        p_T(t) = \lambda e^{-\lambda t}, \quad t \ge 0
+    \]
+\end{itemize}
+
+\subsection{Equazioni Integrali Di Chapman-Kolmogorov}
+
+Definiamo la \textbf{probabilità di transizione di stato} dall'indice $i$ occupato all'istante $s$ all'indice $j$ all'istante $t \ge s$ come:
+\[
+    p_{ij}(s, t) = P[X(t) = j \mid X(s) = i]
+\]
+
+Consideriamo ora un istante temporale intermedio $u$ compreso rigidamente tra l'istante iniziale e quello finale ($s \le u \le t$). Perché il sistema transiti da $i$ a $j$, esso dovrà obbligatoriamente transitare per uno dei possibili stati $k \in \mathcal{S}$ all'istante intermedio $u$. Applicando il teorema delle probabilità totali unitamente alla definizione di probabilità condizionata:
+\begin{align*}
+    p_{ij}(s, t) &= \sum_{k} P[X(t) = j, X(u) = k \mid X(s) = i] \\
+    &= \sum_{k} P[X(u) = k \mid X(s) = i] \cdot P[X(t) = j \mid X(u) = k, X(s) = i]
+\end{align*}
+Applicando rigorosamente la proprietà di Markov, l'evoluzione dal tempo intermedio $u$ al tempo futuro $t$ dipende solo dallo stato $k$ occupato al tempo $u$, decadendo il condizionamento rispetto allo stato remoto $X(s) = i$:
+\[
+    P[X(t) = j \mid X(u) = k, X(s) = i] = P[X(t) = j \mid X(u) = k] = p_{kj}(u, t)
+\]
+Sostituendo nuovamente, ricaviamo la celebre formulazione delle \textbf{equazioni di Chapman-Kolmogorov}:
+\[
+    \boxed{p_{ij}(s, t) = \sum_{k} p_{ik}(s, u) p_{kj}(u, t), \quad \forall u \in [s, t]}
+\]
+
+\subsection{Rappresentazione Matriciale Delle Transizioni}
+
+Definiamo la \textbf{matrice di transizione} $\bm{H}(s, t)$ come la matrice quadrata contenente le probabilità $p_{ij}(s, t)$ per ogni coppia di stati $(i, j)$:
+\[
+    \bm{H}(s, t) = \begin{bmatrix}
+        p_{11}(s, t) & p_{12}(s, t) & \dots & p_{1k}(s, t) & \dots \\
+        p_{21}(s, t) & p_{22}(s, t) & \dots & p_{2k}(s, t) & \dots \\
+        \vdots & \vdots & \ddots & \vdots & \ddots \\
+        p_{i1}(s, t) & p_{i2}(s, t) & \dots & p_{ik}(s, t) & \dots \\
+        \vdots & \vdots & \ddots & \vdots & \ddots
+    \end{bmatrix}
+\]
+L'equazione di Chapman-Kolmogorov si traduce in una semplice moltiplicazione tra operatori matriciali:
+\[
+    \boxed{\bm{H}(s, t) = \bm{H}(s, u) \bm{H}(u, t), \quad \text{con } \bm{H}(t, t) = \bm{I}}
+\]
+dove $\bm{I}$ indica la matrice identità di dimensione appropriata.
+
+\newpage
+
+% SEZIONE: DINAMICA DIFFERENZIALE E MATRICE DEI TASSI (RATE MATRIX)
+
+\section{Dinamica Differenziale e Matrice Dei Tassi}
+
+Per descrivere l'evoluzione continua nel tempo delle probabilità di transizione, analizziamo il comportamento asintotico di $\bm{H}(s, t)$ nell'intorno infinitesimo di un incremento temporale $\Delta t \to 0$.
+
+\subsection{Derivazione Della Matrice Generatrice Infinitesimale}
+
+Sfruttando la proprietà di Chapman-Kolmogorov sull'intervallo temporale suddiviso in $[s, t - \Delta t]$ e $[t - \Delta t, t]$, possiamo scrivere:
+\[
+    \bm{H}(s, t) = \bm{H}(s, t - \Delta t) \bm{H}(t - \Delta t, t)
+\]
+Sottraendo a entrambi i membri il termine $\bm{H}(s, t - \Delta t)$:
+\[
+    \bm{H}(s, t) - \bm{H}(s, t - \Delta t) = \bm{H}(s, t - \Delta t) \left[ \bm{H}(t - \Delta t, t) - \bm{I} \right]
+\]
+Dividendo ambo i membri per l'incremento scalare $\Delta t$ ed eseguendo il limite per $\Delta t \to 0$, ricaviamo la derivata parziale rispetto a $t$:
+\begin{align*}
+    \lim_{\Delta t \to 0} \frac{\bm{H}(s, t) - \bm{H}(s, t - \Delta t)}{\Delta t} &= \lim_{\Delta t \to 0} \left( \bm{H}(s, t - \Delta t) \frac{\bm{H}(t - \Delta t, t) - \bm{I}}{\Delta t} \right) \\
+    \frac{\partial \bm{H}(s, t)}{\partial t} &= \bm{H}(s, t) \cdot \lim_{\Delta t \to 0} \frac{\bm{H}(t - \Delta t, t) - \bm{I}}{\Delta t}
+\end{align*}
+Definiamo formalmente la \textbf{matrice dei tassi} (o \textbf{generatore infinitesimale}) $\bm{Q}(t) = [q_{ij}(t)]$ come il limite:
+\[
+    \boxed{\bm{Q}(t) = \lim_{\Delta t \to 0} \frac{\bm{H}(t - \Delta t, t) - \bm{I}}{\Delta t}}
+\]
+Ne discende l'equazione differenziale matriciale:
+\[
+    \boxed{\frac{\partial \bm{H}(s, t)}{\partial t} = \bm{H}(s, t) \bm{Q}(t)}
+\]
+
+\subsection{Struttura Analitica Della Matrice \texorpdfstring{$\bm{Q}(t)$}{Q(t)}}
+
+Analizzando gli elementi scalari $q_{ij}(t)$ della matrice $\bm{Q}(t)$, distinguiamo la casistica diagonale ed extra-diagonale:
+\begin{equation}
+    q_{ij}(t) = \begin{cases}
+        \displaystyle \lim_{\Delta t \to 0} \frac{p_{ij}(t - \Delta t, t)}{\Delta t}, & i \neq j \\[10pt]
+        \displaystyle \lim_{\Delta t \to 0} \frac{p_{ii}(t - \Delta t, t) - 1}{\Delta t}, & i = j
+    \end{cases}
+\end{equation}
+
+Poiché per ogni riga $i$ e per ogni intervallo temporale la somma delle probabilità di transizione su tutti i possibili stati di destinazione $j$ deve valere rigidamente 1:
+\[
+    \sum_j p_{ij}(t - \Delta t, t) = 1 \iff p_{ii}(t - \Delta t, t) - 1 = -\sum_{j \neq i} p_{ij}(t - \Delta t, t)
+\]
+Dividendo per $\Delta t$ e passando al limite per $\Delta t \to 0$, otteniamo il vincolo algebrico fondamentale della matrice dei tassi:
+\[
+    \boxed{\sum_{j} q_{ij}(t) = 0 \implies q_{ii}(t) = -\sum_{j \neq i} q_{ij}(t) < 0}
+\]
+Ciascun elemento diagonale $q_{ii}(t)$ è rigidamente negativo ed è numericamente pari all'opposto della somma di tutti i coefficienti extra-diagonali situati sulla medesima riga. La matrice dei tassi si presenta dunque nella forma strutturata:
+\[
+    \bm{Q}(t) = \begin{bmatrix}
+        -\sum_{j \neq 1} q_{1j}(t) & q_{12}(t) & \dots & q_{1N}(t) \\
+        q_{21}(t) & -\sum_{j \neq 2} q_{2j}(t) & \dots & q_{2N}(t) \\
+        \vdots & \vdots & \ddots & \vdots \\
+        q_{N1}(t) & q_{N2}(t) & \dots & -\sum_{j \neq N} q_{Nj}(t)
+    \end{bmatrix}
+\]
+
+La denominazione di \emph{matrice dei tassi} (\emph{rate matrix}) riflette il suo significato dimensionale: i coefficienti $q_{ij}$ hanno le dimensioni fisiche di frequenze (inversioni temporali, $[s^{-1}]$) e descrivono la rapidità istantanea con cui il sistema evolve tra le configurazioni di stato.
+
+\subsection{Significato Fisico Dei Tassi Di Transizione}
+
+Per cogliere il legame tra $q_{ij}$ e la dinamica temporale del sistema, consideriamo un intervallo infinitesimo $[t, t + \Delta t]$.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Markov processes and Markovian queues.pdf"] Grafo di transizione elementare a due stati i e j con tasso q_ij e relazione temporale T_bar_ij — Slide 28 / Pagina 28 del PDF
+
+Dall'espansione al primo ordine di Taylor:
+\[
+    p_{ij}(t, t + \Delta t) \cong q_{ij}(t) \Delta t + o(\Delta t), \quad i \neq j
+\]
+La probabilità di compiere un salto dallo stato $i$ verso lo stato $j$ nell'intervallo $\Delta t$ è direttamente proporzionale al tasso $q_{ij}(t)$.
+
+Esaminiamo ora la probabilità di permanenza nello stato $i$, denotata $p_{ii}(0, t)$, assumendo per semplicità un tasso costante $q_{ij}(t) = q_{ij}$ e l'assenza di altri canali di uscita concorrenti:
+\[
+    \frac{d p_{ii}(0, t)}{dt} = -q_{ij} p_{ii}(0, t)
+\]
+Integrando con la condizione iniziale certa $p_{ii}(0, 0) = 1$, deduciamo:
+\[
+    \boxed{p_{ii}(0, t) = e^{-q_{ij} t}, \quad t \ge 0}
+\]
+La probabilità di effettuare la transizione prima del tempo $t$ coincide dunque con la funzione di distribuzione cumulativa esponenziale:
+\[
+    p_{ij}(0, t) = 1 - e^{-q_{ij} t}, \quad t \ge 0
+\]
+Il tempo medio trascorso nello stato prima che avvenga la transizione verso $j$ è pertanto dato dal valore atteso della variabile aleatoria esponenziale:
+\[
+    \boxed{\bar{T}_{ij} = \frac{1}{q_{ij}}}
+\]
+Il tasso $q_{ij}$ rappresenta formalmente la \textbf{frequenza media di transizione} dallo stato $i$ allo stato $j$.
+
+\subsection{Formulazione Forward e Backward Di Chapman-Kolmogorov}
+
+Dalla decomposizione dell'intervallo temporale $[s, t]$, a seconda che si prenda l'incremento infinitesimo al confine superiore $t$ oppure al confine inferiore $s$, emergono le due forme canoniche differenziali delle equazioni di Chapman-Kolmogorov.
+
+\subsubsection{Formulazione Matriciale}
+\begin{align}
+    \textbf{Forma Forward:} \quad &\boxed{\frac{\partial \bm{H}(s, t)}{\partial t} = \bm{H}(s, t) \bm{Q}(t), \quad s \le t} \label{eq:CK_mat_fwd} \\
+    \textbf{Forma Backward:} \quad &\boxed{\frac{\partial \bm{H}(s, t)}{\partial s} = -\bm{Q}(s) \bm{H}(s, t), \quad s \le t} \label{eq:CK_mat_bwd}
+\end{align}
+
+\subsubsection{Formulazione Termine a Termine Scalare}
+Esplicitando le singole componenti per ciascuna coppia di stati $(i, j)$:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Equazione Differenziale Forward}:
+    \begin{equation}
+        \boxed{\frac{\partial p_{ij}(s, t)}{\partial t} = q_{jj}(t) p_{ij}(s, t) + \sum_{k \neq j} q_{kj}(t) p_{ik}(s, t)}
+    \end{equation}
+    corredata dalla condizione al contorno iniziale:
+    \[
+        p_{ij}(s, s) = \delta_{ij} = \begin{cases} 1 & \text{se } j = i \\ 0 & \text{se } j \neq i \end{cases}
+    \]
+    \item \textbf{Equazione Differenziale Backward}:
+    \begin{equation}
+        \boxed{\frac{\partial p_{ij}(s, t)}{\partial s} = -q_{ii}(s) p_{ij}(s, t) - \sum_{k \neq i} q_{ik}(s) p_{kj}(s, t)}
+    \end{equation}
+    con condizione al contorno finale $p_{ij}(t, t) = \delta_{ij}$.
+\end{itemize}
+
+\subsection{Soluzione Formale Mediante Esponenziale Matriciale}
+
+Nel caso generale di matrice dei tassi non stazionaria dipendente dal tempo $\bm{Q}(u)$, integrando formalmente l'equazione forward \eqref{eq:CK_mat_fwd} si ottiene la soluzione esponenziale matriciale:
+\[
+    \boxed{\bm{H}(s, t) = \exp\left( \int_s^t \bm{Q}(u)\,du \right) = \bm{I} + \int_s^t \bm{Q}(u)\,du + \frac{1}{2!} \left(\int_s^t \bm{Q}(u)\,du\right)^2 + \dots}
+\]
+Per un intervallo elementare infinitesimo $[t, t + \Delta t]$, la probabilità di transizione dallo stato generico $i$ verso uno stato distinto $j$ e la probabilità totale di abbandonare lo stato $i$ ammettono la forma asintotica:
+\begin{align*}
+    p_{ij}(t, t + \Delta t) &= q_{ij}(t)\Delta t + o(\Delta t), \quad i \neq j \\
+    1 - p_{ii}(t, t + \Delta t) &= \Delta t \sum_{j \neq i} q_{ij}(t) + o(\Delta t) = -q_{ii}(t) \Delta t + o(\Delta t)
+\end{align*}
+dove la notazione di Landau $o(\Delta t)$ denota un infinitesimo di ordine superiore rispetto a $\Delta t$:
+\[
+    \lim_{\Delta t \to 0} \frac{o(\Delta t)}{\Delta t} = 0
+\]
+
+\subsection{Evoluzione Del Vettore Di Probabilit\`a Di Stato}
+
+Sia $\bm{\pi}^T(t) = [\pi_1(t), \pi_2(t), \dots, \pi_N(t)]$ il vettore riga che raccoglie le probabilità di occupazione dei vari stati all'istante $t$. Sfruttando il principio delle probabilità totali:
+\[
+    \pi_j(t) = \sum_{i} \pi_i(s) p_{ij}(s, t) \iff \bm{\pi}^T(t) = \bm{\pi}^T(s) \bm{H}(s, t), \quad \forall t \ge s
+\]
+Derivando entrambi i membri rispetto al tempo $t$ ed applicando l'equazione differenziale forward \eqref{eq:CK_mat_fwd}:
+\[
+    \frac{d \bm{\pi}^T(t)}{dt} = \bm{\pi}^T(s) \frac{\partial \bm{H}(s, t)}{\partial t} = \bm{\pi}^T(s) \bm{H}(s, t) \bm{Q}(t)
+\]
+Poiché per l'identità precedente $\bm{\pi}^T(s)\bm{H}(s, t) = \bm{\pi}^T(t)$, ricaviamo la fondamentale \textbf{Equazione Forward di Chapman-Kolmogorov per la distribuzione di probabilità}:
+\[
+    \boxed{\frac{d \bm{\pi}^T(t)}{dt} = \bm{\pi}^T(t) \bm{Q}(t)}
+\]
+Dualmente, differenziando rispetto alla variabile iniziale $s$, si ottiene l'equazione backward associata:
+\[
+    \boxed{\frac{d \bm{\pi}(s)}{ds} = \bm{Q}(s) \bm{\pi}(s)}
+\]
+
+\newpage
+
+% SEZIONE: CATENE DI MARKOV OMOGENEE E BILANCIO DI PROBABILITÀ
+
+\section{Catene Di Markov Omogenee Nel Tempo}
+
+Una catena di Markov a tempo continuo è detta \textbf{omogenea nel tempo} (\emph{time-homogeneous}) se le probabilità di transizione tra due stati qualsiasi non dipendono dall'istante iniziale assoluto $s$, ma dipendono unicamente dalla durata dell'intervallo temporale trascorso $\tau = t - s$:
+\[
+    p_{ij}(s, t) = p_{ij}(t - s) = p_{ij}(\tau) \implies \bm{H}(s, t) = \bm{H}(\tau)
+\]
+
+In termini fisici e intuitivi, se la frequenza media degli eventi (arrivi e completamenti dei servizi) non subisce variazioni di regime nel corso del tempo, la matrice dei tassi di transizione risulta rigorosamente costante:
+\[
+    q_{ij}(t) = q_{ij}, \quad \forall t \ge 0 \implies \bm{Q}(t) = \bm{Q} = [q_{ij}]
+\]
+Sotto tale proprietà fondamentale di omogeneità, l'equazione differenziale per l'evoluzione del vettore di probabilità di stato si semplifica notevolmente nell'equazione autonoma:
+\[
+    \boxed{\frac{d \bm{\pi}^T(t)}{dt} = \bm{\pi}^T(t) \bm{Q}}
+\]
+
+\subsection{Scrittura Per Ispezione Diretta e Principio Del Bilancio Dei Flussi}
+
+Per comprendere a fondo il significato ingegneristico dell'equazione differenziale matriciale, esplicitiamo la dinamica dell'elemento generico $i$-esimo. Moltiplicando il vettore riga $\bm{\pi}^T(t)$ per la colonna $i$-esima della matrice costante $\bm{Q}$:
+\[
+    \frac{d \pi_i(t)}{dt} = [\pi_1(t), \pi_2(t), \dots, \pi_i(t), \dots, \pi_N(t)] \cdot \begin{bmatrix} q_{1i} \\ q_{2i} \\ \vdots \\ q_{ii} \\ \vdots \\ q_{Ni} \end{bmatrix}
+\]
+Sviluppando il prodotto riga per colonna ed isolando il termine diagonale:
+\[
+    \frac{d \pi_i(t)}{dt} = \pi_i(t) q_{ii} + \sum_{j \neq i} \pi_j(t) q_{ji}
+\]
+Ricordando la proprietà strutturale della riga $i$-esima, per cui $q_{ii} = -\sum_{j \neq i} q_{ij}$, sostituiamo ottenendo:
+\[
+    \boxed{\frac{d \pi_i(t)}{dt} = -\pi_i(t) \sum_{j \neq i} q_{ij} + \sum_{j \neq i} \pi_j(t) q_{ji}}
+\]
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Markov processes and Markovian queues.pdf"] Diagramma idraulico del bilancio di probabilità: nodo di stato i con flussi uscenti q_ij e flussi entranti q_ji — Slide 33 / Pagina 33 del PDF
+
+Questa formulazione evidenzia un'interpretazione idraulica fondamentale nota come \textbf{principio del bilancio dei flussi di probabilità}:
+\begin{enumerate}
+    \item \textbf{Flusso di Probabilità Uscente (\emph{Probability Flow to Other States})}:
+    \[
+        \Phi_{\text{out}}(i) = \pi_i(t) \sum_{j \neq i} q_{ij}
+    \]
+    Rappresenta il tasso istantaneo con cui la massa di probabilità abbandona lo stato $i$. È dato dal prodotto tra la probabilità che il sistema si trovi attualmente nello stato $i$ ($\pi_i(t)$) e la somma di tutte le frequenze di transizione che conducono verso qualsiasi altro stato $j \neq i$.
+
+    \item \textbf{Flusso di Probabilità Entrante (\emph{Probability Flow from Other States})}:
+    \[
+        \Phi_{\text{in}}(i) = \sum_{j \neq i} \pi_j(t) q_{ji}
+    \]
+    Rappresenta il tasso istantaneo con cui la massa di probabilità affluisce nello stato $i$ da tutti i possibili stati sorgente adiacenti. È calcolato come la sovrapposizione ponderata delle probabilità di trovarsi negli stati remoti $j$ ($\pi_j(t)$) moltiplicate per i rispettivi tassi di transizione in ingresso $q_{ji}$.
+\end{enumerate}
+
+La variazione istantanea della probabilità di occupare lo stato $i$ coincide esattamente con la differenza netta tra il flusso totale entrante e il flusso totale uscente:
+\[
+    \boxed{\frac{d \pi_i(t)}{dt} = \Phi_{\text{in}}(i) - \Phi_{\text{out}}(i)}
+\]
+
+\subsection{Convergenza Allo Stato Stazionario (\emph{Steady-State})}
+
+Quando una catena di Markov a tempo continuo è irriducibile (ossia tutti gli stati comunicano tra loro) e positiva ricorrente, per $t \to \infty$ il sistema raggiunge una condizione di equilibrio termodinamico o \textbf{stato stazionario}, in cui la distribuzione di probabilità si stabilizza e le derivate temporali si annullano identicamente:
+\[
+    \lim_{t \to \infty} \bm{\pi}(t) = \bm{\pi} \implies \frac{d \bm{\pi}^T(t)}{dt} = \bm{0}^T
+\]
+L'equazione differenziale dinamica decade nel celebre sistema di \textbf{equazioni di bilancio globale stazionario}:
+\[
+    \boxed{\bm{\pi}^T \bm{Q} = \bm{0}^T}
+\]
+che a livello di singolo nodo di stato $i$ impone il perfetto bilanciamento conservative:
+\[
+    \boxed{\pi_i \sum_{j \neq i} q_{ij} = \sum_{j \neq i} \pi_j q_{ji}}
+\]
+Tale sistema algebrico omogeneo, unitamente al vincolo di conservazione della probabilità totale:
+\[
+    \sum_{i \in \mathcal{S}} \pi_i = 1
+\]
+fornisce la soluzione univoca della distribuzione stazionaria $\bm{\pi}$, costituendo la base fondante su cui si innestano tutti i modelli di code markoviane ($M/M/1$, $M/M/m$, $M/M/m/m$, ecc.) utilizzati per dimensionare le moderne architetture computazionali e di rete.
+
+
+% AA Markov_Processes [34-66]    ------------------------------------------------------------
+% CAPITOLO: PROCESSI MARKOVIANI, SISTEMI DI NASCITA E MORTE E CODA M/M/1
+
+\section{Proprietà Strutturali Delle Catene Di Markov Ed Ergodicità}
+
+Nello studio dei sistemi computazionali e di rete distribuiti, l'analisi delle prestazioni a regime permanente presuppone che il modello stocastico sottostante converga verso un comportamento statistico asintotico stabile, privo di dipendenza dalle condizioni operative iniziali. Perché un processo di Markov adotti una distribuzione stazionaria ben definita e utilizzabile per il dimensionamento ingegneristico, la sua topologia di transizione deve soddisfare specifiche proprietà strutturali.
+
+\subsection{Irriducibilità, Aperiodicità e Ricorrenza Positiva}
+
+Consideriamo una catena di Markov $X(t)$ definita su uno spazio degli stati discreto $\mathcal{S}$. Le traiettorie del sistema sono governate dalle seguenti caratteristiche topologiche e temporali:
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Irriducibilità}: una catena di Markov si definisce \textbf{irriducibile} se è possibile raggiungere un qualsiasi stato $j \in \mathcal{S}$ a partire da qualunque altro stato iniziale $i \in \mathcal{S}$ in un numero finito di passi (nel dominio del tempo discreto) oppure in un intervallo temporale finito (nel dominio del tempo continuo). Dal punto di vista probabilistico, ciò impone che:
+    \[
+        p_{ij}(t) > 0, \quad \forall i, j \in \mathcal{S}, \; \exists t > 0
+    \]
+    In termini architetturali, l'irriducibilità certifica l'assenza di sottoinsiemi di stati "isolati" o "trappola" (\emph{absorbing states}) che frammenterebbero il sistema in componenti disconnesse. Tutti gli stati del sistema possiedono dunque una probabilità strettamente positiva di essere visitati nel corso dell'evoluzione temporale.
+
+    \item \textbf{Aperiodicità} (proprietà rilevante per catene a tempo discreto): uno stato $i$ si dice \textbf{aperiodico} se il massimo comune divisore (\emph{Greatest Common Factor}, GCF) dell'insieme di tutti i possibili istanti temporali di ritorno nello stato $i$ è pari ad $1$:
+    \[
+        \mathrm{MCD}\{n \ge 1 : p_{ii}^{(n)} > 0\} = 1
+    \]
+    Una catena priva di periodicità impedisce l'insorgenza di cicli deterministici rigidi nella dinamica di stato, scongiurando oscillazioni sincrone persistenti. Nelle catene a tempo continuo, la presenza di tempi di permanenza esponenziali continui garantisce intrinsecamente l'aperiodicità del processo.
+
+    \item \textbf{Ricorrenza Positiva} (proprietà cardine per catene a tempo continuo): una catena è \textbf{positivamente ricorrente} se il tempo medio di primo ritorno a ciascuno stato $i$, partendo da esso, è finito:
+    \[
+        \mathbb{E}[T_{ii}] < \infty, \quad \forall i \in \mathcal{S}
+    \]
+    In una coda a capacità infinita, tale proprietà assicura che il sistema non diverga verso l'infinito accumulando clienti senza possibilità di svuotarsi.
+\end{itemize}
+
+\subsection{Il Teorema Di Ergodicità e L'Equivalenza Delle Medie}
+
+Una catena di Markov che risulti simultaneamente \textbf{irriducibile} e \textbf{positivamente ricorrente} (nonché aperiodica nel caso discreto) viene definita \textbf{ergodica}.
+
+\begin{theorem}[Ergodicità nelle Catene di Markov]
+Se una catena di Markov è ergodica, esiste un'unica distribuzione di probabilità stazionaria limite $\bm{\pi} = [\pi_0, \pi_1, \dots]$ tale per cui, indipendentemente dallo stato iniziale $X(0) = i$, la distribuzione di probabilità di occupazione converge asintoticamente ad essa per orizzonti temporali ampi:
+\[
+    \lim_{t \to \infty} p_{ij}(t) = \lim_{t \to \infty} P[X(t) = j \mid X(0) = i] = \pi_j = p_j, \quad \forall i, j \in \mathcal{S}
+\]
+Per una catena a tempo continuo caratterizzata da generatore infinitesimale $\bm{Q}$, la distribuzione stazionaria soddisfa il sistema algebrico omogeneo:
+\[
+    \boxed{\bm{\pi} \bm{Q} = \bm{0}^T, \quad \text{con } \sum_{j \in \mathcal{S}} \pi_j = 1}
+\]
+\end{theorem}
+
+L'implicazione operativa dell'ergodicità assume una rilevanza cruciale per l'analisi prestazionale dei sistemi distribuiti: essa stabilisce che la \textbf{media temporale} calcolata lungo una singola, prolungata traiettoria di esecuzione del sistema coincide esattamente con la \textbf{media d'insieme} (\emph{spatial mean}) calcolata rispetto alla distribuzione stazionaria teorica $\bm{\pi}$.
+
+Data una generica funzione di costo o prestazione dipendente dallo stato $f(X(t))$ (come la latenza istantanea, il consumo di banda o l'occupazione di memoria), vale l'identità:
+\[
+    \boxed{\lim_{\mathcal{T} \to \infty} \frac{1}{\mathcal{T}} \int_0^{\mathcal{T}} f(X(t))\,dt = \sum_{j \in \mathcal{S}} f(j) \pi_j = \mathbb{E}_{\bm{\pi}}[f(X)]}
+\]
+Ciò assicura che il comportamento statistico di tutte le possibili realizzazioni sia identico, consentendo di misurare sperimentalmente parametri di regime (ad esempio tramite \texttt{Prometheus}) mediante campionamenti temporali prolungati su una singola istanza in produzione.
+
+\newpage
+
+% SEZIONE: RISOLUZIONE DELLE EQUAZIONI DI CHAPMAN-KOLMOGOROV OMOGENEE
+
+\section{Risoluzione Analitica Delle Equazioni Di Chapman-Kolmogorov}
+
+L'evoluzione transitoria della distribuzione di probabilità di una catena di Markov omogenea è descritta dal sistema di equazioni differenziali lineari a coefficienti costanti:
+\begin{equation}
+    \frac{d\bm{\pi}(t)}{dt} = \bm{\pi}(t)\bm{A} \label{eq:matrix_ode}
+\end{equation}
+dove, per generalità analitica, indichiamo con $\bm{A}$ la matrice generatrice quadrata (corrispondente alla matrice dei tassi $\bm{Q}$).
+
+\subsection{Caso Monodimensionale Scalare}
+
+Nel caso scalare unidimensionale ($A = a \in \mathbb{R}$), l'equazione differenziale ordinaria assume la forma elementare:
+\[
+    \frac{d\pi(t)}{dt} = a\pi(t) \implies \pi(t) = \pi(0)e^{at}
+\]
+La funzione esponenziale $e^{at}$ ammette lo sviluppo in serie di potenze di Taylor:
+\[
+    e^{at} = \sum_{k=0}^{\infty} \frac{(at)^k}{k!} = 1 + at + \frac{1}{2!}(at)^2 + \dots + \frac{1}{k!}(at)^k + \dots
+\]
+Ricordando che $k! = k \cdot (k-1) \cdot \dots \cdot 2 \cdot 1$, verifichiamo la differenziabilità termine a termine rispetto al tempo:
+\begin{align*}
+    \frac{d e^{at}}{dt} &= \frac{d}{dt} \left( 1 + at + \frac{1}{2!}a^2 t^2 + \dots + \frac{1}{k!}a^k t^k + \dots \right) \\
+    &= 0 + a + \frac{2}{2!}a^2 t + \dots + \frac{k}{k!}a^k t^{k-1} + \dots \\
+    &= a \left( 1 + at + \dots + \frac{1}{(k-1)!}(at)^{k-1} + \dots \right) = a e^{at}
+\end{align*}
+
+\subsection{Caso Multidimensionale: L'Esponenziale Di Matrice}
+
+Estendendo il formalismo a uno spazio degli stati a $N$ dimensioni, la soluzione analitica dell'equazione differenziale matriciale \eqref{eq:matrix_ode} con condizione iniziale $\bm{\pi}(0) = \bm{\pi}_0$ assume la struttura compatta:
+\[
+    \boxed{\bm{\pi}(t) = \bm{\pi}_0 e^{\bm{A}t}}
+\]
+dove l'\textbf{esponenziale di matrice} $e^{\bm{A}t}$ è definito rigorosamente come la serie matriciale convergente:
+\[
+    \boxed{e^{\bm{A}t} = \sum_{k=0}^{\infty} \frac{\bm{A}^k t^k}{k!} = \bm{I} + \bm{A}t + \frac{1}{2!}\bm{A}^2 t^2 + \dots + \frac{1}{k!}\bm{A}^k t^k + \dots}
+\]
+essendo $\bm{I}$ la matrice identità e ponendo convenzionalmente $\bm{A}^0 = \bm{I}$.
+
+\subsubsection{Dimostrazione Termine a Termine Della Derivata}
+Differenziando la serie matrice termine a termine rispetto a $t$:
+\begin{align*}
+    \frac{d}{dt} e^{\bm{A}t} &= \frac{d}{dt} \left( \bm{I} + \bm{A}t + \frac{1}{2!}\bm{A}^2 t^2 + \dots + \frac{1}{k!}\bm{A}^k t^k + \dots \right) \\
+    &= \bm{0} + \bm{A} + \frac{2}{2!}\bm{A}^2 t + \dots + \frac{k}{k!}\bm{A}^k t^{k-1} + \dots \\
+    &= \bm{A} + \bm{A}^2 t + \dots + \frac{1}{(k-1)!}\bm{A}^k t^{k-1} + \dots
+\end{align*}
+Possiamo raccogliere il fattore matriciale $\bm{A}$ indifferentemente a sinistra oppure a destra:
+\begin{align*}
+    \frac{d}{dt} e^{\bm{A}t} &= \bm{A} \left( \bm{I} + \bm{A}t + \dots + \frac{1}{(k-1)!}\bm{A}^{k-1}t^{k-1} + \dots \right) = \bm{A} \sum_{k=0}^\infty \frac{\bm{A}^k t^k}{k!} = \bm{A} e^{\bm{A}t} \\
+    &= \left( \bm{I} + \bm{A}t + \dots + \frac{1}{(k-1)!}\bm{A}^{k-1}t^{k-1} + \dots \right) \bm{A} = \left(\sum_{k=0}^\infty \frac{\bm{A}^k t^k}{k!}\right) \bm{A} = e^{\bm{A}t} \bm{A}
+\end{align*}
+Ne discende l'identità fondamentale di commutazione:
+\[
+    \boxed{\frac{d e^{\bm{A}t}}{dt} = \bm{A} e^{\bm{A}t} = e^{\bm{A}t} \bm{A}}
+\]
+
+\subsection{Proprietà Algebriche Dell'Esponenziale Di Matrice}
+
+L'operatore esponenziale matriciale gode di specifiche proprietà algebriche:
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Valore all'origine}: per $t = 0$, la serie collassa sulla matrice identità:
+    \[
+        e^{\bm{A}t}\Big|_{t=0} = \bm{I}
+    \]
+    \item \textbf{Invertibilità}: per ogni matrice $\bm{A}$ e scalare $t$, la matrice esponenziale è sempre non singolare, e l'inversa corrisponde all'esponenziale con segno invertito:
+    \[
+        [e^{\bm{A}t}]^{-1} = e^{-\bm{A}t}
+    \]
+    \item \textbf{Proprietà di semi-gruppo temporale}:
+    \[
+        e^{\bm{A}(t_1 + t_2)} = e^{\bm{A}t_1} e^{\bm{A}t_2} = e^{\bm{A}t_2} e^{\bm{A}t_1}
+    \]
+    \item \textbf{Annullamento identico}:
+    \[
+        e^{\bm{A}(t - t)} = e^{\bm{A}t} e^{-\bm{A}t} = e^{-\bm{A}t} e^{\bm{A}t} = \bm{I}
+    \]
+    \item \textbf{Fattorizzazione di matrici distinte}: dati due operatori matriciali $\bm{A}$ e $\bm{B}$, la proprietà esponenziale classica:
+    \[
+        \boxed{e^{\bm{A}t} e^{\bm{B}t} = e^{(\bm{A} + \bm{B})t} \quad \textbf{vale solo e soltanto se } \bm{A} \text{ e } \bm{B} \text{ commutano } (\bm{A}\bm{B} = \bm{B}\bm{A})}
+    \]
+    In caso di mancata commutazione ($\bm{A}\bm{B} \neq \bm{B}\bm{A}$), il prodotto richiede la formula di Baker-Campbell-Hausdorff.
+\end{enumerate}
+
+\subsection{Risoluzione Tramite Trasformata Di Laplace}
+
+Il calcolo esplicito di $e^{\bm{A}t}$ mediante la sommatoria di Taylor può risultare proibitivo per matrici dense di grandi dimensioni. Un metodo analitico risolutivo si basa sull'impiego della \textbf{Trasformata di Laplace unilatera}.
+
+Denotando con $s$ la variabile complessa di Laplace, trasformiamo l'equazione differenziale $\frac{d\bm{\pi}(t)}{dt} = \bm{\pi}(t)\bm{A}$:
+\[
+    \mathcal{L}\left\{ \frac{d\bm{\pi}(t)}{dt} \right\} = s \bm{\pi}(s) - \bm{\pi}(0)
+\]
+Uguagliando al membro destro trasformato:
+\[
+    s \bm{\pi}(s) - \bm{\pi}_0 = \bm{\pi}(s)\bm{A} \implies \bm{\pi}(s) \left[ s\bm{I} - \bm{A} \right] = \bm{\pi}_0
+\]
+Posto che la matrice risovente $(s\bm{I} - \bm{A})$ risulti invertibile (ossia $s$ non appartenga allo spettro degli autovalori di $\bm{A}$), isoliamo il vettore delle trasformate:
+\[
+    \bm{\pi}(s) = \bm{\pi}_0 (s\bm{I} - \bm{A})^{-1}
+\]
+Antitrasformando nel dominio del tempo reale, deduciamo il legame formale fondamentale:
+\[
+    \bm{\pi}(t) = \bm{\pi}_0 \mathcal{L}^{-1}\left\{ (s\bm{I} - \bm{A})^{-1} \right\} \implies \boxed{e^{\bm{A}t} = \mathcal{L}^{-1}\left\{ (s\bm{I} - \bm{A})^{-1} \right\}}
+\]
+
+Tale identità può essere dimostrata applicando direttamente la trasformata alla definizione in serie di potenze di $e^{\bm{A}t}$:
+\begin{align*}
+    (s\bm{I} - \bm{A})^{-1} &= \mathcal{L}\left[ e^{\bm{A}t} \right] = \mathcal{L}\left[ \bm{I} + \bm{A}t + \frac{1}{2!}\bm{A}^2 t^2 + \dots + \frac{1}{k!}\bm{A}^k t^k + \dots \right] \\
+    &= \frac{\bm{I}}{s} + \frac{\bm{A}}{s^2} + \frac{\bm{A}^2}{s^3} + \dots + \frac{\bm{A}^k}{s^{k+1}} + \dots = \sum_{k=0}^{\infty} \frac{\bm{A}^k}{s^{k+1}}
+\end{align*}
+che rappresenta l'espansione in serie di Neumann dell'inversa matriciale $(s\bm{I} - \bm{A})^{-1}$.
+
+\subsection{Esempio Analitico Guidato}
+
+A titolo illustrativo, consideriamo il sistema dinamico lineare del secondo ordine:
+\[
+    \dot{\bm{x}}(t) = \bm{A} \bm{x}(t), \quad \text{con } \bm{A} = \begin{bmatrix} 1 & 0 \\ 0 & 2 \end{bmatrix}
+\]
+\emph{Nota metodologica}: la matrice $\bm{A}$ proposta presenta autovalori positivi e somme di riga non nulle, dunque non può rappresentare un generatore markoviano $\bm{Q}$ (i cui elementi diagonali devono essere negativi con somma di riga nulla), ma serve qui a chiarire il calcolo algebrico della matrice esponenziale.
+
+\subsubsection{Metodo 1: Calcolo Diretto Delle Potenze Successive}
+Calcoliamo le potenze di $\bm{A}$:
+\[
+    \bm{A}^2 = \begin{bmatrix} 1 & 0 \\ 0 & 2 \end{bmatrix} \begin{bmatrix} 1 & 0 \\ 0 & 2 \end{bmatrix} = \begin{bmatrix} 1 & 0 \\ 0 & 2^2 \end{bmatrix}, \quad
+    \bm{A}^3 = \begin{bmatrix} 1 & 0 \\ 0 & 2^2 \end{bmatrix} \begin{bmatrix} 1 & 0 \\ 0 & 2 \end{bmatrix} = \begin{bmatrix} 1 & 0 \\ 0 & 2^3 \end{bmatrix}
+\]
+Per induzione, la potenza $n$-esima è banalmente:
+\[
+    \bm{A}^n = \begin{bmatrix} 1 & 0 \\ 0 & 2^n \end{bmatrix}
+\]
+Applicando la definizione della serie matriciale esponenziale:
+\[
+    e^{\bm{A}t} = \sum_{n=0}^{\infty} \frac{\bm{A}^n t^n}{n!} = \sum_{n=0}^{\infty} \begin{bmatrix} \frac{t^n}{n!} & 0 \\ 0 & \frac{(2t)^n}{n!} \end{bmatrix} = \begin{bmatrix} \sum_{n=0}^{\infty} \frac{t^n}{n!} & 0 \\ 0 & \sum_{n=0}^{\infty} \frac{(2t)^n}{n!} \end{bmatrix} = \begin{bmatrix} e^t & 0 \\ 0 & e^{2t} \end{bmatrix}
+\]
+
+\subsubsection{Metodo 2: Calcolo Mediante Inversione Nel Dominio Di Laplace}
+Costruiamo la matrice delle funzioni di trasferimento:
+\[
+    [s\bm{I} - \bm{A}] = \begin{bmatrix} s & 0 \\ 0 & s \end{bmatrix} - \begin{bmatrix} 1 & 0 \\ 0 & 2 \end{bmatrix} = \begin{bmatrix} s-1 & 0 \\ 0 & s-2 \end{bmatrix}
+\]
+L'inversa di una matrice diagonale è la matrice dei reciproci diagonali:
+\[
+    [s\bm{I} - \bm{A}]^{-1} = \begin{bmatrix} \frac{1}{s-1} & 0 \\ 0 & \frac{1}{s-2} \end{bmatrix} = \begin{bmatrix} \frac{s-2}{(s-1)(s-2)} & 0 \\ 0 & \frac{s-1}{(s-1)(s-2)} \end{bmatrix}
+\]
+Antitrasformando termine a termine tramite le trasformate notevoli $\mathcal{L}^{-1}\left\{\frac{1}{s-a}\right\} = e^{at}$:
+\[
+    \bm{\Phi}(t) = \mathcal{L}^{-1}\left\{ [s\bm{I} - \bm{A}]^{-1} \right\} = \begin{bmatrix} e^t & 0 \\ 0 & e^{2t} \end{bmatrix}
+\]
+I due procedimenti conducono esattamente al medesimo risultato analitico.
+
+\newpage
+
+% SEZIONE: EQUILIBRIO STATISTICO NELLE CATENE OMOGENEE
+
+\section{Condizione Di Equilibrio Statistico Nelle Catene Omogenee}
+
+Quando una catena di Markov a tempo continuo ergodica ha esaurito il transitorio iniziale, la distribuzione di probabilità temporale si stabilizza su una distribuzione limite stazionaria $\bm{\pi} = [\pi_0, \pi_1, \dots]$ indipendente dal tempo.
+
+Le probabilità di stato limite corrispondenti all'equilibrio statistico sono la soluzione del seguente sistema algebrico:
+\begin{equation}
+    \begin{cases}
+        \displaystyle q_{jj}\pi_j + \sum_{k \neq j} q_{kj}\pi_k = 0, \quad \forall j \in \mathcal{S} \\[10pt]
+        \displaystyle \sum_{j \in \mathcal{S}} \pi_j = 1
+    \end{cases}
+    \iff
+    \begin{cases}
+        \bm{\pi}\bm{Q} = \bm{0}^T \\[6pt]
+        \displaystyle \sum_{j \in \mathcal{S}} \pi_j = 1
+    \end{cases}
+\end{equation}
+con la proprietà strutturale del generatore infinitesimale $q_{ii} = -\sum_{j \neq i} q_{ij} < 0$.
+
+\subsection{Esempio Su Un Sistema a Tre Stati}
+
+Consideriamo una catena di Markov a tempo continuo definita sullo spazio $\mathcal{S} = \{0, 1, 2\}$, con grafo delle transizioni completamente connesso.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Markov processes and Markovian queues.pdf"] Grafo delle transizioni di una catena markoviana a 3 stati (0, 1, 2) con tassi q_01, q_02, q_10, q_12, q_20, q_21 — Slide 43 / Pagina 10 del PDF
+
+La matrice dei tassi infinitesimi $\bm{Q}$ per tale sistema assume la forma esplicita:
+\[
+    \bm{Q} = \begin{bmatrix}
+        -(q_{01} + q_{02}) & q_{01} & q_{02} \\
+        q_{10} & -(q_{10} + q_{12}) & q_{12} \\
+        q_{20} & q_{21} & -(q_{20} + q_{21})
+    \end{bmatrix}
+\]
+Imponendo l'equilibrio $\bm{\pi}\bm{Q} = \bm{0}^T$ unitamente al vincolo di normalizzazione della probabilità, il sistema di equazioni lineari per le componenti $[\pi_0, \pi_1, \pi_2]$ risulta:
+\begin{equation}
+    \begin{cases}
+        -(q_{01} + q_{02})\pi_0 + q_{10}\pi_1 + q_{20}\pi_2 = 0 \\
+        -(q_{10} + q_{12})\pi_1 + q_{01}\pi_0 + q_{21}\pi_2 = 0 \\
+        -(q_{20} + q_{21})\pi_2 + q_{02}\pi_0 + q_{12}\pi_1 = 0 \\
+        \pi_0 + \pi_1 + \pi_2 = 1
+    \end{cases}
+\end{equation}
+Ciascuna delle prime tre equazioni esprime analiticamente il bilanciamento tra il flusso di probabilità totale uscente da un nodo (primo termine) e la somma dei flussi entranti dagli altri nodi adiacenti. Poiché la matrice $\bm{Q}$ ha rango non massimo ($\det(\bm{Q}) = 0$, avendo righe a somma nulla), una qualsiasi delle tre equazioni di flusso è linearmente dipendente dalle altre due e viene sostituita dal vincolo di normalizzazione per garantire l'unicità della soluzione.
+
+\newpage
+
+% SEZIONE: PROCESSI DI NASCITA E MORTE (BIRTH AND DEATH)
+
+\section{Processi Di Nascita e Morte (\emph{Birth and Death})}
+
+I \textbf{processi di nascita e morte} rappresentano una sottoclasse speciale di catene di Markov a tempo continuo di fondamentale importanza applicativa, costituendo l'impalcatura matematica della quasi totalità dei sistemi di accodamento.
+
+\subsection{Definizione e Struttura Tridiagonale}
+
+La caratteristica distintiva di un processo di nascita e morte risiede nel vincolo topologico sulle transizioni: a partire da un generico stato $j$, sono permesse transizioni esclusivamente verso gli stati adiacenti:
+\begin{itemize}
+    \item Transizione $j \to j+1$: denominata evento di \textbf{nascita} (\emph{birth}), corrispondente all'arrivo di una nuova richiesta.
+    \item Transizione $j \to j-1$: denominata evento di \textbf{morte} (\emph{death}), corrispondente al completamento del servizio e conseguente rilascio da parte di un servitore.
+\end{itemize}
+
+Definiamo la probabilità istantanea di trovarsi nello stato $k$ al tempo $t$:
+\[
+    P_k(t) = p_k(t) = P[X(t) = k]
+\]
+In un processo omogeneo, i tassi di transizione vengono parametrizzati come segue:
+\begin{align*}
+    \lambda_k &= q_{k, k+1}, \quad \text{Tasso di nascita nello stato } k \ge 0 \\
+    \mu_k &= q_{k, k-1}, \quad \text{Tasso di morte nello stato } k \ge 1 \\
+    q_{k,j} &= 0, \quad \forall |k - j| > 1
+\end{align*}
+Dall'annullamento della somma per riga $\sum_j q_{kj} = 0$, gli elementi diagonali risultano:
+\[
+    q_{k,k} = -(\lambda_k + \mu_k), \quad \text{con } \mu_0 = 0
+\]
+Ne discende che la matrice generatrice $\bm{Q}$ assume una caratteristica struttura a \textbf{banda tridiagonale}:
+\[
+    \bm{Q} = \begin{bmatrix}
+        -\lambda_0 & \lambda_0 & 0 & 0 & \dots \\
+        \mu_1 & -(\lambda_1 + \mu_1) & \lambda_1 & 0 & \dots \\
+        0 & \mu_2 & -(\lambda_2 + \mu_2) & \lambda_2 & \dots \\
+        0 & 0 & \mu_3 & -(\lambda_3 + \mu_3) & \dots \\
+        \vdots & \vdots & \vdots & \vdots & \ddots
+    \end{bmatrix}
+\]
+
+\subsection{Equazioni Differenziali Del Transitorio e Bilancio Dei Flussi}
+
+L'evoluzione temporale del vettore $\bm{\pi}^T(t) = [P_0(t), P_1(t), \dots]$ è governata dall'equazione $\frac{d\bm{\pi}^T(t)}{dt} = \bm{\pi}^T(t)\bm{Q}$, che si esplicita nel sistema infinito di equazioni differenziali:
+\begin{equation}
+    \begin{cases}
+        \displaystyle \frac{dP_0(t)}{dt} = -\lambda_0 P_0(t) + \mu_1 P_1(t) \\[10pt]
+        \displaystyle \frac{dP_k(t)}{dt} = -(\lambda_k + \mu_k)P_k(t) + \lambda_{k-1}P_{k-1}(t) + \mu_{k+1}P_{k+1}(t), \quad k \ge 1 \\[10pt]
+        \displaystyle \sum_{k=0}^{\infty} P_k(t) = 1
+    \end{cases}
+\end{equation}
+corredato dalle condizioni iniziali di occupazione $P_k(0)$.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Markov processes and Markovian queues.pdf"] Diagramma a catena di transizione per processo di nascita e morte con tassi lambda_k e mu_k, ed evidenziazione dei flussi sul nodo k — Slide 46 / Pagina 13 del PDF
+
+Tale formulazione può essere ricavata per ispezione visiva diretta conducendo un bilancio conservativo dei flussi di probabilità che investono il generico nodo $k$:
+\begin{align*}
+    \text{Flusso entrante nello stato } k: \quad &\Phi_{\text{in}}(k) = \lambda_{k-1}P_{k-1}(t) + \mu_{k+1}P_{k+1}(t) \\
+    \text{Flusso uscente dallo stato } k: \quad &\Phi_{\text{out}}(k) = (\lambda_k + \mu_k)P_k(t)
+\end{align*}
+La derivata temporale della probabilità coincide rigorosamente con la differenza tra il flusso affluente e quello defluente:
+\[
+    \boxed{\frac{dP_k(t)}{dt} = \Phi_{\text{in}}(k) - \Phi_{\text{out}}(k) = -(\lambda_k + \mu_k)P_k(t) + \lambda_{k-1}P_{k-1}(t) + \mu_{k+1}P_{k+1}(t)}
+\]
+
+\newpage
+
+% SEZIONE: IL PROCESSO DI POISSON
+
+\section{Il Processo Di Poisson Come Modello Di Pura Nascita}
+
+Il \textbf{processo di Poisson} costituisce il modello fondamentale per descrivere l'arrivo stocastico di eventi indipendenti e disaccoppiati in sistemi distribuiti e reti di telecomunicazione. Esso può essere formalmente inquadrato come un processo di nascita e morte degenere di \textbf{pura nascita} a tasso costante.
+
+\subsection{Caratterizzazione e Risoluzione Delle Equazioni Di Stato}
+
+Un processo di Poisson omogeneo di parametro $\lambda$ è definito dalle seguenti condizioni sui tassi di transizione:
+\begin{align*}
+    \lambda_k &= \lambda, \quad \forall k \ge 0 \\
+    \mu_k &= 0, \quad \forall k \ge 0
+\end{align*}
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Markov processes and Markovian queues.pdf"] Grafo di pura nascita per il processo di Poisson con tasso costante lambda tra stati sequenziali — Slide 47 / Pagina 14 del PDF
+
+Il sistema differenziale generale di nascita e morte si contrae quindi nella catena unidirezionale:
+\begin{equation}
+    \begin{cases}
+        \displaystyle \frac{dP_0(t)}{dt} = -\lambda P_0(t) \\[10pt]
+        \displaystyle \frac{dP_k(t)}{dt} = -\lambda P_k(t) + \lambda P_{k-1}(t), \quad k \ge 1
+    \end{cases} \label{eq:poisson_system}
+\end{equation}
+Ipotizzando che all'istante iniziale $t=0$ non sia ancora giunto alcun evento, fissiamo la condizione iniziale certa:
+\[
+    P_0(0) = 1, \quad P_k(0) = 0 \quad (\forall k \ge 1)
+\]
+
+Risolviamo l'equazione per $k=0$:
+\[
+    \frac{dP_0(t)}{dt} = -\lambda P_0(t) \implies \int \frac{dP_0}{P_0} = -\lambda \int dt \implies \ln P_0(t) = -\lambda t + C
+\]
+Imponendo $P_0(0) = 1$, otteniamo la probabilità di assenza di arrivi:
+\[
+    \boxed{P_0(t) = e^{-\lambda t}, \quad t \ge 0}
+\]
+Sostituendo $P_0(t)$ nell'equazione differenziale per $k=1$:
+\[
+    \frac{dP_1(t)}{dt} + \lambda P_1(t) = \lambda e^{-\lambda t}
+\]
+Moltiplicando ambo i membri per il fattore integrante $e^{\lambda t}$:
+\[
+    \frac{d}{dt}\left[ P_1(t) e^{\lambda t} \right] = \lambda \implies P_1(t) e^{\lambda t} = \lambda t + C
+\]
+Poiché $P_1(0) = 0$, deduciamo $C = 0$, da cui:
+\[
+    \boxed{P_1(t) = (\lambda t) e^{-\lambda t}}
+\]
+Procedendo iterativamente per induzione, per lo stato $k=2$:
+\[
+    \frac{dP_2(t)}{dt} + \lambda P_2(t) = \lambda^2 t e^{-\lambda t} \implies \frac{d}{dt}\left[ P_2(t) e^{\lambda t} \right] = \lambda^2 t \implies P_2(t) e^{\lambda t} = \frac{(\lambda t)^2}{2}
+\]
+Otteniamo così la celebre \textbf{distribuzione di probabilità di Poisson} per il numero di arrivi $k$ registrati nell'intervallo $[0, t]$:
+\[
+    \boxed{P_k(t) = \frac{(\lambda t)^k}{k!} e^{-\lambda t}, \quad k \ge 0, \; t \ge 0}
+\]
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Markov processes and Markovian queues.pdf"] Curve temporali delle probabilita di stato P_k(t) del processo di Poisson per k da 0 a 4 con lambda=2 — Slide 49 / Pagina 16 del PDF
+
+\subsection{Momenti Statistici Del Processo Di Poisson}
+
+Calcoliamo il valor medio del numero di arrivi $k$ nell'intervallo $[0, t]$:
+\begin{align*}
+    \mathbb{E}[k] &= \sum_{k=0}^{\infty} k \frac{(\lambda t)^k}{k!} e^{-\lambda t} = e^{-\lambda t} \sum_{k=1}^{\infty} \frac{(\lambda t)^k}{(k-1)!} = e^{-\lambda t} (\lambda t) \sum_{k=1}^{\infty} \frac{(\lambda t)^{k-1}}{(k-1)!}
+\end{align*}
+Ponendo il cambio di variabile $j = k-1$:
+\[
+    \mathbb{E}[k] = (\lambda t) e^{-\lambda t} \sum_{j=0}^{\infty} \frac{(\lambda t)^j}{j!} = (\lambda t) e^{-\lambda t} e^{\lambda t} = \boxed{\lambda t}
+\]
+Per determinare la varianza $\sigma_k^2$, calcoliamo preliminarmente il momento fattoriale del secondo ordine $\mathbb{E}[k(k-1)]$:
+\begin{align*}
+    \mathbb{E}[k(k-1)] &= \sum_{k=0}^{\infty} k(k-1) \frac{(\lambda t)^k}{k!} e^{-\lambda t} = e^{-\lambda t} (\lambda t)^2 \sum_{k=2}^{\infty} \frac{(\lambda t)^{k-2}}{(k-2)!} = (\lambda t)^2 e^{-\lambda t} e^{\lambda t} = (\lambda t)^2
+\end{align*}
+Sviluppando la varianza tramite l'operatore di speranza matematica:
+\begin{align*}
+    \sigma_k^2 &= \mathbb{E}[(k - \mathbb{E}[k])^2] = \mathbb{E}[k^2] - (\mathbb{E}[k])^2 \\
+    &= \mathbb{E}[k(k-1)] + \mathbb{E}[k] - (\mathbb{E}[k])^2 \\
+    &= (\lambda t)^2 + \lambda t - (\lambda t)^2 = \boxed{\lambda t}
+\end{align*}
+Nel processo di Poisson, \textbf{il valor medio coincide identicamente con la varianza}:
+\[
+    \boxed{\mathbb{E}[k] = \sigma_k^2 = \lambda t}
+\]
+
+\subsection{Statistica Dei Tempi Di Interarrivo}
+
+Sia $\tilde{t}$ la variabile aleatoria continua che quantifica il tempo di interarrivo tra due eventi consecutivi del processo di Poisson. Poiché il processo è a incrementi stazionari e indipendenti, l'evento $\{\tilde{t} > t\}$ si verifica se e solo se nell'intervallo temporale di durata $t$ successivo a un arrivo si registrano esattamente zero nuovi arrivi:
+\[
+    P[\tilde{t} > t] = P_0(t) = e^{-\lambda t}, \quad t \ge 0
+\]
+La \textbf{funzione di ripartizione cumulativa} $A(t) = P[\tilde{t} \le t]$ risulta pertanto:
+\[
+    \boxed{A(t) = 1 - P[\tilde{t} > t] = 1 - e^{-\lambda t}, \quad t \ge 0}
+\]
+Derivando rispetto al tempo, otteniamo la corrispondente \textbf{funzione di densità di probabilità} $a(t)$:
+\[
+    \boxed{a(t) = \frac{d A(t)}{dt} = \lambda e^{-\lambda t}, \quad t \ge 0}
+\]
+I parametri caratteristici della distribuzione esponenziale dei tempi di interarrivo sono:
+\begin{align*}
+    \mathbb{E}[\tilde{t}] &= \frac{1}{\lambda}, \qquad \mathbb{E}[\tilde{t}^2] = \frac{2}{\lambda^2}, \qquad \sigma_t^2 = \mathbb{E}[\tilde{t}^2] - (\mathbb{E}[\tilde{t}])^2 = \frac{1}{\lambda^2}
+\end{align*}
+La corrispondente trasformata di Laplace della densità di probabilità $a(t)$ è data da:
+\[
+    A(s) = \int_0^{\infty} \lambda e^{-\lambda t} e^{-st}\,dt = \lambda \int_0^{\infty} e^{-(s+\lambda)t}\,dt = \boxed{\frac{\lambda}{s+\lambda}}
+\]
+
+\subsection{Dimostrazione Analitica Dell'Assenza Di Memoria (\emph{Memoryless})}
+
+Supponiamo di fissare l'istante di riferimento $t=0$ in corrispondenza di un arrivo. Se all'istante $t_0 > 0$ si constata che non è ancora sopraggiunto alcun nuovo evento, determiniamo la probabilità condizionata che l'interarrivo complessivo superi la soglia $t_0 + t$:
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Markov processes and Markovian queues.pdf"] Grafico della funzione di densita esponenziale che illustra la proprieta di assenza di memoria traslata a partire da t_0 — Slide 52 / Pagina 19 del PDF
+
+Applicando la definizione di probabilità condizionata:
+\begin{align*}
+    P[\tilde{t} \le t + t_0 \mid \tilde{t} > t_0] &= \frac{P[t_0 < \tilde{t} \le t + t_0]}{P[\tilde{t} > t_0]} = \frac{P[\tilde{t} \le t + t_0] - P[\tilde{t} \le t_0]}{P[\tilde{t} > t_0]} \\
+    &= \frac{A(t + t_0) - A(t_0)}{1 - A(t_0)} = \frac{\left(1 - e^{-\lambda(t + t_0)}\right) - \left(1 - e^{-\lambda t_0}\right)}{e^{-\lambda t_0}} \\
+    &= \frac{-e^{-\lambda(t + t_0)} + e^{-\lambda t_0}}{e^{-\lambda t_0}} = \frac{e^{-\lambda t_0}\left(1 - e^{-\lambda t}\right)}{e^{-\lambda t_0}} = \boxed{1 - e^{-\lambda t} = A(t)}
+\end{align*}
+La probabilità condizionata che l'evento si verifichi entro un ulteriore tempo $t$ a partire da $t_0$ è totalmente identica alla probabilità incondizionata originaria calcolata all'istante zero. Il tempo già trascorso in attesa non riduce né incrementa l'attesa residua.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Markov processes and Markovian queues.pdf"] Triangolo di equivalenza concettuale tra tasso di nascita costante, arrivi di Poisson e interarrivi esponenziali — Slide 53 / Pagina 20 del PDF
+
+Si instaura così la perfetta \textbf{triangolazione markoviana}: un processo di pura nascita a tasso costante $\lambda$ equivale biunivocamente a un processo di conteggio degli arrivi poissoniano, il quale a sua volta equivale biunivocamente a una sequenza di tempi di interarrivo indipendenti e identicamente distribuiti esponenziali di parametro $\lambda$.
+
+\subsection{Distribuzione Condizionata Degli Istanti Di Arrivo}
+
+Una proprietà teorica di notevole eleganza riguarda la collocazione temporale degli eventi all'interno dell'intervallo $[0, t]$.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Markov processes and Markovian queues.pdf"] Partizione temporale dell'intervallo [0, t] in sottointervalli vuoti alpha_i e sottointervalli con singolo arrivo beta_i — Slide 54 / Pagina 21 del PDF
+
+Supponiamo sia noto a priori che nell'intervallo $[0, t]$ si siano verificati complessivamente $k$ arrivi (evento condizionante $B_k$). Suddividiamo l'intervallo $[0, t]$ in sottointervalli disgiunti: intervalli generici $\alpha_i$ privi di arrivi, e sottointervalli infinitesimi $\beta_i$ contenenti un singolo arrivo (evento $A_k$). Ricordando che per un intervallo $\Delta$:
+\[
+    P_0(\Delta) = e^{-\lambda \Delta}, \qquad P_1(\Delta) = \lambda \Delta e^{-\lambda \Delta}
+\]
+La probabilità congiunta dell'evento configurazionale $A_k$ in presenza di $k$ eventi risulta:
+\begin{align*}
+    P(A_k \mid B_k) &= \frac{P(A_k \cap B_k)}{P(B_k)} = \frac{e^{-\lambda \alpha_1} (\lambda \beta_1 e^{-\lambda \beta_1}) e^{-\lambda \alpha_2} (\lambda \beta_2 e^{-\lambda \beta_2}) \dots e^{-\lambda \alpha_k} (\lambda \beta_k e^{-\lambda \beta_k}) e^{-\lambda \alpha_{k+1}}}{\frac{(\lambda t)^k}{k!} e^{-\lambda t}}
+\end{align*}
+Poiché la somma di tutti i sottointervalli copre l'intero asse: $\sum_{i} \alpha_i + \sum_{i} \beta_i = t$, i termini esponenziali a numeratore si accorpano in $e^{-\lambda t}$, elidendo esattamente il termine a denominatore:
+\[
+    P(A_k \mid B_k) = \frac{\lambda^k (\beta_1 \beta_2 \dots \beta_k) e^{-\lambda t}}{\frac{\lambda^k t^k}{k!} e^{-\lambda t}} = \boxed{\frac{k!}{t^k} (\beta_1 \beta_2 \dots \beta_k) = k! \left( \frac{\beta_1}{t} \frac{\beta_2}{t} \dots \frac{\beta_k}{t} \right)}
+\]
+Se ora consideriamo $k$ variabili aleatorie indipendenti e \textbf{uniformemente distribuite} sull'intervallo $[0, t]$, la probabilità che ciascuna cada nei rispettivi intervallini $\beta_i$ è data dal rapporto tra le misure di Lebesgue $\beta_i / t$. Moltiplicando per le $k!$ possibili permutazioni con cui tali arrivi possono presentarsi in ordine cronologico ordinato, ritroviamo esattamente la medesima espressione:
+\[
+    \boxed{\text{Dato l'evento di } k \text{ arrivi in } [0, t], \text{ le epoche di arrivo sono distribuite come statistiche d'ordine uniformi su } [0, t]}
+\]
+
+\subsection{Accumulo Di Arrivi e Distribuzione Di Erlang-\texorpdfstring{$k$}{k}}
+
+Se consideriamo il tempo aleatorio $X$ necessario per accumulare sequenzialmente esattamente $k$ arrivi successivi da un processo di Poisson di tasso $\lambda$, tale variabile corrisponde alla somma di $k$ variabili esponenziali indipendenti e identicamente distribuite:
+\[
+    X = \sum_{i=1}^{k} \tilde{t}_i, \quad \text{con } \tilde{t}_i \sim \text{Exp}(\lambda)
+\]
+Nel dominio trasformato di Laplace, la densità di probabilità della somma di variabili indipendenti corrisponde al prodotto delle rispettive trasformate:
+\[
+    \Pi(s) = \prod_{i=1}^k A(s) = \left( \frac{\lambda}{s + \lambda} \right)^k
+\]
+Antitrasformando mediante i residui notevoli o applicando ripetutamente la convoluzione nel tempo, ricaviamo la \textbf{distribuzione di Erlang a $k$ fasi}:
+\[
+    \boxed{f_X(x) = \frac{\lambda (\lambda x)^{k-1}}{(k - 1)!} e^{-\lambda x}, \quad x \ge 0}
+\]
+Tale distribuzione modella stadi di computazione articolati in $k$ micro-fasi esponenziali consecutive (come tipico in pipeline di rendering o catene seriali di validazione nei microservizi).
+
+\newpage
+
+% SEZIONE: MODELLO GENERALE DEI SISTEMI DI SERVIZIO E METRICHE
+
+\section{Modello Generale Dei Sistemi Di Servizio e Parametri Prestazionali}
+
+Un sistema di code generico operante a regime permanente è descritto dall'interazione tra sorgenti di carico, memorie di accodamento e servitori.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Markov processes and Markovian queues.pdf"] Schema a blocchi architetturale: n sorgenti di traffico, linea di attesa di capacita L e batteria di m servitori paralleli — Slide 57 / Pagina 24 del PDF
+
+Il sistema è formalmente monitorato attraverso un insieme di variabili aleatorie cardinali:
+\begin{itemize}[leftmargin=*]
+    \item $k$: numero totale di utenti/richieste correntemente presenti all'interno dell'intero sistema.
+    \item $l$: numero di richieste in attesa nella linea di accodamento (\emph{waiting line}), con $l = \max(0, k - m)$.
+    \item $h$: numero di servitori simultaneamente occupati nell'erogazione del carico, con $h = \min(k, m)$.
+    \item $x$: tempo aleatorio di servizio erogato dal singolo servitore.
+    \item $s$: tempo totale trascorso nel sistema (\emph{turnaround latency}, somma di coda e servizio).
+    \item $w$: tempo trascorso in attesa nella coda prima di accedere al primo servitore libero.
+\end{itemize}
+
+A regime permanente, la variabile discreta $k$ è univocamente descritta dalla \textbf{probabilità limite di stato}:
+\[
+    \pi_k = P_k = \lim_{t \to \infty} P[X(t) = k]
+\]
+che rappresenta la probabilità che, ad un generico istante di osservazione in stato stazionario, si rilevino esattamente $k$ entità concorrenti nel sistema.
+
+\subsection{Probabilità Di Blocco Del Sistema e Probabilità Di Rifiuto}
+
+In un'architettura reale dotata di $m$ servitori e capacità finita di accodamento $L$, la capienza massima del sistema è $C = m + L$.
+
+Definiamo la \textbf{probabilità di sistema bloccato/saturo} $S_p$ come la probabilità che tutti gli slot computazionali (servitori e buffer) risultino integralmente occupati:
+\[
+    \boxed{S_p = P[k = m + L] = P_{m+L}}
+\]
+
+Distinguiamo ora tale metrica intrinseca del sistema dalla \textbf{probabilità di scarto effettiva} $\Pi_p$, ovvero la probabilità che una richiesta offerta (\emph{offered service request}, o.s.r.) venga rigettata:
+\[
+    \Pi_p = P[\text{sistema saturo} \mid \text{richiesta generata}]
+\]
+Applicando il teorema di Bayes:
+\[
+    \Pi_p = \frac{P[\text{richiesta generata} \mid \text{sistema saturo}] \cdot P[\text{sistema saturo}]}{P[\text{richiesta generata}]} = S_p \cdot \frac{P[\text{o.s.r.} \mid \text{sistema saturo}]}{P[\text{o.s.r.}]}
+\]
+\textbf{Proprietà PASTA (\emph{Poisson Arrivals See Time Averages})}: se il processo di generazione delle richieste è di Poisson, il tasso di arrivo è rigorosamente indipendente dallo stato interno del sistema. Di conseguenza, la probabilità condizionata coincide con quella a priori:
+\[
+    P[\text{o.s.r.} \mid \text{sistema saturo}] = P[\text{o.s.r.}] \implies \boxed{\Pi_p = S_p = P_{m+L}}
+\]
+
+\subsection{Probabilità Di Saturazione Dei Servitori e Probabilità Di Ritardo}
+
+Nei sistemi in cui è ammessa la linea di attesa ($L > 0$), una richiesta non subisce lo scarto se trova almeno un posto libero nel buffer, ma sperimenta un ritardo positivo se tutti i servitori sono occupati.
+
+Definiamo la \textbf{probabilità di servitori saturi} $S_r$ come la probabilità che vi siano almeno $m$ entità nel sistema:
+\[
+    \boxed{S_r = P[k \ge m] = \sum_{k=m}^{m+L} P_k}
+\]
+
+La \textbf{probabilità di ritardo} $\Pi_r$ rappresenta la probabilità che una richiesta effettivamente ammessa nel sistema (\emph{admitted service request}, a.s.r.) debba attendere in coda prima di iniziare l'elaborazione:
+\[
+    \Pi_r = P[\text{servitori tutti occupati} \mid \text{richiesta ammessa}] = S_r \cdot \frac{P[\text{a.s.r.} \mid \text{servitori occupati}]}{P[\text{a.s.r.}]}
+\]
+Nuovamente, per sorgenti di arrivo poissoniane e buffer non saturo, la selezione non è polarizzata, garantendo l'identità:
+\[
+    \boxed{\Pi_r = S_r = P[k \ge m]}
+\]
+
+\newpage
+
+% SEZIONE: RISOLUZIONE DI EQUILIBRIO PER NASCITA E MORTE
+
+\section{Risoluzione Dello Stato Stazionario Nei Processi Di Nascita e Morte}
+
+Analizziamo ora il processo di nascita e morte in condizioni di equilibrio statistico per calcolare la distribuzione esatta di probabilità a regime $\{P_k\}_{k \ge 0}$.
+
+\subsection{Dal Bilancio Globale Al Bilancio Dettagliato (\emph{Detailed Balance})}
+
+All'equilibrio stazionario, le derivate temporali si annullano identicamente ($dP_k(t)/dt = 0$). Il sistema differenziale decade nel sistema algebrico:
+\begin{equation}
+    \begin{cases}
+        0 = -\lambda_0 P_0 + \mu_1 P_1 \\[6pt]
+        0 = -(\lambda_k + \mu_k)P_k + \lambda_{k-1}P_{k-1} + \mu_{k+1}P_{k+1}, \quad k \ge 1 \\[6pt]
+        \displaystyle \sum_{k=0}^{\infty} P_k = 1
+    \end{cases} \label{eq:bd_equilibrium}
+\end{equation}
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Markov processes and Markovian queues.pdf"] Grafo di equilibrio per processo di nascita e morte con evidenziazione del taglio di frontiera tra k-1 e k — Slide 61 / Pagina 28 del PDF
+
+Riscriviamo l'equazione generica isolando i termini relativi agli stati $k$ e $k+1$ rispetto a quelli tra $k-1$ e $k$:
+\[
+    \mu_{k+1}P_{k+1} - \lambda_k P_k = \mu_k P_k - \lambda_{k-1}P_{k-1}
+\]
+Definiamo la quantità flusso netto di taglio:
+\[
+    \alpha_k = \mu_k P_k - \lambda_{k-1}P_{k-1}
+\]
+Dall'identità precedente segue che tale quantità è invariante rispetto all'indice di stato:
+\[
+    \alpha_{k+1} = \alpha_k = \text{costante}, \quad \forall k \ge 1
+\]
+Valutiamo tale costante sul primo anello della catena ($k = 1$):
+\[
+    \alpha_1 = \mu_1 P_1 - \lambda_0 P_0
+\]
+Dalla prima equazione del sistema \eqref{eq:bd_equilibrium}, sappiamo che $0 = -\lambda_0 P_0 + \mu_1 P_1 \implies \alpha_1 = 0$. Ne consegue che la costante è identicamente nulla per ogni livello di stato:
+\[
+    \alpha_k = 0 \implies \boxed{\lambda_{k-1}P_{k-1} = \mu_k P_k, \quad \forall k \ge 1}
+\]
+Questa identità esprime il principio del \textbf{bilancio locale o dettagliato} (\emph{Detailed Balance}): in un processo di nascita e morte monodimensionale all'equilibrio, il flusso di probabilità che attraversa una qualsiasi frontiera ideale tra lo stato $k-1$ e lo stato $k$ in direzione crescente ($\lambda_{k-1}P_{k-1}$) deve eguagliare esattamente il flusso che la attraversa in direzione opposta decrescente ($\mu_k P_k$).
+
+\subsection{Soluzione In Forma Prodotto e Normalizzazione}
+
+Esprimendo $P_k$ in funzione dello stato precedente $P_{k-1}$:
+\[
+    P_k = \frac{\lambda_{k-1}}{\mu_k} P_{k-1}
+\]
+Procedendo a ritroso in modo ricorsivo fino allo stato vuoto $P_0$:
+\begin{align*}
+    P_1 &= \frac{\lambda_0}{\mu_1} P_0 \\
+    P_2 &= \frac{\lambda_1}{\mu_2} P_1 = \left( \frac{\lambda_1 \lambda_0}{\mu_2 \mu_1} \right) P_0 \\
+    &\;\;\vdots \\
+    P_k &= P_0 \prod_{i=0}^{k-1} \frac{\lambda_i}{\mu_{i+1}}
+\end{align*}
+Imponendo l'assioma di normalizzazione della probabilità totale:
+\[
+    \sum_{k=0}^{\infty} P_k = P_0 + \sum_{k=1}^{\infty} P_k = P_0 \left[ 1 + \sum_{k=1}^{\infty} \prod_{i=0}^{k-1} \frac{\lambda_i}{\mu_{i+1}} \right] = 1
+\]
+Ricaviamo la formula chiusa per la probabilità che il sistema sia completamente vuoto $P_0$:
+\[
+    \boxed{P_0 = \frac{1}{1 + \displaystyle\sum_{k=1}^{\infty} \prod_{i=0}^{k-1} \frac{\lambda_i}{\mu_{i+1}}}}
+\]
+Una volta calcolato $P_0$, l'intera distribuzione $\{P_k\}$ è univocamente determinata.
+
+\newpage
+
+% SEZIONE: LA CODA M/M/1
+
+\section{Analisi Rigorosa Della Coda \texorpdfstring{$M/M/1/\infty/\infty$}{M/M/1}}
+
+La coda $M/M/1/\infty/\infty$ rappresenta l'archetipo fondamentale della teoria delle code.
+
+\subsection{Ipotesi Operative Del Modello}
+
+Il sistema è governato dalle seguenti assunzioni:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Processo di Arrivo Markoviano ($M$)}: tempi di interarrivo indipendenti e identicamente distribuiti (i.i.d.) secondo una legge esponenziale negativa di parametro $\lambda$. Il flusso di ingresso è dunque un processo di Poisson puro a tasso costante.
+    \item \textbf{Processo di Servizio Markoviano ($M$)}: tempi di servizio i.i.d. distribuiti secondo una legge esponenziale negativa di parametro $\mu$.
+    \item \textbf{Indipendenza Statistica}: arrivi e completamenti di servizio sono mutuamente incorrelati.
+    \item \textbf{Singolo Servitore ($1$)}: le richieste vengono elaborate sequenzialmente da una sola risorsa computazionale.
+    \item \textbf{Buffer Illimitato ($\infty$)}: capacità di accodamento teoricamente infinita, nessuna perdita per overflow.
+    \item \textbf{Popolazione Infinita ($\infty$)}: il tasso di generazione del traffico esterno è insensibile al numero di clienti già presenti in coda.
+\end{itemize}
+
+Il processo stocastico $K(t)$ che traccia il numero di clienti nel sistema è un processo di nascita e morte definito sullo spazio discreto illimitato $\mathcal{S} = \{0, 1, 2, \dots\}$.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Markov processes and Markovian queues.pdf"] Diagramma cronologico di evoluzione a scalini dello stato k(t) con indicazione degli arrivi input e delle terminazioni di servizio — Slide 64 / Pagina 31 del PDF
+
+La traiettoria temporale di $k(t)$ è una funzione a gradini interi:
+\begin{itemize}
+    \item In corrispondenza di ciascun arrivo (marcato con crocetta $\times$ sulla linea di input), il numero di clienti subisce una discontinuita di salto unitario $+1$ (\emph{Birth}).
+    \item In corrispondenza di ciascuna terminazione di servizio (marcata con cerchio $\circ$ sulla linea di output), il numero di clienti compie un salto negativo unitario $-1$ (\emph{Death}).
+\end{itemize}
+
+\subsection{Grafo Delle Transizioni e Tassi Costanti}
+
+Poiché il tasso di arrivo e la capacità di servizio non dipendono dal grado di riempimento della coda, i parametri di transizione risultano costanti per ogni stato:
+\begin{align*}
+    \lambda_k &= \lambda, \quad \forall k \ge 0 \\
+    \mu_k &= \mu, \quad \forall k \ge 1
+\end{align*}
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Markov processes and Markovian queues.pdf"] Grafo di transizione di stato della coda M/M/1 con tassi costanti lambda in avanti e mu a ritroso — Slide 65 / Pagina 32 del PDF
+
+\subsection{Derivazione Della Distribuzione Geometrica Di Stato}
+
+Sostituendo i tassi costanti nella soluzione generale per processi di nascita e morte ricavata nella sezione precedente:
+\[
+    P_k = P_0 \prod_{i=0}^{k-1} \frac{\lambda_i}{\mu_{i+1}} = P_0 \prod_{i=0}^{k-1} \frac{\lambda}{\mu} = P_0 \left( \frac{\lambda}{\mu} \right)^k
+\]
+Definendo il fattore di utilizzazione $\rho = \frac{\lambda}{\mu}$, la probabilità dello stato generico assume la forma compatta:
+\[
+    \boxed{P_k = P_0 \rho^k, \quad k \ge 0}
+\]
+
+Calcoliamo la probabilità di sistema inattivo $P_0$ imponendo la normalizzazione:
+\[
+    P_0 = \frac{1}{1 + \displaystyle\sum_{k=1}^{\infty} \rho^k} = \frac{1}{\displaystyle\sum_{k=0}^{\infty} \rho^k}
+\]
+La sommatoria a denominatore è la classica serie geometrica di ragione $\rho$. Essa converge ad un limite finito se e solo se la ragione è strettamente inferiore all'unità, condizione che coincide esattamente con il \textbf{criterio di ergodicità e stabilità}:
+\[
+    \boxed{\rho = \frac{\lambda}{\mu} < 1}
+\]
+Sotto tale condizione:
+\[
+    \sum_{k=0}^{\infty} \rho^k = \frac{1}{1 - \rho} \implies \boxed{P_0 = 1 - \rho}
+\]
+Sostituendo l'espressione di $P_0$, ricaviamo la \textbf{distribuzione stazionaria geometrica} per la coda $M/M/1$:
+\[
+    \boxed{P_k = (1 - \rho)\rho^k, \quad k = 0, 1, 2, \dots}
+\]
+
+Questa formulazione evidenzia come la probabilità di occupazione decresca esponenzialmente all'aumentare del numero di richieste accodate $k$, con una pendenza determinata unicamente dal fattore di carico $\rho$, gettando le basi quantitative per stimare l'accumulo di ritardi e dimensionare le finestre di buffer negli stack di rete e nei nodi cloud.
+
+
+% AA Markov_Processes [67-99]    ------------------------------------------------------------
+
+% CAPITOLO: MODELLI DI CODE PER LE RETI E IL CLOUD COMPUTING
+
+\section{Modelli Di Coda M/M/1: Statistiche Stazionarie E Tempi Di Attesa}
+
+\subsection{Distribuzione Geometrica Dello Stato Nel Sistema M/M/1}
+
+Nei sistemi a coda a singolo servitore di tipo $\mathrm{M/M/1}$, gli intertempi di arrivo sono variabili aleatorie esponenziali indipendenti e identicamente distribuite con parametro $\lambda$ (frequenza media di arrivo), mentre i tempi di erogazione del servizio da parte dell'unico servitore sono distribuiti in modo esponenziale negativo con parametro $\mu$ (tasso medio di servizio). Lo spazio degli stati coincide con l'insieme dei numeri interi non negativi $\mathcal{S} = \{0, 1, 2, \dots\}$, dove lo stato generico $k$ descrive la presenza di $k$ utenti complessivi all'interno del sistema (uno in fase di servizio e $k-1$ in attesa nel buffer di accodamento).
+
+La condizione necessaria e sufficiente affinché il processo di nascita e morte sia ergodico e ammetta una distribuzione limite di probabilità stazionaria è che l'intensità di traffico offerto risulti strettamente inferiore all'unità:
+\[
+\rho = \frac{\lambda}{\mu} < 1
+\]
+Sotto tale ipotesi di stabilità, risolvendo il sistema di bilancio globale di flusso tra stati adiacenti:
+\[
+\lambda p_{k-1} = \mu p_k \quad \implies \quad p_k = \rho^k p_0, \quad \forall k \ge 1
+\]
+Applicando la condizione di normalizzazione della probabilità complessiva $\sum_{k=0}^{\infty} p_k = 1$, si ottiene l'espressione per la probabilità che il sistema sia vuoto:
+\[
+p_0 \sum_{k=0}^{\infty} \rho^k = \frac{p_0}{1-\rho} = 1 \quad \implies \quad p_0 = 1 - \rho
+\]
+Di conseguenza, la probabilità limite stazionaria $p_k$ di riscontrare esattamente $k$ utenti nel sistema assume la forma analitica di una **distribuzione geometrica** modificata con parametro $\rho$:
+\[
+\boxed{p_k = (1 - \rho)\rho^k, \quad k \ge 0}
+\]
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "estrattoSlideLezione.pdf"] Grafico a linee e punti della distribuzione geometrica delle probabilità limite di stato p_k in funzione di k per rho=0.9 — Slide 67 / Pagina 1 del PDF
+
+La natura decrescente delle probabilità $p_k$ all'aumentare di $k$ evidenzia come configurazioni ad elevato affollamento risultino progressivamente meno probabili; ciononostante, all'approssimarsi di $\rho$ a $1$ (ad esempio per $\rho = 0{,}9$, dove $p_0 = 0{,}10$ e la coda decade molto lentamente con $p_k = 0{,}1 \cdot 0{,}9^k$), la dispersione probabilistica si estende ampiamente verso valori elevati di $k$, determinando code lunghe e congestione persistente.
+
+\subsection{Numero Medio Di Utenti E Formula Di Little}
+
+Per determinare il numero medio di utenti presenti globalmente nel sistema all'equilibrio statistico, indicato con $\bar{k} = \mathbb{E}[K]$, si calcola il valore atteso della distribuzione di probabilità stazionaria:
+\[
+\mathbb{E}[K] = \bar{k} = \sum_{k=0}^{\infty} k \cdot p_k = \sum_{k=0}^{\infty} k (1 - \rho)\rho^k = (1 - \rho)\sum_{k=0}^{\infty} k \rho^k
+\]
+Per risolvere analiticamente la serie ponderata $\sum_{k=0}^{\infty} k \rho^k$, si sfrutta la tecnica della derivazione termine a termine rispetto al parametro $\rho$, isolando un fattore moltiplicativo $\rho$:
+\begin{align*}
+\mathbb{E}[K] &= (1 - \rho)\rho \sum_{k=0}^{\infty} k \rho^{k-1} = (1 - \rho)\rho \sum_{k=1}^{\infty} k \rho^{k-1} \\
+&= (1 - \rho)\rho \left( \frac{\partial}{\partial \rho} \sum_{k=0}^{\infty} \rho^k \right) = (1 - \rho)\rho \left( \frac{\partial}{\partial \rho} \left[ \frac{1}{1-\rho} \right] \right) \\
+&= (1 - \rho)\rho \left( \frac{1}{(1-\rho)^2} \right) = \frac{\rho}{1 - \rho}
+\end{align*}
+Il numero medio di utenti presenti nel sistema è pertanto:
+\[
+\boxed{\bar{k} = \frac{\rho}{1 - \rho}}
+\]
+Applicando la fondamentale **Legge di Little** ($\bar{k} = \lambda T$), la quale correla in condizioni stazionarie il numero medio di entità presenti in un sistema arbitrario con il loro tempo medio di permanenza complessivo $T$, si ricava:
+\[
+\boxed{T = \frac{\bar{k}}{\lambda} = \frac{\rho}{\lambda (1 - \rho)} = \frac{\frac{1}{\mu}}{1 - \rho} = \frac{1}{\mu - \lambda}}
+\]
+Tale espressione racchiude il tempo medio totale trascorso da un utente nel sistema $\mathrm{M/M/1}$, comprensivo sia del ritardo di accodamento sia del tempo effettivo di elaborazione da parte del servitore.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "estrattoSlideLezione.pdf"] Grafico del tempo medio di permanenza nel sistema in funzione dell'intensità di traffico medio rho per mu=0.2, evidenziante l'asintoto per rho tendente a 1 — Slide 69 / Pagina 3 del PDF
+
+Dall'andamento del tempo medio di sistema $T$ in funzione dell'intensità di traffico $\rho = \frac{\lambda}{\mu}$ emerge un comportamento non lineare critico: per valori bassi di carico ($\rho \to 0$), il tempo medio coincide con il tempo medio di servizio puro $1/\mu$ (nel caso tracciato nelle slide con $\mu = 0{,}2$, $1/\mu = 5$ unità temporali). Tuttavia, quando l'intensità di traffico si approssima alla saturazione ($\rho \to 1$), il denominatore $(\mu - \lambda)$ tende a zero, provocando l'esplosione asintotica a infinito dei tempi di attesa e di accodamento.
+
+\subsection{Metriche Prestazionali E Decomposizione Degli Stati}
+
+In condizioni di equilibrio statistico, la frequenza o intensità media di richieste erogate dal servitore, indicata con $A_s$, coincide perfettamente con l'intensità di richieste di servizio offerte al sistema $A_o$, normalizzata per la capacità del singolo servitore:
+\[
+A_s = A_o = \rho = 1 - p_0
+\]
+Dato che il sistema $\mathrm{M/M/1}$ possiede una capacità di accodamento virtualmente infinita, nessuna richiesta viene respinta o persa per blocco fisico. Tuttavia, una richiesta entrante sperimenta un ritardo (ossia è costretta ad attendere in coda) ogni qualvolta trova il servitore occupato al momento del proprio arrivo. In virtù della proprietà PASTA (\emph{Poisson Arrivals See Time Averages}), la probabilità di trovare il servitore occupato coincide con la probabilità stazionaria che lo stato non sia zero:
+\[
+S_r = \Pi_r = (1 - \rho)\sum_{k=1}^{\infty} \rho^k = \rho
+\]
+Pertanto, il parametro $\rho$ sintetizza tre grandezze fisicamente identiche:
+\begin{enumerate}[noitemsep]
+    \item La probabilità che il servitore sia occupato all'arrivo di una richiesta;
+    \item La quota percentuale di tempo in cui il server è attivo;
+    \item La probabilità $\Pi_r$ che una richiesta incidente sia costretta ad accodarsi.
+\end{enumerate}
+
+Per analizzare separatamente la coda d'attesa e il centro di servizio, si definiscono due variabili aleatorie discrete:
+\begin{itemize}[noitemsep]
+    \item $l$: lunghezza della linea di attesa (escluso l'utente in erogazione);
+    \item $h$: numero di servitori impegnati, con $h \in \{0, 1\}$.
+\end{itemize}
+La distribuzione marginale del numero di servitori attivi $h$ è una variabile bernoulliana:
+\[
+\Pr\{h = j\} =
+\begin{cases}
+1 - \rho, & j = 0 \\
+\rho, & j = 1
+\end{cases}
+\quad \implies \quad \bar{h} = \mathbb{E}[h] = \rho
+\]
+La distribuzione marginale della lunghezza della linea di attesa $l$ si ottiene mappando gli stati del sistema: la coda è vuota ($l=0$) se il sistema è privo di utenti ($k=0$) oppure se vi è un solo utente che sta occupando il servitore ($k=1$). Se invece il sistema contiene $k = j+1$ utenti (con $j \ge 1$), esattamente $j$ utenti stazionano in coda. Pertanto:
+\[
+\Pr\{l = j\} =
+\begin{cases}
+(1 - \rho) + \rho(1 - \rho) = 1 - \rho^2, & j = 0 \\
+(1 - \rho)\rho^{j+1}, & j \ge 1
+\end{cases}
+\]
+Calcolando il valor medio della lunghezza della coda di attesa $\bar{l} = \mathbb{E}[l]$:
+\[
+\bar{l} = \sum_{j=1}^{\infty} j (1 - \rho)\rho^{j+1} = \rho \sum_{j=1}^{\infty} j (1 - \rho)\rho^j = \rho \cdot \bar{k} = \rho \left( \frac{\rho}{1 - \rho} \right) = \frac{\rho^2}{1 - \rho}
+\]
+Risulta verificata la perfetta linearità della media del numero totale di utenti:
+\[
+\boxed{\bar{k} = \bar{l} + \bar{h} = \frac{\rho^2}{1 - \rho} + \rho = \frac{\rho^2 + \rho(1 - \rho)}{1 - \rho} = \frac{\rho}{1 - \rho}}
+\]
+
+\subsection{Distribuzione Analitica Del Tempo Di Attesa In Coda}
+
+Consideriamo un utente che, all'atto dell'arrivo al sistema, rileva lo stato $k$. Ciò implica la presenza di $k$ utenti preesistenti: uno in erogazione al servitore e $k-1$ in attesa lungo la linea di accodamento. Sotto disciplina d'accesso di tipo FCFS (\emph{First-Come, First-Served}), l'utente entrante deve attendere il completamento della frazione residua del servizio in corso più il servizio completo degli altri $k-1$ utenti che lo precedono.
+
+Grazie alla proprietà di assenza di memoria (\emph{memoryless}) della distribuzione esponenziale negativa, la durata residua del servizio dell'utente già servito è ancora identicamente distribuita come una variabile esponenziale di parametro $\mu$. Pertanto, condizionatamente alla presenza di $k$ utenti, il tempo di attesa in coda $w$ equivale alla convoluzione di $k$ variabili aleatorie esponenziali indipendenti di tasso $\mu$ (distribuzione di Erlang a $k$ stadi). Ricordando che nel dominio della trasformata di Laplace la densità di probabilità di una variabile esponenziale è data da $\frac{\mu}{s+\mu}$, la trasformata della somma di $k$ variabili esponenziali indipendenti è:
+\[
+\mathcal{L}\{f_{w|k}(t)\}(s) = \left( \frac{\mu}{s + \mu} \right)^k
+\]
+Poiché l'arrivo trova il sistema nello stato $k$ con probabilità stazionaria $p_k = (1 - \rho)\rho^k$, la trasformata di Laplace della densità del tempo di attesa complessivo $W(s)$ si esprime mediante la serie:
+\[
+W(s) = \sum_{k=0}^{\infty} \left( \frac{\mu}{s + \mu} \right)^k \rho^k (1 - \rho) = (1 - \rho) \sum_{k=0}^{\infty} \left( \frac{\rho \mu}{s + \mu} \right)^k
+\]
+Trattandosi di una serie geometrica convergente (in quanto $\left| \frac{\rho \mu}{s + \mu} \right| < 1$ per $\mathrm{Re}(s) > 0$), si ottiene:
+\begin{align*}
+W(s) &= (1 - \rho) \frac{1}{1 - \frac{\rho \mu}{s + \mu}} = (1 - \rho) \frac{s + \mu}{s + \mu - \rho \mu} = (1 - \rho) \frac{s + \mu}{s + \mu(1 - \rho)} \\
+&= \frac{(1 - \rho)(s + \mu + \lambda - \lambda)}{s + \mu(1 - \rho)} = \frac{(1 - \rho)[s + \mu(1 - \rho) + \lambda]}{s + \mu(1 - \rho)} \\
+&= (1 - \rho) + \frac{\lambda(1 - \rho)}{s + \mu(1 - \rho)}
+\end{align*}
+Antitrasformando termine a termine secondo Laplace, il termine costante $(1 - \rho)$ genera una delta di Dirac centrata nell'origine $\delta(t)$, associata alla probabilità finita che il sistema sia libero all'arrivo e che l'attesa sia identicamente nulla:
+\[
+\boxed{w(t) = (1 - \rho)\delta(t) + \lambda(1 - \rho) e^{-\mu(1 - \rho)t}, \quad t \ge 0}
+\]
+Integrando la densità per ottenere la funzione di ripartizione $F_w(t) = \Pr\{w \le t\}$:
+\[
+F_w(t) = \int_{0^{-}}^t w(\tau)\, d\tau = (1 - \rho) + \lambda(1 - \rho) \left[ \frac{1 - e^{-\mu(1 - \rho)t}}{\mu(1 - \rho)} \right] = (1 - \rho) + \rho \left(1 - e^{-\mu(1 - \rho)t}\right)
+\]
+Semplificando l'espressione algebrica si perviene alla forma chiusa:
+\[
+\boxed{F_w(t) = 1 - \rho e^{-\mu(1 - \rho)t}, \quad t \ge 0}
+\]
+Il tempo medio di attesa puro in coda $\bar{w} = \mathbb{E}[w]$ (indicato anche con $W$) risulta pari a:
+\[
+\boxed{\bar{w} = W = \frac{\rho}{\mu} \cdot \frac{1}{1 - \rho} = \frac{\lambda}{\mu(\mu - \lambda)}}
+\]
+Definendo $w_r$ come il percentile $r$-esimo del tempo di attesa (ovvero il valore limite tale per cui $\Pr\{w \le w_r\} = \frac{r}{100}$), dall'uguaglianza:
+\[
+1 - \rho e^{-\mu(1 - \rho)w_r} = \frac{r}{100} \implies \rho e^{-\mu(1 - \rho)w_r} = 1 - \frac{r}{100} = \frac{100 - r}{100}
+\]
+si ricava:
+\[
+e^{\mu(1 - \rho)w_r} = \frac{100\rho}{100 - r} \implies \mu(1 - \rho)w_r = \ln\left( \frac{100\rho}{100 - r} \right)
+\]
+Poiché $\frac{W}{\rho} = \frac{1}{\mu(1 - \rho)}$, si isola direttamente:
+\[
+\boxed{w_r = \frac{W}{\rho} \ln\left( \frac{100\rho}{100 - r} \right)}
+\]
+
+\subsection{Distribuzione Del Tempo Speso Nel Sistema}
+
+Il tempo totale di permanenza nel sistema da parte di un utente, denotato con $s$, corrisponde al tempo di attesa in coda sommato al tempo di servizio dell'utente stesso. In un regime FCFS, l'utente appena giunto che trovi $k$ entità davanti a sé dovrà attendere il completamento di $k+1$ variabili esponenziali indipendenti di parametro $\mu$ (le $k$ precedenti più la propria).
+
+Nel dominio di Laplace, la trasformata della distribuzione del tempo totale $S(s)$ risulta dunque:
+\begin{align*}
+S(s) &= \sum_{k=0}^{\infty} \left( \frac{\mu}{s + \mu} \right)^{k+1} \rho^k (1 - \rho) = \frac{\mu}{s + \mu}(1 - \rho) \sum_{k=0}^{\infty} \left( \frac{\rho \mu}{s + \mu} \right)^k \\
+&= \frac{\mu(1 - \rho)}{s + \mu} \left( \frac{1}{1 - \frac{\rho \mu}{s + \mu}} \right) = \frac{\mu(1 - \rho)}{s + \mu} \left( \frac{s + \mu}{s + \mu(1 - \rho)} \right) = \frac{\mu(1 - \rho)}{s + \mu(1 - \rho)}
+\end{align*}
+Antitrasformando secondo Laplace, si riconosce la densità di probabilità di una pura distribuzione esponenziale negativa di parametro scalato $\mu(1 - \rho)$:
+\[
+\boxed{s(t) = \mu(1 - \rho) e^{-\mu(1 - \rho)t}, \quad t \ge 0}
+\]
+La corrispondente funzione di distribuzione cumulativa è:
+\[
+\boxed{F_s(t) = \Pr\{s \le t\} = 1 - e^{-\mu(1 - \rho)t}, \quad t \ge 0}
+\]
+Il tempo medio totale di sistema $T = \mathbb{E}[s]$ coincide con l'inverso del tasso effettivo:
+\[
+\boxed{T = \frac{1}{\mu(1 - \rho)} = \frac{1}{\mu - \lambda} = \bar{w} + \frac{1}{\mu}}
+\]
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "estrattoSlideLezione.pdf"] Grafico della funzione di distribuzione cumulativa del tempo di sistema F_s(t) in funzione del tempo per mu=0.5 e rho=0.6 — Slide 75 / Pagina 9 del PDF
+
+Il percentile $r$-esimo del tempo totale di permanenza nel sistema, denotato con $s_r$, tale per cui $\Pr\{s \le s_r\} = \frac{r}{100}$, si calcola imponendo:
+\[
+1 - e^{-\mu(1 - \rho)s_r} = \frac{r}{100} \implies e^{-\mu(1 - \rho)s_r} = 1 - \frac{r}{100}
+\]
+Applicando il logaritmo naturale ad ambo i membri:
+\[
+-\mu(1 - \rho)s_r = \ln\left(1 - \frac{r}{100}\right) \implies s_r = \frac{-\ln\left(1 - \frac{r}{100}\right)}{\mu(1 - \rho)}
+\]
+Dato che $T = \frac{1}{\mu(1 - \rho)}$, la relazione si compatta nella formula:
+\[
+\boxed{s_r = T \frac{-\ln\left(1 - \frac{r}{100}\right)}{1 - \rho} \cdot (1 - \rho) = \frac{-T \ln\left(1 - \frac{r}{100}\right)}{1}}
+\]
+che nelle slide viene presentata esplicitando il fattore di normalizzazione rispetto alla componente di carico:
+\[
+\boxed{s_r = T \frac{-\ln(1 - r/100)}{1 - \rho}}
+\]
+
+\subsection{Esempi Operativi Di Applicazione Del Modello M/M/1}
+
+I modelli di accodamento a singolo servitore trovano estesa applicazione nell'ingegneria del software e nelle infrastrutture distribuite cloud:
+
+\begin{itemize}
+    \item **Sistemi di Osservabilità e Monitoraggio**: Piattaforme open source standard de facto quali **Prometheus** e **Grafana** raccolgono flussi massivi di metriche serie storiche prodotte da container e nodi fisici. Quando uno \emph{scraper} interroga periodicamente gli endpoint applicativi per immagazzinare i campioni su time-series database (TSDB), il modello $\mathrm{M/M/1}$ descrive la coda di ingestione delle richieste di scrittura. Permette di stimare la latenza di inserimento, determinare il throughput massimo sostenibile dal database senza perdita di consistenza temporale e calibrare gli intervalli di campionamento.
+    \item **Servizi di Assistenza Clienti e Call Center Mono-Operatore**: Un unico operatore gestisce chiamate che sopraggiungono secondo un processo di Poisson con frequenza media nota; la durata di ogni sessione risolutiva è modellata mediante una distribuzione esponenziale. Il formalismo analitico fornisce gli strumenti per garantire accordi sui livelli di servizio (SLA) quantificando la percentuale di utenti che attende meno di una soglia prestabilita.
+    \item **Gestione Delle Richieste Su Cloud Storage**: Nodi di archiviazione a singolo thread o istanze di storage cloud (ad es. microservizi dedicati alla persistenza su dischi a blocchi o bucket a oggetti) gestiscono code di richieste di upload, download e manipolazione metadati. Con arrivi stocastici e tempi di trasmissione esponenziali, l'analisi del percentile $s_r$ previene il degradamento del servizio dimensionando correttamente la capacità di I/O.
+\end{itemize}
+
+\newpage
+
+% MODELLO M/M/INIFINITO
+
+\section{Modello M/M/$\infty$: Coda A Risorse Infinite}
+
+\subsection{Catena Di Nascita E Morte E Distribuzione Di Poisson}
+
+Il modello $\mathrm{M/M/\infty}$ descrive un sistema a cui affluiscono richieste secondo un processo di Poisson con frequenza costante $\lambda$, ma dotato di un numero illimitato di servitori ($m = \infty$). Di conseguenza, nessun utente viene mai forzato ad attendere in coda: ogni richiesta in arrivo trova istantaneamente un servitore libero dedicato.
+
+I tassi di transizione dello schema di nascita e morte risultano definiti come:
+\begin{align*}
+\lambda_k &= \lambda, \quad \forall k \ge 0 \\
+\mu_k &= k\mu, \quad \forall k \ge 1
+\end{align*}
+Il tasso di morte $\mu_k = k\mu$ deriva direttamente dal fatto che, trovandosi il sistema nello stato $k$, vi sono $k$ servitori attivi contemporaneamente; la probabilità che uno qualsiasi di essi completi l'elaborazione nel differenziale temporale $dt$ è pari alla somma delle probabilità individuali ($k \cdot \mu dt$).
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "estrattoSlideLezione.pdf"] Diagramma di transizione di stato della catena di nascita e morte del sistema M/M/infinito con stati 0, 1, 2, k, k+1 — Slide 77 / Pagina 11 del PDF
+
+La catena è intrinsecamente stabile ed ergodica per qualunque valore finito e positivo di $\lambda$ e $\mu$, poiché per $k$ sufficientemente elevato il tasso di servizio cumulativo $k\mu$ supera sempre il tasso di arrivo $\lambda$. La probabilità limite $P_k$ si ricava mediante l'equazione di bilancio di flusso:
+\[
+P_k = P_0 \prod_{i=0}^{k-1} \frac{\lambda_{i}}{\mu_{i+1}} = P_0 \prod_{i=0}^{k-1} \frac{\lambda}{(i+1)\mu} = P_0 \left( \frac{\lambda}{\mu} \right)^k \frac{1}{k!}
+\]
+Imponendo il vincolo di normalizzazione per determinare la probabilità di stato vuoto $P_0$:
+\[
+P_0 = \frac{1}{1 + \sum_{k=1}^{\infty} \prod_{i=0}^{k-1} \frac{\lambda}{(i+1)\mu}} = \frac{1}{1 + \sum_{k=1}^{\infty} \left( \frac{\lambda}{\mu} \right)^k \frac{1}{k!}} = \frac{1}{\sum_{k=0}^{\infty} \frac{1}{k!} \left( \frac{\lambda}{\mu} \right)^k} = \frac{1}{e^{\frac{\lambda}{\mu}}} = e^{-\frac{\lambda}{\mu}}
+\]
+Sostituendo l'espressione di $P_0$ nella relazione generale per $P_k$, si perviene alla probabilità stazionaria:
+\[
+\boxed{P_k = \frac{\left( \frac{\lambda}{\mu} \right)^k}{k!} e^{-\frac{\lambda}{\mu}}, \quad k = 0, 1, 2, \dots}
+\]
+La distribuzione degli stati a regime di un sistema $\mathrm{M/M/\infty}$ è pertanto una pura **distribuzione di Poisson** con valore atteso pari a $A_o = \frac{\lambda}{\mu}$.
+
+Il numero medio di utenti attivi all'interno del sistema (corrispondente al numero medio di servitori contemporaneamente occupati) e il tempo medio di permanenza sono:
+\[
+\boxed{\bar{N} = \frac{\lambda}{\mu}} \qquad \boxed{T = \frac{1}{\mu}}
+\]
+Il tempo medio di sistema $T$ coincide rigorosamente con il tempo medio di servizio unitario $1/\mu$, poiché il tempo di attesa in coda è deterministicamente nullo ($W = 0$).
+
+\subsection{Casi D'Uso Cloud: Serverless E Streaming}
+
+L'astrazione della coda $\mathrm{M/M/\infty}$ modella accuratamente scenari ad elasticità quasi istantanea e ad alta concorrenza:
+\begin{itemize}
+    \item **Piattaforme di Serverless Computing**: In architetture basate su FaaS (\emph{Function-as-a-Service}, es. AWS Lambda, Google Cloud Functions, Knative su Kubernetes), le istanze di esecuzione delle funzioni vengono allocate dinamicamente on-demand al manifestarsi dell'evento di trigger. Supponendo che il pool di nodi sottostante disponga di capacità sufficiente da azzerare i tempi di accodamento, il modello $\mathrm{M/M/\infty}$ descrive la concorrenza istantanea del sistema, consentendo di stimare il numero medio di micro-container $\bar{N} = \lambda/\mu$ attivati contemporaneamente per gestire il traffico.
+    \item **Servizi di Video Streaming Distribuiti**: Grandi piattaforme CDN (\emph{Content Delivery Network}) come YouTube o Netflix servono milioni di stream video paralleli instradandoli verso cluster geograficamente distribuiti. L'enorme scalarità dell'infrastruttura fa sì che ogni sessione utente riceva un canale di streaming indipendente; il sistema si comporta come una linea a capacità virtualmente illimitata con ritardi di accesso trascurabili.
+\end{itemize}
+
+\newpage
+
+% MODELLO M/M/m E FORMULA DI ERLANG-C
+
+\section{Modello M/M/m E Formula Di Attesa Di Erlang-C}
+
+\subsection{Dinamica Degli Stati Del Sistema M/M/m}
+
+Il modello $\mathrm{M/M/m}$ formalizza una risorsa condivisa composta da $m$ servitori identici in parallelo, alimentati da un'unica coda di accodamento comune a capacità illimitata. Gli arrivi seguono un processo di Poisson con tasso $\lambda$ e ciascun servitore elabora i compiti con legge esponenziale di parametro $\mu$.
+
+I tassi di nascita e morte assumono la seguente forma a tratti:
+\[
+\lambda_k = \lambda, \quad \forall k \ge 0
+\]
+\[
+\mu_k = \min(k\mu, m\mu) =
+\begin{cases}
+k\mu, & 0 < k < m \\
+m\mu, & k \ge m
+\end{cases}
+\]
+Quando nel sistema sono presenti $k < m$ utenti, non vi è coda: ogni utente occupa un servitore e il tasso di completamento globale cresce linearmente ($k\mu$). Quando invece il numero di richieste eguaglia o supera il parallelismo disponibile ($k \ge m$), tutti gli $m$ servitori risultano saturi e il tasso aggregato di servizio si stabilizza al valore limite di saturazione $m\mu$.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "estrattoSlideLezione.pdf"] Diagramma di transizione per il modello di coda M/M/m evidenziante la transizione tra regime a tasso variabile (k*mu) e regime saturo (m*mu) — Slide 80 / Pagina 14 del PDF
+
+Il coefficiente di utilizzazione media per singolo servitore $\rho$ è definito come:
+\[
+\rho = \frac{\lambda}{m\mu}
+\]
+La condizione necessaria e sufficiente per la convergenza e stazionarietà della catena è che $\rho < 1$, ovvero $\lambda < m\mu$.
+
+Risolvendo le equazioni di bilancio continuo per via ricorsiva:
+\begin{itemize}
+    \item Per $k \le m$:
+    \[
+    P_k = P_0 \prod_{i=0}^{k-1} \frac{\lambda}{(i+1)\mu} = P_0 \left( \frac{\lambda}{\mu} \right)^k \frac{1}{k!} = P_0 \frac{(m\rho)^k}{k!}
+    \]
+    \item Per $k \ge m$:
+    \begin{align*}
+    P_k &= P_0 \left( \prod_{i=0}^{m-1} \frac{\lambda}{(i+1)\mu} \right) \left( \prod_{i=m}^{k-1} \frac{\lambda}{m\mu} \right) = P_0 \left( \frac{\lambda}{\mu} \right)^k \frac{1}{m! \, m^{k-m}} \\
+    &= P_0 \frac{\rho^k m^m}{m!} = P_0 \frac{(m\rho)^m}{m!} \rho^{k-m}
+    \end{align*}
+\end{itemize}
+La probabilità di sistema inattivo $P_0$ si ottiene normalizzando la somma di tutti gli stati:
+\begin{align*}
+P_0 &= \frac{1}{1 + \sum_{k=1}^{\infty} \prod_{i=0}^{k-1} \frac{\lambda_i}{\mu_{i+1}}} = \frac{1}{1 + \sum_{k=1}^{m-1} \left( \frac{\lambda}{\mu} \right)^k \frac{1}{k!} + \sum_{k=m}^{\infty} \left( \frac{\lambda}{\mu} \right)^k \frac{1}{m! \, m^{k-m}}} \\
+&= \frac{1}{\sum_{k=0}^{m-1} \frac{(m\rho)^k}{k!} + \sum_{k=m}^{\infty} \frac{(m\rho)^k}{m! \, m^{k-m}}} = \frac{1}{\sum_{k=0}^{m-1} \frac{(m\rho)^k}{k!} + \frac{(m\rho)^m}{m!} \sum_{j=0}^{\infty} \rho^j}
+\end{align*}
+Sviluppando la serie geometrica $\sum_{j=0}^{\infty} \rho^j = \frac{1}{1-\rho}$, si perviene alla forma chiusa di $P_0$:
+\[
+\boxed{P_0 = \left[ \sum_{k=0}^{m-1} \frac{(m\rho)^k}{k!} + \frac{(m\rho)^m}{m!} \frac{1}{1 - \rho} \right]^{-1}}
+\]
+
+\subsection{Derivazione Della Formula Di Erlang-C}
+
+La metrica fondamentale nel modello $\mathrm{M/M/m}$ consiste nella probabilità che un utente incidente debba attendere in coda prima di essere servito, denotata con $P[\text{queue}]$ o $C(m, \lambda/\mu)$. Un utente entra in coda se e solo se, al momento del suo arrivo, trova tutti gli $m$ servitori occupati (ossia lo stato del sistema è $k \ge m$):
+\begin{align*}
+P[\text{queue}] &= \sum_{k=m}^{\infty} P_k = \sum_{k=m}^{\infty} P_0 \frac{(m\rho)^k}{m! \, m^{k-m}} = P_0 \frac{(m\rho)^m}{m!} \sum_{k=m}^{\infty} \rho^{k-m} = P_0 \frac{(m\rho)^m}{m!} \frac{1}{1 - \rho}
+\end{align*}
+Sostituendo l'espressione precedentemente ricavata per $P_0$, si ottiene la celebre **Formula di Erlang-C**:
+\[
+\boxed{C\left(m, \frac{\lambda}{\mu}\right) = P[\text{queue}] = \frac{\frac{(m\rho)^m}{m!} \frac{1}{1 - \rho}}{\sum_{k=0}^{m-1} \frac{(m\rho)^k}{k!} + \frac{(m\rho)^m}{m!} \frac{1}{1 - \rho}}}
+\]
+La formula di Erlang-C quantifica l'effetto dell'aggregazione delle risorse (\emph{server pooling}): combinare code multiple indipendenti in un'unica coda condivisa servita da $m$ operatori riduce drasticamente la probabilità di attesa a parità di carico complessivo offerto.
+
+\subsection{Applicazione Dimensionamento Call Center E Calcolo Con Abaco}
+
+Si consideri il problema di dimensionamento presentato nelle slide: un centralino telefonico pone le chiamate in attesa su un buffer comune.
+\begin{itemize}[noitemsep]
+    \item Traffico Poissoniano offerto: $A_o = \frac{\lambda}{\mu} = 25\text{ Erlang}$;
+    \item Numero di giunzioni (servitori paralleli): $m = 30$;
+    \item Durata media di una conversazione: $1/\mu = 3\text{ minuti}$.
+\end{itemize}
+Il coefficiente di utilizzazione dei servitori risulta:
+\[
+\rho = \frac{\lambda}{m\mu} = \frac{A_o}{m} = \frac{25}{30} \approx 0{,}833
+\]
+Volendo determinare la probabilità che una generica chiamata debba essere accodata:
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "estrattoSlideLezione.pdf"] Abaco di Erlang-C che correla intensità di traffico offerto in ascissa con la probabilità di ritardo in ordinata, con punto di lavoro marcato a C(30, 25) circa 0.1 — Slide 85 / Pagina 19 del PDF
+
+Inserendo i valori $m=30$ ed $A_o=25$ nell'abaco logaritmico della funzione di ritardo di Erlang-C riportato nella slide 85, in corrispondenza del punto di lavoro si ottiene direttamente una probabilità di ritardo pari a circa il $10\%$:
+\[
+C(30, 25) \approx 0{,}10 \implies P[\text{queue}] \approx 10\%
+\]
+Ciò evidenzia che, pur lavorando con un fattore di saturazione dell'operatore superiore all'83\%, grazie all'elevato numero di giunzioni ($m=30$) solamente una chiamata su dieci sperimenta un ritardo prima di essere connessa.
+
+\subsection{Applicazioni Nel Cloud: Bilanciamento Del Carico E Autoscaling}
+
+Nelle infrastrutture cloud native, il modello $\mathrm{M/M/m}$ (spesso indicato nella letteratura dei sistemi come $\mathrm{M/M/c}$) costituisce la base algoritmica per:
+\begin{itemize}
+    \item **Autoscaling Orizzontale in Kubernetes (HPA)**: Il controller dell'\textbf{Horizontal Pod Autoscaler} incrementa o decrementa il numero di repliche di un Pod per soddisfare vincoli di utilizzo medio delle risorse CPU/RAM o soglie di latenza su metriche personalizzate. Attraverso il modello $\mathrm{M/M/c}$, è possibile anticipare il comportamento asintotico delle code HTTP/gRPC determinando a priori il numero esatto $m$ di Pod da istanziare per garantire che la probabilità di accodamento non ecceda una data soglia di SLA.
+    \item **Politiche Avanzate di Bilanciamento del Carico**: I proxy di \emph{ingress} o i componenti di \emph{Service Mesh} (ad es. Envoy, Istio) distribuiscono il traffico tra $m$ istanze applicative. Rispetto a strategie statiche e prive di stato (\emph{Round-Robin}), l'analisi delle code a più servitori dimostra come strategie reattive basate sullo stato della coda (\emph{Least Connections}) riducano la dispersione del tempo di risposta quando i tempi di esecuzione variano sensibilmente.
+\end{itemize}
+
+\newpage
+
+% MODELLO M/M/m/m E FORMULA DI ERLANG-B
+
+\section{Modello M/M/m/m E Formula Di Blocco Di Erlang-B}
+
+\subsection{Ipotesi Di Sistema A Perdita Pura}
+
+Il modello $\mathrm{M/M/m/m/\infty}$ (spesso abbreviato in $\mathrm{M/M/m/m}$) descrive un sistema a **perdita pura** (\emph{loss system}). Le ipotesi fondanti del modello comprendono:
+\begin{enumerate}[noitemsep]
+    \item Gli intertempi di arrivo sono variabili esponenziali i.i.d. di parametro $\lambda$;
+    \item I tempi di servizio sono variabili esponenziali i.i.d. di parametro $\mu$;
+    \item I processi di arrivo e di servizio sono statisticamente mutuamente indipendenti;
+    \item Il sistema dispone di $m$ servitori paralleli indipendenti e identici;
+    \item **Capacità di coda nulla**: il sistema non ammette alcun buffer di attesa; una richiesta in arrivo che rilevi tutti gli $m$ servitori occupati viene immediatamente scartata e persa irreversibilmente.
+\end{enumerate}
+Lo spazio degli stati è strettamente finito: $\mathcal{S} = \{0, 1, 2, \dots, m\}$. La catena di Markov a tempo continuo associata è ergodica per qualunque valore finito e positivo di $\lambda$ e $\mu$.
+
+\subsection{Frequenze Di Transizione E Distribuzione Limite}
+
+I coefficienti di transizione per il processo di nascita e morte a stati finiti sono:
+\begin{align*}
+\lambda_k &= \lambda, \quad 0 \le k \le m-1 \\
+\mu_k &= k\mu, \quad 1 \le k \le m
+\end{align*}
+Per $k = m$, il tasso di arrivo efficace si annulla poiché non sono ammesse transizioni verso stati $k > m$.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "estrattoSlideLezione.pdf"] Schema della catena di Markov per il sistema M/M/m/m limitata allo stato massimo m — Slide 88 / Pagina 22 del PDF
+
+Dall'equilibrio dei flussi di taglio tra stati contigui:
+\[
+P_k = P_0 \prod_{i=0}^{k-1} \frac{\lambda}{(i+1)\mu} = P_0 \left( \frac{\lambda}{\mu} \right)^k \frac{1}{k!}, \quad 0 < k \le m
+\]
+Definendo l'intensità di carico offerto $A_o = \frac{\lambda}{\mu}$ (espressa in Erlang), la probabilità dello stato $k$ diventa:
+\[
+P_k = P_0 \frac{A_o^k}{k!}
+\]
+Imponendo la condizione di chiusura probabilistica $\sum_{j=0}^m P_j = 1$, si ottiene la probabilità di sistema totalmente libero:
+\[
+P_0 = \frac{1}{\sum_{j=0}^{m} \frac{A_o^j}{j!}}
+\]
+da cui si ricava la distribuzione limite troncata:
+\[
+\boxed{P_k = \frac{\frac{A_o^k}{k!}}{\sum_{j=0}^{m} \frac{A_o^j}{j!}}, \quad 0 \le k \le m}
+\]
+
+\subsection{Formula Di Erlang-B E Proprietà Ricorsiva}
+
+In virtù del fatto che gli arrivi seguono una distribuzione di Poisson, il tasso di offerta è insensibile allo stato del sistema. Di conseguenza, la probabilità di perdita o blocco del servizio $\Pi_p$ coincide con la probabilità che il sistema si trovi al completo della capacità ($k=m$), formalizzata dalla classica **Formula di Erlang-B** (o funzione di Erlang di prima specie di ordine $m$ e argomento $A_o$, denotata con $E_{1,m}(A_o)$):
+\[
+\boxed{\Pi_p = S_p = E_{1,m}(A_o) = \frac{\frac{A_o^m}{m!}}{\sum_{j=0}^m \frac{A_o^j}{j!}}}
+\]
+
+\subsubsection{Proprietà Di Ricorsione Numerica}
+Il calcolo computazionale diretto di $E_{1,m}(A_o)$ risulta proibitivo per valori elevati di $m$ a causa della rapida crescita del fattoriale $m!$ e delle potenze $A_o^m$. Per evitare problemi di overflow numerico, si adotta la relazione ricorsiva di Erlang:
+\[
+\boxed{E_{1,m}(A_o) = \frac{A_o E_{1,m-1}(A_o)}{m + A_o E_{1,m-1}(A_o)}}
+\]
+avendo come condizione iniziale per un singolo servitore ($m=1$):
+\[
+\boxed{E_{1,1}(A_o) = \frac{A_o}{1 + A_o}}
+\]
+
+\subsubsection{Proprietà Di Insensibilità Di Erlang}
+Un risultato teorico di primaria importanza (teorema di insensibilità) stabilisce che la formula di Erlang-B e la corrispondente distribuzione stazionaria rimangono rigorosamente valide per **qualsiasi distribuzione generale dei tempi di servizio**, a patto che siano indipendenti e identicamente distribuite con media finita $1/\mu$. Il sistema a perdita $\mathrm{M/G/m/m}$ presenta dunque le medesime probabilità di blocco del sistema puramente markoviano $\mathrm{M/M/m/m}$.
+
+\subsection{Parametri Prestazionali Del Sistema A Perdita}
+
+L'intensità media di traffico effettivamente servito (o smaltito) $A_s$ corrisponde al numero medio di servitori impegnati all'equilibrio:
+\[
+A_s = \sum_{k=1}^m k P_k = A_o [1 - E_{1,m}(A_o)]
+\]
+L'intensità media di traffico rifiutato o perso $A_p$ è data dalla quota parte di carico incidente che trova la totalità delle risorse sature:
+\[
+A_p = A_o - A_s = A_o E_{1,m}(A_o)
+\]
+Il coefficiente di utilizzazione medio di ciascun servitore $\rho$ è espresso da:
+\[
+\boxed{\rho = \frac{A_s}{m} = \frac{A_o [1 - E_{1,m}(A_o)]}{m}}
+\]
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "estrattoSlideLezione.pdf"] Curve della probabilità di rifiuto in funzione del numero di servitori m per diversi carichi offerti Ao da 1 a 50 Erlang — Slide 94 / Pagina 28 del PDF
+
+L'analisi quantitativa mostra che, a parità di carico offerto $A_o$, la probabilità di blocco decresce monotonamente con andamento convesso all'aumentare del numero di servitori $m$.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "estrattoSlideLezione.pdf"] Grafico del numero di servitori m necessari in funzione del carico offerto Ao per due soglie di rifiuto Pi_p=0.01 e Pi_p=0.1 — Slide 95 / Pagina 29 del PDF
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "estrattoSlideLezione.pdf"] Fascio di curve della probabilità di rifiuto in funzione del carico offerto Ao per canali discreti da m=1 a m=9 — Slide 96 / Pagina 30 del PDF
+
+\subsection{Efficienza Di Utilizzazione E Vantaggi Della Condivisione}
+
+Un principio cardine delle reti di telecomunicazione e delle architetture cloud risiede nel fatto che, **fissata la probabilità di rifiuto** $\Pi_p$ (ad esempio $\Pi_p = 0{,}01$, corrispondente a un tasso di perdita dell'1\%), un sistema di grandi dimensioni gestito ad accesso condiviso garantisce un'utilizzazione del singolo servitore marcatamente superiore rispetto alla frammentazione delle medesime risorse in pool isolati.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "estrattoSlideLezione.pdf"] Andamento del coefficiente di utilizzazione rho in funzione del carico offerto Ao a parità di probabilità di blocco dell'1% — Slide 97 / Pagina 31 del PDF
+
+Come illustrato nella curva di slide 97:
+\begin{itemize}
+    \item Per bassi carichi ($A_o < 5\text{ Erl}$, con numero di servitori $m$ ridotto), il coefficiente di utilizzazione è inferiore al $40\%$ ($\rho < 0{,}4$);
+    \item Per sistemi ad alta capacità ($A_o \ge 20\text{ Erl}$ e numero di servitori $m > 25$), il coefficiente di utilizzazione si eleva oltre il $65-70\%$, mantenendo invariata la garanzia di blocco all'1\%.
+\end{itemize}
+
+\subsection{Dimensionamento Ottimo Ed Esempio DHCP}
+
+Nel dimensionamento ingegneristico di un sistema a perdite, stimato il carico offerto atteso $A_o$ e assegnata una soglia massima tollerabile di congestione $\Pi_{\max}$, il problema consiste nell'individuare il minimo intero $m$ tale per cui:
+\[
+\boxed{E_{1,m}(A_o) \le \Pi_{\max}}
+\]
+Tale valore ottimo si determina sperimentalmente per tentativi incrementali partendo da $m=1$ mediante la relazione ricorsiva di Erlang.
+
+\subsubsection{Caso Di Studio: Assegnazione Indirizzi In Un Server DHCP}
+Si consideri un server DHCP a cui perviene una domanda di indirizzi IP con intensità media complessiva pari ad $A_o = 100\text{ Erlang}$, con vincolo di probabilità di scarto strettamente inferiore all'1\% ($\Pi_p \le 0{,}01$).
+
+Valutiamo l'impatto architetturale della suddivisione di tale traffico aggregato su $n$ sottoreti indipendenti e separate (con $n \in \{1, 2, 4, 10, 25, 50, 100\}$), ripartendo uniformemente il carico $A_{oi} = A_o / n$ e determinando il fabbisogno di indirizzi $m_i$ per ciascuna subnet:
+
+\begin{table}[H]
+\centering
+\caption{Confronto di dimensionamento Erlang-B per la suddivisione del traffico DHCP in sottoreti isolate.}
+\begin{tabularx}{\textwidth}{cccccc}
+\toprule
+\textbf{Numero Subnet} ($n$) & \textbf{Carico per Subnet} ($A_{oi}$) & \textbf{Indirizzi/Subnet} ($m_i$) & \textbf{Indirizzi Totali} ($m = m_i \cdot n$) & \textbf{Blocco Effettivo} ($\Pi_p$) & \textbf{Utilizzo} ($\rho$) \\
+\midrule
+1   & 100 & 117 & \textbf{117} & 0{,}0098 & 0{,}8463 \\
+2   & 50  & 64  & \textbf{128} & 0{,}0084 & 0{,}7747 \\
+4   & 25  & 36  & \textbf{144} & 0{,}0080 & 0{,}6889 \\
+10  & 10  & 18  & \textbf{180} & 0{,}0071 & 0{,}5516 \\
+25  & 4   & 10  & \textbf{250} & 0{,}0053 & 0{,}3979 \\
+50  & 2   & 7   & \textbf{350} & 0{,}0034 & 0{,}2847 \\
+100 & 1   & 5   & \textbf{500} & 0{,}0031 & 0{,}1994 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+I dati analitici confermano in modo inequivocabile il principio di **risparmio di scala**:
+\begin{enumerate}
+    \item Unico pool centralizzato ($n=1$): per servire $100\text{ Erl}$ sono necessari appena $117$ indirizzi complessivi, garantendo un'utilizzazione del pool dell'$84{,}6\%$.
+    \item Frammentazione estrema ($n=100$ subnet isolate con $1\text{ Erl}$ ciascuna): per mantenere la probabilità di rifiuto sotto l'1\%, ogni subnet necessita di $5$ indirizzi ($m_i=5$), portando il totale a $500$ indirizzi IP dedicati. Di conseguenza, l'efficienza globale di impiego dello spazio di indirizzamento precipita a un modesto $19{,}9\%$.
+\end{enumerate}
+La segmentazione rigida delle risorse senza meccanismi di condivisione o riallocazione dinamica incrementa drasticamente i costi di allocazione a parità di livello di servizio erogato.
+
+% AA Markov_Processes [100-130]  ------------------------------------------------------------
+
+\section{Valutazione Delle Prestazioni Nei Sistemi A Perdita Pura: Formula Di Erlang-B Ed Esempio Applicativo PABX}
+
+Nello studio delle reti di telecomunicazione e delle infrastrutture di servizio a risorse condivise, una delle problematiche classiche di dimensionamento consiste nella determinazione della probabilità che una richiesta di servizio venga rifiutata a causa dell'indisponibilità di canali liberi. Tale scenario è tipico dei sistemi a \textbf{perdita pura} (\emph{loss systems}), nei quali non è presente alcuna memoria o coda di attesa: un utente che trova tutti i servitori occupati viene immediatamente scartato (\emph{dropped}) e abbandona il sistema senza ritentare nell'immediato.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slides_valutazione_prestazioni.pdf"] Rappresentazione formale del problema di stima della congestione ed equazione di bilancio del traffico servito nella formula di Erlang-B — Slide 100 / Pagina 1 del PDF
+
+\subsection{Modello M/M/m/m E Teoria Del Traffico Di Erlang}
+
+Un sistema a perdita pura con $m$ servitori indipendenti e identici viene classicamente descritto, secondo la notazione di Kendall, dal modello markoviano $\text{M/M/}m/m$. I parametri che lo caratterizzano sono:
+\begin{itemize}[noitemsep]
+    \item \textbf{Processo di arrivo markoviano ($\text{M}$)}: gli utenti sopraggiungono secondo un processo di Poisson con tasso medio $\lambda$ [richieste/unità di tempo], implicando tempi di inter-arrivo distribuiti esponenzialmente e indipendenti tra loro.
+    \item \textbf{Tempo di servizio markoviano ($\text{M}$)}: la durata di occupazione della risorsa (ad esempio la lunghezza di una conversazione telefonica o la trasmissione di un flusso) segue una distribuzione esponenziale negativa con valore medio pari a $E[S] = \frac{1}{\mu}$.
+    \item \textbf{Numero di servitori ($m$)}: il sistema dispone di $m$ linee o canali di comunicazione paralleli.
+    \item \textbf{Capacità del sistema ($m$)}: possono trovarsi contemporaneamente nel sistema al più $m$ utenti. La capacità totale coincide esattamente con il numero di servitori, per cui la dimensione della coda di attesa è identicamente nulla ($Q = 0$).
+\end{itemize}
+
+Il volume di traffico teoricamente indirizzato al sistema prende il nome di \textbf{traffico offerto} ($A_0$), espresso in \emph{Erlang} [Erl], ed è definito dal prodotto tra il tasso di arrivo e la durata media del servizio:
+\[
+A_0 = \lambda \cdot E[S] = \frac{\lambda}{\mu}
+\]
+L'Erlang è una grandezza adimensionale che rappresenta il numero medio di canali contemporaneamente impegnati che si osserverebbero qualora il sistema disponesse di un numero infinito di servitori ($m \to \infty$). In presenza di un numero finito $m$ di linee, una frazione delle chiamate troverà tutte le linee occupate. La probabilità che tutti gli $m$ servitori siano simultaneamente occupati coincide, per la proprietà PASTA, con la probabilità di blocco o \textbf{congestione di chiamata} (\emph{call congestion probability}), indicata con $\Pi_p$. Essa è quantificata dalla celebre formula di \textbf{Erlang-B} (o prima formula di Erlang, $E_{1,m}(A_0)$):
+\[
+\boxed{\Pi_p = E_{1,m}(A_0) = \frac{\displaystyle\frac{A_0^m}{m!}}{\displaystyle\sum_{k=0}^m \frac{A_0^k}{k!}}}
+\]
+Poiché una parte del traffico viene bloccata e respinta, il traffico effettivamente gestito dai servitori, detto \textbf{traffico servito} o \textbf{traffico smaltito} ($A_s$), risulterà strettamente inferiore al traffico offerto. La relazione analitica fondamentale che lega traffico offerto e traffico servito è data da:
+\[
+\boxed{A_s = A_0 \left[ 1 - E_{1,m}(A_0) \right]}
+\]
+In ambito ingegneristico si presentano tipicamente due problemi duali:
+\begin{enumerate}[noitemsep]
+    \item \textbf{Problema di progetto/dimensionamento}: noti il traffico offerto stimato $A_0$ e una soglia massima tollerabile di congestione (ad esempio $\Pi_p \le 1\%$), determinare il minimo numero intero di canali $m$ necessari a soddisfare il vincolo di qualità del servizio (\emph{Quality of Service}, QoS).
+    \item \textbf{Problema di verifica/prestazioni}: tramite misurazioni sul campo si rileva il traffico medio effettivamente servito $A_s$ sulle $m$ linee operative. Da $A_s$ e da $m$ si risale, invertendo numericamente la relazione di bilancio, al traffico realmente offerto $A_0$ e, di conseguenza, alla probabilità effettiva di congestione $\Pi_p = E_{1,m}(A_0)$ sperimentata dagli utenti.
+\end{enumerate}
+
+\subsection{Dimensionamento Delle Linee Di Un Centralino Telefonico Aziendale (PABX)}
+
+Si consideri un centralino telefonico automatico aziendale (\textbf{PABX}, \emph{Private Automatic Branch Exchange}) a servizio di una grande azienda. Il PABX è interconnesso alla rete telefonica generale mediante un fascio di giunzioni bidirezionali condivise. Si assumono le seguenti specifiche operative desunte dalle slide di lezione:
+\begin{itemize}[noitemsep]
+    \item Durante l'ora di punta (\emph{rush hour}), gli utenti interni attestati al centralino generano in media 140 chiamate uscenti dirette verso la rete pubblica.
+    \item Nella medesima ora di punta, il numero medio di chiamate entranti provenienti dalla rete pubblica e dirette agli interni aziendali è pari a 180.
+    \item I processi di arrivo delle chiamate sia entranti sia uscenti sono flussi di Poisson stocasticamente indipendenti.
+    \item La durata delle conversazioni segue una distribuzione esponenziale negativa con valor medio pari a 3 minuti ($\frac{3}{60}\text{ h} = 0.05\text{ h}$).
+    \item Il centralino opera come un sistema a perdita pura ($\text{M/M/}m/m$): le chiamate che trovano tutte le linee occupate vengono immediatamente respinte con segnale di occupato.
+    \item \textbf{Vincolo di modularità tecnologica}: le linee telefoniche fisiche possono essere installate e acquistate unicamente a blocchi modulari di 4 canali (ad esempio schede di interfaccia primarie o flussi a canali raggruppati).
+\end{itemize}
+
+L'obiettivo consiste nel calcolare il numero minimo di linee necessarie affinché la probabilità di congestione non ecceda l'1\% ($\Pi_p \le 0.01$) e nel ricavare la frequenza massima complessiva di chiamate ammissibili nell'ora di picco garantendo il medesimo livello di servizio.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slides_valutazione_prestazioni.pdf"] Specifiche del problema di dimensionamento del PABX aziendale — Slide 101 / Pagina 2 del PDF
+
+\subsubsection{Calcolo Del Traffico Offerto}
+
+Poiché i processi delle chiamate uscenti ed entranti sono poissoniani e indipendenti, la loro sovrapposizione genera un processo di Poisson con tasso complessivo pari alla somma dei singoli tassi. Definiamo i contributi di traffico offerto uscente ($A_u$) ed entrante ($A_e$):
+\begin{align*}
+    A_u &= \lambda_u \cdot E[S] = \frac{140\text{ chiamate}}{60\text{ minuti}} \times 3\text{ minuti} = 7\text{ Erl} \\
+    A_e &= \lambda_e \cdot E[S] = \frac{180\text{ chiamate}}{60\text{ minuti}} \times 3\text{ minuti} = 9\text{ Erl}
+\end{align*}
+Il traffico offerto totale $A_0$ risulta pertanto:
+\[
+A_0 = A_u + A_e = 7\text{ Erl} + 9\text{ Erl} = 16\text{ Erl}
+\]
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slides_valutazione_prestazioni.pdf"] Calcolo analitico del traffico offerto entrante, uscente e totale — Slide 102 / Pagina 3 del PDF
+
+\subsubsection{Determinazione Del Numero Di Canali E Applicazione Della Modularità}
+
+Per garantire il vincolo sulla probabilità di perdita, imponiamo:
+\[
+E_{1,m}(16) \le 0.01
+\]
+Dall'applicazione numerica della formula ricorsiva di Erlang-B:
+\[
+E_{1,m}(A_0) = \frac{\displaystyle\frac{A_0 E_{1,m-1}(A_0)}{m}}{1 + \displaystyle\frac{A_0 E_{1,m-1}(A_0)}{m}}, \quad \text{con } E_{1,0}(A_0) = 1
+\]
+si ricavano i valori per valori crescenti di $m$:
+\begin{align*}
+    E_{1,24}(16) &\approx 0.0140 \quad (> 0.01) \\
+    E_{1,25}(16) &\approx 0.0084 \quad (\le 0.01)
+\end{align*}
+Il numero minimo teorico di servitori è dunque pari a $m = 25$. Tuttavia, il sistema impone un vincolo di modularità pari a 4: il numero di linee $m$ deve essere un multiplo intero di 4. Il minimo multiplo di 4 maggiore o uguale a 25 è:
+\[
+m = 28
+\]
+Avendo incrementato il numero di linee da 25 a 28 a causa della quantizzazione fisica delle interfacce, la probabilità di congestione effettivamente offerta all'utenza risulta sensibilmente inferiore al limite dell'1\%:
+\[
+\Pi_{p,\text{effettivo}} = E_{1,28}(16) \approx 0.0019 \quad (0.19\%)
+\]
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slides_valutazione_prestazioni.pdf"] Risoluzione del vincolo di congestione e applicazione del vincolo di modularità a 28 linee — Slide 103 / Pagina 4 del PDF
+
+\subsubsection{Calcolo Della Frequenza Massima Di Chiamate Ammissibile}
+
+Disponendo di una dotazione sovradimensionata di $m = 28$ linee, il centralino è in grado di gestire un volume di traffico offerto superiore prima che la probabilità di perdita ritorni a toccare la soglia contrattuale dell'1\%. Si cerca il valore di picco $A_{0,\max}$ tale che:
+\[
+E_{1,28}(A_{0,\max}) \le 0.01
+\]
+Risolvendo l'equazione implicita rispetto ad $A_{0,\max}$ si ricava:
+\[
+A_{0,\max} \approx 18.64\text{ Erl}
+\]
+Dato che la durata media di ciascuna chiamata rimane costante e pari a $E[S] = 3\text{ minuti} = \frac{3}{60}\text{ ore}$, la frequenza massima di arrivo $\lambda_{\max}$ ammissibile nell'ora di punta si ottiene come:
+\[
+\lambda_{\max} = \frac{A_{0,\max}}{E[S]} = 18.64 \times \frac{60}{3} \approx 372.8 \approx 373\text{ chiamate/ora}
+\]
+Il sistema è quindi in grado di tollerare fino a 373 chiamate all'ora garantendo ancora un tasso di rifiuto inferiore o uguale all'1\%.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slides_valutazione_prestazioni.pdf"] Calcolo del carico massimo ammissibile e del corrispondente tasso di arrivo per 28 linee — Slide 104 / Pagina 5 del PDF
+
+\subsection{Monitoraggio Operativo E Riconfigurazione Della Capacità}
+
+A distanza di tempo dall'entrata in esercizio del PABX a 28 linee, viene svolta una campagna sperimentale di misurazione per monitorare la qualità del servizio erogato. L'analizzatore di rete misura direttamente il numero medio di linee simultaneamente occupate durante l'ora di punta, rilevando un'intensità media di traffico servito pari a:
+\[
+A_s = 20.42\text{ Erl}
+\]
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slides_valutazione_prestazioni.pdf"] Dati operativi post-installazione: misura del traffico servito nell'ora di punta — Slide 105 / Pagina 6 del PDF
+
+Per valutare se il vincolo di QoS sia ancora rispettato, è necessario determinare il traffico complessivamente offerto $A_0$ risolvendo l'equazione non lineare del traffico servito:
+\[
+A_0 \left[ 1 - E_{1,28}(A_0) \right] = 20.42
+\]
+La soluzione per via numerica fornisce:
+\[
+A_0 = 21\text{ Erl}
+\]
+Con un traffico offerto di $21\text{ Erl}$ su un fascio di $m = 28$ linee, la probabilità di congestione sperimentata dalle chiamate risulta essere:
+\[
+\Pi_p = E_{1,28}(21) \approx 0.0277 \quad (2.77\%)
+\]
+Poiché la probabilità di rifiuto ($2.77\%$) supera nettamente la soglia di tollerabilità fissata all'1\% ($0.01$), il PABX non è più in grado di soddisfare i requisiti di servizio stabiliti. Questa degradazione è causata tipicamente dall'aumento organico dell'organico aziendale o da una mutata abitudine d'uso delle telecomunicazioni. Si rende pertanto necessaria una nuova procedura di dimensionamento per installare un numero aggiuntivo di gruppi di linee (in blocchi da 4) tale da ricondurre la probabilità di perdita al di sotto dell'1\%.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slides_valutazione_prestazioni.pdf"] Valutazione dello scostamento di QoS e determinazione della necessità di ri-dimensionamento — Slide 106 / Pagina 7 del PDF
+
+\newpage
+
+\section{Tecniche Di Multiplazione A Confronto: Multiplazione Statica Vs Dinamica}
+
+Nei sistemi di elaborazione e nelle reti dati, una funzione architetturale basilare è svolta dai dispositivi di multiplazione e bilanciamento del carico. Si consideri un'infrastruttura formata da $N$ sorgenti di traffico (terminali utenti, pod di calcolo o thread indipendenti) che generano pacchetti dati da instradare su un canale di trasmissione condiviso avente capacità di servizio totale pari a $C$ [pacchetti/s o bit/s].
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slides_valutazione_prestazioni.pdf"] Definizione del problema di confronto fra multiplazione statica e dinamica con N sorgenti — Slide 107 / Pagina 8 del PDF
+
+Ciascuna delle $N$ sorgenti emette traffico in accordo a un processo di Poisson con frequenza media pari a $\lambda$ [pacchetti/s]. La lunghezza dei pacchetti è distribuita secondo una legge esponenziale negativa. Per garantire la stabilità dell'infrastruttura di trasmissione complessiva, si assume che il tasso totale di generazione sia strettamente inferiore alla capacità di smaltimento del sistema:
+\[
+N \cdot \lambda < C
+\]
+
+\subsection{Architettura Dei Due Schemi Di Multiplazione}
+
+Vengono poste a confronto due differenti strategie di allocazione della capacità di trasmissione e delle risorse di memorizzazione tampone:
+\begin{enumerate}
+    \item \textbf{Strategia A — Multiplazione Statica (\emph{Static Multiplexing})}: la capacità di calcolo o di trasmissione $C$ viene partizionata rigidamente in $N$ canali indipendenti, assegnando in modo permanente a ciascun utente una capacità dedicata pari a $\frac{C}{N}$. Ciascun utente dispone di un proprio buffer di accodamento dedicato di dimensione infinita.
+    \item \textbf{Strategia B — Multiplazione Dinamica (\emph{Dynamic Multiplexing})}: l'intera capacità $C$ è condivisa dinamicamente tra tutte le sorgenti. I pacchetti generati da tutte le sorgenti confluiscono in un unico buffer condiviso di dimensione infinita, servito da un unico servitore avente tasso di servizio $C$.
+\end{enumerate}
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slides_valutazione_prestazioni.pdf"] Schematizzazione a blocchi: architettura di accodamento separata (Static Mux) vs accodamento unico condiviso (Dynamic Mux) — Slide 108 / Pagina 9 del PDF
+
+\subsection{Confronto Analitico: Tempo Medio Nel Sistema E Utilizzazione}
+
+Sotto l'ipotesi che i flussi generati dalle $N$ sorgenti siano statisticamente indipendenti e che la politica di estrazione dal buffer sia FCFS (\emph{First-Come, First-Served}), analizziamo il comportamento a regime dei due modelli.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slides_valutazione_prestazioni.pdf"] Derivazione dei coefficienti di utilizzazione e dei tempi medi di risposta nei due modelli M/M/1 — Slide 109 / Pagina 10 del PDF
+
+\subsubsection{Analisi Dello Schema Statico (N Code M/M/1 Parallele)}
+
+Nel caso statico, il sistema si scompone in $N$ code $M/M/1$ parallele, disaccoppiate e identiche. Ciascuna coda è caratterizzata da:
+\begin{itemize}[noitemsep]
+    \item Tasso medio di arrivo: $\lambda_i = \lambda$
+    \item Tasso medio di servizio: $\mu_i = \frac{C}{N}$
+\end{itemize}
+Il coefficiente di utilizzazione $\rho_A$ di ciascun servitore dedicato è dato dal rapporto tra tasso di arrivo e tasso di servizio:
+\[
+\rho_A = \frac{\lambda}{\displaystyle\frac{C}{N}} = \frac{N \lambda}{C}
+\]
+Dalla teoria classica delle code per un nodo $M/M/1$, il tempo medio totale trascorso da un pacchetto nel sistema (somma del tempo di attesa in coda e del tempo di trasmissione/servizio) è espresso da:
+\[
+T_A = \frac{1}{\mu_i - \lambda_i} = \frac{1}{\displaystyle\frac{C}{N} - \lambda} = \frac{N}{C - N\lambda}
+\]
+Esprimendo la medesima relazione in funzione del coefficiente di utilizzazione $\rho_A$:
+\[
+T_A = \frac{\rho_A}{\lambda (1 - \rho_A)}
+\]
+
+\subsubsection{Analisi Dello Schema Dinamico (Singola Coda M/M/1 Centralizzata)}
+
+Nel caso dinamico, la sovrapposizione degli $N$ processi di Poisson indipendenti genera al buffer centrale un flusso d'ingresso poissoniano con intensità complessiva pari a $\lambda_{\text{tot}} = N \lambda$. Il servitore opera all'intera capacità nominale $\mu = C$. Il sistema si modella dunque come un'unica coda $M/M/1$ globale.
+
+Il relativo coefficiente di utilizzazione $\rho_B$ risulta:
+\[
+\rho_B = \frac{\lambda_{\text{tot}}}{\mu} = \frac{N \lambda}{C}
+\]
+Si osserva immediatamente che:
+\[
+\rho_A = \rho_B = \rho = \frac{N \lambda}{C}
+\]
+L'efficienza di impiego della capacità di calcolo complessiva è formalmente la medesima in entrambi i casi. Tuttavia, calcolando il tempo medio di permanenza nel sistema per la coda dinamica $T_B$, si ottiene:
+\[
+T_B = \frac{1}{\mu - \lambda_{\text{tot}}} = \frac{1}{C - N\lambda} = \frac{\rho_B}{N\lambda (1 - \rho_B)} = \frac{\rho}{N\lambda (1 - \rho)}
+\]
+Mettendo in relazione i tempi medi di risposta dei due sistemi si giunge al risultato fondamentale:
+\[
+\boxed{T_B = \frac{T_A}{N}}
+\]
+La multiplazione dinamica offre un tempo medio di sistema inferiore di un fattore pari a $N$ rispetto alla multiplazione statica, a parità di utilizzazione complessiva del canale. Tale vantaggio discende dal principio di \textbf{pooling statistico} delle risorse (\emph{statistical multiplexing}): nella configurazione statica, se un utente non emette traffico in un dato intervallo temporale, la sua frazione di capacità $\frac{C}{N}$ rimane del tutto inutilizzata mentre gli altri utenti possono accumulare pacchetti nei rispettivi buffer. Nella configurazione dinamica, l'intera capacità $C$ viene istantaneamente mobilitata per servire qualsiasi pacchetto in attesa, minimizzando i tempi morti ed eliminando le inefficienze di partizionamento.
+
+\newpage
+
+\section{Modello Di Coda M/M/1/K A Capacità Finita}
+
+Nelle infrastrutture reali, sia fisiche sia virtualizzate, la memoria a disposizione per l'accodamento dei pacchetti o delle richieste di elaborazione è intrinsecamente limitata. Quando un buffer è saturo, i pacchetti in arrivo non possono essere memorizzati e subiscono uno scarto forzato (\emph{packet drop}). Il modello analitico canonico per descrivere tale fenomeno è la coda $\text{M/M/1/}K$.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slides_valutazione_prestazioni.pdf"] Catena di Markov a tempo continuo per il sistema di accodamento a capacità finita M/M/1/K — Slide 110 / Pagina 11 del PDF
+
+\subsection{Formalismo Della Catena Di Markov A Stati Finiti}
+
+Consideriamo un nodo servito da un singolo server con tasso di servizio esponenziale $\mu = \frac{C}{L}$ (ove $C$ è la capacità di linea in bit/s e $L$ è la lunghezza media dei pacchetti in bit, per cui $\frac{1}{\mu} = \frac{L}{C}$ rappresenta il tempo medio di trasmissione). Il buffer ha una capacità di memorizzazione limitata a $Q$ pacchetti in attesa. La capacità totale del sistema, includendo il pacchetto in corso di trasmissione sul servitore, è indicata con $K$:
+\[
+K = Q + 1
+\]
+Il numero di utenti contemporaneamente presenti nel sistema $N(t)$ può assumere valori appartenenti all'insieme discreto e finito di stati:
+\[
+\mathcal{S} = \{0, 1, 2, \dots, K\}
+\]
+Il sistema è modellato come un processo di nascita e morte (\emph{birth-death process}) omogeneo a tempo continuo:
+\begin{itemize}[noitemsep]
+    \item Tassi di nascita (arrivo): $\lambda_k = \lambda$ per $0 \le k \le K-1$, mentre per $k \ge K$ si ha $\lambda_k = 0$ (le richieste giunte a sistema saturo vengono bloccate e non provocano transizioni di stato).
+    \item Tassi di morte (completamento del servizio): $\mu_k = \mu$ per $1 \le k \le K$.
+\end{itemize}
+
+Le equazioni di bilancio di flusso globale per ciascun nodo della catena di Markov impongono che il flusso di probabilità entrante sia pari al flusso uscente:
+\[
+p_k \mu = p_{k-1} \lambda \implies p_k = p_0 \prod_{i=0}^{k-1} \frac{\lambda_i}{\mu_{i+1}} = p_0 \left( \frac{\lambda}{\mu} \right)^k, \quad \forall k \in \{1, \dots, K\}
+\]
+Definendo il traffico offerto come $A_0 = \frac{\lambda}{\mu}$, la probabilità dello stato generico $k$ si scrive come:
+\[
+p_k = p_0 A_0^k
+\]
+Applicando la condizione di normalizzazione $\sum_{k=0}^K p_k = 1$, si ottiene l'espressione della probabilità che il sistema sia completamente vuoto ($p_0$):
+\[
+p_0 = \frac{1}{1 + \displaystyle\sum_{i=1}^K A_0^i}
+\]
+Sfruttando la convergenza e la scomposizione della serie geometrica:
+\[
+\sum_{i=1}^K A_0^i = \sum_{i=1}^\infty A_0^i - \sum_{i=K+1}^\infty A_0^i = \frac{A_0}{1 - A_0} - \frac{A_0^{K+1}}{1 - A_0}
+\]
+si può riscrivere il denominatore come:
+\[
+1 + \frac{A_0 - A_0^{K+1}}{1 - A_0} = \frac{1 - A_0^{K+1}}{1 - A_0} \implies p_0 = \frac{1 - A_0}{1 - A_0^{K+1}} \quad (\text{per } A_0 \neq 1)
+\]
+Di conseguenza, la distribuzione stazionaria di probabilità dello stato del sistema risulta essere:
+\[
+\boxed{p_k = \begin{cases}
+\displaystyle\frac{1 - A_0}{1 - A_0^{K+1}} A_0^k & \text{per } 0 \le k \le K \\[1em]
+0 & \text{per } k > K
+\end{cases}}
+\]
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slides_valutazione_prestazioni.pdf"] Derivazione analitica della distribuzione limite di probabilità e traffico servito nel modello M/M/1/K — Slide 111 / Pagina 12 del PDF
+
+\subsection{Probabilità Di Rifiuto E Traffico Servito}
+
+A differenza del sistema $M/M/1$ a capacità infinita (che richiede tassativamente la condizione di stabilità $\rho < 1$), il sistema $M/M/1/K$ ammette una distribuzione stazionaria ben definita per \emph{qualsiasi} valore di traffico offerto $A_0 \in (0, \infty)$, poiché lo spazio degli stati è finito e le eccedenze di carico vengono sistematicamente scartate.
+
+Per la proprietà PASTA, un pacchetto che perviene al sistema troverà il buffer completamente pieno con probabilità pari alla probabilità limite dello stato $K$. La \textbf{probabilità di rifiuto} o blocco (\emph{loss probability}) $P_{\text{rifiuto}}$ è dunque:
+\[
+P_{\text{rifiuto}} = p_K = \frac{1 - A_0}{1 - A_0^{K+1}} A_0^K
+\]
+Il traffico effettivo che attraversa il nodo e viene completato con successo (traffico servito $A_s$) corrisponde alla quota-parte del traffico offerto non soggetta a rifiuto:
+\[
+A_s = A_0 (1 - P_{\text{rifiuto}})
+\]
+Il throughput effettivo del sistema espresso in pacchetti al secondo risulta pertanto pari a $\gamma = \lambda (1 - P_{\text{rifiuto}})$.
+
+\subsection{Applicazione Operativa: Edge Computing E Nodi Gateway IoT}
+
+I modelli di accodamento a capacità finita come l'$\text{M/M/1/}K$ trovano impiego primario nella progettazione e ottimizzazione delle architetture di **Edge Computing** applicate all'**Internet of Things (IoT)**.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slides_valutazione_prestazioni.pdf"] Esempi applicativi ed edge gateway IoT modellati mediante code a capacità limitata — Slide 112 / Pagina 13 del PDF
+
+Nei contesti di computazione distribuita periferica:
+\begin{itemize}[noitemsep]
+    \item Una moltitudine di dispositivi IoT periferici (sensori ambientali, telecamere industriali, attuatori) genera flussi intermittenti di telemetria diretti verso un \textbf{Edge Gateway}.
+    \item Il gateway periferico dispone di capacità computazionale, banda di rete e memoria RAM intrinsecamente circoscritte rispetto a un datacenter centralizzato, configurando vincoli rigidi sulla dimensione delle code di ricezione.
+    \item La modellazione analitica del gateway come coda $\text{M/M/1/}K$ consente di stabilire a priori la dimensione ottimale del buffer $Q$ e la capacità di calcolo minima $\mu$ richieste per garantire che la probabilità di perdita di pacchetti critici di telemetria resti al di sotto delle soglie di affidabilità imposte, minimizzando al contempo la latenza media end-to-end senza incorrere in sovradimensionamenti hardware ingiustificati.
+\end{itemize}
+
+\newpage
+
+\section{Proprietà PASTA (Poisson Arrivals See Time Averages)}
+
+Nello studio probabilistico dei sistemi di servizio, assume un'importanza basilare distinguere la proporzione di tempo che il sistema trascorre in un dato stato dalla frazione di utenti che, giungendo al sistema, trovano tale stato. La proprietà **PASTA** (\emph{Poisson Arrivals See Time Averages}) sancisce l'equivalenza fondamentale tra queste due differenti prospettive di osservazione.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slides_valutazione_prestazioni.pdf"] Definizione introduttiva della proprietà PASTA su catene markoviane stazionarie — Slide 113 / Pagina 14 del PDF
+
+\subsection{La Prospettiva Temporale Vs La Prospettiva All'Arrivo}
+
+Si consideri una catena di Markov a tempo continuo stazionaria ed ergodica indicante il numero di utenti presenti a regime $N(t)$. Si definiscono formalmente due quantità:
+\begin{enumerate}
+    \item \textbf{Probabilità stazionarie temporali} ($p_n$): indicano la probabilità che, scegliendo un istante temporale $t$ completamente casuale, il sistema si trovi nello stato $n$. In virtù dell'ergodicità del processo, $p_n$ rappresenta la frazione asintotica del tempo totale in cui il sistema permane nello stato $n$:
+    \[
+    p_n = \lim_{t \to \infty} P\{N(t) = n\} = \lim_{t \to \infty} \frac{T_n(t)}{t}
+    \]
+    ove $T_n(t)$ è il tempo cumulativo speso nello stato $n$ nell'intervallo $[0, t]$.
+    \item \textbf{Probabilità stazionarie all'arrivo} ($a_n$): indicano la probabilità che un utente, sopraggiunto all'istante $t$, osservi esattamente $n$ utenti nel sistema un istante infinitesimo prima del proprio ingresso:
+    \[
+    a_n = \lim_{t \to \infty} P\{N(t^-) = n \mid \text{evento di arrivo si verifica all'istante } t\}
+    \]
+\end{enumerate}
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slides_valutazione_prestazioni.pdf"] Formulazione del teorema PASTA e ipotesi LAA (Lack of Anticipation Assumption) — Slide 114 / Pagina 15 del PDF
+
+\begin{theorem}
+In un sistema di accodamento che soddisfa l'\textbf{ipotesi di non anticipazione} (\textbf{LAA}, \emph{Lack of Anticipation Assumption}), secondo cui gli inter-arrivi futuri e i tempi di servizio passati degli utenti già giunti al sistema sono mutuamente indipendenti:
+\begin{enumerate}
+    \item Se il processo di arrivo è un \textbf{processo di Poisson}, allora la distribuzione dello stato osservata dai clienti all'istante di arrivo coincide esattamente con la distribuzione media temporale dello stato:
+    \[
+    \boxed{a_n = p_n, \quad \forall n = 0, 1, 2, \dots}
+    \]
+    \item Il processo di Poisson è l'\textbf{unico} processo di arrivo per cui tale proprietà sussiste in generale (condizione necessaria e sufficiente).
+\end{enumerate}
+\end{theorem}
+
+\subsection{Dimostrazione Analitica Della Proprietà PASTA}
+
+Sia $A(t, t+\delta)$ l'evento corrispondente al verificarsi di un arrivo nell'intervallo semiaperto a destra $[t, t+\delta)$. La probabilità $a_n(t)$ che un utente arrivato all'istante $t$ trovi il sistema nello stato $n$ è espressa dalla probabilità condizionata:
+\[
+a_n(t) = \lim_{\delta \to 0} P\{N(t^-) = n \mid A(t, t+\delta)\}
+\]
+Applicando la definizione di probabilità condizionata di Bayes:
+\[
+a_n(t) = \lim_{\delta \to 0} \frac{P\{N(t^-) = n \cap A(t, t+\delta)\}}{P\{A(t, t+\delta)\}}
+\]
+Lo stato del sistema $N(t^-)$ un istante prima di $t$ è univocamente determinato dagli istanti di arrivo precedenti a $t$ e dai relativi tempi di servizio erogati. In virtù della proprietà di \textbf{indipendenza degli incrementi} caratteristica del processo di Poisson, gli eventi di arrivo che si verificheranno nell'intervallo futuro $[t, t+\delta)$ sono del tutto indipendenti dalla storia passata degli arrivi fino a $t$. Inoltre, per l'ipotesi LAA, tali arrivi futuri sono statisticamente indipendenti anche dalle durate di servizio dei clienti giunti prima di $t$. Ne consegue che l'evento $N(t^-) = n$ e l'evento di arrivo $A(t, t+\delta)$ sono \textbf{statisticamente indipendenti}:
+\[
+P\{N(t^-) = n \cap A(t, t+\delta)\} = P\{N(t^-) = n\} \cdot P\{A(t, t+\delta)\}
+\]
+Sostituendo tale fattorizzazione nel rapporto:
+\[
+a_n(t) = \lim_{\delta \to 0} \frac{P\{N(t^-) = n\} \cdot P\{A(t, t+\delta)\}}{P\{A(t, t+\delta)\}} = P\{N(t^-) = n\}
+\]
+Prendendo il limite per $t \to \infty$, la probabilità asintotica all'arrivo converge alla probabilità stazionaria temporale:
+\[
+a_n = \lim_{t \to \infty} a_n(t) = \lim_{t \to \infty} P\{N(t^-) = n\} = p_n
+\]
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slides_valutazione_prestazioni.pdf"] Dimostrazione formale della proprietà PASTA tramite fattorizzazione probabilistica — Slide 116 / Pagina 17 del PDF
+
+\subsection{Controesempi: Processi Non Poissoniani E Violazione Dell'Ipotesi LAA}
+
+Per comprendere a fondo la necessità di entrambe le condizioni (processo di Poisson e ipotesi LAA), si analizzano tre casi didattici in cui la proprietà PASTA fallisce.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slides_valutazione_prestazioni.pdf"] Esempio di fallimento del teorema PASTA in presenza di arrivi deterministici — Slide 115 / Pagina 16 del PDF
+
+\subsubsection{Caso 1: Arrivi Deterministici (Sistema D/D/1)}
+
+Si consideri una coda inizializzata allo stato vuoto ($N(0) = 0$) soggetta a:
+\begin{itemize}[noitemsep]
+    \item Arrivi rigorosamente deterministici ogni 10 secondi.
+    \item Tempi di servizio costanti e pari a 9 secondi.
+\end{itemize}
+Ogni utente arriva all'istante $t_k = 10k$ secondi. Poiché il cliente precedente ha terminato il servizio all'istante $10(k-1) + 9 = 10k - 1$ secondi, il servitore è inattivo da 1 secondo. Ciascun utente entrante trova sistematicamente la coda vuota, pertanto la probabilità di trovare il sistema occupato all'arrivo è nulla:
+\[
+a_1 = 0
+\]
+Al contrario, dal punto di vista temporale, in ogni ciclo periodico di 10 secondi il sistema ha un utente presente per 9 secondi ed è vuoto per 1 secondo. La frazione di tempo medio in cui il sistema è occupato ($p_1$) vale:
+\[
+p_1 = \frac{9}{10} = 0.9 \neq a_1
+\]
+Questo controesempio dimostra che \textbf{le medie campionate dagli utenti non coincidono affatto con le medie temporali} se gli arrivi non seguono una distribuzione di Poisson.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slides_valutazione_prestazioni.pdf"] Esempi quantitativi: fallimento con arrivi uniformi e violazione della proprietà LAA — Slide 117 / Pagina 18 del PDF
+
+\subsubsection{Caso 2: Arrivi Non Poissoniani (Inter-Arrivi Uniformi)}
+
+Si consideri un sistema con:
+\begin{itemize}[noitemsep]
+    \item Tempi di inter-arrivo indipendenti e identicamente distribuiti (IID) secondo una distribuzione uniforme tra 2 e 4 secondi: $T_{\text{arr}} \sim \mathcal{U}(2, 4)$. Il tempo medio di inter-arrivo è $E[T_{\text{arr}}] = 3\text{ s}$, per cui $\lambda = \frac{1}{3}\text{ s}^{-1}$.
+    \item Tempi di servizio deterministici pari a 1 secondo ($S = 1\text{ s}$, $T_{\text{serv}} = 1$).
+\end{itemize}
+Poiché l'intervallo minimo tra due arrivi consecutivi è di 2 secondi e il tempo di servizio è di solo 1 secondo, ciascun cliente trova tassativamente il sistema vuoto al suo arrivo:
+\[
+a_1 = 0
+\]
+Calcoliamo la probabilità temporale $p_1$ applicando la legge di Little al sistema ($N = \lambda T$):
+\[
+N = \lambda \cdot E[S] = \frac{1}{3} \cdot 1 = \frac{1}{3}
+\]
+D'altra parte, poiché non possono mai coesistere 2 clienti nel sistema, il numero medio di utenti a regime coincide con:
+\[
+N = 0 \cdot p_0 + 1 \cdot p_1 = p_1 \implies p_1 = \frac{1}{3}, \quad p_0 = \frac{2}{3}
+\]
+Si riscontra anche in questo caso una netta discrepanza: $a_1 = 0 \neq p_1 = \frac{1}{3}$.
+
+\subsubsection{Caso 3: Violazione Dell'Ipotesi LAA Con Arrivi Di Poisson}
+
+Si consideri un flusso di arrivo perfettamente poissoniano, ma in cui il tempo di servizio del cliente $i$-esimo ($S_i$) è correlato al tempo di inter-arrivo fino al cliente successivo ($T_{i+1}$), violando apertamente la condizione di non anticipazione LAA:
+\[
+S_i = \alpha T_{i+1}, \quad \text{con } 0 < \alpha < 1
+\]
+Poiché $\alpha < 1$, il servizio del cliente $i$ termina sempre prima dell'arrivo del cliente $(i+1)$. Ne consegue che ogni cliente al suo arrivo troverà sempre il servitore libero:
+\[
+a_1 = 0
+\]
+Tuttavia, la frazione media di tempo in cui il server è occupato coincide con il rapporto tra il valore atteso della durata di servizio e il valore atteso dell'inter-arrivo:
+\[
+p_1 = \frac{E[S_i]}{E[T_{i+1}]} = \frac{\alpha E[T_{i+1}]}{E[T_{i+1}]} = \alpha \neq 0
+\]
+Dunque, anche in presenza di un processo di Poisson, se viene violata l'indipendenza tra tempi di servizio passati e arrivi futuri (LAA), l'uguaglianza $a_n = p_n$ crolla.
+
+\subsection{Distribuzione Dello Stato Agli Istanti Di Partenza}
+
+Un duale fondamentale della probabilità all'arrivo è la probabilità stazionaria allo smistamento o \textbf{partenza} (\emph{departure}), indicata con $d_n$:
+\[
+d_n = \lim_{t \to \infty} P\{N(t^+) = n \mid \text{evento di completamento/partenza all'istante } t\}
+\]
+ovvero la probabilità che un utente, nell'istante esatto in cui abbandona il sistema dopo essere stato servito, lasci dietro di sé $n$ utenti.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slides_valutazione_prestazioni.pdf"] Relazione fra distribuzioni all'arrivo an e alla partenza dn mediante principio di conservazione degli stati — Slide 118 / Pagina 19 del PDF
+
+In qualsiasi sistema di accodamento a salti unitari (in cui le transizioni di stato avvengono unicamente per incrementi unitari $+1$ dovuti a singoli arrivi e decrementi unitari $-1$ dovuti a singole partenze):
+\begin{itemize}[noitemsep]
+    \item Il numero totale di transizioni dallo stato $n$ allo stato $n+1$ in un intervallo di tempo esteso differisce dal numero di transizioni dallo stato $n+1$ allo stato $n$ al più di un'unità.
+    \item Di conseguenza, la frequenza asintotica con cui un arrivo trova $n$ utenti deve uguagliare la frequenza asintotica con cui una partenza lascia $n$ utenti nel sistema:
+    \[
+    \boxed{a_n = d_n, \quad \forall n = 0, 1, 2, \dots}
+    \]
+\end{itemize}
+Combinando questo risultato topologico generale con la proprietà PASTA (valida sotto arrivi di Poisson e ipotesi LAA), si ottiene l'importante catena di uguaglianze stocastiche:
+\[
+\boxed{a_n = d_n = p_n, \quad \forall n = 0, 1, 2, \dots}
+\]
+Ciò significa che, a regime, \textbf{un utente che entra nel sistema, un utente che esce dal sistema e un osservatore esterno che campiona il sistema in un istante temporale puramente casuale osservano la medesima distribuzione statistica dello stato}.
+
+\newpage
+
+\section{Reti Di Code E Teoremi Fondamentali: Da Burke A Jackson}
+
+Nelle moderne infrastrutture cloud e nei sistemi distribuiti a microservizi, le richieste computazionali non vengono processate da un singolo nodo isolato, bensì attraversano un grafo complesso di code interconnesse (router virtuali, load balancer, nodi di calcolo, storage backend). L'analisi di queste topologie si fonda sulle proprietà algebriche dei processi di Poisson e su due teoremi cardine della teoria delle reti di code: il teorema di Burke e il teorema di Jackson.
+
+\subsection{Proprietà Di Aggregazione E Separazione Dei Processi Di Poisson}
+
+I processi di Poisson godono di proprietà di stabilità rispetto alle operazioni fondamentali di instradamento:
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slides_valutazione_prestazioni.pdf"] Aggregazione o multiplexing di N processi di Poisson indipendenti — Slide 119 / Pagina 20 del PDF
+
+\begin{enumerate}
+    \item \textbf{Aggregazione (Superposizione)}: consideriamo $N$ processi di Poisson mutuamente indipendenti caratterizzati rispettivamente dai parametri $\lambda_1, \lambda_2, \dots, \lambda_N$. Il processo risultante dalla fusione (somma) di tali flussi è ancora un processo di Poisson rigoroso avente parametro globale pari a:
+    \[
+    \boxed{\lambda_{\text{tot}} = \sum_{i=1}^N \lambda_i}
+    \]
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slides_valutazione_prestazioni.pdf"] Separazione statistica o demultiplexing bernoulliano di un processo di Poisson — Slide 120 / Pagina 21 del PDF
+
+    \item \textbf{Separazione Statistica (Splitting o Demultiplazione)}: si consideri un unico processo di Poisson di parametro $\lambda$. Se ciascuna entità in transito viene instradata verso una specifica linea di uscita $i \in \{1, \dots, M\}$ con probabilità indipendente $p_i$ (tale che $\sum_{i=1}^M p_i = 1$), i flussi di uscita generati costituiscono $M$ processi di Poisson mutuamente indipendenti, ciascuno con parametro:
+    \[
+    \boxed{\lambda_i = p_i \cdot \lambda}
+    \]
+\end{enumerate}
+
+\subsection{Teorema Di Burke Per Code In Serie}
+
+Consideriamo la composizione a cascata di due sistemi di servizio disposti in \emph{tandem}: le entità completate dal primo nodo $M/M/1$ transitano direttamente come traffico di ingresso per il secondo nodo di servizio.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slides_valutazione_prestazioni.pdf"] Modello di due code M/M/1 connesse in tandem per lo studio del processo di inter-partenza — Slide 121 / Pagina 22 del PDF
+
+Ci si domanda quale sia la distribuzione statistica degli intervalli di tempo tra partenze consecutive dal primo nodo (inter-departure times, $d(t)$), che fungono da inter-arrivi al secondo nodo.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slides_valutazione_prestazioni.pdf"] Scomposizione degli eventi all'uscita di un cliente da una coda M/M/1 — Slide 122 / Pagina 23 del PDF
+
+Siano:
+\begin{itemize}[noitemsep]
+    \item $b(t) = \mu_1 e^{-\mu_1 t}$ la funzione densità di probabilità del tempo di servizio al nodo 1, la cui trasformata di Laplace è $B(s) = \frac{\mu_1}{s + \mu_1}$.
+    \item $d(t)$ la densità di probabilità degli intervalli tra uscite successive, con trasformata di Laplace $D(s)$.
+\end{itemize}
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slides_valutazione_prestazioni.pdf"] Trasformate di Laplace degli inter-tempi condizionati allo stato di coda vuota o occupata — Slide 123 / Pagina 24 del PDF
+
+All'istante in cui un cliente completa il proprio servizio e abbandona il nodo 1, si possono verificare due scenari mutuamente esclusivi:
+\begin{enumerate}
+    \item \textbf{La coda 1 non è vuota}: vi è almeno un altro cliente in attesa che impegna immediatamente il servitore. L'intervallo temporale prima della successiva partenza coincide puramente con il tempo di servizio del nuovo cliente:
+    \[
+    D(s) \big|_{\text{coda non vuota}} = B(s)
+    \]
+    \item \textbf{La coda 1 rimane vuota}: il sistema entra in uno stato di inattività. Prima che si verifichi una nuova partenza, si deve attendere l'arrivo di un nuovo cliente (variabile casuale esponenziale con parametro $\lambda$) sommato al suo tempo di servizio (esponenziale con parametro $\mu_1$). Trattandosi della somma di due variabili casuali indipendenti, la densità è data dalla convoluzione delle pdf, che nel dominio di Laplace si traduce nel prodotto algebrico delle trasformate:
+    \[
+    D(s) \big|_{\text{coda vuota}} = \left( \frac{\lambda}{s + \lambda} \right) \cdot B(s) = \left( \frac{\lambda}{s + \lambda} \right) \left( \frac{\mu_1}{s + \mu_1} \right)
+    \]
+\end{enumerate}
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slides_valutazione_prestazioni.pdf"] Dimostrazione algebrica dell'equivalenza fra processo di partenza e processo di Poisson — Slide 124 / Pagina 25 del PDF
+
+Ricordando che la probabilità stazionaria che il nodo sia non vuoto è pari a $\rho = \frac{\lambda}{\mu_1}$, mentre la probabilità che sia vuoto è $1 - \rho$, la trasformata di Laplace complessiva $D(s)$ si ottiene per il teorema della probabilità totale:
+\begin{align*}
+    D(s) &= (1 - \rho) D(s) \big|_{\text{coda vuota}} + \rho D(s) \big|_{\text{coda non vuota}} \\
+         &= \left( 1 - \frac{\lambda}{\mu_1} \right) \left( \frac{\lambda}{s + \lambda} \right) \left( \frac{\mu_1}{s + \mu_1} \right) + \frac{\lambda}{\mu_1} \left( \frac{\mu_1}{s + \mu_1} \right) \\
+         &= \frac{\mu_1}{s + \mu_1} \left[ \frac{\mu_1 - \lambda}{\mu_1} \cdot \frac{\lambda}{s + \lambda} + \frac{\lambda}{\mu_1} \right] \\
+         &= \frac{\mu_1}{s + \mu_1} \left[ \frac{\lambda(\mu_1 - \lambda) + \lambda(s + \lambda)}{\mu_1 (s + \lambda)} \right] \\
+         &= \frac{\mu_1}{s + \mu_1} \left[ \frac{\lambda \mu_1 - \lambda^2 + \lambda s + \lambda^2}{\mu_1 (s + \lambda)} \right] \\
+         &= \frac{\mu_1}{s + \mu_1} \cdot \frac{\lambda(s + \mu_1)}{\mu_1 (s + \lambda)} = \frac{\lambda}{s + \lambda}
+\end{align*}
+Antitrasformando $D(s) = \frac{\lambda}{s + \lambda}$ nel dominio del tempo si ricava:
+\[
+\boxed{d(t) = \lambda e^{-\lambda t}, \quad \text{per } t \ge 0}
+\]
+Questo risultato costituisce la tesi del **Teorema di Burke**:
+\begin{theorem}[Teorema di Burke]
+In un sistema $M/M/1$ (ed estendibile al caso $M/M/m$) stabile ($\lambda < \mu$):
+\begin{enumerate}
+    \item Il processo di partenza è un processo di Poisson con il medesimo tasso medio $\lambda$ del processo di arrivo.
+    \item All'istante arbitrario $t$, il numero di clienti presenti nel nodo 1 è stocasticamente indipendente dalla sequenza degli istanti di partenza antecedenti a $t$.
+    \item Di conseguenza, il nodo 2 a valle riceve un flusso di arrivo strettamente markoviano di parametro $\lambda$ e può essere studiato analiticamente come un sistema $M/M/1$ del tutto indipendente dal nodo 1.
+\end{enumerate}
+\end{theorem}
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slides_valutazione_prestazioni.pdf"] Implicazione architetturale di Burke: disaccoppiamento in reti feed-forward e transizione a Jackson — Slide 125 / Pagina 26 del PDF
+
+Il teorema di Burke implica che in qualsiasi rete di code orientata priva di anelli di retroazione (\textbf{reti feed-forward}), ciascun nodo può essere analizzato individualmente come se fosse isolato dal resto del sistema.
+
+\subsection{Teorema Di Jackson Per Reti Di Code Aperte}
+
+Il teorema di Burke non è direttamente applicabile quando la topologia di rete presenta anelli di re-instradamento o retroazione (\emph{feedback loop}): se un pacchetto può essere re-immesso in una coda già visitata, gli inter-arrivi effettivi a quella coda non sono più indipendenti e perdono la natura poissoniana microscopica. Questa criticità viene risolta dal fondamentale **Teorema di Jackson** (1957) per **reti di code aperte** (\emph{open queueing networks}).
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slides_valutazione_prestazioni.pdf"] Condizioni operative per una rete aperta di Jackson a K stazioni di servizio — Slide 126 / Pagina 27 del PDF
+
+Si consideri una rete aperta composta da $K$ stazioni di servizio (nodi) soddisfacente le seguenti tre ipotesi:
+\begin{enumerate}[noitemsep]
+    \item Ciascun nodo $k \in \{1, \dots, K\}$ dispone di $c_k$ servitori paralleli con tempi di servizio esponenziali indipendenti di tasso $\mu_k$.
+    \item Gli utenti provenienti dall'esterno entrano al generico nodo $k$ secondo un processo di Poisson stazionario con tasso esogeno $\lambda_k \ge 0$.
+    \item Una volta terminato il servizio al nodo $k$, il cliente viene instradato istantaneamente al nodo $j$ con probabilità markoviana $p_{kj}$, oppure abbandona definitivamente la rete con probabilità $d_k = 1 - \sum_{j=1}^K p_{kj}$.
+\end{enumerate}
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slides_valutazione_prestazioni.pdf"] Equazioni di traffico globale e forma a prodotto della distribuzione congiunta di Jackson — Slide 127 / Pagina 28 del PDF
+
+\subsubsection{Equazioni Di Traffico E Condizioni Di Stabilità}
+
+Il tasso di arrivo effettivo globale $\Lambda_k$ al nodo $k$ include sia il contributo degli arrivi esterni diretti, sia la somma dei contributi provenienti da tutti gli altri nodi della rete. Esso soddisfa il sistema lineare di equazioni di bilancio di flusso:
+\[
+\boxed{\Lambda_k = \lambda_k + \sum_{j=1}^K \Lambda_j p_{jk}, \quad \forall k \in \{1, \dots, K\}}
+\]
+Affinché la rete sia ergodica e stabile, il carico effettivo a ogni nodo deve essere strettamente inferiore alla capacità di smaltimento massima del nodo stesso:
+\[
+\Lambda_k < c_k \mu_k, \quad \forall k \in \{1, \dots, K\}
+\]
+
+\subsubsection{Soluzione In Forma Prodotto (\emph{Product-Form Solution})}
+
+Sia $\bm{n} = (n_1, n_2, \dots, n_K)$ il vettore di stato congiunto del sistema, dove $n_k \ge 0$ indica il numero totale di utenti presenti al nodo $k$ (tra attesa e servizio). Il teorema di Jackson stabilisce che la distribuzione stazionaria congiunta ammette una **soluzione in forma prodotto**:
+\[
+\boxed{p(n_1, n_2, \dots, n_K) = \prod_{k=1}^K p_k(n_k)}
+\]
+dove ciascun termine $p_k(n_k)$ coincide formalmente con la probabilità stazionaria marginale di un nodo isolato di tipo $M/M/c_k$ soggetto a tasso di arrivo equivalente $\Lambda_k$ e tasso di servizio $\mu_k$. Nel caso notevole di nodi a servitore singolo ($c_k = 1$), definendo $\rho_k = \frac{\Lambda_k}{\mu_k} < 1$, si ottiene:
+\[
+p_k(n_k) = (1 - \rho_k) \rho_k^{n_k} \implies p(n_1, n_2, \dots, n_K) = \prod_{k=1}^K (1 - \rho_k) \rho_k^{n_k}
+\]
+Questo risultato ha una rilevanza concettuale profonda: sebbene il flusso microscopico lungo i collegamenti interni con retroazione \emph{non} sia affatto un processo di Poisson, la distribuzione di stato congiunta della rete si comporta \textbf{come se} tutti i nodi fossero code $M/M/c_k$ statisticamente indipendenti.
+
+\subsection{Esempio Di Rete Jackson A Tre Nodi Con Routing Probabilistico}
+
+Si consideri l'architettura a tre nodi schematizzata nelle slide didattiche.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slides_valutazione_prestazioni.pdf"] Schema topologico e grafo di routing per una rete Jackson a tre nodi interconnessi — Slide 128 / Pagina 29 del PDF
+
+La topologia presenta le seguenti interconnessioni e parametri di traffico:
+\begin{itemize}[noitemsep]
+    \item Nodi: $k \in \{1, 2, 3\}$.
+    \item Arrivi esogeni esterni: il nodo 1 riceve traffico esterno con tasso $\lambda_1$; il nodo 3 riceve traffico con tasso $\lambda_3$; al nodo 2 non giunge traffico diretto dall'esterno ($\lambda_2 = 0$).
+    \item Matrice di instradamento interno:
+    \begin{itemize}[noitemsep]
+        \item Dal nodo 1: una frazione $p_{12}$ dei clienti transita verso il nodo 2; la frazione complementare $1 - p_{12}$ viene deviata verso il nodo 3. Nessun utente abbandona la rete direttamente dal nodo 1 ($d_1 = 0$).
+        \item Dal nodo 2: una frazione $p_{21}$ retroagisce verso il nodo 1 (\emph{feedback loop}); la frazione complementare $1 - p_{21}$ abbandona definitivamente la rete ($d_2 = 1 - p_{21}$).
+        \item Dal nodo 3: una frazione $p_{32}$ fluisce verso il nodo 2; la quota restante $1 - p_{32}$ lascia la rete ($d_3 = 1 - p_{32}$).
+    \end{itemize}
+\end{itemize}
+Applicando le equazioni generali del traffico di Jackson:
+\[
+\Lambda_k = \lambda_k + \sum_{j=1}^3 \Lambda_j p_{jk}
+\]
+si imposta il sistema algebrico per la determinazione dei carichi effettivi:
+\[
+\begin{cases}
+\Lambda_1 = \lambda_1 + p_{21} \Lambda_2 \\
+\Lambda_2 = p_{12} \Lambda_1 + p_{32} \Lambda_3 \\
+\Lambda_3 = \lambda_3 + (1 - p_{12}) \Lambda_1
+\end{cases}
+\]
+Risolvendo tale sistema lineare a tre incognite, si determinano in modo univoco i tassi totali di arrivo $\Lambda_1, \Lambda_2, \Lambda_3$. Verificata la condizione di stabilità $\Lambda_k < \mu_k$ per ciascun nodo, l'intera distribuzione congiunta di probabilità degli utenti nella rete è ottenuta dal semplice prodotto delle distribuzioni geometriche marginali.
+
+\newpage
+
+\section{Ipotesi Di Indipendenza Di Kleinrock E Modelli Di Coda Avanzati Nei Sistemi Cloud}
+
+Nelle reti telematiche geografiche e nei datacenter moderni, i pacchetti conservano inalterata la propria dimensione durante il transito attraverso nodi successivi. Questo fatto induce una correlazione statistica deterministica tra i tempi di servizio che il medesimo pacchetto richiederà sui vari link della rete, violando in linea di principio l'ipotesi di rinnovamento markoviano richiesta dai modelli di Jackson.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slides_valutazione_prestazioni.pdf"] Ipotesi di indipendenza di Kleinrock nelle reti a commutazione di pacchetto — Slide 129 / Pagina 30 del PDF
+
+\subsection{Ipotesi Di Indipendenza Di Kleinrock Nelle Reti A Commutazione Di Pacchetto}
+
+Formulata da Leonard Kleinrock negli anni '60 durante gli studi pionieristici per la rete ARPANET, l'\textbf{Ipotesi di Indipendenza di Kleinrock} stabilisce che:
+\begin{quote}
+\emph{L'operazione di aggregazione e fusione di molteplici flussi di pacchetti eterogenei su una linea di trasmissione condivisa ha un effetto stocastico assimilabile al ripristino dell'indipendenza mutua tra i tempi di inter-arrivo e le lunghezze dei pacchetti.}
+\end{quote}
+In termini formali, Kleinrock suggerisce di approssimare il comportamento di una rete a commutazione di pacchetto assumendo che, a ogni attraversamento di un nuovo nodo, la lunghezza del pacchetto venga \textbf{campionata nuovamente in modo indipendente} da una distribuzione esponenziale negativa.
+
+Tale semplificazione, confermata da estese campagne sperimentali e simulazioni Monte Carlo, consente di estendere l'applicazione del Teorema di Jackson a reti reali di telecomunicazione. L'approssimazione risulta eccellente qualora siano soddisfatte le seguenti condizioni di rete:
+\begin{itemize}[noitemsep]
+    \item I processi di iniezione del traffico ai nodi perimetrali d'ingresso seguono una legge di Poisson.
+    \item Il tempo di trasmissione medio sul singolo link segue una distribuzione compatibile con la legge esponenziale.
+    \item Su ciascun collegamento fisico converge una pluralità consistente di flussi di traffico multiplexati (\emph{heavy multiplexing}).
+    \item La topologia della rete è densamente connessa (\emph{richly/densely connected}), evitando strozzature seriali pure.
+    \item Il profilo di traffico non presenta fenomeni di burstiness estrema o correlazioni a lungo raggio.
+\end{itemize}
+
+\subsection{Modelli Di Coda Avanzati Nei Sistemi Cloud: Dal Modello M/G/1 Ai Microservizi}
+
+Nelle infrastrutture cloud-native, le assunzioni di tempi di servizio puramente esponenziali risultano sovente restrittive. Operazioni di calcolo complesse o accessi a dischi persistenti evidenziano varianze o distribuzioni deterministiche che richiedono l'impiego del modello markoviano generalizzato $\text{M/G/1}$ (arrivi di Poisson con parametro $\lambda$, tempi di servizio generali con distribuzione arbitraria $G$, valor medio $\frac{1}{\mu}$ e varianza $\sigma_S^2$, servitore singolo).
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slides_valutazione_prestazioni.pdf"] Applicazioni operative avanzate: Service Mesh e Storage in Kubernetes modellate con code M/G/1 — Slide 130 / Pagina 31 del PDF
+
+Nel modello $\text{M/G/1}$, il tempo medio di attesa in coda è governato dalla formula di \textbf{Pollaczek-Khinchine}:
+\[
+W_q = \frac{\lambda E[S^2]}{2(1 - \rho)} = \frac{\rho + \lambda \mu \sigma_S^2}{2(\mu - \lambda)}
+\]
+da cui si evince come la dispersione statistica (varianza $\sigma_S^2$) del tempo di elaborazione impatti direttamente la latenza media sperimentata dal sistema.
+
+Nelle slide di riferimento vengono evidenziati due campi di applicazione operativa del modello $\text{M/G/1}$ nelle architetture cloud moderne:
+
+\subsubsection{1. Gestione Del Traffico Nei Service Mesh (Istio, Linkerd)}
+
+Nei paradigmi architetturali a microservizi basati su container, le comunicazioni inter-servizio orizzontali (\emph{East-West traffic}) sono intermediate da proxy sidecar (ad esempio Envoy) coordinati da un **Service Mesh** come Istio o Linkerd:
+\begin{itemize}[noitemsep]
+    \item \textbf{Problematica}: le chiamate API REST o gRPC tra decine di microservizi possono manifestare colli di bottiglia e amplificazioni della latenza dovute a servizi intermedi sovraccarichi o a code di instradamento sbilanciate.
+    \item \textbf{Modellazione con $\text{M/G/1}$}: le richieste HTTP in arrivo a un microservizio sono generate dall'aggregazione di molti client (processo approssimativamente di Poisson), ma il tempo di elaborazione della logica di business e delle query database ha una distribuzione generale non esponenziale. L'uso di code $\text{M/G/1}$ consente al control plane del service mesh di stimare analiticamente la latenza attesa e i tempi di accodamento, ottimizzando algoritmi di bilanciamento del carico a minima latenza (\emph{least request}, \emph{peak EWMA}) e configurando soglie di \emph{circuit breaking} adeguate.
+\end{itemize}
+
+\subsubsection{2. Gestione Dello Storage In Kubernetes Per Applicazioni Stateful}
+
+In ambiente Kubernetes, le applicazioni che necessitano di conservare lo stato (ad esempio cluster di database relazionali PostgreSQL o NoSQL Cassandra) richiedono volumi persistenti:
+\begin{itemize}[noitemsep]
+    \item \textbf{Problematica}: l'accesso concorrente a dischi condivisi di rete o a storage software-defined (Ceph, EBS, Longhorn) genera code di richieste I/O di lettura e scrittura. Se non governate, tali contese inducono starvation e picchi di ritardo che degradano le transazioni applicative.
+    \item \textbf{Modellazione con $\text{M/G/1}$}: le richieste di I/O generate dalle istanze database possono essere modellate come arrivi di Poisson, mentre la durata dell'accesso fisico (tempo di \emph{seek}, latenza di rete dello storage distribuito, scrittura su memorie a blocchi) possiede una distribuzione generale $G$. Il modello analitico consente di stimare accuratamente il tempo di attesa per le operazioni di I/O, dimensionando in modo ottimale il throughput IOPS allocato alle \textbf{Persistent Volume Claim (PVC)} e ai corrispondenti \textbf{Persistent Volumes (PV)} per soddisfare i requisiti di Service Level Agreement (SLA).
+\end{itemize}
+
+
+
+\end{document}

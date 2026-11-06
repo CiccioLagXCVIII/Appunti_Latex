@@ -1,0 +1,128 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{matlab}
+
+\RequirePackage{verbatim}
+\RequirePackage{fancyvrb}
+\RequirePackage{upquote}
+\RequirePackage[framemethod=tikz]{mdframed}
+\RequirePackage{hyperref}
+\RequirePackage[gray]{xcolor}
+\RequirePackage{listings}
+\RequirePackage{fontspec}
+
+% ==============================================================================
+% CONFIGURAZIONE FONT MONOSPAZIO (Strada A - Consolas per Codice e Console)
+% ==============================================================================
+% Consolas scalato al 92% per pareggiare l'altezza ottica con Latin Modern Roman.
+% I caratteri, i trattini e i segni meno nei numeri negativi e nelle matrici sono
+% perfettamente centrati, dritti e simmetrici.
+\setmonofont{Consolas}[Scale=0.92]
+
+% ==============================================================================
+% DEFINIZIONE SPAZIO COLORI MONOCROMATICO (DeviceGray nativo per stampa B/N)
+% ==============================================================================
+\definecolor{MatlabKeyword}{gray}{0.0}
+\definecolor{MatlabFunction}{gray}{0.0}
+\definecolor{MatlabComment}{gray}{0.40}
+\definecolor{MatlabString}{gray}{0.0}
+\definecolor{output}{gray}{0.0}
+\definecolor{codeframe}{gray}{0.25}
+\definecolor{codebg}{gray}{0.97}
+
+% Indentazione paragrafi
+\setlength{\parindent}{0pt}
+
+% Disattivazione colori e cornici nei link ipertestuali
+\hypersetup{
+    hidelinks
+}
+
+% ==============================================================================
+% CONFIGURAZIONE LISTINGS PER MATLAB (Highlighter in Bianco e Nero con Grassetto)
+% ==============================================================================
+\lstdefinestyle{MatlabStyle}{
+    language=Matlab,
+    basicstyle=\ttfamily\footnotesize\color{black},
+    keywordstyle=\bfseries\color{black},
+    keywordstyle=[2]\bfseries\color{black},
+    commentstyle=\itshape\color{MatlabComment},
+    stringstyle=\color{black},
+    showstringspaces=false,
+    breaklines=true,
+    frame=none,
+    numberstyle=\tiny\color{black},
+    numbersep=5pt,
+    tabsize=4,
+    captionpos=b,
+    morekeywords={matlab, end, function, if, else, elseif, for, while, switch, case, otherwise, try, catch, return, break, continue, global, persistent},
+    morekeywords=[2]{syms, clc, clear, close, disp, fprintf, error, norm, det, trace, simplify, solve, subs, diff, int, jacobian, hessian, size, length, numel, isscalar, zeros, ones, eye, inv, rank, eig, diag, reshape, double, figure, hold, plot, plot3, quiver, quiver3, text, title, xlabel, ylabel, zlabel, grid, box, axis, view, rotate3d, nexttile, uniquetol, real, imag, conj, sin, cos, tan, asin, acos, atan, atan2, sqrt, exp, log, abs, pi}
+}
+
+% ==============================================================================
+% STILE BOX MDFRAMED CON BARRA LATERALE IN GRIGIO PURO
+% ==============================================================================
+\mdfdefinestyle{matlabcode}{%
+  topline=false,
+  bottomline=false,
+  rightline=false,
+  leftline=true,
+  linewidth=2.5pt,
+  linecolor=codeframe,
+  backgroundcolor=codebg,
+  innertopmargin=4pt,
+  innerbottommargin=4pt,
+  innerleftmargin=9pt,
+  innerrightmargin=6pt,
+  skipabove=3pt,
+  skipbelow=3pt
+}
+
+% Ambiente matlabcode basato su listings + mdframed
+\lstnewenvironment{matlabcode}{
+    \lstset{style=MatlabStyle}
+}{}
+\surroundwithmdframed[style=matlabcode]{matlabcode}
+
+% ==============================================================================
+% AMBIENTI OUTPUT MATLAB
+% ==============================================================================
+\newenvironment{matlaboutput}{%
+  \par\vspace{1pt}%
+  \Verbatim[xleftmargin=10pt, formatcom=\color{black}, fontsize=\footnotesize]%
+}{\endVerbatim\vspace{1pt}}
+
+\newenvironment{matlabsymbolicoutput}{%
+  \par\vspace{2pt}%
+  \begingroup
+  \centering
+}{\par\vspace{2pt}\endgroup}
+
+% ==============================================================================
+% TITOLI E INDICE MATLAB CON BOOKMARK COMPATIBILI
+% ==============================================================================
+\newcounter{multititle}
+\newcommand{\matlabmultipletitles}{\setcounter{multititle}{1}}
+
+\newcounter{hastoc}
+\newcommand{\matlabhastoc}{\setcounter{hastoc}{1}}
+
+\newcommand{\matlabtitle}[1]{%
+  \ifnum\value{multititle}>0%
+    \ifnum\value{hastoc}>0\phantomsection\addcontentsline{toc}{section}{#1}\fi%
+  \fi%
+  \section*{#1}%
+}
+
+\newcommand{\matlabheading}[1]{%
+  \ifnum\value{hastoc}>0\phantomsection\addcontentsline{toc}{section}{#1}\fi%
+  \section*{#1}%
+}
+
+\newcommand{\matlabheadingtwo}[1]{%
+  \ifnum\value{hastoc}>0\phantomsection\addcontentsline{toc}{subsection}{#1}\fi%
+  \subsection*{#1}%
+}
+
+\newcommand{\matlabheadingthree}[1]{%
+  \subsubsection*{#1}%
+}

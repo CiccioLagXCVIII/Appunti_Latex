@@ -1,0 +1,324 @@
+﻿\documentclass[11pt, a4paper]{article}
+
+%---------------------------------------------------------
+% Lingua E Codifica
+%---------------------------------------------------------
+\usepackage[italian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+%---------------------------------------------------------
+% Layout Di Pagina E Tipografia
+%---------------------------------------------------------
+\usepackage[margin=2cm, top=1.5cm, bottom=1.5cm]{geometry}
+\usepackage{parskip}
+\usepackage{microtype}
+
+%---------------------------------------------------------
+% Gestione Dei Colori
+%---------------------------------------------------------
+\usepackage[table]{xcolor}
+\definecolor{darkgreen}{RGB}{0,100,0}
+
+%---------------------------------------------------------
+% Matematica E Simboli
+%---------------------------------------------------------
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{mathtools}
+\usepackage{siunitx}
+
+% BB OTTIMIZZAZIONE MATRICI LUNGHE PER LA STAMPA
+\setlength{\arraycolsep}{10pt}
+\usepackage{bm}
+\usepackage{arydshln}
+
+
+%---------------------------------------------------------
+% Grafica, Immagini E Tabelle
+%---------------------------------------------------------
+\usepackage{graphicx}
+\graphicspath{{./Images/CNN - Unsupervised Applications/}}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, patterns, angles, quotes, calc}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+
+%---------------------------------------------------------
+% Link, Riferimenti Ed Elenchi
+%---------------------------------------------------------
+\usepackage[unicode]{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+    citecolor=blue,
+    pdftitle={Capitolo 13 - CNN - Unsupervised Applications},
+    pdfauthor={Francesco Lo Verde},
+    pdfpagemode=FullScreen,
+}
+\usepackage{bookmark}
+\usepackage{enumitem}
+\setlist{noitemsep}
+
+%---------------------------------------------------------
+% Personalizzazione Titoli E Altri Pacchetti
+%---------------------------------------------------------
+\usepackage{titlesec}
+\titleformat{\section}{\normalfont\LARGE\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\Large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalfont\large\bfseries}{\thesubsubsection}{1em}{}
+
+\usepackage{comment}
+\newtheorem{theorem}{Definizione}
+
+% Pacchetto per gli algoritmi
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+
+\SetKwData{Dati}{Input}
+\SetKwData{Risultato}{Output}
+\SetKw{Inizializza}{Inizializza}
+\SetKwFor{Per}{per}{fare}{fine per}
+\SetKwComment{Commento}{// }{}
+
+\author{Francesco Lo Verde}
+\begin{document}
+\section{Applicazioni Di Reti Neurali Convoluzionali Non Supervisionate}
+
+Nell'ambito della percezione robotica e del deep learning, l'apprendimento non supervisionato gioca un ruolo di rilievo poiché consente di estrarre informazioni strutturate da grandi quantità di dati senza la necessità di annotazioni manuali.
+
+\subsection{Confronto Tra Apprendimento Supervisionato E Non Supervisionato}
+
+Per comprendere appieno le reti non supervisionate, è opportuno richiamare la distinzione fondamentale rispetto all'approccio supervisionato:
+\begin{itemize}
+    \item \textbf{Apprendimento Supervisionato (\emph{Supervised Learning}):} I dati sono forniti sotto forma di coppie $(\bm{x}, y)$, in cui $\bm{x}$ rappresenta il vettore delle feature (oppure una matrice se l'input $\bm{x}$ è un'immagine) e $y$ rappresenta la relativa etichetta (\emph{label}). L'obiettivo consiste nell'apprendere una funzione matematica in grado di mappare l'input sull'etichetta corrispondente, ossia $f: \bm{x} \to y$.
+    \item \textbf{Apprendimento Non Supervisionato (\emph{Unsupervised Learning}):} In questo scenario si dispone unicamente dei dati di input $\bm{x}$ e non si ha alcun accesso alle etichette. L'obiettivo principale è l'apprendimento della struttura intrinseca e delle regolarità nascoste all'interno dei dati stessi.
+\end{itemize}
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Unsupervised Applications"] Schema a blocchi di un'applicazione non supervisionata: Input x mappato a Features mappato a Reconstructed Input \hat{x} — Slide 1 / Pagina 1 del PDF
+
+\subsection{Tipologie Di Architetture Non Supervisionate Con CNN}
+
+Le reti neurali convoluzionali (\textbf{CNN}) possono essere impiegate in modalità non supervisionata principalmente attraverso tre paradigmi architetturali:
+\begin{itemize}
+    \item \textbf{Autoencoder:} utilizzati per l'apprendimento di feature (\emph{feature learning}) robuste e compatte.
+    \item \textbf{Variational Autoencoders (VAE):} estensioni probabilistiche degli autoencoder dedicate alla generazione di nuovi campioni.
+    \item \textbf{Generative Adversarial Networks (GAN):} modelli generativi basati sulla teoria dei giochi per la generazione di campioni ad alta fedeltà.
+\end{itemize}
+
+\newpage
+
+\section{Autoencoder Per L'Apprendimento Di Feature}
+
+Un \textbf{autoencoder} è un'architettura neurale progettata con lo scopo di apprendere una rappresentazione compressa dei dati di input, per poi cercare di ricostruire l'input originale a partire da tale rappresentazione compressa.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Unsupervised Applications"] Schema generale di un Autoencoder: Input x che si riduce a Features che si espande a Reconstructed Input \hat{x} — Slide 4 / Pagina 4 del PDF
+
+L'architettura di un autoencoder si compone di due componenti principali: l'encoder e il decoder.
+
+\subsection{L'Encoder}
+
+L'\textbf{encoder} ha il compito di mappare l'input ad alta dimensionalità in uno spazio latente a dimensionalità ridotta (chiamato spazio delle \emph{feature} o codice). Nel contesto delle immagini, l'encoder è composto da una sequenza di strati convoluzionali (\emph{convolutional layers}) e strati di pooling (\emph{pooling layers}).
+
+Durante il passaggio attraverso gli strati dell'encoder, si osservano due dinamiche principali:
+\begin{itemize}
+    \item La dimensione spaziale dell'input (altezza e larghezza) viene ridotta all'aumentare della profondità della rete.
+    \item Il numero di canali (\emph{channels}) viene aumentato contestualmente per permettere alla rete di catturare un numero maggiore di caratteristiche e dettagli dell'immagine.
+\end{itemize}
+
+L'obiettivo finale di questa fase è l'apprendimento di una rappresentazione robusta dell'input, indicata comunemente come vettore delle feature.
+
+\subsection{Il Decoder}
+
+Il \textbf{decoder} riceve in ingresso la rappresentazione latente calcolata dall'encoder e tenta di ricostruire l'input originario. Questa ricostruzione finale, denotata con $\bm{\hat{x}}$, deve essere idealmente il più vicino possibile all'input $\bm{x}$.
+
+L'architettura del decoder è speculare a quella dell'encoder ed è composta da strati di convoluzione trasposta (\emph{transposed convolution} o \emph{upconvolutional layers}).
+
+La ricostruzione finale $\bm{\hat{x}}$ differirà dall'input reale $\bm{x}$ a causa delle non linearità introdotte all'interno della rete. Questa discrepanza forza la rete a scartare il rumore e a conservare unicamente le informazioni più importanti dell'input, garantendo l'apprendimento di una rappresentazione robusta.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Unsupervised Applications"] Schema dettagliato dell'Autoencoder con indicazione di Encoder, Features e Decoder con testo esplicativo delle singole componenti — Slide 5 / Pagina 5 del PDF
+
+\subsection{La Necessità Di Limitazioni Nell'Apprendimento}
+
+Se un autoencoder riuscisse ad apprendere una funzione identità perfetta, ossia a impostare banalmente:
+\[
+\bm{\hat{x}} = \bm{x}
+\]
+il modello risulterebbe del tutto inutile poiché non effettuerebbe alcuna estrazione di significato o compressione informativa. Per ovviare a questo problema, gli autoencoder vengono progettati introducendo dei vincoli che impediscono loro di copiare perfettamente l'input.
+
+Tipicamente, essi sono limitati in modo tale da poter effettuare la copia solo in modo approssimato, e specificamente per input che assomigliano ai dati appartenenti al dataset di addestramento. Essendo costretto a dare priorità a quali aspetti dell'input copiare, il modello impara a estrarre le proprietà geometriche e semantiche realmente utili dei dati.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Unsupervised Applications"] Schema dell'Autoencoder focalizzato sulla restrizione del copia-incolla perfetto — Slide 6 / Pagina 6 del PDF
+
+\subsection{Funzione Di Loss Per La Ricostruzione}
+
+Per addestrare la rete a minimizzare la differenza tra l'input $\bm{x}$ e l'input ricostruito $\bm{\hat{x}}$, si definisce una funzione di perdita (\emph{loss function}). Tipicamente, per questo scopo si utilizza la norma $L_2$ (errore quadratico medio):
+
+\[
+\mathcal{L}(\bm{x}, \bm{\hat{x}}) = \|\bm{x} - \bm{\hat{x}}\|_2^2
+\]
+
+Questa funzione di loss forza la rete a rendere $\bm{\hat{x}} \approx \bm{x}$. Di conseguenza, per minimizzare la perdita globale sul dataset di addestramento, l'autoencoder è costretto ad apprendere una rappresentazione robusta e informativa nello spazio latente intermedio.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Unsupervised Applications"] Schema dell'Autoencoder che mostra la retroazione della Loss (solitamente L2) tra l'input x e la ricostruzione \hat{x} — Slide 7 / Pagina 7 del PDF
+
+\subsection{Uso Dell'Encoder Nei Task Supervisionati}
+
+Una volta completata la fase di addestramento non supervisionato dell'autoencoder, la rappresentazione latente appresa può essere sfruttata per compiti di tipo supervisionato (\emph{transfer learning} o pre-addestramento). Il procedimento si articola nei seguenti passaggi:
+\begin{enumerate}
+    \item Si rimuove il decoder, in quanto la sua utilità era limitata alla sola fase di addestramento per la ricostruzione.
+    \item Si utilizza l'encoder addestrato come estrattore di feature per calcolare le rappresentazioni dei dati d'ingresso.
+    \item Si collegano le feature estratte a uno o più strati completamente connessi (\emph{fully connected layers}) per mappare le feature sull'etichetta target $y$ (ad esempio, per un task di classificazione).
+    \item Durante l'addestramento del task supervisionato (utilizzando una loss specifica, come la \emph{cross entropy loss} per la classificazione), i pesi dell'encoder possono essere sintonizzati tramite fine-tuning (\emph{fine-tuned}) insieme ai pesi dei nuovi strati completamente connessi.
+\end{enumerate}
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Unsupervised Applications"] Schema di fine-tuning dell'encoder per un task supervisionato con cross entropy loss — Slide 8 / Pagina 8 del PDF
+
+Grazie agli autoencoder è dunque possibile apprendere feature robuste per ricostruire l'input. Tuttavia, sorge una questione spontanea: è possibile modificare o alterare queste feature latenti per generare nuove immagini diverse da quelle di input? Le reti convoluzionali sono in grado di creare immagini realistiche che non hanno mai visto prima? La risposta risiede nei modelli generativi avversari.
+
+\newpage
+
+\section{Reti Generative Avversarie (GAN)}
+
+Le \textbf{Reti Generative Avversarie} (acronimo inglese \textbf{GAN}, \emph{Generative Adversarial Networks}) rappresentano una delle innovazioni più rilevanti nell'ambito della generazione di immagini e della traduzione \emph{image-to-image}.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Unsupervised Applications"] Esempi di traduzione d'immagine basati su CycleGAN: Monet/Foto, Zebre/Cavalli, Estate/Inverno — Slide 10 / Pagina 10 del PDF
+
+Le applicazioni delle GAN spaziano in molteplici domini complessi:
+\begin{itemize}
+    \item Traduzione di stile artistico (es. trasformazione di uno schizzo in un dipinto, o applicazione dello stile di pittori famosi come Monet, Van Gogh, Cezanne o Ukiyo-e su fotografie reali).
+    \item Generazione di arte astratta o figurativa a partire dallo studio di stili storici.
+    \item Generazione di dati sintetici (\emph{synthetic data generation}) per l'addestramento di altri modelli.
+    \item Generazione di tracce audio e sintesi video.
+\end{itemize}
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Unsupervised Applications"] Esempi di generazione artistica (Creative Adversarial Networks e Sketch-to-Art) — Slide 11 / Pagina 11 del PDF
+
+\subsection{Architettura Delle GAN}
+
+Il framework delle GAN prevede l'interazione competitiva di due modelli distinti che vengono addestrati simultaneamente: il Generatore e il Discriminatore.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Unsupervised Applications"] Schema generale del framework GAN: interazione tra Generatore G, Variabile latente z, Discriminatore D e calcolo della Loss — Slide 12 / Pagina 12 del PDF
+
+I componenti fondamentali e i flussi di dati coinvolti sono i seguenti:
+\begin{itemize}
+    \item \textbf{Variabile Casuale Latente ($\bm{z}$):} Rappresenta un vettore di rumore casuale campionato da una distribuzione nota (solitamente una distribuzione Gaussiana o Uniforme). Questa variabile $\bm{z}$ può essere interpretata come la rappresentazione latente dell'immagine che si intende generare.
+    \item \textbf{Generatore ($G$):} Prende in input il vettore di rumore $\bm{z}$ e genera un campione sintetico $G(\bm{z})$ (ad esempio, un'immagine fittizia).
+    \item \textbf{Campione Reale ($\bm{x}$):} Rappresenta un'immagine estratta dal dataset reale del mondo fisico.
+    \item \textbf{Discriminatore ($D$):} Prende in ingresso un'immagine (che può essere reale $\bm{x}$ o generata $G(\bm{z})$) e valuta la probabilità che l'immagine sia reale anziché prodotta dal generatore. L'output del discriminatore è un valore scalare $D(\bm{x})$ o $D(G(\bm{z}))$, solitamente compreso nell'intervallo $[0, 1]$.
+    \item \textbf{Moduli Differenziabili:} Sia il Generatore $G$ che il Discriminatore $D$ sono costituiti da reti neurali differenziabili, consentendo l'ottimizzazione tramite l'algoritmo di backpropagation.
+\end{itemize}
+
+\subsection{Il Generatore}
+
+Il \textbf{Generatore} $G$ è solitamente implementato tramite una rete neurale convoluzionale profonda che mappa un vettore latente $\bm{z}$ a un campione generato (immagine). Un esempio classico è l'architettura \textbf{DCGAN} (\emph{Deep Convolutional GAN}), in cui il vettore latente viene proiettato, rimodellato (\emph{reshape}) e successivamente elaborato attraverso una serie di strati di deconvoluzione (convoluzione trasposta) con stride pari a 2, dimezzando la profondità dei canali e raddoppiando la risoluzione spaziale ad ogni livello, fino ad ottenere l'immagine finale a 3 canali.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Unsupervised Applications"] Architettura del Generatore DCGAN con passaggi di Deconv e stride 2 — Slide 14 / Pagina 14 del PDF
+
+\subsection{Il Discriminatore}
+
+Il \textbf{Discriminatore} $D$ è una rete neurale convoluzionale classica che agisce come un classificatore binario. Il suo scopo principale è distinguere tra campioni reali e campioni sintetici. L'architettura tipica prevede una sequenza di strati convoluzionali seguiti da strati completamente connessi, che riducono l'immagine di input a un singolo valore di probabilità finale.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Unsupervised Applications"] Schema del Discriminatore come classificatore CNN convoluzionale classico — Slide 15 / Pagina 15 del PDF
+
+\subsection{Addestramento Alternato Delle GAN}
+
+L'addestramento di una GAN avviene alternando la fase di aggiornamento dei pesi del discriminatore e quella del generatore. Questo processo impedisce a uno dei due modelli di sopraffare l'altro prematuramente.
+
+\subsubsection{Addestramento Del Discriminatore}
+
+Durante questa fase, l'obiettivo è massimizzare la precisione del discriminatore nel classificare correttamente le immagini reali come "vere" (etichetta 1) e le immagini generate come "false" (etichetta 0). I passi operativi sono:
+\begin{enumerate}
+    \item Si bloccano i pesi del generatore (indicato graficamente con un lucchetto sul generatore).
+    \item Si campionano immagini reali $\bm{x}$ dal dataset e immagini fittizie $G(\bm{z})$ generate a partire da rumore casuale $\bm{z}$.
+    \item Si calcola la perdita del discriminatore basandosi sulle sue predizioni $D(\bm{x})$ e $D(G(\bm{z}))$.
+    \item Si esegue la backpropagation dell'errore per aggiornare unicamente i pesi del discriminatore.
+\end{enumerate}
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Unsupervised Applications"] Schema di addestramento del discriminatore con generatore bloccato e aggiornamento pesi del discriminatore — Slide 16 / Pagina 16 del PDF
+
+\subsubsection{Addestramento Del Generatore}
+
+Durante questa fase, l'obiettivo è aggiornare il generatore affinché produca immagini talmente realistiche da ingannare il discriminatore, inducendolo a classificarle come reali. I passi operativi sono:
+\begin{enumerate}
+    \item Si bloccano i pesi del discriminatore (indicato graficamente con un lucchetto sul discriminatore).
+    \item Si generano campioni fittizi $G(\bm{z})$ a partire da rumore casuale $\bm{z}$.
+    \item Si valuta la risposta del discriminatore $D(G(\bm{z}))$.
+    \item Si calcola la perdita sul generatore, che è elevata se il discriminatore riconosce l'immagine come falsa (cioè se $D(G(\bm{z})) \approx 0$) e bassa se la ritiene vera (cioè se $D(G(\bm{z})) \approx 1$).
+    \item Si esegue la backpropagation dell'errore attraverso il discriminatore (senza però modificarne i pesi) fino al generatore, aggiornando i pesi di quest'ultimo.
+\end{enumerate}
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Unsupervised Applications"] Schema di addestramento del generatore con discriminatore bloccato e aggiornamento pesi del generatore — Slide 17 / Pagina 17 del PDF
+
+\subsection{Formulazione Matematica Del Gioco Minimax}
+
+Il framework delle GAN si basa sulla formulazione matematica di un \textbf{gioco minimax} a due giocatori. In questo contesto, il discriminatore $D$ cerca di massimizzare la propria ricompensa, ossia la capacità di distinguere correttamente tra campioni reali e finti, mentre il generatore $G$ tenta di minimizzare tale ricompensa, rendendo indistinguibili i propri campioni rispetto a quelli reali.
+
+La funzione obiettivo globale $V(D, G)$ è espressa dalla seguente equazione:
+
+\[
+\boxed{\min_{G} \max_{D} V(D, G) = \mathbb{E}_{\bm{x} \sim p(\bm{x})}[\log D(\bm{x})] + \mathbb{E}_{\bm{z} \sim q(\bm{z})}[\log(1 - D(G(\bm{z})))]}
+\]
+
+Analizziamo nel dettaglio i due termini che costituiscono la funzione di valore $V(D, G)$:
+\begin{itemize}
+    \item $\bm{\mathbb{E}_{\bm{x} \sim p(\bm{x})}[\log D(\bm{x})]}$: Rappresenta il valore atteso del logaritmo della probabilità che il discriminatore assegni l'etichetta di "reale" a un campione reale $\bm{x}$ estratto dalla distribuzione reale dei dati $p(\bm{x})$. Il discriminatore $D$ punta a massimizzare questo termine portando $D(\bm{x})$ a $1$.
+    \item $\bm{\mathbb{E}_{\bm{z} \sim q(\bm{z})}[\log(1 - D(G(\bm{z})))]}$: Rappresenta il valore atteso del logaritmo della probabilità che il discriminatore classifichi correttamente come "falso" il campione generato $G(\bm{z})$, dove $\bm{z}$ è campionato dalla distribuzione del rumore $q(\bm{z})$.
+    \begin{itemize}
+        \item Il discriminatore $D$ cerca di massimizzare questo termine portando $D(G(\bm{z}))$ a $0$ (in questo modo, $1 - D(G(\bm{z})) \to 1$ e il logaritmo tende a zero).
+        \item Al contrario, il generatore $G$ cerca di minimizzare questo termine spingendo $D(G(\bm{z}))$ verso $1$ (in questo modo, $1 - D(G(\bm{z})) \to 0$ e il logaritmo tende a $-\infty$).
+    \end{itemize}
+\end{itemize}
+
+\newpage
+
+\subsection{Algoritmo Di Addestramento Tramite Minibatch SGD}
+
+Di seguito viene riportato l'algoritmo dettagliato per l'addestramento stocastico a minibatch delle reti generative avversarie, originariamente proposto da Ian Goodfellow et al. Il parametro $k$, che rappresenta il numero di passi di aggiornamento del discriminatore per ogni passo del generatore, è un iperparametro (spesso impostato a $1$ per ridurre il costo computazionale).
+
+\begin{algorithm}[H]
+\Dati{Distribuzione dei dati $p_{\text{data}}(\bm{x})$, distribuzione a priori del rumore $p_g(\bm{z})$, iperparametro $k$, dimensione del minibatch $m$.}
+\Inizializza{Parametri della rete del discriminatore $\theta_d$ e del generatore $\theta_g$.}
+\Per{numero di iterazioni di addestramento}{
+    \Per{$k$ passi}{
+        Campiona un minibatch di $m$ vettori di rumore $\{\bm{z}^{(1)}, \dots, \bm{z}^{(m)}\}$ dalla distribuzione a priori $p_g(\bm{z})$\;
+        Campiona un minibatch di $m$ esempi reali $\{\bm{x}^{(1)}, \dots, \bm{x}^{(m)}\}$ dalla distribuzione dei dati $p_{\text{data}}(\bm{x})$\;
+        Aggiorna il discriminatore ascendendo lungo il suo gradiente stocastico:
+        \[
+        \nabla_{\theta_d} \frac{1}{m} \sum_{i=1}^{m} \left[ \log D\left(\bm{x}^{(i)}\right) + \log\left(1 - D\left(G\left(\bm{z}^{(i)}\right)\right)\right) \right]
+        \]
+    }
+    Campiona un minibatch di $m$ vettori di rumore $\{\bm{z}^{(1)}, \dots, \bm{z}^{(m)}\}$ dalla distribuzione a priori $p_g(\bm{z})$\;
+    Aggiorna il generatore discendendo lungo il suo gradiente stocastico:
+    \[
+    \nabla_{\theta_g} \frac{1}{m} \sum_{i=1}^{m} \log\left(1 - D\left(G\left(\bm{z}^{(i)}\right)\right)\right)
+    \]
+}
+\caption{Addestramento stocastico a minibatch delle reti generative avversarie.}
+\end{algorithm}
+
+Gli aggiornamenti basati sui gradienti possono essere calcolati con qualsiasi regola standard di ottimizzazione stocastica (ad esempio, SGD con momentum o Adam).
+
+\subsection{Equilibrio Di Nash}
+
+Il punto di convergenza ottimale per questo gioco minimax a due giocatori corrisponde all'\textbf{Equilibrio di Nash}. Da un punto di vista teorico, questo stato viene raggiunto quando si verificano contemporaneamente le seguenti condizioni:
+
+\begin{align*}
+p_{\text{gen}}(\bm{x}) &= p_{\text{data}}(\bm{x}) \quad \forall \bm{x} \\
+D(\bm{x}) &= \frac{1}{2} \quad \forall \bm{x}
+\end{align*}
+
+Ciò implica che:
+\begin{itemize}
+    \item La distribuzione dei dati generati dal generatore $p_{\text{gen}}(\bm{x})$ coincide perfettamente con la distribuzione reale dei dati $p_{\text{data}}(\bm{x})$.
+    \item Il discriminatore non è più in grado di distinguere in alcun modo tra un esempio reale e uno fittizio. Di conseguenza, assegna in modo uniforme una probabilità pari a $\frac{1}{2}$ ad ogni campione che analizza.
+\end{itemize}
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "Unsupervised Applications"] Evoluzione delle distribuzioni durante l'addestramento fino al raggiungimento dell'Equilibrio di Nash — Slide 20 / Pagina 20 del PDF
+\end{document}

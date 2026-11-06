@@ -1,0 +1,21 @@
+{
+  "plugins": ["prettier-plugin-latex"],
+  "tabWidth": 2,
+  "printWidth": 80,
+  "useTabs": false,
+  "latex": {
+    "alignEnvironments": [
+      "array",
+      "matrix",
+      "pmatrix",
+      "bmatrix",
+      "eqnarray",
+      "align",
+      "align*",
+      "aligned",
+      "alignat",
+      "tabular",
+      "tabularx"
+    ]
+  }
+}

@@ -1,0 +1,148 @@
+====================================================================
+ LOG ESECUZIONE updateStructure - 2026-11-06 10:33:37
+ Modalita: Completa (Tutti gli script E*.m)
+====================================================================
+
+E1_RappresentazioneAsseAngolo
+1. Apertura OK
+2. Cancellazione Output OK
+3. Esecuzione: OK
+4. Creazione Cartella E1_Images OK
+5. Esportazione Immagini In E1_Images OK
+6. Sostituzione Cartella E1_Images In "Esercitazioni Matlab\E1_RappresentazioneAsseAngolo" OK
+7. Conversione In .mlx OK
+8. Spostamento In Notebook Aggiornati OK
+
+E2_Angoli_Eulero
+1. Apertura OK
+2. Cancellazione Output OK
+3. Esecuzione: OK
+4. Creazione Cartella E2_Images OK
+5. Esportazione Immagini In E2_Images OK
+6. Sostituzione Cartella E2_Images In "Esercitazioni Matlab\E2_Angoli_Eulero" OK
+7. Conversione In .mlx OK
+8. Spostamento In Notebook Aggiornati OK
+
+E3_1_CinematicaDirettaManipolatoreSfericoTipoI
+1. Apertura OK
+2. Cancellazione Output OK
+3. Esecuzione: OK
+4. Creazione Cartella E3_1_Images OK
+5. Esportazione Immagini In E3_1_Images OK
+6. Sostituzione Cartella E3_1_Images In "Esercitazioni Matlab\E3_1_CinematicaDirettaManipolatoreSfericoTipoI" OK
+7. Conversione In .mlx OK
+8. Spostamento In Notebook Aggiornati OK
+
+E3_2_CinematicaDirettaManipolatoreSCARA
+1. Apertura OK
+2. Cancellazione Output OK
+3. Esecuzione: OK
+4. Creazione Cartella E3_2_Images OK
+5. Esportazione Immagini In E3_2_Images OK
+6. Sostituzione Cartella E3_2_Images In "Esercitazioni Matlab\E3_2_CinematicaDirettaManipolatoreSCARA" OK
+7. Conversione In .mlx OK
+8. Spostamento In Notebook Aggiornati OK
+
+E3_3_CinematicaDirettaManipolatoreAntropomorfo
+1. Apertura OK
+2. Cancellazione Output OK
+3. Esecuzione: OK
+4. Creazione Cartella E3_3_Images OK
+5. Esportazione Immagini In E3_3_Images OK
+6. Sostituzione Cartella E3_3_Images In "Esercitazioni Matlab\E3_3_CinematicaDirettaManipolatoreAntropomorfo" OK
+7. Conversione In .mlx OK
+8. Spostamento In Notebook Aggiornati OK
+
+E3_4_CinematicaDirettaManipolatoreSfericoTipoII
+1. Apertura OK
+2. Cancellazione Output OK
+3. Esecuzione: OK
+4. Creazione Cartella E3_4_Images OK
+5. Esportazione Immagini In E3_4_Images OK
+6. Sostituzione Cartella E3_4_Images In "Esercitazioni Matlab\E3_4_CinematicaDirettaManipolatoreSfericoTipoII" OK
+7. Conversione In .mlx OK
+8. Spostamento In Notebook Aggiornati OK
+
+E3_5_CinematicaDirettaPolsoSferico
+1. Apertura OK
+2. Cancellazione Output OK
+3. Esecuzione: OK
+4. Creazione Cartella E3_5_Images OK
+5. Esportazione Immagini In E3_5_Images OK
+6. Sostituzione Cartella E3_5_Images In "Esercitazioni Matlab\E3_5_CinematicaDirettaPolsoSferico" OK
+7. Conversione In .mlx OK
+8. Spostamento In Notebook Aggiornati OK
+
+E3_6_1_CinematicaDirettaManipolatoreStanford
+1. Apertura OK
+2. Cancellazione Output OK
+3. Esecuzione: OK
+4. Creazione Cartella E3_6_1_Images OK
+5. Esportazione Immagini In E3_6_1_Images OK
+6. Sostituzione Cartella E3_6_1_Images In "Esercitazioni Matlab\E3_6_1_CinematicaDirettaManipolatoreStanford" OK
+7. Conversione In .mlx OK
+8. Spostamento In Notebook Aggiornati OK
+
+E3_6_2_1_DisaccoppiamentoPolsoStrutturaPortante
+1. Apertura OK
+2. Cancellazione Output OK
+3. Esecuzione: OK
+4. Creazione Cartella E3_6_2_Images N/A (Nessuna figura prevista)
+7. Conversione In .mlx OK
+8. Spostamento In Notebook Aggiornati OK
+
+E4_CinematicaInversaSpaziOperativiManipolatoreRRR
+1. Apertura OK
+2. Cancellazione Output OK
+3. Esecuzione: OK
+4. Creazione Cartella E4_Images OK
+5. Esportazione Immagini In E4_Images OK
+6. Sostituzione Cartella E4_Images In "Esercitazioni Matlab\E4_CinematicaInversaSpaziOperativiManipolatoreRRR" OK
+7. Conversione In .mlx OK
+8. Spostamento In Notebook Aggiornati OK
+
+E5_CinematicaInversaManipolatoreStanford
+1. Apertura OK
+2. Cancellazione Output OK
+3. Esecuzione: OK
+4. Creazione Cartella E5_Images OK
+5. Esportazione Immagini In E5_Images OK
+6. Sostituzione Cartella E5_Images In "Esercitazioni Matlab\E5_CinematicaInversaManipolatoreStanford" OK
+7. Conversione In .mlx OK
+8. Spostamento In Notebook Aggiornati OK
+
+E6_RelazioneVettoreVelocitaAngoliEulero
+1. Apertura OK
+2. Cancellazione Output OK
+3. Esecuzione: OK
+4. Creazione Cartella E6_Images N/A (Nessuna figura prevista)
+7. Conversione In .mlx OK
+8. Spostamento In Notebook Aggiornati OK
+
+E7_CodiceCalcoloJacobianoGeometrico
+1. Apertura OK
+2. Cancellazione Output OK
+3. Esecuzione: OK
+4. Creazione Cartella E7_Images N/A (Nessuna figura prevista)
+7. Conversione In .mlx OK
+8. Spostamento In Notebook Aggiornati OK
+
+E8_AnalisiMobilitaRRRPlanare
+1. Apertura OK
+2. Cancellazione Output OK
+3. Esecuzione: OK
+4. Creazione Cartella E8_Images OK
+5. Esportazione Immagini In E8_Images OK
+6. Sostituzione Cartella E8_Images In "Esercitazioni Matlab\E8_AnalisiMobilitàRRRPlanare" OK
+7. Conversione In .mlx OK
+8. Spostamento In Notebook Aggiornati OK
+
+E9_AlgoritmoNewtonEGradiente
+1. Apertura OK
+2. Cancellazione Output OK
+3. Esecuzione: OK
+4. Creazione Cartella E9_Images OK
+5. Esportazione Immagini In E9_Images OK
+6. Sostituzione Cartella E9_Images In "Esercitazioni Matlab\E9_AlgoritmoNewtonEGradiente" OK
+7. Conversione In .mlx OK
+8. Spostamento In Notebook Aggiornati OK

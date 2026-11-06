@@ -1,0 +1,729 @@
+﻿\documentclass[11pt, a4paper]{article}
+
+%---------------------------------------------------------
+% Lingua E Codifica
+%---------------------------------------------------------
+\usepackage[italian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{soul}
+\usepackage{csquotes}
+
+%---------------------------------------------------------
+% Layout Di Pagina E Tipografia
+%---------------------------------------------------------
+\usepackage[margin=2cm, top=1.5cm, bottom=1.5cm]{geometry}
+\usepackage{parskip}
+\usepackage{microtype}
+
+%---------------------------------------------------------
+% Gestione Dei Colori
+%---------------------------------------------------------
+\usepackage[table]{xcolor}
+\definecolor{darkgreen}{RGB}{0,100,0}
+
+%---------------------------------------------------------
+% Matematica E Simboli
+%---------------------------------------------------------
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{mathtools}
+\usepackage{siunitx}
+
+% BB OTTIMIZZAZIONE MATRICI LUNGHE PER LA STAMPA
+\setlength{\arraycolsep}{10pt}
+\usepackage{bm}
+\usepackage{arydshln}
+
+
+%---------------------------------------------------------
+% Grafica, Immagini E Tabelle
+%---------------------------------------------------------
+\usepackage{graphicx}
+\graphicspath{{./Images/Introduction/}}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, patterns, angles, quotes, calc}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+
+%---------------------------------------------------------
+% Link, Riferimenti Ed Elenchi
+%---------------------------------------------------------
+\usepackage[unicode]{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+    citecolor=blue,
+    pdftitle={Capitolo 1 - Introduction},
+    pdfauthor={Francesco Lo Verde},
+    pdfpagemode=FullScreen,
+}
+\usepackage{bookmark}
+\usepackage{enumitem}
+\setlist{noitemsep}
+
+%---------------------------------------------------------
+% Personalizzazione Titoli E Altri Pacchetti
+%---------------------------------------------------------
+\usepackage{titlesec}
+\titleformat{\section}{\normalfont\LARGE\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\Large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalfont\large\bfseries}{\thesubsubsection}{1em}{}
+
+\usepackage{comment}
+\newtheorem{theorem}{Definizione}
+
+% Pacchetto per gli algoritmi
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+
+\SetKwData{Dati}{Input}
+\SetKwData{Risultato}{Output}
+\SetKwFor{For}{for}{do}{endfor}
+\SetKwComment{Commento}{// }{}
+
+\author{Francesco Lo Verde}
+\begin{document}
+\section{Informazioni Generali Sul Corso}
+
+Il corso di \textbf{Deep Learning and Robot Perception} è tenuto dal docente \textbf{Gabriele Costante}. Per qualsiasi necessità di chiarimento o supporto durante lo studio delle tematiche affrontate, il docente riceve gli studenti durante l'orario di ufficio fissato il lunedì dalle ore 16:30 alle ore 18:30, oppure in altri orari previo appuntamento da concordare via email scrivendo all'indirizzo \href{mailto:gabriele.costante@unipg.it}{gabriele.costante@unipg.it}. Gli interessi di ricerca del docente si concentrano principalmente sui settori della \emph{computer vision}, del \emph{machine learning}, del \emph{deep learning} e della percezione robotica.
+
+% [IMMAGINE] Esempi visivi di robotica e deep learning (rilevamento di persone, SLAM visivo, stima della posa, navigazione attiva) — Slide 1 / Pagina 1 del PDF
+
+\newpage
+
+\subsection{Syllabus Del Corso}
+
+L'organizzazione del programma didattico varia in base al percorso di studi dello studente, differenziandosi tra il curriculum in \textbf{Data Science + Robotics} (che prevede l'acquisizione di 6 CFU, corrispondenti a 48 ore di lezione) e il curriculum interamente dedicato alla \textbf{Robotics} (che prevede 9 CFU, equivalenti a 72 ore di lezione complessive). Entrambi i percorsi integrano le lezioni teoriche con apposite sessioni di laboratorio pratico.
+
+La prima parte del programma, comune a entrambi i curricula, introduce i fondamenti della disciplina partendo dall'introduzione alla \textbf{Computer Vision} e coprendo le tecniche classiche di elaborazione e analisi delle immagini. Si affrontano argomenti cardine quali:
+\begin{itemize}[noitemsep]
+    \item Il filtraggio delle immagini (\emph{image filtering}).
+    \item L'estrazione di caratteristiche salienti (\emph{image features}).
+    \item La descrizione e l'accoppiamento di tali caratteristiche (\emph{feature descriptor and matching}).
+    \item Le trasformazioni geometriche d'immagine e l'algoritmo \textbf{RANSAC} per la stima robusta dei parametri del modello in presenza di dati aberranti (\emph{outliers}).
+    \item La geometria stereoscopica (\emph{stereo geometry}).
+\end{itemize}
+
+Successivamente, il corso introduce l'intersezione tra l'apprendimento automatico e la visione artificiale, ripercorrendo i concetti introduttivi del \textbf{Machine Learning} applicato alla visione. Vengono analizzati classificatori classici come il classificatore a vicinato più vicino (\emph{Nearest Neighbor}), i classificatori lineari, le macchine a vettori di supporto (\textbf{SVM}) e le reti neurali artificiali di base.
+
+La trattazione si sposta quindi sulle moderne metodologie di \textbf{Deep Learning}, approfondendo in modo estensivo:
+\begin{itemize}[noitemsep]
+    \item Le reti neurali convoluzionali (\textbf{CNN}) e le principali architetture di rete convoluzionali (\emph{CNN Architectures}).
+    \item Le reti neurali ricorrenti per la gestione di dati sequenziali, analizzando i modelli \textbf{RNN}, \textbf{LSTM} e \textbf{GRU}.
+    \item L'applicazione delle CNN nei principali task di computer vision, tra cui il rilevamento di oggetti (\emph{detection}), la segmentazione semantica (\emph{segmentation}) e il riconoscimento visivo (\emph{recognition}).
+    \item Le applicazioni non supervisionate delle reti neurali convoluzionali (\emph{unsupervised applications of CNN}).
+    \item I meccanismi di attenzione (\emph{Attention Mechanism}) e l'architettura dei \textbf{Transformers}.
+    \item L'estensione dei modelli ad attenzione al dominio visivo mediante i \textbf{Vision Transformers} (ViT).
+\end{itemize}
+
+Per gli studenti iscritti al curriculum \textbf{Robotics} (9 CFU), il percorso formativo si estende ulteriormente per includere lo studio dell'apprendimento per rinforzo, approfondendo le seguenti tematiche avanzate:
+\begin{itemize}[noitemsep]
+    \item L'apprendimento per rinforzo classico (\textbf{Reinforcement Learning}).
+    \item L'apprendimento per rinforzo profondo (\textbf{Deep Reinforcement Learning}).
+    \item I metodi di approssimazione del valore (\emph{Value approximation methods}).
+    \item I metodi basati sul gradiente della politica (\emph{Policy Gradient Methods}).
+\end{itemize}
+
+Anche questa sezione avanzata è accompagnata da specifiche sessioni di laboratorio finalizzate alla messa in pratica degli algoritmi studiati.
+
+\newpage
+
+\subsection{Modalità Di Esame E Progetto}
+
+La verifica dell'apprendimento si compone di due parti integrate tra loro: una prova orale e lo svolgimento di un progetto basato su una sfida di apprendimento profondo (\textbf{deep learning challenge}).
+
+L'esame orale prevede domande mirate sulle tematiche discusse durante il corso, seguite da una discussione critica sul progetto svolto dallo studente.
+Il progetto consiste in una sfida focalizzata su un compito specifico e su un relativo dataset, che verranno presentati e distribuiti durante le prime settimane del corso. Ciascuno studente riceverà l'accesso a un set di addestramento (\emph{training set}) per sviluppare e addestrare il proprio modello. Durante lo svolgimento del corso, è possibile sottomettere periodicamente i modelli addestrati al docente, il quale provvederà a valutarli su un set di test separato (\emph{test set}). I risultati di queste valutazioni periodiche saranno pubblicati su una pagina web dedicata, mostrando una classifica generale aggiornata. Non vi è alcun limite al numero di sottomissioni o tentativi che uno studente può effettuare per migliorare le prestazioni del proprio modello.
+
+% [IMMAGINE] Esempio di pubblicazione scientifica sulla stima del movimento ego-motion con CNN (Exploring Representation Learning with CNNs for Frame to Frame Ego-Motion Estimation) — Slide 4 / Pagina 4 del PDF
+
+Ai fini dell'esame, lo studente deve preparare una breve relazione tecnica (di 2-3 pagine) in cui viene illustrata dettagliatamente la strategia implementata per affrontare la sfida. La posizione ottenuta in classifica \textbf{non influisce sul voto finale} dell'esame; tuttavia, la sottomissione di almeno un modello funzionante è un requisito obbligatorio per poter sostenere la prova orale, in quanto la strategia adottata costituirà oggetto di discussione. La relazione può essere scritta indifferentemente in lingua italiana o inglese e deve essere inviata al docente via email almeno un giorno prima dell'esame orale. Oltre alla relazione tecnica, in sede d'esame verrà valutato anche il codice sorgente del software sviluppato.
+
+\subsection{Framework E Strumenti Consigliati}
+
+Per lo sviluppo del progetto d'esame, lo studente può avvalersi di diversi framework di sviluppo ampiamente utilizzati sia in ambito accademico che industriale:
+\begin{itemize}[noitemsep]
+    \item \textbf{TensorFlow} (\href{https://www.tensorflow.org/}{tensorflow.org}) e \textbf{Keras} (\href{https://keras.io/}{keras.io}), basati su linguaggio Python.
+    \item \textbf{PyTorch} (\href{http://pytorch.org/}{pytorch.org}), anch'esso basato su Python e caratterizzato da un approccio a grafi dinamici molto flessibile.
+    \item \textbf{Caffe} (\href{http://caffe.berkeleyvision.org/}{caffe.berkeleyvision.org}), implementato in C++ con interfacce Python, storicamente rilevante per le applicazioni di visione.
+    \item \textbf{OpenCV} (\href{https://opencv.org/}{opencv.org}), libreria fondamentale scritta in C++ con un'ottima interfaccia Python, impiegata per l'elaborazione classica delle immagini.
+    \item \textbf{VLFeat} (\href{http://www.vlfeat.org/}{vlfeat.org}), libreria scritta per ambiente MATLAB incentrata su algoritmi classici di estrazione e accoppiamento di caratteristiche.
+    \item \textbf{MatconvNet} (\href{http://www.vlfeat.org/matconvnet/}{vlfeat.org/matconvnet}), estensione di VLFeat che consente l'implementazione e l'addestramento di reti neurali convoluzionali all'interno dell'ambiente MATLAB.
+\end{itemize}
+
+% [IMMAGINE] Loghi dei principali framework consigliati (TensorFlow, PyTorch, Caffe, OpenCV, VLFeat) — Slide 5 / Pagina 5 del PDF
+
+\subsection{Materiale Didattico Di Riferimento}
+
+Per integrare le slide fornite a lezione, lo studente può consultare i seguenti testi scientifici di riferimento:
+\begin{itemize}[noitemsep]
+    \item Richard Szeliski, \emph{Computer Vision: Algorithms and Applications}, disponibile gratuitamente online all'indirizzo \href{http://szeliski.org/Book/}{szeliski.org/Book/}.
+    \item Ian Goodfellow, Yoshua Bengio e Aaron Courville, \emph{Deep Learning}, edito da MIT Press e consultabile online all'indirizzo \href{http://www.deeplearningbook.org/}{deeplearningbook.org}.
+    \item Christopher Bishop, \emph{Pattern Recognition and Machine Learning}, edito da Springer.
+    \item Richard Hartley e Andrew Zisserman, \emph{Multiple View Geometry in Computer Vision}, edito da Cambridge University Press, testo fondamentale per la modellazione geometrica prospettica.
+    \item Ramesh Jain, Rangachar Kasturi e Brian G. Schunck, \emph{Machine Vision}, pubblicato da McGraw-Hill nel 1995 (ISBN 0-07-032018-7).
+\end{itemize}
+
+% [IMMAGINE] Copertina del libro "Computer Vision: Algorithms and Applications" di Szeliski e "Deep Learning" di Goodfellow et al. — Slide 6 / Pagina 6 del PDF
+
+% [IMMAGINE] Copertina del libro "Pattern Recognition and Machine Learning" di Bishop e "Multiple View Geometry in Computer Vision" di Hartley e Zisserman — Slide 7 / Pagina 7 del PDF
+
+% [IMMAGINE] Copertina del libro "Machine Vision" di Jain, Kasturi e Schunck — Slide 8 / Pagina 8 del PDF
+
+Oltre ai libri di testo, si consiglia vivamente di consultare il materiale didattico e le dispense fornite sulla piattaforma d'ateneo \textbf{UNISTUDIUM} e di seguire le lezioni del noto corso online dell'Università di Stanford \textbf{CS231n: Convolutional Neural Networks for Visual Recognition}, accessibile pubblicamente all'indirizzo \href{http://cs231n.stanford.edu/}{cs231n.stanford.edu}.
+
+\subsection{Requisiti E Prerequisiti Del Corso}
+
+Per poter seguire proficuamente le lezioni del corso di \emph{Deep Learning and Robot Perception}, si assumono come noti i seguenti prerequisiti metodologici e tecnologici:
+\begin{itemize}[noitemsep]
+    \item Conoscenza pratica dei linguaggi di programmazione \textbf{C/C++}, \textbf{Python} e dell'ambiente \textbf{MATLAB}.
+    \item Nozioni fondamentali di \textbf{algebra lineare} (vettori, matrici, trasformazioni geometriche).
+    \item Fondamenti di \textbf{machine learning} (già acquisiti nel percorso di studio precedente).
+\end{itemize}
+
+Si sottolinea esplicitamente che il corso \textbf{non presuppone alcuna esperienza pregressa nel campo dell'imaging}, dell'elaborazione delle immagini, della computer vision o della grafica computerizzata. Tutti i concetti fondamentali legati alla rappresentazione ed elaborazione dei dati visivi saranno introdotti da zero durante le lezioni.
+
+\newpage
+
+\section{Introduzione Alla Visione Artificiale}
+
+La visione artificiale (\textbf{Computer Vision}) è una disciplina scientifica che si propone di emulare le capacità del sistema visivo umano per consentire a un elaboratore elettronico di comprendere il contenuto di immagini statiche o sequenze video.
+
+Se per un essere umano l'interpretazione visiva di una scena è un processo immediato e intuitivo, per un calcolatore questa operazione rappresenta un problema di elevatissima complessità. Per comprendere la natura di questa disparità, si consideri la capacità naturale del sistema visivo umano di effettuare operazioni complesse quali:
+\begin{itemize}[noitemsep]
+    \item \textbf{Segmentare} un oggetto d'interesse (ad esempio, un fiore) separandolo in modo netto dallo sfondo circostante.
+    \item Interpretare correttamente le \textbf{variazioni cromatiche} e di luminosità dovute alla presenza di ombre, riflessi o altre interferenze ambientali, senza alterare la percezione della vera natura o del colore dell'oggetto.
+    \item Distinguere e riconoscere diverse entità visive anche in presenza di forti fenomeni di \textbf{auto-occlusione} (ovvero quando parti dell'oggetto stesso ne nascondono altre).
+\end{itemize}
+
+% [IMMAGINE] Esempio di fiore (iris viola) e della classica foto dell'incidente ferroviario a La Gare Montparnasse (1895) — Slide 12 / Pagina 12 del PDF
+
+L'obiettivo ultimo della visione artificiale risiede proprio nel \hl{ricostruire e comprendere la storia sottesa a un'immagine o a un video}. Questo processo richiede l'estrazione e la decodifica di svariate proprietà della scena analizzata, che includono:
+\begin{itemize}[noitemsep]
+    \item La \textbf{geometria tridimensionale} (\emph{3D shape}) della scena e degli oggetti che la compongono.
+    \item I \textbf{nomi degli oggetti} presenti (persone, veicoli, elementi strutturali o naturali), associando a ogni porzione visiva una specifica etichetta semantica.
+    \item La comprensione dinamica della scena, ovvero determinare \hl{cosa sia accaduto o cosa stia accadendo} nel tempo all'interno del flusso visivo.
+\end{itemize}
+
+Questo processo di astrazione può essere suddiviso in diverse sotto-problematiche o compiti fondamentali, tra i quali spiccano:
+\begin{itemize}[noitemsep]
+    \item \textbf{Ricostruzione 3D e stima della profondità} (\emph{3D Reconstruction/Depth Estimation}): determinare la distanza spaziale di ciascun punto della scena rispetto al sensore visivo.
+    \item \textbf{Segmentazione} (\emph{Segmentation}): partizionare l'immagine in regioni omogenee dal punto di vista semantico o geometrico.
+    \item \textbf{Rilevamento e riconoscimento di oggetti} (\emph{Object Detection and Recognition}): identificare la presenza e la localizzazione spaziale di specifiche categorie di oggetti all'interno dell'inquadratura.
+    \item \textbf{Classificazione della scena} (\emph{Scene Classification}): assegnare un'etichetta globale all'intera immagine per descrivere l'ambiente rappresentato (ad esempio, classificare un'immagine come un ambiente boschivo).
+\end{itemize}
+
+% [IMMAGINE] Esempio di scomposizione semantica di un'immagine di una foresta al tramonto (fogliame, fiume, rocce, tronco, profondità) — Slide 13 / Pagina 13 del PDF
+
+\newpage
+
+\section{La Visione Umana E Le Sue Peculiarità}
+
+Per poter sviluppare algoritmi robusti di visione artificiale, è essenziale comprendere le dinamiche e i limiti biologici del sistema visivo umano, che funge da modello di riferimento per le prestazioni che si desiderano raggiungere.
+
+Un primo quesito fondamentale riguarda la natura del nostro sistema sensoriale binoculare: \hl{perché l'essere umano è dotato di due occhi?} La risposta risiede nella necessità di percepire la profondità dello spazio circostante. Grazie alla disparità geometrica tra le immagini proiettate sulle due retine, il cervello è in grado di triangolare la posizione spaziale dei punti nello spazio tridimensionale. Questo concetto, contrapposto idealmente alla visione monoculare (esemplificata nella cultura classica dal mito dei Ciclopi contrapposti a Odisseo), è alla base della stereovisione e della moderna robotica mobile.
+
+% [IMMAGINE] Illustrazione del Ciclope e di Odisseo a confronto per la visione binoculare — Slide 14 / Pagina 14 del PDF
+
+Una delle caratteristiche più straordinarie del sistema percettivo umano è la sua capacità di dedurre una grande quantità di informazioni semantiche e strutturali partendo da dati estremamente limitati, degradati o a bassissima risoluzione. Ad esempio, gli esseri umani riescono a riconoscere contesti e soggetti anche in presenza di immagini composte da pochissimi pixel, come dimostrato storicamente dalle ricerche sulla categorizzazione visiva condotte su dataset ridotti (noti come \enquote{80 million tiny images}).
+
+% [IMMAGINE] Immagine fortemente sgranata e a bassissima risoluzione che mostra comunque figure umane riconoscibili nel contesto — Slide 15 / Pagina 15 del PDF
+
+Questa straordinaria capacità interpretativa si basa sull'utilizzo sistematico del \textbf{contesto} e di forti assunzioni a priori sulla struttura del mondo reale. Tuttavia, questo stesso meccanismo può indurre il cervello in errore, portando a interpretazioni errate se i dati visivi violano le nostre aspettative logiche o se le immagini sono appositamente progettate per sfruttare le debolezze percettive.
+
+Ad esempio, si consideri come un'immagine sfocata in cui una persona tiene un oggetto vicino all'orecchio venga istintivamente interpretata come un uomo che parla al telefono; qualora l'immagine venga resa nitida, si scopre invece che l'oggetto impugnato è in realtà una scarpa. Il cervello, guidato dall'associazione contestuale (un uomo che tiene un oggetto rettangolare scuro vicino all'orecchio solitamente sta telefonando), compie un'inferenza probabilistica scorretta a causa della bassa risoluzione del segnale in ingresso.
+
+% [IMMAGINE] Confronto tra un'immagine sfocata (uomo che sembra parlare al telefono) e la stessa immagine nitida (l'uomo ha una scarpa all'orecchio) — Slide 16 / Pagina 16 del PDF
+
+Un altro esempio emblematico del funzionamento interpretativo della visione umana è rappresentato dalle \textbf{illusioni ottiche}, tra le quali la celebre \emph{Checker Shadow Illusion} di Edward H. Adelson. In questa illusione, due quadrati di una scacchiera (uno in piena luce e uno all'interno dell'ombra proiettata da un cilindro verde) appaiono all'occhio umano con due tonalità di grigio nettamente differenti (uno chiaro e uno scuro). In realtà, i due quadrati possiedono esattamente la stessa intensità di grigio e riflettono la medesima quantità di luce fisica verso l'osservatore. Il cervello umano, tuttavia, compensa automaticamente l'effetto dell'ombra proiettata dal cilindro, interpretando il quadrato nell'ombra come più chiaro di quanto non sia in realtà per mantenere la costanza di colore e la coerenza logica della scacchiera.
+
+% [IMMAGINE] La celebre illusione ottica della scacchiera "Checker Shadow Illusion" di Edward H. Adelson — Slide 17 / Pagina 17 del PDF
+
+\newpage
+
+\section{Dalla Visione Umana Alla Visione Artificiale}
+
+Il passaggio dall'analisi visiva biologica alla modellazione computazionale richiede la formalizzazione matematica del processo percettivo. Quando un essere umano osserva un ambiente, non si limita a registrarne i dettagli superficiali, ma ne costruisce una rappresentazione geometrica e semantica coerente (ad esempio, individuando la presenza di una sedia, di un tavolo e calcolandone la disposizione spaziale).
+
+% [IMMAGINE] Rappresentazione visiva di una stanza in 2D e la sua ricostruzione 3D semantica con sedia e tavolo evidenziati — Slide 18 / Pagina 18 del PDF
+
+La transizione strutturale dall'immagine fisica all'interpretazione logica può essere modellata come una catena di elaborazione parallela tra il sistema biologico e quello artificiale:
+
+\begin{align*}
+    \text{\textbf{Uomo: }} & \text{Immagine} \longrightarrow \underbrace{\text{Occhio}}_{\text{Sensing Device}} \longrightarrow \underbrace{\text{Cervello (Elaboratore)}}_{\text{Interpreting Device}} \longrightarrow \text{Interpretazione} \\
+    \text{\textbf{Macchina: }} & \text{Immagine} \longrightarrow \underbrace{\text{Telecamera}}_{\text{Sensing Device}} \longrightarrow \underbrace{\text{Processore / GPU}}_{\text{Interpreting Device}} \longrightarrow \text{Interpretazione}
+\end{align*}
+
+In entrambi i casi, l'obiettivo finale è mappare il segnale luminoso catturato in una serie di etichette astratte e coordinate spaziali che descrivono coerentemente l'ambiente (come \enquote{giardino}, \enquote{primavera}, \enquote{ponte}, \enquote{acqua}, \enquote{alberi}, ecc.).
+
+% [IMMAGINE] Schema a blocchi che confronta la catena di sensing e interpretazione tra occhio/cervello umano e telecamera/microprocessore artificiale — Slide 19 / Pagina 19 del PDF
+
+Tuttavia, mentre per l'essere umano l'immagine rappresenta direttamente un insieme di oggetti dotati di significato, per il calcolatore l'immagine non è altro che una matrice bidimensionale di numeri interi, corrispondenti alle intensità dei pixel. Ad esempio, un'immagine in bianco e nero viene letta dal computer come una griglia di valori numerici (solitamente compresi tra 0 e 255 per una codifica a 8 bit), dove ogni numero rappresenta la luminosità locale.
+
+% [IMMAGINE] Immagine dell'incidente ferroviario affiancata da una matrice numerica che esemplifica la griglia di intensità dei pixel — Slide 20 / Pagina 20 del PDF
+
+Questa profonda differenza di astrazione solleva una questione fondamentale: \hl{può il computer eguagliare la percezione umana?} La risposta non è univoca e dipende strettamente dalla natura dell'applicazione considerata:
+\begin{itemize}[noitemsep]
+    \item I computer tendono a mostrare prestazioni superiori o estremamente veloci nell'affrontare compiti definiti tradizionalmente \enquote{semplici} da un punto di vista computazionale (come il conteggio esatto dei pixel, il calcolo di statistiche d'immagine o il rilevamento di pattern geometrici ad altissimo contrasto).
+    \item Gli esseri umani rimangono nettamente superiori nell'affrontare compiti \enquote{difficili} che richiedono un'elevata capacità di astrazione, comprensione del contesto semantico globale, gestione di forti ambiguità geometriche o interpretazione di scene complesse mai viste in precedenza.
+\end{itemize}
+
+\newpage
+
+\section{Storia E Obiettivi Della Visione Artificiale}
+
+La nascita della visione artificiale come disciplina scientifica autonoma viene storicamente fatta risalire a un celebre progetto estivo di ricerca studentesca avviato presso il Massachusetts Institute of Technology (\textbf{MIT}) nel 1966.
+
+Il pioniere dell'intelligenza artificiale \textbf{Marvin Minsky} propose a un suo studente universitario di associare una telecamera a un calcolatore elettronico, ipotizzando che la risoluzione del problema di far descrivere al computer ciò che vedeva potesse essere completata nell'arco di una singola estate di lavoro. Questo aneddoto testimonia come, all'epoca, la complessità intrinseca della percezione visiva fosse ampiamente sottostimata.
+
+% [IMMAGINE] Documento originale del MIT "The Summer Vision Project" redatto da Seymour Papert nel luglio 1966 — Slide 22 / Pagina 22 del PDF
+
+Nei decenni successivi, la disciplina ha attraversato una profonda evoluzione teorica e metodologica, schematizzabile attraverso una linea temporale che ne evidenzia i principali filoni di ricerca:
+\begin{itemize}[noitemsep]
+    \item \textbf{Anni '70}: Elaborazione digitale delle immagini, modelli a blocchi (\emph{blocks world}), etichettatura delle linee (\emph{line labeling}), cilindri generalizzati (\emph{generalized cylinders}), strutture pittoriche (\emph{pictorial structures}), corrispondenza stereoscopica (\emph{stereo correspondence}), immagini intrinseche (\emph{intrinsic images}).
+    \item \textbf{Anni '80}: Flusso ottico (\emph{optical flow}), struttura dal movimento (\emph{structure from motion}), piramidi d'immagine (\emph{image pyramids}), elaborazione nello spazio delle scale (\emph{scale-space processing}), forma dall'ombreggiatura (\emph{shape from shading}), analisi della trama e della messa a fuoco (\emph{texture and focus}), modellazione fisica (\emph{physically-based modeling}), regolarizzazione, campi casuali di Markov (\textbf{MRF}), filtri di Kalman.
+    \item \textbf{Anni '90}: Elaborazione di dati di intervallo 3D (\emph{3D range data processing}), invarianti proiettivi (\emph{projective invariants}), fattorizzazione (\emph{factorization}), visione basata sulla fisica (\emph{physics-based vision}), tagli dei grafi (\emph{graph cuts}), filtraggio particellare (\emph{particle filtering}), segmentazione basata sull'energia, rilevamento e riconoscimento dei volti (\emph{face recognition and detection}), metodi a sottospazi (\emph{subspace methods}).
+    \item \textbf{Anni 2000}: Modellazione e resa basata sulle immagini (\emph{image-based modeling and rendering}), sintesi di trame e inpainting (\emph{texture synthesis and inpainting}), fotografia computazionale, riconoscimento basato su caratteristiche locali, algoritmi di inferenza MRF, riconoscimento di categorie di oggetti e introduzione pervasiva dell'apprendimento automatico (\emph{learning}).
+\end{itemize}
+
+% [IMMAGINE] Linea temporale degli sviluppi della Computer Vision dal 1970 al 2000+ — Slide 23 / Pagina 23 del PDF
+
+\newpage
+
+\subsection{I Grandi Obiettivi Della Disciplina}
+
+Le diverse tappe evolutive della computer vision convergono verso quattro macro-obiettivi fondamentali, che rappresentano i pilastri applicativi e di ricerca della materia:
+
+\subsubsection{Calcolo Della Forma 3D Del Mondo}
+L'obiettivo è stimare la struttura tridimensionale dell'ambiente a partire da proiezioni bidimensionali. Questa tecnologia è di vitale importanza per la navigazione dei robot mobili, come i rover impiegati nelle missioni spaziali marziane, e per i sistemi di scansione e modellazione 3D dei volti o degli oggetti fisici.
+
+% [IMMAGINE] Esempi di ricostruzione 3D, profondità d'immagine e modello del Mars Rover — Slide 24 / Pagina 24 del PDF
+
+\subsubsection{Riconoscimento Di Oggetti E Persone}
+Consiste nell'individuare e categorizzare la presenza di elementi semantici complessi all'interno delle scene. Il sistema deve essere in grado di apporre etichette locali precise, distinguendo ad esempio il cielo (\emph{sky}), gli edifici (\emph{building}), le bandiere (\emph{flag}), le scritte (\emph{banner}), i volti (\emph{face}), i lampioni (\emph{street lamp}), i veicoli (\emph{cars, bus}) e le pareti (\emph{wall}).
+
+% [IMMAGINE] Immagine di Piazza Tiananmen a Pechino con etichettatura semantica automatica sovrapposta — Slide 25 e 26 / Pagine 25 e 26 del PDF
+
+\subsubsection{Miglioramento E Restauro Delle Immagini}
+Sotto questa categoria ricadono le operazioni volte a migliorare la qualità visiva dei dati acquisiti. Due delle principali metodologie sono:
+\begin{itemize}[noitemsep]
+    \item La \textbf{super-risoluzione e il denoising} (\emph{super-resolution/denoising}), utilizzate per ricostruire dettagli ad alta frequenza da immagini a bassa risoluzione o per eliminare il rumore introdotto dai sensori.
+    \item L' \textbf{inpainting o completamento d'immagine} (\emph{inpainting/image completion}), mirato a riempire in modo plausibile e coerente porzioni di immagine mancanti o rimosse dall'utente.
+\end{itemize}
+
+% [IMMAGINE] Esempio di super-risoluzione applicata alla targa di un'automobile — Slide 27 / Pagina 27 del PDF
+
+% [IMMAGINE] Processo di inpainting per il riempimento coerente di una porzione di paesaggio costiero — Slide 28 / Pagina 28 del PDF
+
+\subsubsection{Forensics E Analisi Dei Riflessi}
+Questa branca avanzata sfrutta le proprietà fisiche dell'ottica e della riflettanza per estrarre informazioni nascoste o non direttamente visibili nell'inquadratura. Un esempio pionieristico è rappresentato dalle ricerche denominate \enquote{Eyes for Relighting}, capaci di ricostruire l'ambiente tridimensionale circostante analizzando esclusivamente i riflessi microscopici presenti sulla cornea dell'occhio umano fotografato.
+
+% [IMMAGINE] Sequenza di immagini che mostra la cornea di un occhio e la ricostruzione dell'ambiente riflesso (forensics) — Slide 29 / Pagina 29 del PDF
+
+\newpage
+
+\section{Motivazioni E Applicazioni Industriali}
+
+La forte spinta alla ricerca e allo sviluppo nell'ambito della computer vision e del deep learning è alimentata da ragioni sia di carattere tecnologico-economico (l'esplosione dei Big Data) sia di carattere scientifico (l'interdisciplinarietà).
+
+Ogni giorno vengono catturate e condivise miliardi di immagini sui canali digitali. Già nel 2014, i dati di mercato stimavano il caricamento e la condivisione di oltre 1,8 miliardi di foto giornaliere su piattaforme come Flickr, Snapchat, Instagram, Facebook e WhatsApp. Questa mole immensa di dati non strutturati rende impensabile qualsiasi forma di catalogazione manuale, imponendo lo sviluppo di algoritmi in grado di effettuare una comprensione semantica automatica ed efficiente su larga scala.
+
+% [IMMAGINE] Grafico KPCB sulla crescita del numero quotidiano di foto caricate online dal 2005 al 2014 — Slide 31 / Pagina 31 del PDF
+
+Da un punto di vista scientifico, la visione artificiale rappresenta un campo fortemente \textbf{interdisciplinare}, posizionandosi all'intersezione di diverse aree di studio:
+\begin{itemize}[noitemsep]
+    \item \textbf{Biologia} e \textbf{Psicologia} (per la comprensione della neuroscienza visiva e delle scienze cognitive).
+    \item \textbf{Ingegneria} (con particolare riferimento alla robotica, all'elaborazione dei segnali e ai sistemi di controllo).
+    \item \textbf{Fisica} (per la modellazione della propagazione della luce, dell'ottica e dei sensori).
+    \item \textbf{Matematica} e \textbf{Computer Science} (per l'ottimizzazione, l'algebra lineare, la modellazione geometrica, la computer grafica e la ricerca di informazioni).
+    \item \textbf{Machine Learning} (per la progettazione di modelli statistici in grado di apprendere direttamente dai dati).
+\end{itemize}
+
+% [IMMAGINE] Diagramma di Venn che mostra l'interdisciplinarietà della Computer Vision collegata a matematica, ingegneria, biologia e computer science — Slide 32 / Pagina 32 del PDF
+
+\subsection{Esempi Di Applicazioni Di Successo}
+
+Il percorso evolutivo della visione artificiale ha portato allo sviluppo di molteplici applicazioni industriali e commerciali ad alto impatto tecnologico:
+
+\subsubsection{Optical Character Recognition (OCR)}
+Il riconoscimento automatico dei caratteri tipografici e manoscritti rappresenta uno dei primi successi commerciali della disciplina. Tali sistemi trovano applicazione pratica in:
+\begin{itemize}[noitemsep]
+    \item \textbf{Lettori automatici di targhe automobilistiche} (\emph{license plate readers}), fondamentali per la gestione del traffico e dei pedaggi stradali.
+    \item \textbf{Elaborazione automatica degli assegni bancari} (\emph{automatic check processing}), per l'estrazione automatica di cifre e firme.
+    \item \textbf{Riconoscimento di cifre scritte a mano} (\emph{digit recognition}), il cui sviluppo è stato guidato dalle prime reti convoluzionali (come l'architettura \textbf{LeNet-5} sviluppata da Yann LeCun presso i laboratori AT\&T).
+\end{itemize}
+
+% [IMMAGINE] Processo di estrazione di caratteri da una targa automobilistica — Slide 33 / Pagina 33 del PDF
+
+% [IMMAGINE] Esempio di elaborazione automatica di un assegno bancario — Slide 34 / Pagina 34 del PDF
+
+% [IMMAGINE] Riconoscimento di cifre scritte a mano con l'architettura LeNet-5 di Yann LeCun presso AT&T Labs — Slide 35 / Pagina 35 del PDF
+
+\subsubsection{Face Detection E Face Analysis}
+Il rilevamento dei volti è ormai integrato nella quasi totalità dei dispositivi consumer, come le fotocamere degli smartphone, dove viene impiegato per regolare istantaneamente la messa a fuoco e l'esposizione sulla base dei volti rilevati.
+
+% [IMMAGINE] Interfaccia della fotocamera di uno smartphone con riquadri gialli di Face Detection — Slide 36 / Pagina 36 del PDF
+
+Oltre alla semplice localizzazione (Face Detection), le moderne tecnologie di \textbf{Face Analysis and Recognition} consentono di estrarre informazioni complesse e attributi dettagliati dal volto di una persona, quali:
+\begin{itemize}[noitemsep]
+    \item \textbf{Stima dell'età} (\emph{age estimation}): calcolo dell'età minima, massima e stimata del soggetto.
+    \item \textbf{Genere} (\emph{gender}) e presenza di accessori (ad esempio, occhiali da vista o da sole).
+    \item \textbf{Stato emotivo ed espressione} (\emph{mood, smiling}), classificando l'umore come arrabbiato, felice, neutro, ecc.
+    \item \textbf{Rilevamento dei punti di riferimento facciali} (\emph{facial landmarks}) e stima dell'orientamento tridimensionale della testa espressa attraverso gli angoli di rollio, imbardata e passo (\emph{roll, yaw, pitch}).
+\end{itemize}
+
+% [IMMAGINE] Foto di un volto celebre (Leonardo DiCaprio) analizzato con estrazione automatica di attributi facciali e angoli di rotazione della testa — Slide 37 / Pagina 37 del PDF
+
+\section{Ulteriori Applicazioni Della Visione Artificiale}
+
+Oltre alle applicazioni classiche introdotte in precedenza, le tecnologie basate sulla visione computazionale e sull'apprendimento profondo si estendono a una vasta gamma di ambiti industriali, scientifici e di consumo.
+
+Una delle aree a maggior impatto è quella della \textbf{biometria basata sulla visione} (\emph{vision-based biometrics}), la quale sfrutta le caratteristiche fisiche uniche degli individui per finalità di identificazione e sicurezza. Un esempio storico e di grande rilevanza scientifica è rappresentato dal celebre caso della \enquote{ragazza afghana} immortalata sulla copertina del \emph{National Geographic} nel 1985. A distanza di molti anni, l'identità della donna (Sharbat Gula) è stata confermata in modo matematicamente rigoroso analizzando i pattern unici della sua iride, dimostrando come le caratteristiche dell'iride rimangano stabili nel tempo e costituiscano un potente mezzo biometrico.
+
+% [IMMAGINE] Copertina del National Geographic del giugno 1985 con il celebre volto della ragazza afghana — Slide 1 / Pagina 1 del PDF
+
+% [IMMAGINE] Dettaglio dell'analisi biometrica dell'iride per l'identificazione della ragazza afghana ("How the Afghan Girl was Identified by Her Iris Patterns") — Slide 2 / Pagina 2 del PDF
+
+Questi sistemi biometrici sono ormai parte integrante della nostra quotidianità, consentendo l'accesso sicuro ai dispositivi personali senza l'ausilio di password tradizionali. Ne sono un esempio i lettori di impronte digitali (\emph{fingerprint scanners}) ampiamente diffusi sugli smartphone moderni, nonché i sistemi di sblocco facciale tridimensionale (\emph{Face unlock}), come quello implementato sul dispositivo Apple iPhone X. Quest'ultimo si affida a sensori ottici avanzati in grado di proiettare e analizzare una griglia di punti invisibili per ricostruire la mappa tridimensionale del volto dell'utente, garantendo un elevatissimo livello di sicurezza.
+
+% [IMMAGINE] Esempi di autenticazione biometrica: lettore di impronte digitali su smartphone e sblocco facciale Face ID su Apple iPhone X — Slide 3 / Pagina 3 del PDF
+
+Un altro settore profondamente rivoluzionato dalla visione artificiale è la grande distribuzione organizzata. I supermercati completamente automatizzati (come la catena \textbf{Amazon Go}) impiegano complessi sistemi di riconoscimento degli oggetti e tracciamento delle persone basati su telecamere. Questi sistemi consentono ai clienti di prelevare i prodotti dagli scaffali e uscire dal punto vendita senza dover passare fisicamente da una cassa tradizionale. Il sistema di visione rileva autonomamente quali articoli sono stati prelevati o riposti, addebitandone il costo direttamente sul conto dell'utente e riducendo al minimo la necessità di personale umano in loco (generalmente limitato a un massimo di dieci dipendenti per la gestione e l'assistenza logistica).
+
+% [IMMAGINE] Persone che transitano attraverso i varchi automatici di uscita in un supermercato Amazon Go a Seattle — Slide 4 / Pagina 4 del PDF
+
+Nel campo dell'industria cinematografica e dell'intrattenimento, la computer vision costituisce la base tecnologica per la creazione di \textbf{effetti speciali avanzati}, in particolare attraverso le tecniche di cattura del movimento (\emph{motion capture}). Aziende leader del settore, come la \emph{Industrial Light and Magic}, utilizzano algoritmi di tracciamento facciale e corporeo per catturare le espressioni degli attori sul set e trasferirle in tempo reale su personaggi digitali complessi (come il celebre personaggio di Davy Jones nella saga cinematografica \emph{Pirati dei Caraibi}), eliminando la necessità di lunghe sessioni di trucco prostetico e migliorando il realismo delle animazioni 3D.
+
+% [IMMAGINE] Esempio di motion capture facciale utilizzato per la digitalizzazione del personaggio di Davy Jones in "Pirati dei Caraibi" — Slide 5 / Pagina 5 del PDF
+
+Anche il mondo dello sport beneficia ampiamente di queste tecnologie, sia per il miglioramento dell'esperienza televisiva degli spettatori sia per il supporto arbitrale. Tra le applicazioni più note vi è il sistema \emph{Sportvision}, utilizzato nelle trasmissioni di football americano per sovrapporre graficamente sul campo da gioco la linea del \emph{first down} in tempo reale. Analogamente, nelle competizioni di nuoto vengono impiegati sistemi di tracciamento visivo per sovrapporre le corsie grafiche, visualizzare le bandiere dei paesi degli atleti e mostrare la linea del record mondiale in sovrimpressione rispetto al flusso video originale.
+
+% [IMMAGINE] Applicazioni televisive sportive: la linea gialla del "first down" nel football americano e la sovrapposizione grafica durante una gara di nuoto — Slide 6 / Pagina 6 del PDF
+
+\newpage
+
+\subsection{Veicoli Intelligenti E Sistemi Di Assistenza Alla Guida}
+
+La transizione verso la guida autonoma e i sistemi avanzati di assistenza alla guida (\textbf{ADAS}) costituisce uno dei motori principali della ricerca moderna in ambito di percezione robotica. Aziende pionieristiche come \textbf{Mobileye} e \textbf{Tesla} (con il sistema \emph{Autopilot}) hanno dimostrato l'efficacia di architetture visive integrate per garantire la sicurezza stradale.
+
+Un tipico sistema di visione a bordo veicolo si compone di molteplici sensori ottici orientati in diverse direzioni per garantire una copertura spaziale a $360^\circ$:
+\begin{itemize}[noitemsep]
+    \item Una telecamera rivolta in avanti (\emph{forward looking camera}) per il rilevamento di veicoli, pedoni, segnaletica e corsie stradali a lunga distanza.
+    \item Telecamere laterali (\emph{side looking cameras}) dedicate al monitoraggio degli angoli ciechi e alla gestione dei cambi di corsia e delle intersezioni.
+    \item Una telecamera posteriore (\emph{rear looking camera}) per le manovre di retromarcia e il monitoraggio dei veicoli sopraggiungenti.
+\end{itemize}
+
+% [IMMAGINE] Schema di copertura visiva di un'automobile intelligente dotato di telecamere frontali, laterali e posteriori — Slide 7 / Pagina 7 del PDF
+
+Questi sistemi si basano su hardware dedicato ad altissima efficienza, come i chip della serie \textbf{EyeQ} sviluppati da Mobileye. Questi processori integrano sul silicio algoritmi specializzati per svolgere in tempo reale compiti critici quali la protezione dei pedoni (\emph{pedestrian protection}), il rilevamento di veicoli (\emph{vehicle detection}) e i sistemi di frenata automatica d'emergenza o avviso di collisione (\emph{Advanced Warning System}).
+
+\subsection{Robotica Autonoma Ed Esplorazione Spaziale}
+
+Nell'ambito della robotica, la visione artificiale rappresenta il canale sensoriale primario per l'interazione con l'ambiente fisico e la navigazione in contesti non strutturati. Questa tecnologia trova la sua massima espressione sia in contesti di esplorazione extraterrestre sia nella logistica industriale:
+\begin{itemize}[noitemsep]
+    \item \textbf{Esplorazione Planetaria}: Il rover \emph{Curiosity} della NASA si affida a sistemi di visione stereoscopica per la navigazione autonoma sulla superficie marziana, calcolando in tempo reale le mappe di profondità per evitare ostacoli rocciosi e pianificare traiettorie sicure.
+    \item \textbf{Manipolazione Robotica Industriale}: Iniziative come l' \emph{Amazon Picking Challenge} promuovono lo sviluppo di bracci robotici in grado di riconoscere, afferrare e manipolare oggetti eterogenei all'interno di magazzini automatizzati, integrando algoritmi di segmentazione semantica e stima della posa 3D.
+    \item \textbf{Logistica e Consegne Autonome}: Sistemi di consegna aerea come \emph{Amazon Prime Air} (tramite droni UAV) e veicoli terrestri come \emph{Amazon Scout} utilizzano la visione artificiale per la localizzazione autonoma, l'evitamento dinamico degli ostacoli e l'individuazione sicura del punto di rilascio del carico.
+\end{itemize}
+
+% [IMMAGINE] Esempi di robotica autonoma: il rover Mars Curiosity, un braccio robotico dell'Amazon Picking Challenge, il drone Amazon Prime Air e il robot terrestre Amazon Scout — Slide 8 / Pagina 8 del PDF
+
+\newpage
+
+\subsection{La Visione Computazionale Nella Diagnostica Medica}
+
+La diagnostica per immagini rappresenta un settore d'elezione per l'applicazione delle reti neurali profonde, dove l'accuratezza e la rapidità algoritmica possono supportare attivamente le decisioni cliniche.
+
+% [IMMAGINE] Esempio di imaging medico tridimensionale (risonanza magnetica cerebrale MRI) — Slide 9 / Pagina 9 del PDF
+
+Oltre alla visualizzazione e all'analisi di dati volumetrici tridimensionali complessi generati tramite risonanza magnetica (\textbf{MRI}) o tomografia computerizzata (\textbf{CT}), il deep learning viene impiegato con successo nella classificazione automatica di patologie dermatologiche. Ad esempio, architetture convoluzionali profonde (come la celebre rete \emph{Inception v3}) vengono addestrate su dataset clinici massivi per effettuare la classificazione di lesioni cutanee.
+
+Il sistema riceve in ingresso un'immagine della lesione e, attraverso una serie di strati convoluzionali e di pooling, estrae le caratteristiche morfologiche rilevanti. Tali caratteristiche vengono classificate per determinare la probabilità che la lesione appartenga a una determinata classe clinica (ad esempio, distinguendo con alta precisione un melanoma maligno da una lesione melanocitica benigna o da un nevo comune).
+
+\subsection{Realtà Virtuale E Realtà Aumentata}
+
+I moderni sistemi di realtà virtuale (\textbf{VR}) e realtà aumentata (\textbf{AR}) richiedono l'elaborazione istantanea del flusso visivo per garantire una corretta sincronizzazione tra il movimento dell'utente e il rendering del mondo digitale. I principali task gestiti dagli algoritmi di visione includono:
+\begin{itemize}[noitemsep]
+    \item \textbf{Tracciamento della testa a sei gradi di libertà} (\emph{6DoF head tracking}): stimare istantaneamente la posizione spaziale $(x, y, z)$ e l'orientamento angolare (espressi mediante gli angoli di rollio \emph{roll}, imbardata \emph{yaw} e passo \emph{pitch}) del visore indossato dall'utente.
+    \item \textbf{Tracciamento delle mani e del corpo} (\emph{Hand \& body tracking}): rilevare e ricostruire lo scheletro articolato delle mani per consentire l'interazione diretta con gli oggetti virtuali senza l'ausilio di controller fisici.
+    \item \textbf{Comprensione della scena 3D} (\emph{3D scene understanding}): mappare la geometria dell'ambiente reale circostante per consentire agli oggetti virtuali di interagire coerentemente con ostacoli fisici (come tavoli o pareti).
+    \item \textbf{Acquisizione video tridimensionale a 360 gradi} (\emph{3D-360 video capture}): calibrare e fondere in tempo reale i flussi video provenienti da array multicamera per generare contenuti immersivi ad alta risoluzione.
+\end{itemize}
+
+% [IMMAGINE] Tecnologie VR/AR: schema di tracking 6DoF facciale, tracciamento delle mani, comprensione della scena 3D con HoloLens e array circolare multicamera per video 360 — Slide 10 / Pagina 10 del PDF
+
+\newpage
+
+\subsection{Sintesi Di Immagini E Traduzione Da Immagine A Immagine}
+
+L'introduzione di architetture generative profonde ha aperto scenari radicalmente nuovi per la manipolazione e la sintesi dei dati visivi. Un contributo fondamentale in questo ambito è rappresentato dallo sviluppo delle reti generative avversarie ciclo-consistenti (\textbf{CycleGAN}), teorizzate da Zhu et al. nel 2017 per affrontare il problema della traduzione da immagine a immagine in assenza di dati accoppiati (\emph{Unpaired Image-to-Image Translation}).
+
+A differenza dei metodi classici che richiedono coppie identiche di immagini per l'addestramento (ad esempio, la stessa foto ripresa sia di giorno sia di notte), le CycleGAN consentono di apprendere la mappatura tra due domini generici $X$ e $Y$ sfruttando una loss di consistenza del ciclo (\emph{cycle consistency loss}). Questo approccio permette di effettuare operazioni sorprendenti quali:
+\begin{itemize}[noitemsep]
+    \item Tradurre dipinti d'autore in fotografie realistiche (e viceversa), ad esempio convertendo un quadro di Monet in uno scatto fotografico reale.
+    \item Effettuare conversioni biologiche fittizie, trasformando l'aspetto di un cavallo in quello di una zebra, o viceversa, preservando la posa e lo sfondo.
+    \item Modificare le condizioni stagionali di un paesaggio, traducendo immagini estive in invernali e viceversa.
+    \item Convertire una fotografia reale secondo lo stile pittorico di artisti leggendari come Monet, Van Gogh, Cezanne o nello stile tradizionale giapponese Ukiyo-e.
+\end{itemize}
+
+% [IMMAGINE] Esempi di traduzione d'immagine tramite CycleGAN (Monet-Foto, Zebre-Cavalli, Estate-Inverno, stili artistici applicati a fotografie) — Slide 11 / Pagina 11 del PDF
+
+\subsection{Modelli Di Fondazione E Modelli Linguistici Di Grande Scala}
+
+Negli ultimi anni, l'evoluzione del deep learning ha visto l'emergere dei cosiddetti \textbf{Modelli di Fondazione} (\emph{Foundation Models}), dei modelli linguistici di grande scala (\textbf{LLM}) e delle architetture basate su \textbf{Transformers}. Sebbene nati principalmente per l'elaborazione del linguaggio naturale, questi modelli dimostrano straordinarie capacità di ragionamento astratto e generazione di codice strutturato.
+
+Come mostrato nell'interazione guidata da un prompt in lingua italiana, un modello di grandi dimensioni è in grado di interpretare una richiesta testuale astratta (ad esempio, formulare un algoritmo per calcolare la somma dei primi $N$ numeri naturali), generare il corrispondente codice sorgente in linguaggio Python ottimizzato e motivare matematicamente la correttezza del risultato ricorrendo alla nota formula di Gauss:
+
+\[
+\sum_{i=1}^{n} i = \frac{n \cdot (n+1)}{2}
+\]
+
+Questo livello di flessibilità e comprensione semantica multimodale costituisce la base per i futuri sistemi di interazione uomo-robot e per la programmazione automatica di compiti robotici complessi.
+
+% [IMMAGINE] Screenshot di un'interazione con un LLM che genera ed spiega codice Python per il calcolo della somma dei primi N numeri naturali — Slide 12 / Pagina 12 del PDF
+
+\newpage
+
+\section{Stato Dell'Arte E Sfide Della Visione Artificiale}
+
+La visione artificiale si colloca al centro della moderna rivoluzione dell'Intelligenza Artificiale. Analizzando la traiettoria evolutiva della disciplina, emergono alcuni elementi chiave:
+\begin{itemize}[noitemsep]
+    \item La stragrande maggioranza dei sistemi commerciali e accademici attualmente in uso è stata sviluppata in un arco temporale inferiore ai cinque anni, a testimonianza di una velocità di innovazione senza precedenti.
+    \item Si tratta di un settore di ricerca estremamente dinamico e in continua mutazione metodologica.
+    \item Le prestazioni dei sistemi computazionali hanno vissuto una crescita di tipo esponenziale. Come illustrato dal grafico delle prestazioni temporali, la curva dell'accuratezza dei calcolatori (\emph{Computer Performance}) ha superato in corrispondenza del punto storico attuale la soglia di riferimento delle capacità umane medie (\emph{Human Performance}) in diversi compiti di classificazione e analisi visiva controllata.
+\end{itemize}
+
+% [IMMAGINE] Grafico qualitativo che illustra il sorpasso delle prestazioni computazionali rispetto a quelle umane nel tempo — Slide 13 / Pagina 13 del PDF
+
+Questa eccellenza metodologica ha trainato un'espansione imponente del mercato industriale legato alla visione artificiale. Le proiezioni di ricavo globale (elaborate dall'istituto di analisi \emph{Tractica}) mostrano una crescita costante e robusta in molteplici settori chiave, evidenziando come la domanda di soluzioni visive intelligenti sia pervasiva in ogni ambito produttivo, con una preminenza dei settori automobilistico (\emph{Automotive}), consumer, medico, della sicurezza e della robotica industriale.
+
+% [IMMAGINE] Grafico a barre Tractica indicante la crescita dei ricavi globali della Computer Vision per mercato applicativo dal 2015 al 2022 — Slide 14 / Pagina 14 del PDF
+
+\newpage
+
+\subsection{Perché La Visione Artificiale È Un Problema Complesso?}
+
+Nonostante i notevoli successi registrati, la computer vision rimane una disciplina intrinsecamente complessa. Questa difficoltà deriva dal fatto che i sensori catturano una proiezione bidimensionale bidimensionale di un mondo tridimensionale dinamico, introducendo una serie di variazioni e ambiguità fisiche che gli algoritmi devono essere in grado di compensare:
+
+\begin{itemize}[noitemsep]
+    \item \textbf{Variazione del punto di vista} (\emph{viewpoint variation}): Lo stesso identico oggetto fisico proietta forme geometriche radicalmente differenti sulla matrice dei pixel a seconda dell'angolo di osservazione della telecamera.
+    \item \textbf{Illuminazione} (\emph{illumination}): Le variazioni della sorgente luminosa (intensità, direzione, colore) modificano in modo drastico i valori di riflettanza registrati dai singoli pixel, alterando l'aspetto visivo di un volto o di un oggetto pur lasciandone invariata la struttura intrinseca.
+    \item \textbf{Scala} (\emph{scale}): La dimensione apparente di un oggetto all'interno dell'immagine varia in base alla sua distanza dal sensore. Questa dinamica prospettica può essere sfruttata per creare paradossi visivi (come mostrato nella foto in cui una ragazza sembra canestro semplicemente grazie a un posizionamento studiato rispetto alla telecamera).
+\end{itemize}
+
+% [IMMAGINE] Esempi di variazioni fisiche che complicano la Computer Vision: variazione del punto di vista di un'automobile, variazioni di illuminazione su un volto e un paradosso di scala prospettica — Slide 15 / Pagina 15 del PDF
+
+A queste problematiche si aggiungono ulteriori sfide legate alla natura stessa degli ambienti reali:
+\begin{itemize}[noitemsep]
+    \item \textbf{Variazione intra-classe} (\emph{intra-class variation}): Oggetti appartenenti alla medesima categoria semantica possono presentare forme, colori e strutture fisiche estremamente differenti tra loro (si pensi alla varietà di design, epoche e forme che caratterizza la classe delle automobili).
+    \item \textbf{Confusione dello sfondo} (\emph{background clutter}): Gli oggetti d'interesse possono mimetizzarsi o confondersi cromaticamente e strutturalmente con lo sfondo circostante (come nel caso di animali selvatici immersi nella vegetazione secca), rendendo difficoltosa l'estrazione dei contorni.
+    \item \textbf{Movimento} (\emph{motion}): La presenza di movimenti rapidi introduce fenomeni di sfocatura da movimento (\emph{motion blur}) e variazioni repentine nella disposizione dei pixel, complicando il tracciamento temporale.
+    \item \textbf{Occlusione} (\emph{occlusion}): Gli oggetti d'interesse possono essere parzialmente o totalmente nascosti da altri elementi della scena frapposti tra l'oggetto e la telecamera (ad esempio, una mucca parzialmente coperta da fogliame folto).
+\end{itemize}
+
+% [IMMAGINE] Esempi visivi di variazione intra-classe (auto diverse), confusione dello sfondo (animali mimetizzati), movimento (uccello in volo rapido) e occlusione (mucca coperta da foglie) — Slide 16 / Pagina 16 del PDF
+
+\newpage
+
+\subsection{Ambiguità Locale E Visione Come Problema Inverso}
+
+Un aspetto critico risiede nella cosiddetta \textbf{ambiguità locale} (\emph{local ambiguity}). Se analizziamo singole porzioni isolate di un'immagine (patch locali di pixel), risulta spesso impossibile determinarne l'esatta natura o il contesto semantico. Una patch sfocata di colore scuro potrebbe corrispondere indifferentemente a una parte di una ruota, a un dettaglio di un veicolo o a un elemento d'arredo. Solo l'integrazione del contesto globale e delle relazioni spaziali tra le diverse parti consente di risolvere l'ambiguità e formulare un'ipotesi corretta.
+
+% [IMMAGINE] Esempio di patch locali sfocate evidenziate da cerchi rossi che risultano ambigue se analizzate isolatamente rispetto all'immagine intera — Slide 17 / Pagina 17 del PDF
+
+Da un punto di vista strettamente matematico, la percezione visiva costituisce un \textbf{problema inverso} (\emph{inverse problem}). Mentre il problema diretto (la computer grafica o proiezione prospettica) mappa in modo univoco una scena tridimensionale nota su un piano bidimensionale attraverso leggi geometriche definite, il problema inverso tenta di risalire dalla singola proiezione bidimensionale alla struttura tridimensionale originale.
+
+Questo processo è intrinsecamente mal posto poiché \hl{infinite configurazioni tridimensionali differenti possono generare la medesima proiezione bidimensionale sul piano dell'immagine}.
+
+% [IMMAGINE] Esempio di illusione prospettica forzata in cui un uomo sembra interagire con una bottiglia di Coca-Cola gigante appoggiata a terra — Slide 18 / Pagina 18 del PDF
+
+Per risolvere questa intrinseca ambiguità geometrica e giungere a un'interpretazione corretta della realtà, sia il cervello umano sia gli algoritmi di visione artificiale devono necessariamente fare affidamento su \textbf{conoscenze a priori} (\emph{prior knowledge}) riguardanti la struttura fisica del mondo, come ad esempio l'assunzione di gravità, la regolarità delle superfici o le proporzioni note degli oggetti comuni.
+
+\newpage
+
+\section{Attività Di Ricerca Presso L'ISARLab}
+
+L' \textbf{ISARLab} (\emph{Intelligent Systems and Robotics Laboratory}) si concentra sull'intersezione tra la robotica autonoma, la computer vision e il machine learning. Le attività di ricerca coprono l'intero spettro della percezione e pianificazione robotica per piattaforme aeree, terrestri e sottomarine.
+
+% [IMMAGINE] Diagramma concettuale delle linee di ricerca ISARLab: SLAM visivo, stima della posa, odometria visiva profonda, pianificazione di traiettorie — Slide 19 / Pagina 19 del PDF
+
+Le principali direttrici di ricerca del laboratorio includono:
+\begin{itemize}[noitemsep]
+    \item Lo sviluppo di algoritmi per piattaforme robotiche aeree (\emph{UAV}), terrestri (\emph{UGV}) e sottomarine (\emph{AUV}).
+    \item La pianificazione autonoma delle missioni e l'esplorazione attiva degli ambienti (\emph{Autonomous Mission Planning and exploration}).
+    \item La comprensione semantica dell'ambiente circostante (\emph{Environment Understanding}).
+    \item La ricostruzione tridimensionale accurata delle scene (\emph{Scene Reconstruction}).
+\end{itemize}
+
+\subsection{Le Sfide Nei Veicoli Autonomi E Nei Robot Industriali}
+
+Sebbene i fondamenti teorici e tecnologici legati ai veicoli a guida autonoma (\textbf{AGV}) abbiano compiuto passi da gigante a cavallo tra gli anni '90 e 2000, la presenza pervasiva di robot autonomi nella vita quotidiana è ancora limitata. La sfida principale risiede nella \textbf{robustezza} e nella capacità di \textbf{adattamento} a scenari complessi, dinamici e precedentemente sconosciuti.
+
+Per superare queste limitazioni, l'attività di ricerca del laboratorio si focalizza su due pilastri metodologici fondamentali:
+\begin{itemize}[noitemsep]
+    \item Progettazione di algoritmi di \textbf{Deep Learning robusti} finalizzati a garantire l'indipendenza dal dominio applicativo (\emph{domain independence}). L'obiettivo è far sì che un modello addestrato in un determinato ambiente (ad esempio, in simulazione) mantenga inalterate le sue prestazioni quando viene distribuito nel mondo reale, senza subire degradazioni dovute al divario di dominio (\emph{domain gap}).
+    \item Sviluppo di metodologie di apprendimento per trasferimento (\textbf{Transfer Learning}) e apprendimento non supervisionato (\textbf{Unsupervised Learning}) per favorire l'adattamento rapido del robot a scenari e contesti mai incontrati durante la fase di addestramento.
+\end{itemize}
+
+Queste tecnologie trovano applicazione diretta nella realizzazione di \textbf{Smart AGV} operanti nell'ambito dell'Industria 4.0, dove i robot devono navigare autonomamente all'interno di stabilimenti industriali complessi, movimentando carichi pesanti e interagendo in modo sicuro con gli operatori umani.
+
+% [IMMAGINE] Applicazione industriale di Smart AGV autonomi per il trasporto di motori all'interno di una fabbrica automobilistica — Slide 21 / Pagina 21 del PDF
+
+\newpage
+
+\subsection{Esplorazione Autonoma Con Microveicoli Aerei (MAVs)}
+
+I microveicoli aerei (\textbf{MAV} o droni) presentano vincoli stringenti in termini di carico utile e potenza computazionale a bordo, richiedendo algoritmi di percezione estremamente ottimizzati. La ricerca svolta in questo ambito si concentra sulla navigazione e pianificazione autonoma, affrontando contemporaneamente cinque task interconnessi:
+
+\begin{itemize}[noitemsep]
+    \item \textbf{Localizzazione} (\emph{Localization}): stimare istantaneamente la posa tridimensionale del drone nello spazio.
+    \item \textbf{Mappatura 3D} (\emph{3D Mapping}): costruire una rappresentazione volumetrica coerente dell'ambiente circostante a mano a mano che viene esplorato.
+    \item \textbf{Pianificazione} (\emph{Planning}): calcolare traiettorie di volo ottimali e prive di collisioni per raggiungere l'obiettivo prefissato.
+    \item \textbf{Fusione Sensoriale} (\emph{Sensor Fusion}): integrare in modo robusto i dati provenienti da sensori eterogenei (telecamere, IMU, sensori di distanza).
+    \item \textbf{Rilevamento ed Evitamento degli Ostacoli} (\emph{Obstacle Detection and Avoidance}): individuare in tempo reale elementi di pericolo e ricalcolare istantaneamente la traiettoria di volo.
+\end{itemize}
+
+% [IMMAGINE] Screenshot di un video dimostrativo del Robotics and Perception Group (UZH) che mostra l'esplorazione autonoma e la ricostruzione 3D di ostacoli complessi da parte di un drone — Slide 22 / Pagina 22 del PDF
+
+\subsection{L'Intersezione Tra Visione E Robotica}
+
+L'integrazione di tecniche di visione artificiale e machine learning a bordo di piattaforme robotiche abilita funzionalità di navigazione e manipolazione avanzate. I contributi del laboratorio si concentrano su specifiche aree applicative:
+
+% [IMMAGINE] Esempi di algoritmi per la robotica: tracciamento di traiettorie, stima delle linee epipolari, corrispondenza di feature locali e rilevamento di veicoli — Slide 23 / Pagina 23 del PDF
+
+\begin{itemize}[noitemsep]
+    \item \textbf{Rilevamento e Riconoscimento di Oggetti} (\emph{Object Detection and Recognition}): identificare e localizzare nello spazio elementi d'interesse per consentire la manipolazione o l'inseguimento.
+    \item \textbf{Pianificazione Basata sulla Visione} (\emph{Vision-based Planning}): guidare i movimenti del robot basandosi direttamente sulle informazioni estratte dal flusso video, senza richiedere una mappa a priori dell'ambiente.
+    \item \textbf{Odometria Visiva} (\emph{Visual Odometry}): stimare lo spostamento incrementale del robot analizzando la variazione temporale dei pixel tra fotogrammi consecutivi.
+    \item \textbf{Riconoscimento di Luoghi} (\emph{Place Recognition}): identificare se una determinata area geografica è già stata visitata in precedenza, un compito essenziale per risolvere il problema della chiusura del ciclo (\emph{loop closing}) negli algoritmi di SLAM.
+\end{itemize}
+
+% [IMMAGINE] Esempi di riconoscimento di pattern visivi, riconoscimento di scene complesse, mappatura ed identificazione di oggetti — Slide 24 / Pagina 24 del PDF
+
+\newpage
+
+\subsection{Odometria Visiva}
+
+L'odometria visiva costituisce una tecnologia abilitante di fondamentale importanza per la navigazione autonoma di qualsiasi piattaforma mobile, in quanto consente di stimare l'ego-movimento (\emph{ego-motion}) del veicolo utilizzando esclusivamente sensori ottici passivi.
+
+% [IMMAGINE] Esempio di estrazione e tracciamento di feature di interesse (punti verdi) all'interno di un ambiente industriale — Slide 25 / Pagina 25 del PDF
+
+Il principio di funzionamento si basa sull'estrazione e sul tracciamento temporale di punti di interesse geometricamente stabili (caratteristiche o \emph{features}) tra fotogrammi successivi della sequenza video. Risolvendo le equazioni di corrispondenza geometrica proiettiva, è possibile stimare con precisione la traiettoria percorsa dal robot.
+
+L'odometria visiva risulta di vitale importanza nelle applicazioni di guida autonoma (\emph{autonomous driving}) e di robotica aerea in quanto:
+\begin{itemize}[noitemsep]
+    \item Costituisce l'unica fonte di localizzazione odometrica affidabile qualora il segnale GPS sia assente o fortemente degradato (come all'interno di tunnel, contesti urbani densi, ambienti interni o canyon naturali).
+    \item Fornisce una stima del movimento ad altissima frequenza temporale, compensando la bassa frequenza di aggiornamento tipica dei sensori di posizionamento globale.
+\end{itemize}
+
+% [IMMAGINE] Ricostruzione della traiettoria tridimensionale di un veicolo tramite odometria visiva operante in un contesto stradale urbano — Slide 26 / Pagina 26 del PDF
+
+L'attività di ricerca condotta dai ricercatori del laboratorio ha portato alla formulazione di architetture innovative che uniscono l'odometria visiva classica alle reti neurali profonde. Nel lavoro pionieristico di Costante et al. (pubblicato su \emph{IEEE Robotics and Automation Letters} e finalista per il prestigioso \emph{Best Vision Paper Award} a ICRA 2017), viene introdotto un approccio basato sul \textbf{flusso ottico denso} (\emph{Dense Optical Flow}) accoppiato a una rete neurale convoluzionale:
+
+{\small
+\begin{align*}
+    \text{Sequenza Immagini}
+    \longrightarrow
+    \underbrace{\text{Flusso Ottico Denso}}_{\text{Rappresentazione Movimento}}
+    \longrightarrow
+    \underbrace{\text{Rete Neurale Convoluzionale}}_{\text{Estrazione Features}}
+    \longrightarrow
+    \underbrace{\text{Stima Frame-to-Frame}}_{\text{Posa Incrementale}}
+\end{align*}
+}
+Questo metodo consente di apprendere direttamente dai dati una rappresentazione robusta del movimento, superando le fragilità tipiche degli approcci geometrici classici in presenza di variazioni di illuminazione o texture deboli.
+
+% [IMMAGINE] Schema architetturale del metodo basato su CNN e flusso ottico denso per la stima dell'ego-motion — Slide 27 / Pagina 27 del PDF
+
+\newpage
+
+\subsection{Rilevamento Ed Evitamento Degli Ostacoli}
+
+Un'ulteriore linea di ricerca di grande rilevanza industriale per gli AGV riguarda la capacità di rilevare ed evitare dinamicamente gli ostacoli presenti lungo il percorso, in particolare all'interno di ambienti di fabbrica congestionati.
+
+I ricercatori del laboratorio hanno sviluppato algoritmi avanzati basati su reti completamente convoluzionali (\textbf{FCN}) per stimare la profondità monoculare in tempo reale partendo da singole immagini RGB:
+
+% [IMMAGINE] Esempio di rilevamento ostacoli tramite stima della profondità in tempo reale — Slide 28 / Pagina 28 del PDF
+
+Questi contributi scientifici (tra cui i lavori di Mancini et al. presentati a IROS 2015 e pubblicati su \emph{IEEE Robotics and Automation Letters} nel 2017) si concentrano sul raggiungimento della \textbf{indipendenza dal dominio} (\emph{domain independence}), consentendo a modelli addestrati in ambienti virtuali o controllati di operare con elevata affidabilità nel mondo reale senza richiedere ricalibrazioni manuali. Tali algoritmi possono essere eseguiti con successo sia su sistemi stereoscopici sia su più economiche configurazioni monoculari.
+
+% [IMMAGINE] Slide di presentazione del lavoro congiunto ISARLab e University of Zurich sulla stima della profondità monoculare indipendente dal dominio — Slide 29 / Pagina 29 del PDF
+
+I risultati più recenti in questo ambito mostrano come l'adozione del paradigma dell'apprendimento multi-task (\textbf{Multi-Task Learning}) sia in grado di migliorare significativamente le prestazioni di stima. Condividendo una porzione comune della rete neurale dedicata all'estrazione delle caratteristiche (\emph{Feature Extraction}), il sistema è in grado di addestrare simultaneamente due rami specializzati:
+\begin{itemize}[noitemsep]
+    \item Un classificatore dedicato al rilevamento ostacoli (\emph{Obstacle Detector}).
+    \item Un predittore di profondità continua (\emph{Depth Predictor}).
+\end{itemize}
+
+Questo approccio a compiti condivisi costringe la rete ad apprendere caratteristiche geometriche e semantiche estremamente robuste, le quali vengono poi utilizzate per generare una mappa tridimensionale accurata (espressa ad esempio tramite griglie di occupazione voxelizzate) impiegata dagli algoritmi di pianificazione del moto del robot.
+
+% [IMMAGINE] Schema a blocchi del framework multi-task learning per il rilevamento ostacoli e predizione di profondità, con mappa 3D voxel risultante — Slide 30 / Pagina 30 del PDF
+
+\newpage
+
+\subsection{Rilevamento Di Oggetti Per La Navigazione Autonoma Con UAV}
+
+L'applicazione del rilevamento di oggetti in tempo reale a bordo di piattaforme aeree richiede il soddisfacimento simultaneo di tre requisiti fondamentali:
+\begin{itemize}[noitemsep]
+    \item \textbf{Robustezza} (\emph{Robustness}): I rilevatori basati su reti neurali profonde devono garantire prestazioni di tracciamento e riconoscimento stabili anche in presenza di repentine variazioni del punto di vista, tipiche del volo oscillatorio dei droni.
+    \item \textbf{Flessibilità} (\emph{Flexibility}): Il tracciamento e l'identificazione degli oggetti costituiscono le primitive necessarie per l'esecuzione di compiti operativi complessi, quali il trasporto di carichi o operazioni di \emph{pick and place}.
+    \item \textbf{Efficienza} (\emph{Efficiency}): Gli algoritmi devono essere progettati specificamente per poter essere eseguiti in tempo reale su piattaforme computazionali embedded caratterizzate da risorse limitate e basso consumo energetico, preservando l'autonomia della batteria del drone.
+\end{itemize}
+
+% [IMMAGINE] Schermata nera indicante l'applicazione di algoritmi in tempo reale per il rilevamento di oggetti con UAV — Slide 31 / Pagina 31 del PDF
+
+\subsection{Descrizione Video In Linguaggio Naturale Per L'Interazione Uomo-Robot}
+
+Una delle frontiere più affascinanti della ricerca robotica risiede nella capacità del robot di comunicare i propri stati percettivi in linguaggio naturale. Il laboratorio sviluppa modelli in grado di generare descrizioni testuali fluide a partire dalle sequenze video catturate dalle telecamere di bordo, facilitando un'interazione uomo-robot (\textbf{HRI}) intuitiva ed empatica.
+
+% [IMMAGINE] Esempio di interazione ravvicinata tra una persona e un piccolo robot da tavolo dotato di telecamera — Slide 32 / Pagina 32 del PDF
+
+Inoltre, vengono sviluppate interfacce gestuali personalizzate per il controllo di droni tramite un approccio di apprendimento per trasferimento (lavoro di Costante et al. pubblicato in occasione di IROS 2014). Il sistema integra una catena di moduli software dedicati alla compensazione della distorsione d'immagine, al rilevamento e tracciamento delle persone, al riconoscimento facciale per l'identificazione dell'utente autorizzato e, infine, al rilevamento ed interpretazione dei gesti manuali (\emph{Gesture Recognition}) per l'invio di comandi di moto al controllore di volo del drone.
+
+% [IMMAGINE] Pipeline software e architettura a blocchi per la gestione del tracciamento di persone e riconoscimento dei gesti per il controllo di droni — Slide 33 / Pagina 33 del PDF
+
+\newpage
+
+\subsection{Simulazione E Controllo Avanzato}
+
+Per testare in sicurezza le dinamiche di volo e di controllo in scenari complessi prima della loro effettiva implementazione sulle piattaforme reali, il laboratorio fa ampio ricorso ad ambienti di simulazione fisica e sensoriale avanzati.
+
+% [IMMAGINE] Esempi di droni reali in fase di test su pavimentazione di sicurezza affiancati da ricostruzioni di traiettorie simulate — Slide 34 / Pagina 34 del PDF
+
+In questo ambito, un contributo innovativo è rappresentato dallo sviluppo di simulatori \textbf{multisensoriali} in grado di riprodurre non solo l'ambiente visivo, ma anche la propagazione acustica del suono all'interno di scenari urbani complessi. Il simulatore audio modella matematicamente tre fenomeni fisici fondamentali:
+
+\begin{itemize}[noitemsep]
+    \item \textbf{Effetto Doppler} (\emph{Doppler Effect}): modella la variazione di frequenza percepita dal ricevitore $M_i$ in movimento rispetto alla sorgente sonora $S_j$:
+
+    \[
+    f^{S_j}_{M_i, r}(t_k) = f_{S_j}(t_k) \cdot \frac{c}{c - v^{S_j}_{M_i, r}(t_k)}
+    \]
+
+    dove $f_{S_j}(t_k)$ è la frequenza emessa dalla sorgente all'istante temporale discretizzato $t_k$, $c$ è la velocità di propagazione del suono nell'aria e $v^{S_j}_{M_i, r}(t_k)$ rappresenta la velocità relativa radiale tra la sorgente e il ricevitore.
+
+    \item \textbf{Linea di Ritardo} (\emph{Delay Line}): calcola il ritardo di propagazione del segnale sonoro espresso in numero di campioni discreti:
+
+    \[
+    M^{S_j}_{M_i}(t_k) = \frac{f_s}{c} d^{S_j}_{M_i}(t_k)
+    \]
+
+    dove $f_s$ rappresenta la frequenza di campionamento del segnale audio e $d^{S_j}_{M_i}(t_k)$ è la distanza euclidea istantanea tra la sorgente $S_j$ e il microfono $M_i$.
+
+    \item \textbf{Assorbimento dell'Aria} (\emph{Air Absorption}): modellato attraverso una risposta all'impulso tempo-variante $h^{S_j}_{M_i}(t_k)$ che attenua le componenti spettrali ad alta frequenza in funzione della distanza percorsa dall'onda sonora.
+\end{itemize}
+
+Parallelamente, il simulatore visivo genera l'immagine RGB virtuale $I_l(t_k)$, la corrispondente mappa di profondità $D_l(t_k)$ e la mappa di segmentazione semantica ground truth $G_l(t_k)$, consentendo l'addestramento di agenti intelligenti in ambienti virtuali fotorealistici.
+
+% [IMMAGINE] Schema a blocchi dei simulatori audio e visivi integrati per scenari di navigazione urbana complessi — Slide 35 / Pagina 35 del PDF
+
+Infine, queste tecnologie di simulazione e percezione vengono combinate per l'addestramento di controllori basati sull'apprendimento per rinforzo profondo (\textbf{Deep Reinforcement Learning}). Gli agenti intelligenti vengono addestrati a risolvere compiti complessi di navigazione e pianificazione (ad esempio, percorrere corridoi stradali, risolvere labirinti o evitare ostacoli dinamici) combinando sensori attivi (come Lidar o telecamere) e controllori di navigazione robusti.
+
+% [IMMAGINE] Panoramica dei sistemi di controllo DRL in ambienti reali e virtuali, con maze 3D, telecamere top/front e point cloud Lidar — Slide 36 / Pagina 36 del PDF
+\end{document}

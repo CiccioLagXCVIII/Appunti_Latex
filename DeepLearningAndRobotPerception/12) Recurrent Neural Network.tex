@@ -1,0 +1,724 @@
+﻿\documentclass[11pt, a4paper]{article}
+
+%---------------------------------------------------------
+% Lingua E Codifica
+%---------------------------------------------------------
+\usepackage[italian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+%---------------------------------------------------------
+% Layout Di Pagina E Tipografia
+%---------------------------------------------------------
+\usepackage[margin=2cm, top=1.5cm, bottom=1.5cm]{geometry}
+\usepackage{parskip}
+\usepackage{microtype}
+\usepackage{csquotes}
+
+%---------------------------------------------------------
+% Gestione Dei Colori
+%---------------------------------------------------------
+\usepackage[table]{xcolor}
+\definecolor{darkgreen}{RGB}{0,100,0}
+\usepackage{soul}
+%---------------------------------------------------------
+% Matematica E Simboli
+%---------------------------------------------------------
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{mathtools}
+\usepackage{siunitx}
+
+% BB OTTIMIZZAZIONE MATRICI LUNGHE PER LA STAMPA
+\setlength{\arraycolsep}{10pt}
+\usepackage{bm}
+\usepackage{arydshln}
+
+
+%---------------------------------------------------------
+% Grafica, Immagini E Tabelle
+%---------------------------------------------------------
+\usepackage{graphicx}
+\graphicspath{{./Images/Recurrent Neural Network/}}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, patterns, angles, quotes, calc}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+
+%---------------------------------------------------------
+% Link, Riferimenti Ed Elenchi
+%---------------------------------------------------------
+\usepackage[unicode]{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+    citecolor=blue,
+    pdftitle={Capitolo 12 - Recurrent Neural Network},
+    pdfauthor={Francesco Lo Verde},
+    pdfpagemode=FullScreen,
+}
+\usepackage{bookmark}
+\usepackage{enumitem}
+\setlist{noitemsep}
+
+%---------------------------------------------------------
+% Personalizzazione Titoli E Altri Pacchetti
+%---------------------------------------------------------
+\usepackage{titlesec}
+\titleformat{\section}{\normalfont\LARGE\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\Large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalfont\large\bfseries}{\thesubsubsection}{1em}{}
+
+\usepackage{comment}
+\newtheorem{theorem}{Definizione}
+
+% Pacchetto per gli algoritmi
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+
+\SetKwInput{Dati}{Input}
+\SetKwInput{Risultato}{Output}
+\SetKw{Inizializza}{Inizializza}
+\SetKwIF{Se}{AltrimentiSe}{Altrimenti}{se}{allora}{altrimenti se}{altrimenti}{finese}
+\SetKwProg{Fn}{Funzione}{:}{fine}
+\SetKwFor{Per}{per}{fai}{fine per}
+\SetKwRepeat{Ripeti}{ripeti}{finché}
+\SetKwComment{Commento}{// }{}
+
+\author{Francesco Lo Verde}
+\begin{document}
+\section{Reti Neurali Ricorrenti}
+
+Le reti neurali classiche, note come reti feedforward, hanno rivoluzionato l'apprendimento automatico ma presentano forti limitazioni strutturali quando si lavora con dati che possiedono una dimensione temporale o sequenziale. Per comprendere appieno la necessità di introdurre le \textbf{Reti Neurali Ricorrenti (RNN)}, è fondamentale analizzare dapprima la tassonomia delle architetture di rete e i limiti intrinseci dei modelli standard.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slide-1"] Schema grafico che mostra una rete neurale ricorrente rappresentata sia in forma compatta (con un ciclo ricorsivo sul blocco A) sia srotolata nel tempo (unfolded) — Slide 1 / Pagina 1 del PDF
+
+\subsection{Tassonomia Delle Reti Standard E Limitazioni}
+
+Le architetture di rete possono essere classificate in base alla relazione di dimensionalità tra i dati in ingresso (input) e quelli in uscita (output). La tassonomia principale prevede le seguenti configurazioni:
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slide-2"] Schema di una rete neurale classica "one to one" con input, stato nascosto e output — Slide 2 / Pagina 2 del PDF
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slide-3"] Panoramica delle diverse configurazioni architetturali: one-to-one, one-to-many, many-to-one e due varianti di many-to-many — Slide 3 / Pagina 3 del PDF
+
+\begin{itemize}[noitemsep]
+    \item \textbf{One-to-One} (Uno a Uno): Rappresenta la classica rete neurale feedforward standard. Un singolo input di dimensione fissa viene mappato direttamente in un singolo output di dimensione fissa.
+    \item \textbf{One-to-Many} (Uno a Molti): Un singolo input produce una sequenza di output di lunghezza variabile.
+    \begin{itemize}[noitemsep]
+        \item \emph{Applicazione tipica}: \textbf{Image Captioning}. L'input è rappresentato da una singola immagine e l'output è una sequenza di parole che ne descrive il contenuto.
+    \end{itemize}
+    \item \textbf{Many-to-One} (Molti a Uno): Una sequenza di input di lunghezza variabile viene mappata in un singolo output di dimensione fissa.
+    \begin{itemize}[noitemsep]
+        \item \emph{Applicazione tipica}: \textbf{Sentiment Classification}. L'input è una sequenza di parole (una frase o un testo) e l'output è una classificazione del sentimento associato (ad esempio, positivo o negativo).
+    \end{itemize}
+    \item \textbf{Many-to-Many} (Molti a Molti - Variante Sincrona): Una sequenza di input viene mappata in una sequenza di output in cui ogni elemento dell'input corrisponde temporalmente a un elemento dell'output.
+    \begin{itemize}[noitemsep]
+        \item \emph{Applicazione tipica}: \textbf{Video Classification}. L'input è una sequenza di frame e l'output è una classificazione frame-by-frame (ad esempio, rilevamento di azioni a livello di singolo fotogramma).
+    \end{itemize}
+    \item \textbf{Many-to-Many} (Molti a Molti - Variante Asincrona / Seq2Seq): Una sequenza di input di lunghezza variabile viene elaborata interamente prima che la rete inizi a produrre una sequenza di output, anch'essa di lunghezza variabile.
+    \begin{itemize}[noitemsep]
+        \item \emph{Applicazione tipica}: \textbf{Machine Translation}. L'input è una frase in una lingua di partenza e l'output è la traduzione corrispondente in un'altra lingua.
+    \end{itemize}
+\end{itemize}
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slide-4"] Esempi visivi di Image Captioning in cui immagini reali vengono descritte da frasi generate — Slide 4 / Pagina 4 del PDF
+
+Le reti feedforward tradizionali falliscono nell'affrontare la maggior parte di queste configurazioni a causa dei seguenti limiti strutturali:
+\begin{enumerate}
+    \item \textbf{Dimensionalità fissa}: Accettano solo un singolo vettore di input di dimensione predeterminata e producono un output di dimensione altrettanto rigida.
+    \item \textbf{Assunzione di indipendenza}: Assumono che i dati all'interno della sequenza siano indipendenti e identicamente distribuiti (\textbf{i.i.d.}). Nella realtà, i dati sequenziali violano sistematicamente questa assunzione; lo stato corrente dipende intrinsecamente dagli stati precedenti. Ad esempio, la scelta della parola successiva in una frase dipende fortemente dal contesto fornito dalle parole antecedenti.
+    \item \textbf{Mancanza di memoria}: Non possiedono un meccanismo nativo per riutilizzare la conoscenza derivante da eventi passati per classificare o elaborare l'input corrente.
+\end{enumerate}
+
+\newpage
+
+\subsection{La Soluzione: Reti Neurali Ricorrenti (RNN)}
+
+Introdotte nella loro formulazione fondamentale da \textbf{Rumelhart nel 1986}, le Reti Neurali Ricorrenti rappresentano la classe di modelli specificamente progettata per l'elaborazione di dati sequenziali. Un campione sequenziale consiste tipicamente di due sequenze: la sequenza di input e la sequenza di output (che funge da supervisione durante la fase di addestramento).
+
+La caratteristica distintiva di una RNN è la presenza di cicli di retroazione che consentono alle informazioni di persistere. Questo comportamento può essere compreso srotolando (\emph{unfolding}) la rete lungo la dimensione temporale.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slide-6"] Schema grafico che illustra la condivisione dei parametri e la struttura ciclica srotolata di una RNN — Slide 6 / Pagina 6 del PDF
+
+Il pilastro fondamentale delle RNN è la \textbf{condivisione dei parametri} (\emph{parameter sharing}) tra i diversi passi temporali (\emph{timesteps}). Questa scelta progettuale offre due vantaggi cruciali:
+\begin{itemize}
+    \item \textbf{Flessibilità della lunghezza}: Consente al modello di elaborare sequenze di lunghezza arbitraria, comprese quelle non viste durante la fase di addestramento. Se avessimo parametri distinti per ogni istante temporale, la rete non potrebbe generalizzare a lunghezze temporali superiori a quelle del dataset di training.
+    \item \textbf{Efficienza statistica}: Condividere gli stessi pesi per ogni istante temporale riduce drasticamente il numero di parametri liberi da apprendere, migliorando la capacità di generalizzazione e la robustezza del modello.
+\end{itemize}
+
+Dato che lo stato corrente e la relativa predizione dipendono dall'intera sequenza di eventi passati, si afferma che le reti ricorrenti sono dotate di \textbf{memoria}.
+
+\newpage
+
+\subsubsection{Formulazione Matematica Dello Stato}
+
+La relazione matematica fondamentale che governa la transizione dello stato interno di una RNN tra l'istante precedente $t-1$ e l'istante corrente $t$ è espressa dalla seguente funzione:
+
+\[
+\boxed{\bm{h}_t = f(\bm{h}_{t-1}, \bm{x}_t; \bm{\theta})}
+\]
+
+Dove:
+\begin{itemize}[noitemsep]
+    \item $\bm{h}_t$ rappresenta lo \textbf{stato nascosto} (\emph{hidden state}) all'istante $t$, che funge da memoria della rete.
+    \item $\bm{x}_t$ è l'input corrente all'istante $t$.
+    \item $\bm{h}_{t-1}$ è lo stato nascosto calcolato al passo temporale precedente.
+    \item $\bm{\theta}$ rappresenta l'insieme dei parametri della rete (i pesi e i bias), che rimangono strettamente identici per ciascun istante temporale.
+\end{itemize}
+
+Se srotoliamo l'equazione ricorsiva per molteplici passi temporali a partire da uno stato iniziale $\bm{h}_0$ (tipicamente inizializzato a zero), possiamo esprimere lo stato futuro $\bm{h}_{t+1}$ in forma espansa come composizione di funzioni annidate:
+
+\[
+\bm{h}_{t+1} = f\Big(\bm{x}_t, f\big(\bm{x}_{t-1}, f(\bm{x}_{t-2}, \dots, f(\bm{x}_0, \bm{h}_0; \bm{\theta}); \bm{\theta}); \bm{\theta}\big); \bm{\theta}\Big)
+\]
+
+Questo evidenzia come i parametri $\bm{\theta}$ siano applicati in modo ricorsivo ad ogni singolo passo della sequenza.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slide-9"] Diagramma formale di srotolamento temporale di una RNN tratto dal libro "Deep Learning" (Goodfellow, Bengio, Courville) — Slide 9 / Pagina 9 del PDF
+
+\subsubsection{Efficienza Rappresentazionale E Sintesi Del Passato}
+
+L'architettura impone alla rete di mappare l'intera sequenza storica degli input $\bm{x}_0, \bm{x}_1, \dots, \bm{x}_t$ in un unico vettore di stato $\bm{h}_t$ di dimensione fissa. Questo vincolo comporta inevitabilmente una perdita di informazioni dettagliate sugli input originari.
+
+Tuttavia, forzare la rete a comprimere il passato all'interno di un unico stato presenta un vantaggio teorico fondamentale: il modello è costretto ad apprendere in modo selettivo solo gli aspetti altamente rilevanti della sequenza temporale per il compito specifico (ad esempio, catturare la concordanza tra articoli e nomi in un problema linguistico). Questa selezione mirata delle informazioni migliora notevolmente l'efficienza statistica del sistema. Lo stato nascosto $\bm{h}_t$ agisce quindi come un sommario informativo del passato utile a predire il futuro.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slide-11"] Diagramma di flusso computazionale di una RNN con calcolo delle predizioni e della loss associata ad ogni istante temporale — Slide 11 / Pagina 11 del PDF
+
+Lo stato nascosto $\bm{h}_t$ può essere impiegato direttamente per generare una predizione, ad esempio alimentando un classificatore lineare per generare un'etichetta associata all'istante corrente.
+
+\newpage
+
+\section{Rete Ricorrente Vanilla (Vanilla RNN)}
+
+Prendiamo in esame la forma più elementare di rete neurale ricorrente, nota come \textbf{Vanilla RNN}, analizzando il caso di un'architettura multi-input e multi-output (\emph{many-to-many}).
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slide-12"] Rappresentazione concettuale di una Vanilla RNN in modalità many-to-many con diagramma di loop sullo stato nascosto — Slide 12 / Pagina 12 del PDF
+
+Per modellare in modo matematicamente rigoroso le interazioni tra l'ingresso, lo stato interno nascosto e l'uscita prodotta, si introducono tre distinte matrici di pesi condivise:
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slide-13"] Schema della cella RNN con l'indicazione esplicita delle tre matrici di peso U, V, W — Slide 13 / Pagina 13 del PDF
+
+\begin{itemize}[noitemsep]
+    \item $\bm{U}$: Matrice dei pesi che regola la transizione dall'input corrente $\bm{x}_t$ allo stato nascosto $\bm{h}_t$.
+    \item $\bm{V}$: Matrice dei pesi che proietta lo stato nascosto $\bm{h}_t$ verso l'output corrente $\bm{y}_t$ (o pre-attivazione $\bm{o}_t$).
+    \item $\bm{W}$: Matrice dei pesi che governa la dinamica di transizione temporale dallo stato precedente $\bm{h}_{t-1}$ allo stato corrente $\bm{h}_t$.
+\end{itemize}
+
+Trattandosi di una rete neurale, l'output di ogni combinazione lineare viene fatto passare attraverso una funzione di attivazione non lineare (ad eccezione, eventualmente, dei passaggi di puro calcolo lineare). La formulazione generale prevede:
+
+\[
+\bm{y}_t = g(\bm{V}\bm{h}_t)
+\]
+\[
+\bm{h}_t = s(\bm{U}\bm{x}_t + \bm{W}\bm{h}_{t-1})
+\]
+
+Dove $g$ e $s$ indicano funzioni non lineari come la tangente iperbolica ($\tanh$) o la funzione softmax.
+
+In particolare, il sistema di equazioni accoppiate che definisce completamente il comportamento di una cella Vanilla RNN ad ogni istante temporale $t$ è il seguente:
+
+\begin{align*}
+\bm{a}_t &= \bm{b} + \bm{U}\bm{x}_t + \bm{W}\bm{h}_{t-1} \\
+\bm{h}_t &= \tanh(\bm{a}_t) \\
+\bm{o}_t &= \bm{c} + \bm{V}\bm{h}_t \\
+\hat{\bm{y}}_t &= \text{softmax}(\bm{o}_t)
+\end{align*}
+
+Dove $\bm{b}$ e $\bm{c}$ sono rispettivamente i vettori di bias dello stato nascosto e dell'output, $\bm{a}_t$ rappresenta la pre-attivazione dello stato nascosto e $\hat{\bm{y}}_t$ rappresenta la distribuzione di probabilità predetta per le classi in uscita.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slide-15"] Schema dettagliato della struttura srotolata (unrolled) di una Vanilla RNN con evidenziate le relazioni governate da U, V e W — Slide 15 / Pagina 15 del PDF
+
+\newpage
+
+\section{Retropropagazione Dell'Errore Nei Tempi (BPTT)}
+
+L'addestramento di una rete neurale ricorrente avviene mediante la definizione di una funzione di costo (loss) complessiva e il calcolo dei gradienti rispetto ai parametri condivisi $\bm{U}$, $\bm{V}$ e $\bm{W}$. Questo processo prende il nome di \textbf{Backpropagation Through Time (BPTT)}.
+
+Assumendo di affrontare un problema di classificazione, la loss complessiva della sequenza $\mathcal{L}$ viene definita come la somma delle perdite calcolate ad ogni singolo istante temporale $t$:
+
+\[
+\mathcal{L} = \sum_{t} \mathcal{L}_t
+\]
+
+Utilizzando la formulazione basata sulla probabilità condizionata, la perdita all'istante $t$ può essere espressa come l'opposto del logaritmo della verosimiglianza:
+
+\[
+\mathcal{L}_t = -\log\big(p(y_t \mid \bm{x}_0, \bm{x}_1, \dots, \bm{x}_t)\big)
+\]
+
+Nel caso specifico in cui si utilizzi l'attivazione softmax in uscita combinata con la loss di \textbf{cross-entropia}, la perdita totale per una sequenza assume la seguente forma matematica:
+
+\[
+\mathcal{L} = \sum_{t} \mathcal{L}_t = -\sum_{t} \sum_{k=1}^{nclasses} t_{t,k} \log(\hat{y}_{t,k})
+\]
+
+Dove:
+\begin{itemize}[noitemsep]
+    \item $nclasses$ è il numero totale di classi del problema di classificazione.
+    \item $t_{t,k}$ rappresenta l'elemento $k$-esimo del vettore dei target reali (\emph{ground truth}) all'istante temporale $t$ (solitamente codificato in modalità \emph{one-hot}).
+    \item $\hat{y}_{t,k}$ è la probabilità predetta per la classe $k$-esima all'istante $t$, calcolata tramite $\hat{\bm{y}}_t = \text{softmax}(\bm{o}_t)$.
+\end{itemize}
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "slide-18"] Grafo computazionale temporale che illustra la direzione del flusso dei gradienti per U, V e W durante la BPTT — Slide 18 / Pagina 18 del PDF
+
+Per aggiornare i parametri della rete, dobbiamo calcolare i gradienti parziali della loss rispetto alle tre matrici di pesi: $\nabla_{\bm{U}}\mathcal{L}$, $\nabla_{\bm{V}}\mathcal{L}$ e $\nabla_{\bm{W}}\mathcal{L}$.
+
+\newpage
+
+\subsection{Derivazione Del Gradiente Rispetto A V}
+
+La matrice di pesi $\bm{V}$ influisce sulla loss di ogni istante temporale solo in modo diretto tramite l'output corrente $\bm{o}_t$. Di conseguenza, per calcolare il gradiente $\nabla_{\bm{V}}\mathcal{L}_t$ relativo al singolo istante $t$, possiamo applicare direttamente la regola della catena (\emph{chain rule}):
+
+\[
+\nabla_{\bm{V}}\mathcal{L}_t = \frac{\partial \mathcal{L}_t}{\partial \hat{\bm{y}}_t} \frac{\partial \hat{\bm{y}}_t}{\partial \bm{o}_t} \frac{\partial \bm{o}_t}{\partial \bm{V}}
+\]
+
+Procediamo svolgendo il calcolo analitico di ogni singolo termine componente per componente.
+
+\subsubsection{Passo 1: Derivata della loss rispetto all'output stimato}
+
+Consideriamo la componente $k$-esima del vettore di output $\hat{\bm{y}}_t$. Derivando la cross-entropia rispetto alla coordinata $\hat{y}_{t,k}$, otteniamo:
+
+\[
+\frac{\partial \mathcal{L}_t}{\partial \hat{y}_{t,k}} = - \frac{\partial}{\partial \hat{y}_{t,k}} \sum_{j=1}^{nclasses} t_{t,j} \log(\hat{y}_{t,j}) = - \frac{t_{t,k}}{\hat{y}_{t,k}}
+\]
+
+\subsubsection{Passo 2: Derivata della funzione softmax rispetto alla pre-attivazione}
+
+Sia $\hat{y}_{t,k} = \text{softmax}(o_{t,k}) = \frac{e^{o_{t,k}}}{\sum_i e^{o_{t,i}}}$. Dobbiamo valutare la variazione rispetto all'input di pre-attivazione generico $o_{t,i}$. Si presentano due casi distinti a seconda dell'uguaglianza degli indici:
+
+\begin{enumerate}
+    \item \textbf{Caso $i = k$}:
+    \begin{align*}
+    \frac{\partial \hat{y}_{t,k}}{\partial o_{t,k}} &= \frac{\partial}{\partial o_{t,k}} \left( \frac{e^{o_{t,k}}}{\sum_i e^{o_{t,i}}} \right) = \frac{e^{o_{t,k}}\sum_i e^{o_{t,i}} - e^{o_{t,k}}e^{o_{t,k}}}{\left(\sum_i e^{o_{t,i}}\right)^2} \\
+    &= \frac{e^{o_{t,k}}}{\sum_i e^{o_{t,i}}} - \left(\frac{e^{o_{t,k}}}{\sum_i e^{o_{t,i}}}\right)^2 = \hat{y}_{t,k}(1 - \hat{y}_{t,k})
+    \end{align*}
+
+    \item \textbf{Caso $i \neq k$}:
+    \begin{align*}
+    \frac{\partial \hat{y}_{t,k}}{\partial o_{t,i}} &= \frac{\partial}{\partial o_{t,i}} \left( \frac{e^{o_{t,k}}}{\sum_j e^{o_{t,j}}} \right) = \frac{0 \cdot \sum_j e^{o_{t,j}} - e^{o_{t,k}}e^{o_{t,i}}}{\left(\sum_j e^{o_{t,j}}\right)^2} \\
+    &= -\frac{e^{o_{t,k}} e^{o_{t,i}}}{\left(\sum_j e^{o_{t,j}}\right)^2} = -\hat{y}_{t,k}\hat{y}_{t,i}
+    \end{align*}
+\end{enumerate}
+
+Riassumendo in forma compatta la derivata della softmax:
+
+\[
+\frac{\partial \hat{y}_{t,k}}{\partial o_{t,i}} = \begin{cases}
+\hat{y}_{t,i}(1 - \hat{y}_{t,i}) & \text{se } i = k \\
+-\hat{y}_{t,i}\hat{y}_{t,k} & \text{se } i \neq k
+\end{cases}
+\]
+
+\newpage
+
+\subsubsection{Passo 3: Combinazione dei primi due termini}
+
+Applichiamo la regola della catena per trovare la derivata della loss $\mathcal{L}_t$ rispetto alla generica pre-attivazione $o_{t,i}$, sommando l'effetto su tutte le possibili classi $k$:
+
+\begin{align*}
+\frac{\partial \mathcal{L}_t}{\partial o_{t,i}} &= \sum_{k=1}^{nclasses} \frac{\partial \mathcal{L}_t}{\partial \hat{y}_{t,k}} \frac{\partial \hat{y}_{t,k}}{\partial o_{t,i}} \\
+&= \frac{\partial \mathcal{L}_t}{\partial \hat{y}_{t,i}} \frac{\partial \hat{y}_{t,i}}{\partial o_{t,i}} + \sum_{k \neq i}^{nclasses} \frac{\partial \mathcal{L}_t}{\partial \hat{y}_{t,k}} \frac{\partial \hat{y}_{t,k}}{\partial o_{t,i}}
+\end{align*}
+
+Sostituendo i risultati precedentemente calcolati:
+
+\begin{align*}
+\frac{\partial \mathcal{L}_t}{\partial o_{t,i}} &= -\frac{t_{t,i}}{\hat{y}_{t,i}} \big(\hat{y}_{t,i}(1 - \hat{y}_{t,i})\big) + \sum_{k \neq i}^{nclasses} \left(-\frac{t_{t,k}}{\hat{y}_{t,k}}\right) \big(-\hat{y}_{t,i}\hat{y}_{t,k}\big) \\
+&= -t_{t,i}(1 - \hat{y}_{t,i}) + \sum_{k \neq i}^{nclasses} t_{t,k} \hat{y}_{t,i} \\
+&= -t_{t,i} + t_{t,i}\hat{y}_{t,i} + \hat{y}_{t,i}\sum_{k \neq i}^{nclasses} t_{t,k} \\
+&= -t_{t,i} + \hat{y}_{t,i} \left( t_{t,i} + \sum_{k \neq i}^{nclasses} t_{t,k} \right)
+\end{align*}
+
+Poiché il vettore target $\bm{t}_t$ rappresenta una distribuzione di probabilità valida, la somma di tutte le sue componenti è pari a $1$ (ovvero $\sum_{k=1}^{nclasses} t_{t,k} = 1$). Possiamo quindi semplificare l'espressione:
+
+\[
+\frac{\partial \mathcal{L}_t}{\partial o_{t,i}} = \hat{y}_{t,i} - t_{t,i}
+\]
+
+\subsubsection{Passo 4: Introduzione dell'ultimo termine e calcolo del gradiente finale}
+
+Per completare la derivazione rispetto alla matrice di pesi $\bm{V}$, consideriamo che $\bm{o}_t = \bm{c} + \bm{V}\bm{h}_t$. Di conseguenza, la derivata parziale rispetto a $\bm{V}$ introduce il vettore dello stato nascosto trasposto $\bm{h}_t^T$.
+
+Combinando questo risultato con la differenza tra l'output predetto e l'etichetta reale ottenuta al Passo 3, ricaviamo la formulazione finale del gradiente:
+
+\[
+\nabla_{\bm{V}}\mathcal{L}_t = \frac{\partial \mathcal{L}_t}{\partial \bm{o}_{t}} \frac{\partial \bm{o}_{t}}{\partial \bm{V}} = \boxed{(\hat{\bm{y}}_t - \bm{t}_t)\bm{h}_t^T}
+\]
+
+\newpage
+
+\subsection{Derivazione Del Gradiente Rispetto A W}
+
+Il calcolo del gradiente della loss rispetto alla matrice di accoppiamento degli stati nascosti $\bm{W}$ è notevolmente più complesso. Questo avviene perché lo stato nascosto corrente $\bm{h}_t$ dipende da $\bm{W}$ sia in modo diretto, sia indirettamente attraverso il contributo dello stato precedente $\bm{h}_{t-1}$, il quale a sua volta dipende da $\bm{W}$ tramite $\bm{h}_{t-2}$, propagandosi all'indietro fino all'inizio della sequenza.
+
+Se applichiamo la regola della catena, la derivata parziale della pre-attivazione $\bm{a}_t$ si biforca in due rami distinti proprio a causa di questa dipendenza ricorsiva. Questa ramificazione si estende all'indietro nel tempo fino all'istante iniziale della finestra temporale $\tau$ considerata per la BPTT:
+
+\[
+\nabla_{\bm{W}}\mathcal{L} = \frac{\partial \mathcal{L}_t}{\partial \hat{\bm{y}}_t} \frac{\partial \hat{\bm{y}}_t}{\partial \bm{o}_t} \frac{\partial \bm{o}_t}{\partial \bm{h}_t} \frac{\partial \bm{h}_t}{\partial \bm{a}_t} \left( \frac{\partial \bm{a}_t}{\partial \bm{W}} + \frac{\partial \bm{a}_t}{\partial \bm{h}_{t-1}} \frac{\partial \bm{h}_{t-1}}{\partial \bm{a}_{t-1}} \left( \frac{\partial \bm{a}_{t-1}}{\partial \bm{W}} + \frac{\partial \bm{a}_{t-1}}{\partial \bm{h}_{t-2}} \frac{\partial \bm{h}_{t-2}}{\partial \bm{a}_{t-2}} (\dots) \right) \right)
+\]
+
+Possiamo riscritturare questa complessa equazione in una forma matematica compatta e computazionalmente trattabile come sommatoria delle influenze temporali dal passo iniziale $k=0$ fino all'istante corrente $t$:
+
+\[
+\nabla_{\bm{W}}\mathcal{L} = \sum_{k=0}^{t} \frac{\partial \mathcal{L}_t}{\partial \bm{h}_t} \frac{\partial \bm{h}_t}{\partial \bm{h}_k} \frac{\partial \bm{h}_k}{\partial \bm{a}_k} \frac{\partial \bm{a}_k}{\partial \bm{W}}
+\]
+
+\subsubsection{Analisi Di Un Caso Studio Con Finestra Temporale Di 3 Passi}
+
+Per comprendere concretamente la dinamica di calcolo, consideriamo una sequenza limitata a una finestra temporale di 3 passi ($t=3$). L'espansione della formula del gradiente rispetto a $\bm{W}$ per la loss $\mathcal{L}_3$ risulta:
+
+\[
+\nabla_{\bm{W}}\mathcal{L} = \frac{\partial \mathcal{L}_3}{\partial \hat{\bm{y}}_3} \frac{\partial \hat{\bm{y}}_3}{\partial \bm{o}_3} \frac{\partial \bm{o}_3}{\partial \bm{h}_3} \frac{\partial \bm{h}_3}{\partial \bm{a}_3} \left( \frac{\partial \bm{a}_3}{\partial \bm{W}} + \frac{\partial \bm{a}_3}{\partial \bm{h}_2} \frac{\partial \bm{h}_2}{\partial \bm{a}_2} \left( \frac{\partial \bm{a}_2}{\partial \bm{W}} + \frac{\partial \bm{a}_2}{\partial \bm{h}_1} \frac{\partial \bm{h}_1}{\partial \bm{a}_1} \frac{\partial \bm{a}_1}{\partial \bm{W}} \right) \right)
+\]
+
+Per semplificare l'esposizione algebrica senza perdere in rigore concettuale, analizziamo il corrispondente \textbf{caso scalare}:
+
+\begin{itemize}
+    \item Il termine di errore in uscita è analogo a quello calcolato in precedenza:
+    \[
+    \frac{\partial \mathcal{L}_3}{\partial \hat{y}_3} \frac{\partial \hat{y}_3}{\partial o_3} \frac{\partial o_3}{\partial h_3} = (y_3 - t_3)V
+    \]
+    \item La derivata dello stato rispetto alla sua pre-attivazione, governata dalla tangente iperbolica ($\tanh$), è:
+    \[
+    \frac{\partial h_t}{\partial a_t} = \frac{\partial \tanh(a_t)}{\partial a_t} = 1 - \tanh^2(a_t) = 1 - h_t^2
+    \]
+    \item La derivata della pre-attivazione rispetto alla matrice di peso $\bm{W}$ è data dallo stato precedente:
+    \[
+    \frac{\partial a_t}{\partial W} = h_{t-1}
+    \]
+    \item La derivata della pre-attivazione rispetto allo stato precedente è pari a:
+    \[
+    \frac{\partial a_t}{\partial h_{t-1}} = W
+    \]
+\end{itemize}
+
+Sostituendo puntualmente ciascuno di questi contributi nell'espressione srotolata della regola della catena per $t=3$, otteniamo la formulazione finale esplicita del gradiente:
+
+\begin{align*}
+\nabla_{W}\mathcal{L} &= \boxed{ (y_3 - t_3) V (1 - h_3^2) h_2 } \\
+&\quad + \boxed{ (y_3 - t_3) V (1 - h_3^2) W (1 - h_2^2) h_1 } \\
+&\quad + \boxed{ (y_3 - t_3) V (1 - h_3^2) W (1 - h_2^2) W (1 - h_1^2) h_0 }
+\end{align*}
+
+Questo sviluppo mostra chiaramente come l'errore commesso all'istante corrente venga retropropagato a ritroso nel tempo, venendo progressivamente scalato dal peso $\bm{W}$ e dai fattori di derivata della funzione di attivazione ad ogni passo temporale precedente incontrato nel cammino.
+
+\section{Backpropagation Nelle Reti Neurali Ricorrenti}
+
+Prima di analizzare la derivazione del gradiente rispetto ai parametri della rete, richiamiamo le equazioni fondamentali che governano il comportamento \textbf{forward} di una cella ricorrente standard (\emph{vanilla RNN}) a ogni passo temporale $t$. Lo stato nascosto e l'output vengono calcolati come segue:
+
+\begin{align*}
+\bm{a}_t &= \bm{b} + \bm{U}\bm{x}_t + \bm{W}\bm{h}_{t-1} \\
+\bm{h}_t &= \tanh(\bm{a}_t) \\
+\bm{o}_t &= \bm{c} + \bm{V}\bm{h}_t \\
+\hat{\bm{y}}_t &= \text{softmax}(\bm{o}_t) \\
+\mathcal{L} &= \sum_t \mathcal{L}_t = -\sum_t \sum_k^{n_{\text{classes}}} t_{t,k} \log(\hat{y}_{t,k})
+\end{align*}
+
+dove:
+\begin{itemize}[noitemsep]
+    \item $\bm{a}_t$ rappresenta l'attivazione pre-sinaptica dello stato nascosto al tempo $t$, ottenuta combinando linearmente l'input corrente $\bm{x}_t$ tramite la matrice dei pesi $\bm{U}$ e lo stato nascosto precedente $\bm{h}_{t-1}$ tramite la matrice $\bm{W}$, con l'aggiunta di un vettore di bias $\bm{b}$.
+    \item $\bm{h}_t$ è lo stato nascosto corrente, calcolato applicando la funzione di attivazione non lineare tangente iperbolica ($\tanh$) ad $\bm{a}_t$.
+    \item $\bm{o}_t$ rappresenta il vettore dei logiti (output non normalizzati) calcolato a partire dallo stato nascosto corrente tramite la matrice dei pesi $\bm{V}$ e il bias $\bm{c}$.
+    \item $\hat{\bm{y}}_t$ è la distribuzione di probabilità predetta sui caratteri o sulle classi, ottenuta applicando l'operatore $\text{softmax}$ a $\bm{o}_t$.
+    \item $\mathcal{L}$ rappresenta la funzione di perdita (\textbf{loss}) globale, definita come la somma su tutti i passi temporali $t$ delle perdite locali $\mathcal{L}_t$, calcolate tramite l'entropia incrociata (\emph{cross-entropy}) tra il vettore di target \emph{one-hot} $\bm{t}_{t}$ e la distribuzione predetta $\hat{\bm{y}}_t$ per le $n_{\text{classes}}$ classi disponibili.
+\end{itemize}
+
+La computazione del gradiente della loss rispetto alla matrice dei pesi degli input $\bm{U}$, indicata con $\nabla_{\bm{U}}\mathcal{L}$, è concettualmente analoga a quella per la matrice dei pesi ricorrenti $\nabla_{\bm{W}}\mathcal{L}$. Infatti, la matrice $\bm{U}$ influenza lo stato nascosto corrente $\bm{h}_t$ sia direttamente, sia indirettamente attraverso lo stato nascosto precedente $\bm{h}_{t-1}$, il quale a sua volta dipende da $\bm{h}_{t-2}$, propagandosi a ritroso nel tempo.
+
+Applicando rigorosamente la regola della catena (\emph{chain rule}), il gradiente della perdita locale $\mathcal{L}_t$ rispetto alla matrice $\bm{U}$ accumula i contributi di tutti i passi temporali passati $k$ (da $0$ a $t$):
+
+\begin{equation}
+\boxed{\nabla_{\bm{U}} \mathcal{L} = \sum_{k=0}^t \frac{\partial \mathcal{L}_t}{\partial \bm{h}_y} \frac{\partial \bm{h}_t}{\partial \bm{h}_k} \frac{\partial \bm{h}_k}{\partial \bm{a}_k} \frac{\partial \bm{a}_k}{\partial \bm{U}}}
+\end{equation}
+
+In questa formulazione, il termine $\bm{h}_y$ presente a denominatore nella prima derivata parziale indica lo stato nascosto al tempo di calcolo della perdita (equivalente a $\bm{h}_t$). Ciascun termine all'interno della sommatoria riflette l'effetto della variazione dei parametri $\bm{U}$ sullo stato pre-attivazione $\bm{a}_k$, la sua propagazione allo stato nascosto locale $\bm{h}_k$, la trasmissione dinamica temporale dallo stato $\bm{h}_k$ fino allo stato corrente $\bm{h}_t$, e infine l'impatto di quest'ultimo sulla loss finale $\mathcal{L}_t$.
+
+\newpage
+
+\section{Pattern Architetturali Delle Reti Neurali Ricorrenti}
+
+\subsection{Pattern Many-To-Many}
+
+Il primo pattern ricorrente fondamentale analizzato è la configurazione \textbf{many-to-many} (molti-a-molti). In questo schema, la rete elabora una sequenza di input e produce una sequenza di output di pari lunghezza, valutando una perdita locale ad ogni singolo passo temporale.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "25-47" Rappresentazione srotolata di una RNN molti-a-molti (Goodfellow) e diagramma CS231n many-to-many — Slide 2 / Pagina 2 del PDF
+
+Questa configurazione è tipica di applicazioni che richiedono una classificazione o una predizione continua fotogramma per fotogramma, come ad esempio la classificazione di video a livello di singolo frame (\emph{video classification at frame level}).
+
+\subsection{Esempio Pratico Di Funzionamento: Modello A Caratteri}
+
+Per illustrare concretamente il funzionamento di una RNN in configurazione many-to-many, consideriamo l'addestramento di un modello a livello di caratteri (\emph{character-level language model}) basato sulla sequenza di addestramento «hello». Ad ogni passo temporale, il carattere corrente viene fornito in input alla rete, e il carattere immediatamente successivo nella sequenza funge da etichetta di \textbf{ground truth} per il calcolo della loss.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "25-47" Diagramma di addestramento RNN a livello di caratteri per la sequenza "hello" — Slide 3 / Pagina 3 del PDF
+
+Ipotizzando un vocabolario ristretto composto da quattro caratteri $\{\text{'h'}, \text{'e'}, \text{'l'}, \text{'o'}\}$, ciascun elemento viene codificato come un vettore \emph{one-hot} di dimensione 4. Il funzionamento si articola come segue:
+\begin{itemize}[noitemsep]
+    \item Al passo 1, l'input è «h» ($[1, 0, 0, 0]^\top$) e il target desiderato è «e».
+    \item Al passo 2, l'input è «e» ($[0, 1, 0, 0]^\top$) e il target desiderato è «l».
+    \item Al passo 3, l'input è «l» ($[0, 0, 1, 0]^\top$) e il target desiderato è «l».
+    \item Al passo 4, l'input è «l» ($[0, 0, 1, 0]^\top$) e il target desiderato è «o».
+\end{itemize}
+
+I vettori di input vengono moltiplicati per la matrice dei pesi $\bm{W}_{xh}$ per generare lo stato nascosto (\emph{hidden layer}), che integra l'informazione del passo precedente calcolata tramite la matrice di ricorrenza $\bm{W}_{hh}$. Infine, lo stato nascosto viene proiettato sullo strato di output (\emph{output layer}) mediante la matrice $\bm{W}_{hy}$ per produrre i logiti di classificazione.
+
+Durante la fase di test (\textbf{test time}), la rete opera in modalità predittiva autonoma per generare la sequenza passo dopo passo:
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "25-47" Diagramma di generazione autoregressiva al tempo di test con campionamento da Softmax — Slide 4 / Pagina 4 del PDF
+
+I logiti generati dallo strato di output vengono normalizzati in probabilità tramite la funzione Softmax. Successivamente, si effettua un campionamento (\emph{sample}) da questa distribuzione per selezionare il carattere predetto. Questo carattere viene quindi alimentato come input per il passo temporale successivo. Attraverso questo meccanismo autoregressivo, lo stato nascosto propaga la memoria del contesto della parola precedentemente elaborata, guidando la generazione coerente dei caratteri successivi.
+
+\subsection{Pattern Output-To-Hidden E Tecniche Di Addestramento}
+
+Un'alternativa strutturale alle tradizionali connessioni ricorrenti tra stati nascosti prevede la presenza di connessioni collegate esclusivamente tra l'output di un passo temporale e lo stato nascosto del passo successivo.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "25-47" Architettura di una RNN con connessioni dall'output allo stato nascosto — Slide 5 / Pagina 5 del PDF
+
+Il confronto tra queste due filosofie architetturali evidenzia importanti differenze in termini di espressività e costo computazionale:
+\begin{itemize}
+    \item \textbf{Connessioni tra unità nascoste (hidden-to-hidden)}: Rappresentano il modello standard analizzato in precedenza. La rete ha la facoltà di memorizzare qualunque informazione relativa al passato all'interno dello stato nascosto $\bm{h}$ e trasmetterla direttamente al futuro.
+    \item \textbf{Connessioni dall'output allo stato nascosto (output-to-hidden)}: In questa configurazione non esistono connessioni dirette da $\bm{h}_{t-1}$ a $\bm{h}_t$. Lo stato nascosto precedente influenza il presente unicamente attraverso l'output intermedio $\bm{o}_{t-1}$. Poiché l'output $\bm{o}$ è vincolato a predire i target del compito specifico, esso manca tipicamente di molte informazioni contestuali di lungo termine necessarie per la dinamica temporale. Di conseguenza, questo pattern possiede una \textbf{capacità inferiore} rispetto al modello con ricorrenza nascosta. Tuttavia, presenta un notevole vantaggio: i singoli passi temporali sono reciprocamente indipendenti durante la fase di ottimizzazione, rendendo l'addestramento estremamente più semplice.
+\end{itemize}
+
+Poiché il vincolo dell'output-to-hidden rischia di causare una perdita di informazioni utili tra i passi temporali, si adotta la tecnica del \textbf{Teacher Forcing} per preservare i vantaggi di addestramento garantendo al contempo stabilità.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "25-47" Schema del Teacher Forcing durante l'addestramento e il test — Slide 6 / Pagina 6 del PDF
+
+La tecnica del Teacher Forcing si basa sui seguenti concetti operativi:
+\begin{itemize}
+    \item \textbf{Disaccoppiamento e parallelizzazione}: Eliminando la ricorrenza diretta tra stati nascosti, tutte le predizioni locali sono confrontate direttamente con i target di addestramento. Questo disaccoppia completamente i passi temporali. L'addestramento può quindi essere interamente parallelizzato, calcolando i gradienti per ogni istante $t$ in isolamento, senza la necessità di ricorrere alla Backpropagation Through Time (BPTT).
+    \item \textbf{Fase di addestramento (Train time)}: Anziché alimentare la connessione ricorrente con l'output predetto dal modello al passo precedente (che potrebbe essere errato e accumulare derive), si forza l'inserimento dell'etichetta di ground truth $\bm{y}^{(t-1)}$ direttamente come input per lo stato nascosto al passo successivo.
+    \item \textbf{Fase di test (Test time)}: Poiché in fase di test non si dispone delle etichette di ground truth, si ripristina la connessione ricorrente standard, alimentando lo stato nascosto corrente con l'output predetto al passo precedente.
+\end{itemize}
+
+\subsection{Pattern Many-To-One}
+
+Un altro pattern di largo impiego è la configurazione \textbf{many-to-one} (molti-a-uno), progettata per mappare una sequenza di ingressi di lunghezza arbitraria in un singolo output localizzato all'ultimo passo temporale.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "25-47" Struttura di una RNN molti-a-uno per classificazione di sequenze — Slide 7 / Pagina 7 del PDF
+
+In questo modello, gli stati nascosti si aggiornano sequenzialmente incorporando le informazioni di ciascun elemento della sequenza, ma l'output $\bm{o}_t$ e la relativa perdita $\mathcal{L}$ vengono calcolati esclusivamente in corrispondenza del passo finale. Questo pattern trova la sua applicazione ideale in compiti quali la \textbf{sentiment analysis} (classificazione di una frase di testo in una categoria di sentimento) o nella classificazione di video a livello di intera sequenza (\emph{video classification at sequence level}).
+
+\subsection{Pattern One-To-Many}
+
+In modo complementare, il pattern \textbf{one-to-many} (uno-a-molti) mappa un singolo input iniziale in una sequenza di output di lunghezza variabile.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "25-47" Struttura di una RNN uno-a-molti per compiti come l'image captioning — Slide 8 / Pagina 8 del PDF
+
+Per implementare questa dinamica, una soluzione comune consiste nel fornire lo stesso input $\bm{x}$ a ciascun'unità nascosta della sequenza ricorrente tramite una matrice di pesi dedicata $\bm{R}$. Ciascun passo temporale riceve questo input statico congiuntamente all'output generato al passo precedente (utilizzando l'etichetta di ground truth in addestramento e l'output predetto durante il test). Questo pattern è alla base dei sistemi di \textbf{image captioning}, in cui un'immagine fissa in ingresso viene descritta da una sequenza di parole in uscita.
+
+La connessione tra modelli visivi estrattori e modelli ricorrenti generatori può essere schematizzata nel seguente modo:
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "25-47" Connessione tra CNN (estrazione feature) e RNN per la generazione della descrizione di un'immagine — Slide 9 / Pagina 9 del PDF
+
+Il processo prevede l'impiego di una rete neurale convoluzionale (\textbf{CNN}) per estrarre le caratteristiche salienti dell'immagine di input. Il vettore di caratteristiche risultante viene successivamente fornito a una RNN, la quale si occupa di generare in modo sequenziale le parole descrittive (ad esempio, «straw», «hat», fino al token di conclusione «END»).
+
+L'intera pipeline di elaborazione ed esecuzione al tempo di test segue una struttura a blocchi dettagliata:
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "25-47"] Pipeline dettagliata di image captioning al tempo di test — Slide 10 / Pagina 10 del PDF
+
+La pipeline si sviluppa secondo le seguenti fasi:
+\begin{enumerate}
+    \item L'immagine di test viene elaborata da una CNN profonda strutturata in blocchi sequenziali: strati convoluzionali accoppiati seguiti da operazioni di max-pooling (\emph{conv-64}, \emph{conv-128}, \emph{conv-256}, \emph{conv-512}) e conclusi da strati completamente connessi (\emph{FC-4096}).
+    \item L'attivazione dell'ultimo strato completamente connesso viene utilizzata per inizializzare il primo stato nascosto $\bm{h}_0$ della rete ricorrente.
+    \item Al passo iniziale, viene fornito in input il token speciale di avvio $\bm{x}_0 = \langle\text{START}\rangle$.
+    \item Lo stato nascosto iniziale $\bm{h}_0$ genera l'output $\bm{y}_0$ (es. «straw»), il quale viene inserito come input per il passo successivo.
+    \item Il processo procede iterativamente producendo le parole successive fino a quando la rete emette il token speciale $\bm{y}_2 = \langle\text{END}\rangle$, determinando il completamento della descrizione.
+\end{enumerate}
+
+\subsection{Limitazioni Del Pattern Output-To-Hidden E Modello Encoder-Decoder}
+
+L'architettura con connessioni output-to-hidden si rivela efficace per modellare distribuzioni di probabilità arbitrarie su una sequenza di output $\bm{y}$ a condizione che la sequenza di input $\bm{x}$ presenti la medesima lunghezza.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "25-47"] Schema delle limitazioni del pattern output-to-hidden in caso di sequenze di lunghezza differente — Slide 11 / Pagina 11 del PDF
+
+Tuttavia, sorge una limitazione insormontabile quando le sequenze di input e output presentano lunghezze differenti ($T_{\text{in}} \neq T_{\text{out}}$). Questa situazione rappresenta lo standard in compiti di \textbf{traduzione automatica} (\emph{machine translation}), dove il numero di parole della frase d'origine differisce quasi sempre da quello della frase tradotta.
+
+Per risolvere questa limitazione, si introduce il pattern basato su architettura \textbf{Encoder-Decoder}:
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "25-47"] Architettura Encoder-Decoder per la gestione di sequenze di lunghezza diversa — Slide 12 / Pagina 12 del PDF
+
+Il modello è strutturato in due componenti principali disaccoppiate:
+\begin{enumerate}
+    \item \textbf{Encoder (fase di lettura)}: Elabora la sequenza di ingresso $\bm{x}^{(1)}, \bm{x}^{(2)}, \dots, \bm{x}^{(n_x)}$ di lunghezza $n_x$ e la comprime in una rappresentazione a lunghezza fissa $\bm{C}$, definita vettore di contesto.
+    \item \textbf{Decoder (fase di scrittura)}: Riceve il vettore di contesto $\bm{C}$ e lo utilizza come informazione di partenza per generare la sequenza di output $\bm{y}^{(1)}, \bm{y}^{(2)}, \dots, \bm{y}^{(n_y)}$ di lunghezza $n_y$, svincolata dalla lunghezza $n_x$ dell'input.
+\end{enumerate}
+Entrambi gli stadi di encoder e decoder sono realizzati combinando opportunamente \textbf{livelli convoluzionali e convoluzionali trasposti} per gestire l'informazione bidimensionale o sequenziale.
+
+\newpage
+
+\section{Il Problema Delle Dipendenze A Lungo Termine}
+
+L'addestramento delle reti ricorrenti standard (\emph{vanilla RNN}) su sequenze estese è ostacolato da due fenomeni strettamente legati alla propagazione del gradiente all'indietro nel tempo:
+\begin{itemize}
+    \item \textbf{Vanishing gradient} (gradiente evanescente - estremamente comune): il gradiente decade in modo esponenziale tendendo a zero dopo pochi passi temporali, inibendo l'aggiornamento dei pesi per le dipendenze lontane nel tempo.
+    \item \textbf{Exploding gradient} (gradiente esplosivo - meno comune): la magnitudo del gradiente cresce in modo incontrollato, provocando instabilità numerica e divergenza nell'ottimizzazione tramite SGD.
+\end{itemize}
+
+Per comprendere l'origine analitica di questi problemi, consideriamo nuovamente la formulazione del gradiente della perdita locale al tempo $t$ rispetto alla matrice dei pesi ricorrenti $\bm{W}$:
+
+\[
+\nabla_{\bm{W}}\mathcal{L} = \sum_{k=0}^t \frac{\partial \mathcal{L}_t}{\partial \bm{y}_t} \frac{\partial \bm{y}_t}{\partial \bm{h}_t} \frac{\partial \bm{h}_t}{\partial \bm{h}_k} \frac{\partial \bm{h}_k}{\partial \bm{W}}
+\]
+
+La criticità di questa espressione risiede nella presenza del fattore di transizione temporale $\frac{\partial \bm{h}_t}{\partial \bm{h}_k}$. Espandendo questo fattore tramite l'applicazione ripetuta della regola della catena, otteniamo una catena di moltiplicazioni su un intervallo di $\tau$ passi temporali:
+
+\[
+\nabla_{\bm{W}}\mathcal{L} = \frac{\partial \mathcal{L}_t}{\partial \bm{h}_t} \left( \prod_{j=1}^{\tau} \frac{\partial \bm{h}_{t-j+1}}{\partial \bm{h}_{t-j}} \right) \frac{\partial \bm{h}_{t-\tau}}{\partial \bm{W}}
+\]
+
+che può essere riscritta in forma estesa come:
+
+\[
+\nabla_{\bm{W}}\mathcal{L} = \frac{\partial \mathcal{L}_t}{\partial \bm{h}_t} \frac{\partial \bm{h}_t}{\partial \bm{h}_{t-1}} \frac{\partial \bm{h}_{t-1}}{\partial \bm{h}_{t-2}} \cdots \frac{\partial \bm{h}_{t-\tau+1}}{\partial \bm{h}_{t-\tau}} \frac{\partial \bm{h}_{t-\tau}}{\partial \bm{W}}
+\]
+
+Nel \textbf{caso scalare} semplificato, il comportamento asintotico di questa catena di derivate parziali evidenzia due scenari limite ben definiti:
+\begin{itemize}
+    \item Se i singoli termini di transizione soddisfano la condizione:
+    \[
+    \frac{\partial h_t}{\partial h_k} < 1
+    \]
+    il prodotto di $\tau$ termini tende esponenzialmente a zero per $\tau$ grandi, annullando il gradiente globale:
+    \[
+    \nabla_{\bm{W}}\mathcal{L} \ll 1
+    \]
+    \item Se invece i termini soddisfano la condizione:
+    \[
+    \frac{\partial h_t}{\partial h_k} > 1
+    \]
+    il prodotto cresce esponenzialmente con la lunghezza della sequenza $\tau$, portando all'esplosione dei gradienti:
+    \[
+    \nabla_{\bm{W}}\mathcal{L} \gg 1
+    \]
+\end{itemize}
+
+Nel caso generale in cui lo stato nascosto è un vettore multidimensionale $\bm{h}_t$, il termine $\frac{\partial \bm{h}_t}{\partial \bm{h}_k}$ rappresenta una matrice \textbf{Jacobiana}. L'evoluzione del gradiente nel tempo è governata dal \textbf{raggio spettrale} $\rho$ di questa matrice (ovvero il suo autovalore di modulo massimo):
+\begin{itemize}[noitemsep]
+    \item Se $\rho < 1$, il prodotto delle matrici Jacobiane decade verso la matrice nulla, causando l'evanescenza del gradiente.
+    \item Se $\rho > 1$, il prodotto delle matrici Jacobiane diverge, determinando l'esplosione del gradiente.
+\end{itemize}
+
+Mentre l'esplosione del gradiente può essere risolta in modo semplice ed efficace riscalando il gradiente quando la sua norma supera una soglia definita $T_0$ (\textbf{gradient clipping}):
+
+\[
+\boxed{\text{se } \|\nabla_{\bm{W}}\mathcal{L}\| > T_0 \quad \text{allora} \quad \nabla_{\bm{W}}\mathcal{L} \leftarrow \frac{T_0}{\|\nabla_{\bm{W}}\mathcal{L}\|} \nabla_{\bm{W}}\mathcal{L}}
+\]
+
+il problema dell'evanescenza del gradiente risulta intrinsecamente più complesso. In assenza di modifiche strutturali, il decadimento esponenziale impedisce la propagazione dell'errore all'indietro per finestre temporali ampie, limitando l'apprendimento alle sole relazioni a breve termine:
+
+\[
+\nabla_{\bm{W}}\mathcal{L} = \underbrace{\frac{\partial \mathcal{L}_t}{\partial \bm{h}_t} \frac{\partial \bm{h}_t}{\partial \bm{h}_{t-1}} \frac{\partial \bm{h}_{t-1}}{\partial \bm{h}_{t-2}}}_{\text{Dipendenze a breve termine}} \cdots \underbrace{\frac{\partial \bm{h}_{t-\tau+2}}{\partial \bm{h}_{t-\tau+1}} \frac{\partial \bm{h}_{t-\tau+1}}{\partial \bm{h}_{t-\tau}} \frac{\partial \bm{h}_{t-\tau}}{\partial \bm{W}}}_{\text{Dipendenze a lungo termine (evanescenti)}}
+\]
+
+\newpage
+
+\section{Long-Short Term Memory Network (LSTM)}
+
+Le reti \textbf{Long-Short Term Memory (LSTM)} sono state progettate per superare il problema del vanishing gradient introducendo una struttura di cella in grado di far fluire l'errore all'indietro nel tempo senza subire attenuazioni esponenziali.
+
+In una cella RNN standard, la propagazione dello stato nascosto avviene attraverso una singola trasformazione non lineare (tipicamente una tangente iperbolica):
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "25-47"] Catena di celle RNN standard con singolo strato tanh — Slide 15 / Pagina 15 del PDF
+
+In questa struttura semplice, il gradiente subisce una modifica sistematica ad ogni passo ad opera della derivata della funzione non lineare e del raggio spettrale della matrice Jacobiana.
+
+L'architettura LSTM introduce invece un'interazione sofisticata introducendo un canale di comunicazione parallelo denominato \textbf{cell state} (stato della cella), indicato con $\bm{C}_t$:
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "25-47"] Catena di celle LSTM con evidenziazione del flusso dello stato della cella — Slide 16 / Pagina 16 del PDF
+
+La caratteristica fondamentale del cell state è il suo posizionamento lungo il ramo superiore della cella, dove il flusso del gradiente può scorrere in modo pressoché ininterrotto:
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "25-47"] Dettaglio della propagazione dello stato della cella (cell state) nell'LSTM — Slide 17 / Pagina 17 del PDF
+
+L'interazione con questo canale è governata da tre filtri non lineari chiamati \textbf{gate} (porte), che determinano quali informazioni aggiungere, rimuovere o propagare. Il calcolo all'interno di una cella LSTM si articola in quattro fasi:
+
+\subsection{Forget Gate (Porta Di Oblio)}
+
+Il primo blocco a sinistra incontra il \textbf{forget gate}. Questo meccanismo determina quali informazioni rimuovere dallo stato della cella precedente $\bm{C}_{t-1}$. Ad esempio, in un modello linguistico, se il soggetto della frase cambia, la rete deve dimenticare le informazioni grammaticali del vecchio soggetto per evitare conflitti con il nuovo.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "25-47"] Dettaglio del forget gate in una cella LSTM — Slide 18 / Pagina 18 del PDF
+
+La porta di oblio calcola un coefficiente di ritenzione compreso nell'intervallo $[0,1]$ applicando la funzione sigmoidea alla combinazione dello stato nascosto precedente $\bm{h}_{t-1}$ e dell'input corrente $\bm{x}_t$:
+
+\begin{equation}
+\boxed{\bm{f}_t = \sigma(\bm{W}_f [\bm{h}_{t-1}, \bm{x}_t] + \bm{b}_f)}
+\end{equation}
+
+dove l'operatore $[\cdot]$ indica la concatenazione dei vettori.
+
+\subsection{Input Gate (Porta Di Ingresso)}
+
+La seconda fase stabilisce quali nuove informazioni memorizzare nel cell state. Riprendendo l'esempio precedente, dopo aver rimosso le caratteristiche del vecchio soggetto, la rete deve registrare le caratteristiche associate al nuovo soggetto.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "25-47"] Dettaglio dell'input gate e dello stato candidato in una cella LSTM — Slide 19 / Pagina 19 del PDF
+
+Questo processo richiede l'interazione di due elementi:
+\begin{itemize}
+    \item L'\textbf{input gate} $\bm{i}_t$, che decide quali componenti dello stato aggiornare tramite un filtro sigmoideo:
+    \[
+    \bm{i}_t = \sigma(\bm{W}_i [\bm{h}_{t-1}, \bm{x}_t] + \bm{b}_i)
+    \]
+    \item Lo stato candidato $\tilde{\bm{C}}_t$, che propone i nuovi valori da inserire nello stato tramite una tangente iperbolica:
+    \[
+    \tilde{\bm{C}}_t = \tanh(\bm{W}_C [\bm{h}_{t-1}, \bm{x}_t] + \bm{b}_C)
+    \]
+\end{itemize}
+
+\subsection{Aggiornamento dello Stato della Cella}
+
+Ottenuti i contributi dei due gate, lo stato della cella corrente $\bm{C}_t$ viene aggiornato mediante una combinazione lineare controllata:
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "25-47"] Dettaglio del calcolo di aggiornamento dello stato della cella LSTM — Slide 20 / Pagina 20 del PDF
+
+\begin{equation}
+\boxed{\bm{C}_t = \bm{f}_t \odot \bm{C}_{t-1} + \bm{i}_t \odot \tilde{\bm{C}}_t}
+\end{equation}
+
+dove l'operatore $\odot$ indica il prodotto di Hadamard (prodotto elemento per elemento). Questa operazione lineare evita che il gradiente subisca le attenuazioni tipiche dei passaggi attraverso strati non lineari ripetuti.
+
+\subsection{Output Gate (Porta Di Uscita)}
+
+L'ultima fase determina il valore dello stato nascosto in uscita $\bm{h}_t$, che rappresenta anche il vettore di output effettivo della cella al tempo $t$. Nel contesto del modello linguistico, avendo memorizzato il nuovo soggetto, la cella deve ora produrre in output un verbo coerente con esso.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "25-47"] Dettaglio dell'output gate e del calcolo dello stato nascosto in una cella LSTM — Slide 21 / Pagina 21 del PDF
+
+Lo stato della cella corrente $\bm{C}_t$ viene filtrato e proiettato nell'intervallo $[-1, 1]$ tramite la tangente iperbolica, e successivamente pesato dall'output del gate sigmoideo $\bm{o}_t$:
+
+\begin{align*}
+\bm{o}_t &= \sigma(\bm{W}_o [\bm{h}_{t-1}, \bm{x}_t] + \bm{b}_o) \\
+\Aboxed{\bm{h}_t &= \bm{o}_t \odot \tanh(\bm{C}_t)}
+\end{align*}
+
+\newpage
+
+\section{Gated Recurrent Unit (GRU) E Applicazioni}
+
+\subsection{Gated Recurrent Unit (GRU)}
+
+La \textbf{Gated Recurrent Unit (GRU)} rappresenta una variante semplificata della cella LSTM progettata per ottimizzare l'efficienza computazionale.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "25-47"] Struttura interna di una Gated Recurrent Unit (GRU) — Slide 22 / Pagina 22 del PDF
+
+La cella GRU si differenzia dall'LSTM per due aspetti fondamentali:
+\begin{itemize}[noitemsep]
+    \item Combina la porta di ingresso (input gate) e la porta di oblio (forget gate) in un'unica porta di aggiornamento denominata \textbf{update gate}.
+    \item Elimina il canale separato del cell state, integrando tutte le informazioni all'interno dello stato nascosto $\bm{h}_t$, riducendo così il numero di parametri della cella.
+\end{itemize}
+
+\subsection{Architettura Completa Per La Descrizione Dei Video}
+
+Sfruttando l'espressività delle celle ricorrenti a gate, viene proposta l'architettura completa \textbf{Full-GRU Encoder-Decoder Natural Language Video Description}.
+
+% [IMMAGINE DEL FILE DI SLIDE CON NOME "25-47"] Esempio di descrizione di un video tramite architettura full-GRU encoder-decoder — Slide 23 / Pagina 23 del PDF
+
+Questo sistema affronta il compito di generare descrizioni testuali a partire da contenuti video dinamici (come mostrato nell'immagine in cui un gatto interagisce con una ciotola di cibo). L'architettura è progettata per gestire le informazioni temporali del video a diversi livelli di granularità (\emph{granularities}), catturando sia le transizioni veloci tra i singoli fotogrammi della scena sia la semantica globale e le azioni a lungo termine che caratterizzano l'intera sequenza.
+
+
+\end{document}

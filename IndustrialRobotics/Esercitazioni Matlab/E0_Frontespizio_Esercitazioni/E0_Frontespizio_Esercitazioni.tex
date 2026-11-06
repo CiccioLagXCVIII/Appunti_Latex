@@ -1,0 +1,105 @@
+%!TEX program = xelatex
+% ==============================================================================
+% FRONTESPIZIO A COLORI: RACCOLTA ESERCITAZIONI MATLAB - INDUSTRIAL ROBOTICS
+% ==============================================================================
+\documentclass[11pt, a4paper]{article}
+
+% BB Localizzazione Linguistica e Font XeLaTeX
+\usepackage{fontspec}
+\usepackage[italian]{babel}
+\setmainfont{Latin Modern Roman}
+\setsansfont{Latin Modern Sans}
+\setmonofont{Consolas}[Scale=0.92]
+
+% BB Geometria e Margini della Copertina
+\usepackage{geometry}
+\geometry{
+    a4paper,
+    left=2.3cm,
+    right=2.3cm,
+    top=2.5cm,
+    bottom=2.5cm
+}
+
+% BB Palette Colori Istituzionale (Coerente con TesinaNEW.tex)
+\usepackage[table]{xcolor}
+\definecolor{primaryNavy}{RGB}{20, 52, 85}     % Blu Navy istituzionale
+\definecolor{accentBlue}{RGB}{41, 128, 185}    % Blu tecnico per dettagli
+\definecolor{slateGray}{RGB}{108, 117, 125}    % Grigio sobrio per testi secondari
+\definecolor{softBg}{RGB}{248, 249, 250}       % Grigio perlaceo di sfondo
+\definecolor{borderGray}{RGB}{222, 226, 230}   % Linee di separazione
+
+% BB Grafica e Inclusione Loghi
+\usepackage{graphicx}
+\graphicspath{{./Images/}}
+
+% BB Tabelle e Tipografia
+\usepackage{booktabs}
+\usepackage{array}
+
+% BB Metadati PDF
+\usepackage{hyperref}
+\hypersetup{
+    hidelinks,
+    pdfauthor={Francesco Lo Verde},
+    pdftitle={Esercitazioni di Laboratorio MATLAB - Industrial Robotics},
+    pdfsubject={Raccolta delle esercitazioni di cinematica dei manipolatori robotici},
+    pdfkeywords={Industrial Robotics, MATLAB, Cinematica Diretta, Cinematica Inversa, Jacobiano Geometrico}
+}
+
+\begin{document}
+\pagestyle{empty}
+
+\begin{titlepage}
+    \centering
+    \sffamily
+
+    % --- SEZIONE SUPERIORE: LOGO E UNIVERSITÀ ---
+    \vspace*{0.2cm}
+    \includegraphics[width=0.34\textwidth]{LogoUnipg.png}\par
+    \vspace{0.8cm}
+
+    {\scshape\Large\bfseries\color{primaryNavy} Università degli Studi di Perugia\par}
+    \vspace{0.25cm}
+    {\large\bfseries\color{slateGray} Dipartimento di Ingegneria\par}
+
+    \vfill
+
+    % --- SEZIONE CENTRALE: CORSO E TITOLO PRINCIPALE ---
+    {\Large\bfseries\color{accentBlue} CORSO DI INDUSTRIAL ROBOTICS\par}
+    \vspace{0.6cm}
+
+    \begin{minipage}{0.95\linewidth}
+        \centering
+        {\fontsize{24}{30}\selectfont \bfseries \color{primaryNavy} Esercitazioni MATLAB\par}
+    \end{minipage}
+
+    \vspace{0.7cm}
+    {\color{accentBlue}\rule{0.65\linewidth}{1.4pt}}\par
+    \vspace{0.7cm}
+
+    {\large\color{slateGray} Rappresentazioni Orientamento, Cinematica Diretta Manipolatori,\\Disaccoppiamento Polso - Struttura Portante, Cinematica Inversa Manipolatore Stanford, Jacobiano Geometrico E Metodi Per Cinematica Inversa\par}
+
+    \vfill
+
+    % --- SEZIONE INFERIORE: DATI DELLO STUDENTE ---
+    \begin{minipage}{0.85\linewidth}
+        \large
+        \begin{tabular}{@{} l l}
+            \multicolumn{2}{l}{\textbf{\color{primaryNavy}Studente:}} \\
+            \addlinespace[0.4em]
+            Nome:  & \textbf{Francesco Lo Verde} \\
+            Email: & \texttt{francesco.loverde@studenti.unipg.it} \\
+        \end{tabular}
+    \end{minipage}
+
+    \vspace{1.5cm}
+
+    % --- PIÈ DI PAGINA: ANNO ACCADEMICO ---
+    {\large\bfseries\color{slateGray} Anno Accademico 2025--2026\par}
+    \vspace*{0.2cm}
+
+\end{titlepage}
+
+\end{document}
+

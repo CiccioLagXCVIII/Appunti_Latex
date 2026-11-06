@@ -1,0 +1,2929 @@
+﻿\documentclass[11pt, a4paper]{report}
+
+%---------------------------------------------------------
+% Lingua E Codifica
+%---------------------------------------------------------
+\usepackage[italian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+%---------------------------------------------------------
+% Layout Di Pagina E Tipografia
+%---------------------------------------------------------
+\usepackage[margin=2cm, top=1.5cm, bottom=1.5cm]{geometry}
+\usepackage{parskip}
+\usepackage{microtype}
+
+%---------------------------------------------------------
+% Gestione Dei Colori
+%---------------------------------------------------------
+\usepackage[table]{xcolor}
+\definecolor{darkgreen}{RGB}{0,100,0}
+
+%---------------------------------------------------------
+% Matematica E Simboli
+%---------------------------------------------------------
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{mathtools}
+\usepackage{siunitx}
+
+% BB OTTIMIZZAZIONE MATRICI LUNGHE PER LA STAMPA
+\setlength{\arraycolsep}{10pt}
+\usepackage{bm}
+\usepackage{arydshln}
+\usepackage{amsthm}
+\newtheorem{theorem}{Teorema}
+\newtheorem{definition}{Definizione}
+\newtheorem{lemma}{Lemma}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+%---------------------------------------------------------
+% Grafica, Immagini E Tabelle
+%---------------------------------------------------------
+\usepackage{graphicx}
+\graphicspath{{./Images/Reinforcement Learning/}}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, patterns, angles, quotes, calc}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+
+%---------------------------------------------------------
+% Link, Riferimenti Ed Elenchi
+%---------------------------------------------------------
+\usepackage[unicode]{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+    citecolor=blue,
+    pdftitle={Capitolo 15 - Reinforcement Learning},
+    pdfauthor={Francesco Lo Verde},
+    pdfpagemode=FullScreen,
+}
+\usepackage{bookmark}
+\usepackage{enumitem}
+\setlist{noitemsep}
+
+%---------------------------------------------------------
+% Personalizzazione Titoli E Altri Pacchetti
+%---------------------------------------------------------
+\usepackage{titlesec}
+
+% Definizione Della Numerazione Gerarchica
+\renewcommand{\thesection}{\thechapter.\arabic{section}}
+\renewcommand{\thesubsection}{\thesection.\arabic{subsection}}
+\renewcommand{\thesubsubsection}{\thesubsection.\arabic{subsubsection}}
+
+% Definizione Della Formattazione Dei Titoli
+
+% Formattazione per \section
+\titleformat{\section}{\normalfont\LARGE\bfseries}{\thesection}{1em}{}
+
+% Formattazione per \subsection
+\titleformat{\subsection}{\normalfont\Large\bfseries}{\thesubsection}{1em}{}
+
+% Formattazione per \subsubsection (se necessario)
+\titleformat{\subsubsection}{\normalfont\large\bfseries}{\thesubsubsection}{1em}{}
+
+%---------------------------------------------------------
+% Pacchetto Per Algoritmi
+%---------------------------------------------------------
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+
+\SetKwData{Dati}{Input}
+\SetKwData{Risultato}{Output}
+\SetKwInput{Inizializza}{Inizializzazione}
+\SetKwFor{Mentre}{mentre}{fare}{fine mentre}
+\SetKwFor{Per}{per ogni}{fare}{fine per}
+\SetKwIF{Se}{AltrimentiSe}{Altrimenti}{se}{allora}{altrimenti se}{altrimenti}{fine se}
+\SetKwComment{Commento}{// }{}
+
+%---------------------------------------------------------
+% Altri Pacchetti
+%---------------------------------------------------------
+\usepackage{comment}
+
+\author{Francesco Lo Verde}
+\begin{document}
+
+\section{Fondamenti Di Reinforcement Learning}
+
+\subsection{Definizioni Di Base}
+
+Il \textbf{Reinforcement Learning (RL)} è un paradigma di machine learning in cui un agente viene addestrato a compiere azioni/scelte senza essere esplicitamente supervisionato con tali informazioni. A differenza dell'apprendimento supervisionato (\emph{supervised learning}), in cui il segnale di supervisione è precisamente la quantità  che vorremmo che il modello stimasse, nel reinforcement learning non supervisioniamo con tale quantitÃƒÂ . Sfruttiamo invece il concetto di \emph{reward} (ricompensa), che codifica se una sequenza di scelte effettuate dall'agente sia vantaggiosa o meno per la risoluzione del compito. Il \emph{reward} è l'elemento che distingue il reinforcement learning da tutti gli altri paradigmi. Il reinforcement learning si differenzia anche dall'apprendimento non supervisionato (\emph{unsupervised learning}), in quanto, sebbene non sia esplicito, il \emph{reward} fornisce comunque un'indicazione sulla capacitÃƒÂ  del modello di predire le azioni corrette.
+
+Il \emph{reward} viene ottenuto attraverso le interazioni tra l'agente e l'ambiente (\emph{environment}). L'ambiente fornisce segnali di \emph{reward} in risposta alle azioni eseguite dall'agente. L'agente, di conseguenza, apprende da sequenze di interazioni con l'ambiente, con l'obiettivo di identificare sequenze di azioni che massimizzino il \emph{reward} ottenuto.
+
+Un agente di RL acquisisce informazioni dalla scena, compie un'azione, interagisce con l'ambiente e riceve un \emph{reward} (o costo) che codifica se le azioni eseguite siano buone o meno rispetto al compito in esame (si veda la Figura 1.1).
+
+Consideriamo un semplice esempio per introdurre il RL (si veda la Figura 1.2). In questo scenario, l'agente puÃƒÂ² muoversi solo in alto, in basso, a sinistra o a destra, oppure non muoversi affatto. Vi sono celle accessibili (quelle bianche), mentre altre sono proibite (quelle gialle). Infine, vi è una cella obiettivo (\emph{goal}) che deve essere raggiunta dall'agente.
+
+L'obiettivo del RL è trovare una ``buona'' \emph{policy} (politica), ovvero una funzione che, per ogni possibile cella in cui si trova l'agente, fornisca l'azione (alto/basso/sinistra/destra/nessuna azione) da eseguire. Il termine buona dipende dalla definizione della funzione di \emph{reward}, la quale a sua volta dipende dalle caratteristiche del compito e dai possibili vincoli imposti. Nell'esempio del \emph{grid world}, una buona \emph{policy} potrebbe essere una politica che evita le celle proibite e raggiunge lo stato obiettivo nel minor numero di passi.
+
+\newpage
+
+% [IMMAGINE DAL PDF ORIGINALE] Schema generale del processo di interazione nel Reinforcement Learning Ã¢â‚¬â€ Pagina 2 del PDF
+% [IMMAGINE DAL PDF ORIGINALE] Esempio di Grid World con celle proibite e target Ã¢â‚¬â€ Pagina 2 del PDF
+
+Introduciamo alcune definizioni.
+
+\subsubsection{Agente}
+
+L'entità  che interagisce con l'ambiente e acquisisce osservazioni.
+
+\subsubsection{Ambiente}
+
+Comprende tutto ciò che si trova al di fuori dell'agente, e il suo stato può cambiare sia indipendentemente dall'agente, sia a causa delle sue azioni.
+
+\subsubsection{Stato}
+
+Lo stato è la rappresentazione disponibile dell'ambiente e dell'agente. Spesso ci riferiamo ad esso anche come \textbf{Osservazione} (\emph{Observation}), per evidenziare che si tratta di un'osservazione dell'ambiente e dello stato interno dell'agente. Lo stato dipende dal tempo.
+
+Ci riferiamo a uno stato come elemento di uno spazio degli stati $\mathcal{S}$ rappresentato dal seguente vettore:
+\begin{equation}
+\bm{s} \in \mathbb{R}^D
+\end{equation}
+dove $D$ indica la dimensionalità del vettore di rappresentazione dello stato. Quando abbiamo accesso a un'osservazione parziale, distinguiamo tra questa osservazione, che indichiamo con $\bm{x} \in \mathbb{R}^D$, e lo stato nascosto dell'ambiente $\bm{s} \in \mathbb{R}^M$, dove $M$ potrebbe essere diverso da $D$. Quando l'osservazione non convoglia direttamente informazioni sullo stato reale, ci riferiamo a \textbf{Problemi Parzialmente Osservabili} (\emph{Partially Observable Problems}).
+
+In generale, lo stato del sistema è incerto a causa della presenza di processi stocastici, pertanto lo modelliamo con una variabile aleatoria $s_t$, che codifica i possibili valori che lo stato potrebbe assumere al passo temporale $t$, ciascuno con una determinata probabilità, ovvero:
+\begin{equation}
+p(s) = \Pr\{s_t = s\}, \quad s \in \mathcal{S}
+\end{equation}
+
+Nel nostro esempio del \emph{grid world}, lo spazio degli stati è $\mathcal{S} = \{s_1, \dots, s_9\}$, ovvero ci sono 9 stati (uno per ogni cella), e ciascuno stato codifica la posizione del robot nella griglia: $s_i = (x_i, y_i)$ (si veda la Figura 1.3).
+
+\subsubsection{Azione}
+
+Le azioni che l'agente compie a ogni passo temporale. Come per lo stato, anche questa potrebbe essere una variabile aleatoria $a_t$, che codifica i possibili valori che l'azione potrebbe assumere al passo temporale $t$, ovvero:
+\begin{equation}
+p(a) = \Pr\{a_t = a\}, \quad a \in \mathcal{A}
+\end{equation}
+
+Nel nostro esempio del \emph{grid world}, lo spazio delle azioni è $\mathcal{A} = \{a_1, \dots, a_5\}$, ovvero vi sono 5 azioni: $a_1 = \text{alto}$, $a_2 = \text{destra}$, $a_3 = \text{basso}$, $a_4 = \text{sinistra}$, $a_5 = \text{fermo}$ (si veda la Figura 1.3).
+
+% [IMMAGINE DAL PDF ORIGINALE] A sinistra: i nove stati del grid world. A destra: l'insieme delle azioni possibili Ã¢â‚¬â€ Pagina 3 del PDF
+
+\newpage
+
+\subsubsection{Modello (Transizione Di Stato)}
+
+Quando un'azione viene compiuta in un dato stato, l'agente si sposta in un altro stato in base all'azione scelta. La funzione che codifica questo aspetto è il modello dell'ambiente o, piÃƒÂ¹ precisamente, la dinamica di transizione di stato. Questa funzione mappa coppie stato-azione a stati successivi. Ad esempio, nel \emph{grid world} (sotto certe ipotesi che spiegheremo), se ci troviamo nello stato $s_1$ e compiamo l'azione \emph{destra}, il nostro stato successivo sarÃƒÂ  $s_2$:
+\begin{equation}
+s_1 \xrightarrow{\text{azione}=\text{destra}} s_2
+\end{equation}
+
+Da un punto di vista probabilistico, possiamo dire che non siamo interessati alle probabilitÃƒÂ  marginali su stati, azioni e \emph{reward}, ma piuttosto alla loro distribuzione condizionata date le azioni e gli stati passati. A questo scopo, abbiamo bisogno di una rappresentazione del modello di queste dinamiche. Il modello è una rappresentazione matematica dell'ambiente e, in particolare, descrive la legge di transizione che lega la coppia stato-azione ai futuri stati e \emph{reward}. Il modello puÃƒÂ² essere stocastico o deterministico. In generale, descriviamo la probabilitÃƒÂ  di transizione di stato (il modello) con una pdf (funzione di densitÃƒÂ  di probabilitÃƒÂ ):
+\begin{equation}
+p(s' \mid s, a) = \Pr\{s_{t+1} = s' \mid s_t = s, a_t = a\}
+\end{equation}
+\begin{equation*}
+\sum_{s' \in \mathcal{S}} p(s' \mid s, a) = 1, \quad \forall s \in \mathcal{S}, a \in \mathcal{A}
+\end{equation*}
+
+Nell'esempio del \emph{grid world} abbiamo considerato dinamiche di transizione di stato deterministiche; tuttavia, in generale esse sono stocastiche, ovvero la stessa coppia stato-azione potrebbe condurre a stati diversi in accordo con la pdf associata.
+
+Per l'esempio del \emph{grid world} (considerando un ambiente deterministico), possiamo scrivere la matrice delle dinamiche di transizione di stato, che ci mostra, per ogni coppia stato-azione, qual è lo stato successivo (si veda la Figura 1.4).
+
+\begin{figure}[H]
+\centering
+\begin{tabular}{c|ccccc}
+\toprule
+& $a_1$ (alto) & $a_2$ (destra) & $a_3$ (basso) & $a_4$ (sinistra) & $a_5$ (fermo) \\ \midrule
+$s_1$ & $s_1$ & $s_2$ & $s_4$ & $s_1$ & $s_1$ \\
+$s_2$ & $s_2$ & $s_3$ & $s_5$ & $s_1$ & $s_2$ \\
+$s_3$ & $s_3$ & $s_3$ & $s_6$ & $s_2$ & $s_3$ \\
+$s_4$ & $s_1$ & $s_5$ & $s_7$ & $s_4$ & $s_4$ \\
+$s_5$ & $s_2$ & $s_6$ & $s_8$ & $s_4$ & $s_5$ \\
+$s_6$ & $s_3$ & $s_6$ & $s_9$ & $s_5$ & $s_6$ \\
+$s_7$ & $s_4$ & $s_8$ & $s_7$ & $s_7$ & $s_7$ \\
+$s_8$ & $s_5$ & $s_9$ & $s_8$ & $s_7$ & $s_8$ \\
+$s_9$ & $s_6$ & $s_9$ & $s_9$ & $s_8$ & $s_9$ \\
+\bottomrule
+\end{tabular}
+\caption{Matrice di transizione di stato per l'esempio del grid world [2].}
+\end{figure}
+
+\subsubsection{Policy}
+
+La \emph{policy} (politica) descrive il comportamento dell'agente, ovvero l'azione che l'agente seleziona dato lo stato in cui si trova. In particolare, la \emph{policy} è una funzione che mappa l'osservazione (stato) che rappresenta l'ambiente in azioni. Le \emph{policy} possono essere deterministiche (dato uno stato, un'azione viene selezionata con probabilitÃƒÂ  $1.0$):
+\begin{equation}
+\pi(s) = a
+\end{equation}
+
+\newpage
+
+o stocastiche (dato uno stato, vi è una pdf sulle possibili azioni che possono essere selezionate in quello stato):
+\begin{equation}
+\pi(a \mid s) = p(a_t = a \mid s_t = s)
+\end{equation}
+
+Nell'esempio del \emph{grid world}, una possibile \emph{policy} deterministica per lo stato $s_1$ è (si veda anche la Figura 1.5):
+\begin{align}
+\pi(a_1 \mid s_t = s_1) &= 0.0  \\
+\pi(a_2 \mid s_t = s_1) &= 1.0  \\
+\pi(a_3 \mid s_t = s_1) &= 0.0  \\
+\pi(a_4 \mid s_t = s_1) &= 0.0  \\
+\pi(a_5 \mid s_t = s_1) &= 0.0
+\end{align}
+dove $a_1 = \text{alto}$, $a_2 = \text{destra}$, $a_3 = \text{basso}$, $a_4 = \text{sinistra}$, $a_5 = \text{fermo}$.
+
+% [IMMAGINE DAL PDF ORIGINALE] Policy deterministica ed esempi di traiettorie ottenute Ã¢â‚¬â€ Pagina 5 del PDF
+
+\newpage
+
+Invece, una possibile \emph{policy} stocastica è (si veda anche la Figura 1.6):
+\begin{align}
+\pi(a_1 \mid s_t = s_1) &= 0.0  \\
+\pi(a_2 \mid s_t = s_1) &= 0.5  \\
+\pi(a_3 \mid s_t = s_1) &= 0.5  \\
+\pi(a_4 \mid s_t = s_1) &= 0.0  \\
+\pi(a_5 \mid s_t = s_1) &= 0.0
+\end{align}
+
+% [IMMAGINE DAL PDF ORIGINALE] Policy stocastica con frecce che indicano le azioni campionabili per ogni stato Ã¢â‚¬â€ Pagina 6 del PDF
+
+\textbf{N.B.} una \emph{policy} non rappresenta le azioni possibili da uno stato, bensÃƒÂ¬ l'azione selezionata in un dato stato: è la scelta compiuta dall'agente.
+
+\subsubsection{Reward}
+
+Il \emph{reward} (ricompensa) è la caratteristica piÃƒÂ¹ distintiva del reinforcement learning. Si tratta di uno scalare che definisce l'obiettivo da massimizzare (o minimizzare, nel caso della formulazione di costo). Ogni volta che l'agente compie un'azione in un certo stato, l'ambiente fornisce un \emph{reward} che codifica se l'azione sia buona o meno. Pertanto, il \emph{reward} è una funzione dello stato e dell'azione:
+\begin{equation}
+r(s, a) \in \mathbb{R}
+\end{equation}
+
+In generale, \emph{reward} elevati vengono utilizzati per incoraggiare l'agente a compiere le azioni corrispondenti, mentre \emph{reward} negativi indicano che le azioni selezionate non sono vantaggiose per risolvere il compito.
+
+Nell'esempio del \emph{grid world}, una funzione di \emph{reward} ragionevole potrebbe assegnare un \emph{reward} pari a $-1$ per le azioni che tentano di uscire dai confini della griglia (ad esempio, l'azione \emph{sinistra} nello stato $s_1$), un \emph{reward} pari a $-1$ per le azioni che tentano di entrare in stati proibiti, un \emph{reward} pari a $+1$ per le azioni che conducono l'agente allo stato obiettivo (\emph{target}) e un \emph{reward} pari a $0$ in caso contrario. Come per le dinamiche di transizione di stato, anche i \emph{reward} possono essere descritti in formato tabellare in caso di ambienti deterministici (si veda la Figura 1.7).
+
+\newpage
+
+\begin{figure}[H]
+\centering
+\begin{tabular}{c|ccccc}
+\toprule
+& $a_1$ (alto) & $a_2$ (destra) & $a_3$ (basso) & $a_4$ (sinistra) & $a_5$ (fermo) \\ \midrule
+$s_1$ & $r_{\text{bordo}}$ & 0 & 0 & $r_{\text{bordo}}$ & 0 \\
+$s_2$ & $r_{\text{bordo}}$ & 0 & 0 & 0 & 0 \\
+$s_3$ & $r_{\text{bordo}}$ & $r_{\text{bordo}}$ & $r_{\text{proibito}}$ & 0 & 0 \\
+$s_4$ & 0 & 0 & $r_{\text{proibito}}$ & $r_{\text{bordo}}$ & 0 \\
+$s_5$ & 0 & $r_{\text{proibito}}$ & 0 & 0 & 0 \\
+$s_6$ & 0 & $r_{\text{bordo}}$ & $r_{\text{target}}$ & 0 & $r_{\text{proibito}}$ \\
+$s_7$ & 0 & 0 & $r_{\text{bordo}}$ & $r_{\text{bordo}}$ & $r_{\text{proibito}}$ \\
+$s_8$ & 0 & $r_{\text{target}}$ & $r_{\text{bordo}}$ & $r_{\text{proibito}}$ & 0 \\
+$s_9$ & $r_{\text{proibito}}$ & $r_{\text{bordo}}$ & $r_{\text{bordo}}$ & 0 & $r_{\text{target}}$ \\
+\bottomrule
+\end{tabular}
+\caption{Reward per il grid world deterministico [2].}
+\end{figure}
+
+Tuttavia, poichÃƒÂ© il mondo potrebbe essere stocastico, la selezione di un'azione in un certo stato potrebbe determinare stati successivi differenti e, di conseguenza, differenti \emph{reward}. Pertanto, anche il \emph{reward} è, in generale, modellato come una variabile aleatoria. In particolare, esprimiamo il \emph{reward} atteso quando il sistema si trova nello stato $s_t = s$, dato che è stata eseguita l'azione $a_t = a$, come il valore atteso ottenuto mediando sui valori di \emph{reward} in base alla distribuzione di transizione di stato.
+\begin{equation}
+\begin{aligned}
+r(s, a) &= \mathbb{E}_{p(r \mid s, a)} [r_t = r \mid s_t = s, a_t = a] \\
+&= \sum_{r_t \in \mathcal{R}} r p(r \mid s, a) = \sum_{r_t \in \mathcal{R}} r \sum_{s' \in \mathcal{S}} p(s', r \mid s, a), \quad \forall s \in \mathcal{S}, a \in \mathcal{A}
+\end{aligned}
+\end{equation}
+
+Possiamo trovare la \emph{policy} ottima semplicemente guardando la tabella in Figura 1.7? La risposta è no, poichÃƒÂ© la tabella fornisce i \emph{reward} immediati che possono essere ottenuti dopo aver compiuto un'azione in un dato stato. Al contrario, una \emph{policy} è buona quando garantisce che il \emph{reward} totale ottenuto nel lungo periodo (dopo molteplici interazioni con l'ambiente) sia elevato. Un'azione che si traduce in un elevato \emph{reward} immediato potrebbe non essere la scelta migliore nel lungo periodo.
+
+\subsubsection{Traiettorie, Return E Episodi}
+
+Le traiettorie sono sequenze di tuple stato-azione-reward ottenute a partire da un dato stato e seguendo una specifica \emph{policy}. Se consideriamo la \emph{policy} in Figura 1.8.a e iniziamo nello stato $s_1$, otteniamo la seguente sequenza:
+\begin{equation}
+s_1 \xrightarrow[r=0]{a_2} s_2 \xrightarrow[r=0]{a_3} s_5 \xrightarrow[r=0]{a_3} s_8 \xrightarrow[r=1]{a_2} s_9
+\end{equation}
+
+Se sommiamo tutti i \emph{reward} osservati durante l'esecuzione della traiettoria, otteniamo il \emph{reward} totale, spesso indicato come \textbf{return} (ritorno) o \textbf{reward cumulativo}. Nell'esempio precedente, il \emph{return} è $0 + 0 + 0 + 1 = 1$. I \emph{return} vengono utilizzati per valutare le \emph{policy}, cioÃƒÂ¨ le \emph{policy} con \emph{return} piÃƒÂ¹ elevati sono migliori. Considerando l'esempio precedente, la \emph{policy} a sinistra che ottiene un \emph{return} pari a 1 (Figura 1.8.a) è migliore della \emph{policy} a destra che, invece, fornisce un valore di \emph{return} pari a 0. Si noti che una \emph{policy} potrebbe fornire un valore negativo
+
+\newpage
+
+% [IMMAGINE DAL PDF ORIGINALE] Traiettorie (linee tratteggiate rosse) ottenute da due diverse policy Ã¢â‚¬â€ Pagina 8 del PDF
+
+di \emph{reward} anche se il \emph{return} complessivo è maggiore rispetto ad altre \emph{policy}: ciÃƒÂ² conferma che considerare i \emph{reward} immediati per trovare la \emph{policy} ottima non è conveniente, e dobbiamo invece tenere conto del valore del \emph{return}.
+
+Il \emph{return} sopra definito è associato a traiettorie che presentano un numero finito di interazioni. Questo tipo di traiettorie è associato a un \textbf{compito episodico} (\emph{episodic task}), ossia, dopo una certa quantitÃƒÂ  di interazioni con l'ambiente, il compito termina. La sequenza di interazioni (tuple stato-azione-reward) dallo stato iniziale allo stato finale viene definita \textbf{episodio}. Lo stato finale è noto anche come \textbf{stato terminale} e sussiste sempre nei compiti episodici. Nei compiti episodici, se abbiamo ambienti e \emph{policy} deterministici e iniziamo sempre dallo stesso stato iniziale, osserveremo sempre la stessa traiettoria. Al contrario, se la \emph{policy} o le dinamiche di transizione di stato, o entrambe, sono stocastiche, potremmo riscontrare traiettorie differenti.
+
+I \emph{return} possono essere definiti anche per compiti che non terminano mai, ovvero compiti caratterizzati da traiettorie infinite. Questi compiti sono noti come \textbf{compiti continui} (\emph{continuing tasks}). In questo caso, se sommassimo semplicemente i \emph{reward} per calcolare il \emph{return}, potremmo ritrovarci con un valore di \emph{return} infinito (cioÃƒÂ¨ il \emph{return} divergerebbe):
+\begin{equation}
+\text{return} = 0 + 0 + 0 + 0 + 1 + 1 + 1 + 0 + 1 + 0 + \dots = \infty
+\end{equation}
+
+Di conseguenza, per traiettorie infinitamente lunghe dobbiamo utilizzare i \textbf{return scontati} (\emph{discounted returns}). Il \textbf{fattore di sconto} $\gamma \in (0, 1)$ viene utilizzato per scontare i \emph{reward} futuri (ovvero, diamo meno importanza ai \emph{reward} futuri) e garantire che la serie converga a un valore finito:
+\begin{equation}
+\text{return} = 0 + \gamma 0 + \gamma^2 0 + \gamma^3 0 + \gamma^4 1 \dots
+\end{equation}
+
+Se $\gamma$ è vicino a zero, poniamo maggiore enfasi sui \emph{reward} immediati (cioÃƒÂ¨ la \emph{policy} sarÃƒÂ  piÃƒÂ¹ miope), mentre valori di $\gamma$ vicini a 1 attribuiscono maggiore importanza ai \emph{return} a lungo termine.
+
+La presenza del fattore di sconto è importante anche per unificare la formulazione per compiti episodici e continui. In particolare, possiamo trattare i compiti episodici come compiti continui
+
+\newpage
+
+modificando leggermente l'interpretazione dello stato terminale:
+\begin{itemize}
+    \item Possiamo considerare lo stato terminale come uno \textbf{stato assorbente} (\emph{absorbing state}), ovvero l'agente non lascia mai tale stato una volta raggiunto. In pratica, questo puÃƒÂ² essere ottenuto impostando le azioni possibili nello stato terminale su, ad esempio, \emph{nessuna azione} (\emph{no action}).
+\end{itemize}
+
+Con questi concetti, il RL di solito sfrutta il framework dei \textbf{Processi Decisionali di Markov} (\emph{Markov Decision Process} - MDP) per formalizzare il problema. In particolare, un MDP è definito da:
+\begin{itemize}
+    \item Un insieme di stati $\mathcal{S}$ che si assume essere finito;
+    \item Un insieme di azioni $\mathcal{A}$ che si assume essere finito;
+    \item Un modello, ossia una funzione di probabilitÃƒÂ  di transizione di stato $p(s_{t+1} \mid s_t, a_t)$;
+    \item Una funzione di \emph{reward} $r(s, a)$;
+    \item Un fattore di sconto per compiti continui.
+\end{itemize}
+
+Come affermato sopra, siamo interessati a massimizzare il \emph{reward} a lungo termine e non quello immediato. A tal fine, introduciamo un'ulteriore variabile aleatoria, ovvero il \textbf{Ritorno Atteso} $g_t$ (\emph{Expected Return}). La scelta piÃƒÂ¹ semplice per questo ritorno è la somma di tutti i \emph{reward} ricevuti dal passo temporale $t$ in avanti:
+\begin{equation}
+g_t = r_{t+1} + r_{t+2} + \dots + r_T
+\end{equation}
+dove $T$ è un passo finale (anch'esso una variabile aleatoria).
+
+Distinguiamo tra compiti che possono essere raggruppati in sotto-sequenze, cioÃƒÂ¨ compiti episodici, e compiti che continuano indefinitamente, cioÃƒÂ¨ compiti continui.
+
+Nei primi, $T$ è ben definito e lo stato finale in cui l'episodio termina è noto come stato terminale. Solitamente, estendiamo lo spazio degli stati con questo stato terminale aggiuntivo, ovvero $\mathcal{S}^+$.
+
+I compiti continui, invece, hanno $T = \infty$, pertanto la definizione di ritorno sopra riportata è problematica, poichÃƒÂ© potrebbe divergere all'infinito (essendo anche la quantitÃƒÂ  che miriamo a massimizzare).
+
+Questo è il punto in cui entra in gioco il fattore di sconto. Posto che $0 \le \gamma \le 1$ e che il \emph{reward} $r_t$ sia limitato, otteniamo la seguente espressione:
+\begin{equation}
+\begin{aligned}
+g_t &= r_{t+1} + \gamma r_{t+2} + \gamma^2 r_{t+3} + \dots = \sum_{k=0}^{\infty} \gamma^k r_{t+k+1} = r_{t+1} + \gamma(r_{t+2} + \gamma r_{t+3} \dots) \\
+&= r_{t+1} + \gamma g_{t+1}
+\end{aligned}
+\end{equation}
+che è ricorsiva.
+
+\newpage
+
+% [IMMAGINE DAL PDF ORIGINALE] Semplice esempio per dimostrare come calcolare i return Ã¢â‚¬â€ Pagina 10 del PDF
+
+\subsubsection{Come Computare I Return?}
+
+Dopo aver compreso l'importanza dei \emph{return} nella valutazione dell'efficacia di una \emph{policy}, è fondamentale capire come calcolarli.
+
+Esistono due metodi per calcolare i \emph{return}: applicando direttamente la definizione, che comporta la somma di tutti i \emph{reward} scontati lungo una traiettoria, oppure utilizzando il \textbf{bootstrapping}. Consideriamo l'esempio in Figura 1.9.
+
+Se applichiamo direttamente la definizione, possiamo calcolare i \emph{return} a partire da ciascuno stato nella figura come segue:
+\begin{equation}
+\begin{aligned}
+v(s_1) &= r_1 + \gamma r_2 + \gamma^2 r_3 + \dots \\
+v(s_2) &= r_2 + \gamma r_3 + \gamma^2 r_4 + \dots \\
+v(s_3) &= r_3 + \gamma r_4 + \gamma^2 r_1 + \dots \\
+v(s_4) &= r_4 + \gamma r_1 + \gamma^2 r_2 + \dots
+\end{aligned}
+\end{equation}
+
+Con l'idea del \emph{bootstrapping}, invece, sfruttiamo il fatto che i \emph{return} di uno stato dipendono dai \emph{return} di altri stati. Lo chiamiamo \emph{bootstrapping} perchÃƒÂ© calcoliamo il \emph{return} di uno stato servendoci di quello di un altro (che a sua volta potrebbe dipendere dallo stato
+
+\newpage
+
+che stiamo considerando). Nell'esempio, infatti, $v(s_1)$ dipende da $v(s_2)$, $v(s_2)$ dipende da $v(s_3)$, $v(s_3)$ dipende da $v(s_4)$ e $v(s_4)$ dipende a sua volta da $v(s_1)$:
+\begin{equation}
+\begin{aligned}
+v(s_1) &= r_1 + \gamma(r_2 + \gamma r_3 + \dots) = r_1 + \gamma v(s_2) \\
+v(s_2) &= r_2 + \gamma(r_3 + \gamma r_4 + \dots) = r_2 + \gamma v(s_3) \\
+v(s_3) &= r_3 + \gamma(r_4 + \gamma r_1 + \dots) = r_3 + \gamma v(s_4) \\
+v(s_4) &= r_4 + \gamma(r_1 + \gamma r_2 + \dots) = r_4 + \gamma v(s_1)
+\end{aligned}
+\end{equation}
+
+Il \emph{bootstrapping} potrebbe apparire meno conveniente poichÃƒÂ© introduce un ciclo infinito di dipendenze. Tuttavia, se riscriviamo la relazione in forma matrice-vettore, otteniamo un risultato interessante:
+\begin{equation}
+\underbrace{\begin{bmatrix}
+v(s_1) \\
+v(s_2) \\
+v(s_3) \\
+v(s_4)
+\end{bmatrix}}_{\bm{v}}
+=
+\underbrace{\begin{bmatrix}
+r_1 \\
+r_2 \\
+r_3 \\
+r_4
+\end{bmatrix}}_{\bm{r}}
++
+\begin{bmatrix}
+\gamma v(s_2) \\
+\gamma v(s_3) \\
+\gamma v(s_4) \\
+\gamma v(s_1)
+\end{bmatrix}
+=
+\underbrace{\begin{bmatrix}
+r_1 \\
+r_2 \\
+r_3 \\
+r_4
+\end{bmatrix}}_{\bm{r}}
++ \gamma
+\underbrace{\begin{bmatrix}
+0 & 1 & 0 & 0 \\
+0 & 0 & 1 & 0 \\
+0 & 0 & 0 & 1 \\
+1 & 0 & 0 & 0
+\end{bmatrix}}_{\bm{P}}
+\underbrace{\begin{bmatrix}
+v(s_1) \\
+v(s_2) \\
+v(s_3) \\
+v(s_4)
+\end{bmatrix}}_{\bm{v}}
+\end{equation}
+che puÃƒÂ² essere scritto come:
+\begin{equation}
+\bm{v} = \bm{r} + \gamma \bm{P}\bm{v}
+\end{equation}
+e il valore di $\bm{v}$ puÃƒÂ² essere calcolato come $\bm{v} = (\bm{I} - \gamma \bm{P})^{-1} \bm{r}$ (si puÃƒÂ² dimostrare che $(\bm{I} - \gamma \bm{P})$ è sempre invertibile).
+
+\subsection{Funzione Di Stato-Valore}
+
+Sebbene i \emph{return} possano essere utilizzati per valutare le \emph{policy}, essi non possono essere applicati nel caso di problemi stocastici, poichÃƒÂ© partire da uno stato non produce sempre lo stesso \emph{return}. Per affrontare questo problema, dobbiamo legare formalmente il concetto di \emph{return} allo stato. In questo modo, possiamo chiedere alla routine di ottimizzazione di trovare la \emph{policy} che, per ciascuno stato, fornisca il maggior \emph{return} possibile (partendo da quello stato), indipendentemente dalla stocasticitÃƒÂ  dell'ambiente. In particolare, dobbiamo introdurre il concetto di \textbf{Funzione di Valore} (\emph{Value Function}), una funzione dello stato che esprime il \emph{return} atteso che osserviamo partendo da un dato stato.
+
+In primo luogo, si consideri una sequenza di passi temporali $t = 0, 1, 2, \dots$. Al tempo $t$, l'agente si trova nello stato $s_t$, e l'azione intrapresa seguendo una \emph{policy} $\pi$ è $a_t$. Lo stato successivo è $s_{t+1}$ e il \emph{reward} immediato ottenuto è $r_{t+1}$:
+\[ s_t \xrightarrow{a_t} s_{t+1}, r_{t+1} \]
+
+\newpage
+
+Tutti i termini, ossia $s_t$, $s_{t+1}$, $a_t$, $r_{t+1}$, sono variabili aleatorie.
+
+A partire da $t$, possiamo ottenere una sequenza stato-azione-reward:
+\[ s_t \xrightarrow{a_t} s_{t+1}, r_{t+1} \xrightarrow{a_{t+1}} s_{t+2}, r_{t+2} \xrightarrow{a_{t+2}} s_{t+3}, r_{t+3} \dots \]
+
+Richiamando la definizione di \emph{return} dalla \eqref{eq:return_recursive}:
+\[ g_t \doteq r_{t+1} + \gamma r_{t+2} + \gamma^2 r_{t+3} + \dots \]
+dove $\gamma \in (0, 1)$ è il tasso di sconto. Si noti che $g_t$ è anch'essa una variabile aleatoria poichÃƒÂ© i \emph{reward} sono variabili aleatorie. Pertanto, possiamo calcolarne il valore atteso:
+\[ v_\pi(s) \doteq \mathbb{E}[g_t = g \mid s_t = s] \]
+
+$v_\pi(s)$ è chiamata \textbf{funzione di stato-valore} (\emph{state-value function}). Essa dipende da $s$ poichÃƒÂ© il valore atteso dei \emph{return} è calcolato a partire da $s$, e da $\pi$ poichÃƒÂ© le traiettorie sono generate secondo una determinata \emph{policy}. Tuttavia, non dipende da $t$, poichÃƒÂ© il passo temporale è utilizzato solo per far evolvere la \emph{policy}. Al contrario, il valore dello stato viene calcolato considerando l'intera traiettoria e non un passo temporale specifico o una parte di essa.
+
+Un'importante espressione per la funzione di stato-valore è la seguente:
+\begin{equation}
+\begin{aligned}
+v_\pi(s) &= \mathbb{E}_\pi [g_t = g \mid s_t = s] = \mathbb{E}_\pi \left[ \sum_{k=0}^{\infty} \gamma^k r_{t+k+1} \;\middle|\; s_t = s \right], \quad \forall s \in \mathcal{S} \\
+&= \sum_{a \in \mathcal{A}} \pi(a \mid s) \sum_{s' \in \mathcal{S}} \sum_{r} p(s', r \mid s, a) [r + \gamma v_\pi(s')], \quad \forall s \in \mathcal{S}
+\end{aligned}
+\end{equation}
+
+Questa è nota anche come \textbf{Equazione di Bellman} per $v_\pi(s)$. La relazione puÃƒÂ² essere dimostrata considerando che calcolare il valore atteso rispetto alla \emph{policy} significa che dobbiamo mediare il \emph{return} su tutte le traiettorie possibili. Il valore di uno stato è il valore atteso dei \emph{return} osservati a partire da quello stato e seguendo la \emph{policy} $\pi$, pertanto dobbiamo mediare su tutte le possibili sequenze di azioni, stati e \emph{reward}. La probabilitÃƒÂ  di una traiettoria che inizia in $s_t = s$ è:
+\begin{equation}
+p(s_T, r_T, a_{T-1}, s_{T-1}, r_{T-1}, a_{T-2}, \dots, s_{t+1}, r_{t+1}, a_t \mid s_t = s)
+\end{equation}
+
+Utilizzando la regola della catena per le probabilitÃƒÂ  e le proprietÃƒÂ  di Markov:
+\begin{equation}
+p(s_T, r_T \mid a_{T-1}, s_{T-1})\pi(a_{T-1} \mid s_{T-1})p(s_{T-1}, r_{T-1} \mid a_{T-2}, s_{T-2})\pi(a_{T-2} \mid s_{T-2})\dots p(s_{t+1}, r_{t+1} \mid a_t, s_t)\pi(a_t \mid s_t)
+\end{equation}
+
+\newpage
+
+Di conseguenza, il valore atteso puÃƒÂ² essere visto come:
+\begin{equation}
+\begin{aligned}
+v_\pi(s) &= \mathbb{E}_\pi[g_t = g \mid s_t = s] \\
+&= \sum_{\text{traj. da } s_t} g_t p(s_T, r_T, a_{T-1}, s_{T-1}, r_{T-1}, a_{T-2}, \dots, s_{t+1}, r_{t+1}, a_t \mid s_t = s) \\
+&= \sum_{\text{traj. da } s_t} g_t p(s_T, r_T, \dots, s_{t+2}, r_{t+2}, a_{t+1} \mid s_{t+1}) p(s_{t+1}, r_{t+1} \mid a_t, s_t)\pi(a_t \mid s_t) \\
+&= \sum_{\text{traj. da } s_t} (r_{t+1} + \gamma g_{t+1}) p(s_T, r_T, \dots, s_{t+2}, r_{t+2}, a_{t+1} \mid s_{t+1}) p(s_{t+1}, r_{t+1} \mid a_t, s_t)\pi(a_t \mid s_t) \\
+&= \sum_{s_{t+1}, a_t, r_{t+1}} \sum_{\text{traj. da } s_{t+1}} (r_{t+1} + \gamma g_{t+1}) p(s_T, r_T, \dots, s_{t+2}, r_{t+2}, a_{t+1} \mid s_{t+1}) p(s_{t+1}, r_{t+1} \mid a_t, s_t)\pi(a_t \mid s_t) \\
+&= \sum_{s_{t+1}, a_t, r_{t+1}} p(s_{t+1}, r_{t+1} \mid a_t, s_t)\pi(a_t \mid s_t) \left[ r_{t+1} + \gamma \sum_{\text{traj. da } s_{t+1}} g_{t+1} p(s_T, r_T, \dots, s_{t+2}, r_{t+2}, a_{t+1} \mid s_{t+1}) \right] \\
+&= \sum_{s_{t+1}, a_t, r_{t+1}} p(s_{t+1}, r_{t+1} \mid a_t, s_t)\pi(a_t \mid s_t) \left[ r_{t+1} + \gamma \mathbb{E}_\pi [ g_{t+1} = g \mid s_{t+1} = s' ] \right] \\
+&= \sum_{s_{t+1}, a_t, r_{t+1}} p(s_{t+1}, r_{t+1} \mid a_t, s_t)\pi(a_t \mid s_t) \left[ r_{t+1} + \gamma v_\pi(s') \right] \\
+&= \sum_{a \in \mathcal{A}} \pi(a \mid s) \sum_{s' \in \mathcal{S}} \sum_{r} p(s', r \mid s, a) [r + \gamma v_\pi(s')]
+\end{aligned}
+\end{equation}
+
+ÃƒË† inoltre utile introdurre la \textbf{funzione di valore dell'azione} $q_\pi(s, a)$ (\emph{action-value function}) che descrive quanto sia conveniente trovarsi in un dato stato $s$ e compiere un'azione $a$. PoichÃƒÂ© in questo caso l'azione è osservata, la funzione puÃƒÂ² essere espressa come segue:
+\begin{equation}
+\begin{aligned}
+q_\pi(s, a) &\doteq \mathbb{E}_\pi [g_t = g \mid s_t = s, a_t = a] = \mathbb{E}_\pi \left[ \sum_{k=0}^{\infty} \gamma^k r_{t+k+1} \;\middle|\; s_t = s, a_t = a \right], \quad \forall s \in \mathcal{S}, a \in \mathcal{A} \\
+&= \sum_{s' \in \mathcal{S}} \sum_{r} p(s', r \mid s, a)[r + \gamma v_\pi(s')], \quad \forall s \in \mathcal{S}
+\end{aligned}
+\end{equation}
+
+L'espressione è simile a quella di $v_\pi(s)$, con la differenza che, in questo caso, non mediaamo su tutte le possibili azioni, poichÃƒÂ© l'azione è intrapresa (osservata). Pertanto, abbiamo:
+\begin{equation}
+v_\pi(s) = \sum_{a \in \mathcal{A}} \pi(a \mid s) q_\pi(s, a)
+\end{equation}
+e se la \emph{policy} è deterministica, si ha chiaramente:
+\begin{equation}
+v_\pi(s) = q_\pi(s, a)
+\end{equation}
+con $\pi(s) = a$.
+
+\subsubsection{Derivazione Alternativa Dell'Equazione Di Bellman}
+
+L'equazione di Bellman per $v_\pi(s)$ puÃƒÂ² anche essere facilmente derivata come segue:
+
+\newpage
+
+\begin{equation}
+v_\pi(s) = \mathbb{E}_\pi[g_t = g \mid s_t = s] = \mathbb{E}_\pi[r_{t+1} + \gamma g_{t+1} \mid s_t = s] = \mathbb{E}_\pi[r_{t+1} \mid s_t = s] + \gamma \mathbb{E}_\pi[g_{t+1} \mid s_t = s]
+\end{equation}
+
+Il primo termine puÃƒÂ² essere riorganizzato utilizzando la legge del valore atteso totale nel caso condizionato:
+\begin{equation}
+\mathbb{E}_\pi [r_{t+1} \mid s_t = s] = \sum_{a \in \mathcal{A}} \pi(a \mid s) \mathbb{E}_\pi [r_{t+1} \mid s_t = s, a_t = a] = \sum_{a \in \mathcal{A}} \pi(a \mid s) \sum_r r p(r \mid s, a)
+\end{equation}
+
+Analogamente, il secondo termine puÃƒÂ² essere scritto come funzione dei valori di stato futuri:
+\begin{equation}
+\begin{aligned}
+\mathbb{E}_\pi [g_{t+1} \mid s_t = s] &= \sum_{s' \in \mathcal{S}} \mathbb{E}_\pi [g_{t+1} \mid s_t = s, s_{t+1} = s'] p(s' \mid s) \\
+&= \sum_{s' \in \mathcal{S}} \mathbb{E}_\pi [g_{t+1} \mid s_{t+1} = s'] p(s' \mid s) \\
+&= \sum_{s' \in \mathcal{S}} v_\pi(s') p(s' \mid s) \\
+&= \sum_{s' \in \mathcal{S}} v_\pi(s') \sum_{a \in \mathcal{A}} p(s' \mid s, a)\pi(a \mid s)
+\end{aligned}
+\end{equation}
+
+La prima riga si ottiene con la legge del valore atteso totale nel caso condizionato. La seconda riga deriva dalla proprietÃƒÂ  di Markov (ovvero, l'indipendenza condizionata dagli stati passati dato l'ultimo). L'ultima riga è ottenuta per la regola della catena, cioÃƒÂ¨ $p(s' \mid s) = \sum_{a \in \mathcal{A}} p(s', a \mid s) = \sum_{a \in \mathcal{A}} p(s' \mid s, a)\pi(a \mid s)$.
+
+Combinando i due termini otteniamo:
+\begin{equation}
+\begin{aligned}
+v_\pi(s) &= \sum_{a \in \mathcal{A}} \pi(a \mid s) \sum_r r p(r \mid s, a) + \gamma \sum_{s' \in \mathcal{S}} v_\pi(s') \sum_{a \in \mathcal{A}} p(s' \mid s, a)\pi(a \mid s) \\
+&= \sum_{a \in \mathcal{A}} \pi(a \mid s) \left[ \sum_r r p(r \mid s, a) + \gamma \sum_{s' \in \mathcal{S}} v_\pi(s') p(s' \mid s, a) \right], \quad \forall s \in \mathcal{S}
+\end{aligned}
+\end{equation}
+
+Inoltre, poichÃƒÂ© $p(s' \mid s, a) = \sum_r p(s', r \mid s, a)$ e $p(r \mid s, a) = \sum_{s'} p(s', r \mid s, a)$, possiamo riscrivere la Eq. \eqref{eq:combined_bellman}:
+\begin{equation}
+v_\pi(s) = \sum_{a \in \mathcal{A}} \pi(a \mid s) \sum_r \sum_{s' \in \mathcal{S}} p(s', r \mid s, a) [r + \gamma v_\pi(s')]
+\end{equation}
+
+\subsubsection{Esempio Di Calcolo Dell'Equazione Di Bellman}
+
+Consideriamo due esempi per illustrare come calcolare l'equazione di Bellman: uno con una \emph{policy} deterministica e uno con una stocastica.
+
+Iniziamo con il primo (Figura 1.10) e consideriamo lo stato $s_1$. Data la \emph{policy} deterministica, le probabilitÃƒÂ  di compiere le azioni sono $\pi(a = a_3 \mid s_1) = 1$
+
+\newpage
+
+% [IMMAGINE DAL PDF ORIGINALE] Esempio per calcolare l'equazione di Bellman con policy deterministica Ã¢â‚¬â€ Pagina 15 del PDF
+% [IMMAGINE DAL PDF ORIGINALE] Esempio per calcolare l'equazione di Bellman con policy stocastica Ã¢â‚¬â€ Pagina 15 del PDF
+
+\newpage
+
+e $\pi(a \ne a_3 \mid s_1) = 0$. Le probabilitÃƒÂ  di transizione di stato sono $p(s' = s_3 \mid s_1, a_3) = 1$ e $p(s' \ne s_3 \mid s_1, a_3) = 0$. Le probabilitÃƒÂ  di \emph{reward} sono $p(r = 0 \mid s_1, a_3) = 1$ e $p(r \ne 0 \mid s_1, a_3) = 0$. Utilizzando l'equazione di Bellman \eqref{eq:bellman_state_value} otteniamo:
+\[ v_\pi(s_1) = 0 + \gamma v_\pi(s_3). \]
+
+Analogamente, per gli altri stati otteniamo:
+\begin{equation}
+\begin{aligned}
+v_\pi(s_2) &= 1 + \gamma v_\pi(s_4), \\
+v_\pi(s_3) &= 1 + \gamma v_\pi(s_4), \\
+v_\pi(s_4) &= 1 + \gamma v_\pi(s_4).
+\end{aligned}
+\end{equation}
+
+Possiamo ora utilizzare queste equazioni per risolvere rispetto agli stati.
+\begin{equation}
+\begin{aligned}
+v_\pi(s_4) &= \frac{1}{1 - \gamma}, \\
+v_\pi(s_3) &= \frac{1}{1 - \gamma}, \\
+v_\pi(s_2) &= \frac{1}{1 - \gamma}, \\
+v_\pi(s_1) &= \frac{\gamma}{1 - \gamma}.
+\end{aligned}
+\end{equation}
+
+Se impostiamo $\gamma = 0.9$, si ha:
+\begin{equation}
+\begin{aligned}
+v_\pi(s_4) &= \frac{1}{1 - 0.9} = 10, \\
+v_\pi(s_3) &= \frac{1}{1 - 0.9} = 10, \\
+v_\pi(s_2) &= \frac{1}{1 - 0.9} = 10, \\
+v_\pi(s_1) &= \frac{0.9}{1 - 0.9} = 9.
+\end{aligned}
+\end{equation}
+
+Consideriamo ora la \emph{policy} stocastica in Figura 1.11.
+
+Nello stato $s_1$, le probabilitÃƒÂ  di andare a destra e in basso sono uguali a 0.5: $\pi(a = a_2 \mid s_1) = 0.5$ e $\pi(a = a_3 \mid s_1) = 0.5$. La probabilitÃƒÂ  di transizione di stato è invece deterministica: $p(s' = s_3 \mid s_1, a_3) = 1$ e $p(s' \ne s_3 \mid s_1, a_3) = 0$. Lo stesso vale per il \emph{reward}: $p(r = 0 \mid s_1, a_3) = 1$ e $p(r \ne 0 \mid s_1, a_3) = 0$. Utilizzando l'equazione di Bellman, otteniamo:
+\[ v_\pi(s_1) = 0.5 [0 + \gamma v_\pi(s_3)] + 0.5 [-1 + \gamma v_\pi(s_2)]. \]
+
+Analogamente, per gli altri stati:
+\[ v_\pi(s_2) = 1 + \gamma v_\pi(s_4), \]
+
+\newpage
+
+\begin{equation}
+\begin{aligned}
+v_\pi(s_3) &= 1 + \gamma v_\pi(s_4), \\
+v_\pi(s_4) &= 1 + \gamma v_\pi(s_4).
+\end{aligned}
+\end{equation}
+
+Ora possiamo risolvere il sistema e ottenere:
+\begin{equation}
+\begin{aligned}
+v_\pi(s_4) &= \frac{1}{1 - \gamma}, \\
+v_\pi(s_3) &= \frac{1}{1 - \gamma}, \\
+v_\pi(s_2) &= \frac{1}{1 - \gamma}, \\
+v_\pi(s_1) &= 0.5 [0 + \gamma v_\pi(s_3)] + 0.5 [-1 + \gamma v_\pi(s_2)] \\
+&= -0.5 + \frac{\gamma}{1 - \gamma}.
+\end{aligned}
+\end{equation}
+
+e, se impostiamo $\gamma = 0.9$:
+\begin{equation}
+\begin{aligned}
+v_\pi(s_4) &= 10, \\
+v_\pi(s_3) &= 10, \\
+v_\pi(s_2) &= 10, \\
+v_\pi(s_1) &= -0.5 + 9 = 8.5.
+\end{aligned}
+\end{equation}
+
+Se confrontiamo i risultati ottenuti con le due \emph{policy}, possiamo facilmente vedere che la prima (quella deterministica) è migliore, poichÃƒÂ© non entra mai nello stato proibito.
+
+\subsubsection{Forma Matrice-Vettore Dell'Equazione Di Bellman}
+
+L'equazione di Bellman per il valore di stato nell'Eq. \eqref{eq:combined_bellman}, che riportiamo qui per chiarezza:
+\[ \sum_{a \in \mathcal{A}} \pi(a \mid s) \sum_{s' \in \mathcal{S}} \sum_r p(s', r \mid s, a) [r + \gamma v_\pi(s')] \]
+puÃƒÂ² essere riscritta come segue:
+\begin{equation}
+v_\pi(s) = r_\pi(s) + \gamma \sum_{s' \in \mathcal{S}} p_\pi(s' \mid s) v_\pi(s')
+\end{equation}
+dove $r_\pi(s) = \sum_{a \in \mathcal{A}} \pi(a \mid s) \sum_r p(r \mid s, a)r$ e $p_\pi(s' \mid s) = \sum_{a \in \mathcal{A}} \pi(a \mid s) p(s' \mid s, a)$.
+
+Sia $\bm{v}_\pi = [v_\pi(s_1), v_\pi(s_2), \dots, v_\pi(s_{|\mathcal{S}|})]^T \in \mathbb{R}^{|\mathcal{S}|}$, $\bm{r}_\pi = [r_\pi(s_1), r_\pi(s_2), \dots, r_\pi(s_{|\mathcal{S}|})]^T \in \mathbb{R}^{|\mathcal{S}|}$ e $\bm{P}_\pi \in \mathbb{R}^{|\mathcal{S}| \times |\mathcal{S}|}$ dove $[\bm{P}_\pi]_{i,j} = p_\pi(s_j \mid s_i)$, possiamo esprimere l'Eq. \eqref{eq:combined_bellman} in forma matrice-vettore come segue:
+\begin{equation}
+\bm{v}_\pi = \bm{r}_\pi + \gamma \bm{P}_\pi \bm{v}_\pi
+\end{equation}
+
+\newpage
+
+che, piÃƒÂ¹ esplicitamente, puÃƒÂ² essere vista come (nel caso di quattro stati per semplicitÃƒÂ ):
+\begin{equation}
+\underbrace{\begin{bmatrix}
+v_\pi(s_1) \\
+v_\pi(s_2) \\
+v_\pi(s_3) \\
+v_\pi(s_4)
+\end{bmatrix}}_{\bm{v}_\pi}
+=
+\underbrace{\begin{bmatrix}
+r_\pi(s_1) \\
+r_\pi(s_2) \\
+r_\pi(s_3) \\
+r_\pi(s_4)
+\end{bmatrix}}_{\bm{r}_\pi}
++ \gamma
+\underbrace{\begin{bmatrix}
+p_\pi(s_1 \mid s_1) & p_\pi(s_2 \mid s_1) & p_\pi(s_3 \mid s_1) & p_\pi(s_4 \mid s_1) \\
+p_\pi(s_1 \mid s_2) & p_\pi(s_2 \mid s_2) & p_\pi(s_3 \mid s_2) & p_\pi(s_4 \mid s_2) \\
+p_\pi(s_1 \mid s_3) & p_\pi(s_2 \mid s_3) & p_\pi(s_3 \mid s_3) & p_\pi(s_4 \mid s_3) \\
+p_\pi(s_1 \mid s_4) & p_\pi(s_2 \mid s_4) & p_\pi(s_3 \mid s_4) & p_\pi(s_4 \mid s_4)
+\end{bmatrix}}_{\bm{P}_\pi}
+\underbrace{\begin{bmatrix}
+v_\pi(s_1) \\
+v_\pi(s_2) \\
+v_\pi(s_3) \\
+v_\pi(s_4)
+\end{bmatrix}}_{\bm{v}_\pi}
+\end{equation}
+
+\subsubsection{Risoluzione Dell'Equazione Di Bellman}
+
+Il calcolo dei valori di stato è fondamentale nel reinforcement learning poichÃƒÂ© consente di valutare la \emph{policy} corrente e, possibilmente, migliorarla per ottenere migliori valori di stato. Il problema di stimare la funzione di valore dello stato è noto come \textbf{valutazione della policy} (\emph{policy evaluation}). Se gli elementi dell'MDP sono noti, cioÃƒÂ¨ la matrice di transizione di stato, la funzione di \emph{reward}, ecc., allora è possibile risolvere l'equazione di Bellman in due modi.
+
+\textbf{Soluzione in forma chiusa}
+
+Il modo piÃƒÂ¹ semplice per risolvere l'equazione di Bellman consiste nel fare riferimento alla sua forma matrice-vettore in \eqref{eq:bellman_matrix_vector} e risolverla direttamente come segue:
+\begin{equation}
+\bm{v}_\pi = (\bm{I} - \gamma \bm{P}_\pi)^{-1} \bm{r}_\pi
+\end{equation}
+
+Si puÃƒÂ² dimostrare che $(\bm{I} - \gamma \bm{P}_\pi)$ è sempre invertibile, poichÃƒÂ© i suoi autovalori sono tutti non nulli (la dimostrazione utilizza il teorema dei cerchi di Gershgorin).
+
+\textbf{Soluzione iterativa}
+
+La soluzione in forma chiusa è conveniente ma raramente utilizzata in pratica a causa del costo dell'inversione di matrice, in particolare nel caso di ampi spazi degli stati. Un'alternativa alla soluzione in forma chiusa è la soluzione iterativa che sfrutta la seguente espressione:
+\begin{equation}
+\bm{v}_{k+1} = \bm{r}_\pi + \gamma \bm{P}_\pi \bm{v}_k, \quad k = 0, 1, 2, \dots
+\end{equation}
+
+Questa procedura genera una sequenza di valori $\{\bm{v}_0, \bm{v}_1, \bm{v}_2, \dots\}$ dove $\bm{v}_0 \in \mathbb{R}^{|\mathcal{S}|}$ è una stima iniziale di $\bm{v}_\pi$. Si puÃƒÂ² dimostrare che $\bm{v}_k \to \bm{v}_\pi = (\bm{I} - \gamma \bm{P}_\pi)^{-1} \bm{r}_\pi$ per $k \to \infty$.
+
+\subsection{Funzione Di Valore Dell'Azione}
+
+Mentre la funzione di valore dello stato descrive il \emph{return} atteso che possiamo ottenere a partire da uno stato, consideriamo ora la funzione di valore dell'azione, che esprime il valore atteso del
+
+\newpage
+
+\emph{return} che otteniamo partendo da uno stato e compiendo una determinata azione. Questa funzione è definita come:
+\begin{equation}
+q_\pi(s, a) \doteq \mathbb{E}[g_t \mid s_t = s, a_t = a]
+\end{equation}
+
+La prima cosa importante da notare è la relazione tra la funzione di valore dello stato e la funzione di valore dell'azione:
+\begin{equation}
+\underbrace{\mathbb{E}[g_t \mid s_t = s]}_{v_\pi(s)} = \sum_{a \in \mathcal{A}} \underbrace{\mathbb{E}[g_t \mid s_t = s, a_t = a]}_{q_\pi(s,a)} \pi(a \mid s)
+\end{equation}
+pertanto, abbiamo:
+\begin{equation}
+v_\pi(s) = \sum_{a \in \mathcal{A}} \pi(a \mid s) q_\pi(s, a)
+\end{equation}
+
+Un'altra importante osservazione che occorre fare riguarda il valore dell'azione per quelle azioni che non vengono mai selezionate da una \emph{policy}. Si potrebbe pensare che per tali azioni $q_\pi(s, a)$ sia pari a zero. Tuttavia, non è cosÃƒÂ¬ poichÃƒÂ©, sebbene l'azione non sia selezionata dalla \emph{policy}, essa possiede comunque un valore dell'azione che puÃƒÂ² essere calcolato osservando cosa accadrebbe selezionando quell'azione in quello stato. In secondo luogo, tale azione potrebbe non essere selezionata dalla \emph{policy} corrente, la quale potrebbe essere sub-ottima. Al fine di trovare una \emph{policy} migliore, è importante esplorare anche i valori dell'azione per le azioni che non sono selezionate dalla \emph{policy} attuale.
+
+\subsubsection{Equazione Di Bellman Per La Funzione Di Valore Dell'Azione}
+
+Per ottenere l'equazione di Bellman per la funzione di valore dell'azione, rimuoviamo semplicemente la media sulle azioni per lo stato corrente dall'equazione di Bellman della funzione di valore dello stato:
+\begin{equation}
+q_\pi(s, a) = \sum_{r \in \mathcal{R}} p(r \mid s, a)r + \gamma \sum_{s' \in \mathcal{S}} p(s' \mid s, a) \sum_{a' \in \mathcal{A}(s')} \pi(a' \mid s') q_\pi(s', a')
+\end{equation}
+
+Si puÃƒÂ² dimostrare che, analogamente al caso del valore dello stato, possiamo anche trovare una soluzione unica per i valori dell'azione utilizzando una soluzione iterativa.
+
+%% AA 25 - 41
+\section{Policy Ottime E Funzioni Di Valore Ottime}
+
+Risolvere un problema di RL significa trovare la \emph{policy} $\pi^*$ che, per ciascuno stato, calcoli l'azione (o fornisca una distribuzione sulle azioni) che permetta di ottenere il valore massimo per tale stato.
+
+\begin{definition}[Policy Ottima e Valore di Stato Ottimo]
+Una \emph{policy} $\pi^*$ è ottima se $v_{\pi^*}(s) \ge v_\pi(s)$, $\forall s \in \mathcal{S}$ e per qualsiasi altra \emph{policy} $\pi$. I valori di stato associati a $\pi^*$ sono i valori di stato ottimi.
+\end{definition}
+
+Questa definizione solleva molteplici domande a cui dobbiamo rispondere per trovare una procedura atta a calcolare la \emph{policy} ottima:
+\begin{itemize}[noitemsep]
+    \item \textbf{Esistenza:} Esiste la \emph{policy} ottima?
+    \item \textbf{UnicitÃƒÂ :} La \emph{policy} ottima è unica?
+    \item \textbf{Algoritmo:} Come trovare la \emph{policy} ottima e i valori di stato ottimi?
+\end{itemize}
+
+Date le considerazioni precedenti e la definizione della funzione di stato-valore, possiamo introdurre l'\textbf{Equazione di OttimalitÃƒÂ  di Bellman} (\emph{Bellman Optimality Equation} - BOE) o \textbf{Operatore di OttimalitÃƒÂ  di Bellman}, che codifica semplicemente la massimizzazione della funzione di stato-valore rispetto alla \emph{policy}:
+
+\begin{equation}
+\begin{aligned}
+v(s) &= \max_{\pi(s) \in \Pi(s)} \sum_{a \in \mathcal{A}} \pi(a \mid s) \left( \sum_{r \in \mathcal{R}} p(r \mid s, a)r + \gamma \sum_{s' \in \mathcal{S}} p(s' \mid s, a)v(s') \right) \\
+&= \max_{\pi(s) \in \Pi(s)} \sum_{a \in \mathcal{A}} \pi(a \mid s) q(s, a)
+\end{aligned}
+\end{equation}
+
+Pertanto, per trovare la soluzione ottima dobbiamo capire se la soluzione esiste, se è unica, qual è l'algoritmo per trovarla e come tale soluzione si relazioni con la \emph{policy} ottima.
+
+\subsection{Forma Matrice-Vettore Della BOE}
+
+Per studiare la BOE è conveniente esprimerla in forma matrice-vettore, come abbiamo fatto per la funzione di stato-valore:
+\begin{equation}
+\bm{v} = \max_{\pi \in \Pi} (\bm{r}_\pi + \gamma \bm{P}_\pi \bm{v})
+\end{equation}
+dove $\bm{v} \in \mathbb{R}^{|\mathcal{S}|}$ e
+\begin{equation}
+[\bm{r}_\pi]_s \doteq \sum_{a \in \mathcal{A}} \pi(a \mid s) \sum_{r \in \mathcal{R}} p(r \mid s, a)r,
+\end{equation}
+\begin{equation}
+[\bm{P}_\pi]_{s, s'} = p(s' \mid s) \doteq \sum_{a \in \mathcal{A}} \pi(a \mid s) p(s' \mid s, a).
+\end{equation}
+
+PoichÃƒÂ© il valore ottimo di $\pi$ è determinato da $\bm{v}$, il membro destro della \eqref{eq:boe_matrix} è una funzione di $\bm{v}$:
+\begin{equation}
+f(\bm{v}) \doteq \max_{\pi \in \Pi} (\bm{r}_\pi + \gamma \bm{P}_\pi \bm{v}).
+\end{equation}
+
+Di conseguenza, la BOE è una mappa non lineare tra $\bm{v}$ e se stesso, ossia $f : \mathbb{R}^{|\mathcal{S}|} \to \mathbb{R}^{|\mathcal{S}|}$.
+
+\subsection{Teorema Delle Contrazioni}
+
+PoichÃƒÂ© la BOE è una mappa tra $\bm{v}$ e se stesso, possiamo analizzarla utilizzando il \textbf{teorema delle contrazioni} (o \textbf{teorema del punto fisso di Banach}). Per introdurlo, definiamo innanzitutto la nozione di punto fisso:
+
+\begin{definition}[Punto Fisso]
+Data una funzione $f(\bm{v})$, dove $f : \mathbb{R}^{|\mathcal{S}|} \to \mathbb{R}^{|\mathcal{S}|}$, un punto $\bm{v}^*$ è chiamato \textbf{punto fisso} se $f(\bm{v}^*) = \bm{v}^*$.
+\end{definition}
+il che significa che $f$ mappa $\bm{v}^*$ in se stesso. Inoltre, definiamo la mappa di contrazione:
+
+\begin{definition}[Mappa di Contrazione]
+Data una funzione $f(\bm{v})$, dove $f : \mathbb{R}^{|\mathcal{S}|} \to \mathbb{R}^{|\mathcal{S}|}$, la funzione è una \textbf{contrazione} (o mappa di contrazione) se esiste $\gamma \in (0, 1)$ tale che:
+\begin{equation}
+\| f(\bm{v}_1) - f(\bm{v}_2) \| \le \gamma \| \bm{v}_1 - \bm{v}_2 \|
+\end{equation}
+dove $\|\cdot\|$ è una norma generica vettoriale o matriciale.
+\end{definition}
+
+A titolo di esempio, si consideri la seguente funzione:
+\begin{equation}
+f(x) = 0.5x, \quad x \in \mathbb{R}.
+\end{equation}
+
+\newpage
+
+ÃƒË† facile verificare che $x = 0$ è un punto fisso poichÃƒÂ© $0 = 0.5 \cdot 0$. Inoltre, $f(x) = 0.5x$ è una contrazione poichÃƒÂ©:
+\begin{equation}
+\| 0.5x_1 - 0.5x_2 \| = 0.5 \| x_1 - x_2 \| \le \gamma \| x_1 - x_2 \| \quad \text{per qualsiasi } \gamma \in [0.5, 1).
+\end{equation}
+
+Come altro esempio, consideriamo:
+\begin{equation}
+f(\bm{x}) = \bm{A}\bm{x}
+\end{equation}
+dove $\bm{x} \in \mathbb{R}^n$, $\bm{A} \in \mathbb{R}^{n \times n}$ e $\|\bm{A}\| \le \gamma < 1$. ÃƒË† facile verificare che $\bm{x} = \bm{0}$ è un punto fisso in quanto $\bm{0} = \bm{A}\bm{0}$. Per verificarne la proprietÃƒÂ  di contrazione:
+\begin{equation}
+\| \bm{A}\bm{x}_1 - \bm{A}\bm{x}_2 \| = \| \bm{A}(\bm{x}_1 - \bm{x}_2) \| \le \| \bm{A} \| \| \bm{x}_1 - \bm{x}_2 \| \le \gamma \| \bm{x}_1 - \bm{x}_2 \|.
+\end{equation}
+Pertanto, $f(\bm{x}) = \bm{A}\bm{x}$ è una mappa di contrazione.
+
+Possiamo ora introdurre il teorema delle contrazioni:
+
+\begin{theorem}[Teorema delle Contrazioni]
+Per qualsiasi funzione $f(\bm{v})$, con $f : \mathbb{R}^{|\mathcal{S}|} \to \mathbb{R}^{|\mathcal{S}|}$, se $f$ è una contrazione, allora valgono le seguenti proprietÃƒÂ :
+\begin{itemize}[noitemsep]
+    \item \textbf{Esistenza:} Esiste un punto fisso $\bm{v}^*$ tale che $f(\bm{v}^*) = \bm{v}^*$.
+    \item \textbf{UnicitÃƒÂ :} Il punto fisso $\bm{v}^*$ è unico.
+    \item \textbf{Algoritmo:} Si consideri il processo iterativo:
+    \begin{equation}
+    \bm{v}_{k+1} = f(\bm{v}_k)
+    \end{equation}
+\end{itemize}
+Allora, $\bm{v}_k \to \bm{v}^*$ per $k \to \infty$ a partire da qualsiasi stima iniziale $\bm{v}_0$. Inoltre, la convergenza è esponenzialmente rapida.
+\end{theorem}
+
+\subsection{Risoluzione Della BOE}
+
+Si puÃƒÂ² dimostrare che la BOE è effettivamente una mappa di contrazione:
+
+\begin{theorem}
+La funzione $f(\bm{v})$ della BOE è una mappa di contrazione; in particolare, per ogni $\bm{v}_1$ e $\bm{v}_2 \in \mathbb{R}^{|\mathcal{S}|}$ si ha:
+\begin{equation}
+\| f(\bm{v}_1) - f(\bm{v}_2) \|_\infty \le \gamma \| \bm{v}_1 - \bm{v}_2 \|_\infty
+\end{equation}
+dove $\gamma$ è il fattore di sconto e $\|\cdot\|_\infty$ è la norma massimo.
+\end{theorem}
+
+Siamo ora pronti a risolvere la BOE. Innanzitutto, notiamo che se $\bm{v}^*$ è una soluzione della BOE, essa soddisfa:
+\begin{equation}
+\bm{v}^* = \max_{\pi \in \Pi} (\bm{r}_\pi + \gamma \bm{P}_\pi \bm{v}^*)
+\end{equation}
+
+\newpage
+
+di conseguenza, $\bm{v}^*$ è un punto fisso in quanto vale $f(\bm{v}^*) = \bm{v}^*$.
+
+Quindi, poichÃƒÂ© la BOE è una mappa di contrazione, possiamo usare il teorema delle contrazioni per trovare $\bm{v}^*$ come segue:
+\begin{equation}
+\bm{v}_{k+1} = \max_{\pi \in \Pi} (\bm{r}_\pi + \gamma \bm{P}_\pi \bm{v}_k)
+\end{equation}
+dove $\bm{v}_k \to \bm{v}^*$ per $k \to \infty$. Inoltre, il teorema garantisce che il valore esista e sia unico.
+
+Una volta trovato $\bm{v}^*$, possiamo calcolare la \emph{policy} ottima sostituendo il valore di stato ottimo all'interno della BOE:
+\begin{equation}
+\pi^* = \argmax_{\pi \in \Pi} (\bm{r}_\pi + \gamma \bm{P}_\pi \bm{v}^*)
+\end{equation}
+
+Per calcolare $\pi^*$ possiamo utilizzare la strategia \emph{greedy} come suggerito dal seguente teorema:
+
+\begin{theorem}
+Per qualsiasi $s \in \mathcal{S}$, la \emph{policy} deterministica:
+\begin{equation}
+\pi^*(a \mid s) = \begin{cases} 1, & \text{se } a = a^*(s) \\ 0, & \text{se } a \ne a^*(s) \end{cases}
+\end{equation}
+è una \emph{policy} ottima per la BOE. Si noti che:
+\begin{equation}
+a^*(s) = \argmax_{a} q^*(s, a)
+\end{equation}
+dove:
+\begin{equation}
+q^*(s, a) \doteq \sum_{r \in \mathcal{R}} p(r \mid s, a)r + \gamma \sum_{s' \in \mathcal{S}} p(s' \mid s, a)v^*(s')
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+Dalla definizione di \emph{policy} ottima abbiamo:
+\begin{align}
+\pi^*(s) &= \argmax_{\pi \in \Pi} \sum_{a \in \mathcal{A}} \pi(a \mid s) \underbrace{\left( \sum_{r \in \mathcal{R}} p(r \mid s, a)r + \gamma \sum_{s' \in \mathcal{S}} p(s' \mid s, a)v^*(s') \right)}_{q^*(s, a)}, \quad s \in \mathcal{S} \nonumber \\
+&= \argmax_{\pi \in \Pi} \sum_{a \in \mathcal{A}} \pi(a \mid s) q^*(s, a)
+\end{align}
+
+Ora, poichÃƒÂ© si ha $\sum_{a} \pi(a \mid s) = 1$, si ottiene:
+\begin{equation}
+\sum_{a \in \mathcal{A}} \pi(a \mid s) q^*(s, a) \le \sum_{a \in \mathcal{A}} \pi(a \mid s) \max_{a \in \mathcal{A}} q^*(s, a) = \max_{a \in \mathcal{A}} q^*(s, a)
+\end{equation}
+\end{proof}
+
+\newpage
+
+L'uguaglianza nell'equazione precedente si ottiene quando:
+\begin{equation}
+\pi(a \mid s) = \begin{cases} 1, & \text{se } a = \argmax_a q^*(s, a) \\ 0, & \text{se } a \ne \argmax_a q^*(s, a) \end{cases}
+\end{equation}
+
+Pertanto la \eqref{eq:proof_optimal_policy_1} viene massimizzata se $\pi$ è la \emph{policy} greedy. $\square$
+
+L'ultima domanda aperta rimasta è se le soluzioni $\bm{v}^*$ e $\pi^*$ siano effettivamente ottime. Per garantirlo, abbiamo il seguente teorema:
+
+\begin{theorem}
+La soluzione $\bm{v}^*$ è il valore di stato ottimo e $\pi^*$ è la \emph{policy} ottima, ovvero, per qualsiasi altra \emph{policy} $\pi$ vale:
+\begin{equation}
+\bm{v}^* = \bm{v}_{\pi^*} \ge \bm{v}_\pi
+\end{equation}
+\end{theorem}
+
+\subsection{Tassonomia Degli Algoritmi Di RL}
+
+Gli algoritmi di RL possono essere distinti in base alle ipotesi che formulano. In particolare, gli approcci di RL \textbf{model-based} assumono che la probabilitÃƒÂ  di transizione di stato $p(s', r \mid s, a)$ sia nota o che possa essere identificata esplicitamente tramite un'altra strategia. Se, al contrario, l'approccio non si basa sulla conoscenza di $p(s', r \mid s, a)$, esso viene definito \textbf{model-free}.
+
+Un'ulteriore distinzione puÃƒÂ² essere fatta rispetto alla rappresentazione utilizzata per memorizzare i valori degli stati. Distinguiamo tra approcci \textbf{tabulari} (\emph{tabular}) e \textbf{parametrici} (\emph{parametric}). I primi si basano sulla disponibilitÃƒÂ  di una tabella in cui sono memorizzati i valori di ciascuno stato. L'ipotesi implicita è che l'MDP sia finito sia rispetto agli stati che alle azioni e, inoltre, che il numero di stati e azioni sia ridotto. Quest'ultima ipotesi è, in generale, richiesta per limitazioni di memoria. Tuttavia, nei contesti \emph{model-free} questa ipotesi è importante anche per un altro motivo: se lo spazio degli stati è troppo grande non è ragionevole aspettarsi che l'algoritmo sperimenti tutte le possibili coppie stato-azione per riempire la tabella.
+
+Gli approcci parametrici, invece, non memorizzano esplicitamente il valore per tutte le possibili coppie stato-azione. Al contrario, si affidano a un approssimatore di funzioni (\emph{function approximator}) che mappa la rappresentazione stato-azione sul rispettivo valore stimato. La forza di questi approcci risiede nel numero limitato di parametri (che solitamente è significativamente inferiore al numero di stati possibili). L'intuizione è che, se l'approssimatore di funzioni è valido, sarÃƒÂ  in grado di codificare la rappresentazione stato-azione con meno parametri e persino di generalizzare su coppie stato-azione non sperimentate durante la fase di addestramento di RL.
+
+Queste due categorizzazioni possono essere utilizzate per costruire una tassonomia delle possibili strategie di RL (si veda la Figura 2.1).
+\begin{itemize}
+    \item Se il modello è noto e sia lo spazio degli stati che quello delle azioni sono finiti e relativamente piccoli, possiamo utilizzare approcci di \textbf{Programmazione Dinamica} (\emph{Dynamic Programming});
+\end{itemize}
+
+\newpage
+
+\begin{itemize}
+    \item Se il modello è sconosciuto e sia lo spazio degli stati che quello delle azioni sono finiti e relativamente piccoli, possiamo utilizzare i metodi \textbf{Monte Carlo} o di \textbf{Differenza Temporale} (\emph{Temporal Difference Methods});
+    \item Se il modello è sconosciuto e almeno uno tra lo spazio degli stati e delle azioni è molto grande o infinito (ovvero, spazi delle azioni e degli stati continui), ci si affida ai \textbf{Metodi di Approssimazione Funzionale} (\emph{Approximate Function Methods}).
+\end{itemize}
+
+% [IMMAGINE DAL PDF ORIGINALE] Schema ad albero della tassonomia degli approcci di Reinforcement Learning (Tabular vs Approximate, Model-free vs Model-based) Ã¢â‚¬â€ Pagina 6 del PDF
+
+\newpage
+
+\section{Value Iteration E Policy Iteration}
+
+\subsection{Value Iteration}
+
+Nel capitolo precedente abbiamo introdotto alcuni risultati teorici che ci aiutano a risolvere la BOE. Infatti, il teorema del punto fisso di Banach applicato alla BOE ci ha fornito un algoritmo per trovare il punto fisso $\bm{v}^*$ (che si è rivelato essere anche il valore di stato ottimo).
+
+L'algoritmo suggerito dal teorema è proprio l'algoritmo di \textbf{Value Iteration} ampiamente noto nella comunitÃƒÂ  di RL. L'algoritmo applica direttamente il teorema e stima i valori di stato ottimi come segue:
+\begin{equation}
+\bm{v}_{k+1} = \max_{\pi \in \Pi} (\bm{r}_\pi + \gamma \bm{P}_\pi \bm{v}_k)
+\end{equation}
+che converge a $\bm{v}^*$ per $k \to \infty$.
+
+In pratica, ciascuna iterazione di questo algoritmo è suddivisa in due passaggi:
+\begin{itemize}
+    \item \textbf{Policy Update} (Aggiornamento della Policy): in questo passaggio troviamo la \emph{policy} che massimizza la BOE al passo di iterazione corrente, ovvero:
+    \begin{equation}
+    \pi_{k+1} = \argmax_{\pi \in \Pi} (\bm{r}_\pi + \gamma \bm{P}_\pi \bm{v}_k)
+    \end{equation}
+    dove $\bm{v}_k$ è il valore calcolato all'iterazione precedente. L'aggiornamento della \emph{policy} viene calcolato in modalitÃƒÂ  greedy, come suggerito nel capitolo precedente. In particolare, se richiamiamo la forma elemento per elemento del passaggio di aggiornamento della \emph{policy}:
+    \begin{align}
+    \pi_{k+1}(s) &= \argmax_{\pi \in \Pi} \sum_{a \in \mathcal{A}} \pi_k(a \mid s) \underbrace{\left( \sum_{r \in \mathcal{R}} p(r \mid s, a)r + \gamma \sum_{s' \in \mathcal{S}} p(s' \mid s, a)v_k(s') \right)}_{q_k(s, a)}, \quad s \in \mathcal{S} \nonumber \\
+    &= \argmax_{\pi \in \Pi} \sum_{a \in \mathcal{A}} \pi_k(a \mid s) q_k(s, a)
+    \end{align}
+\end{itemize}
+
+\newpage
+
+sappiamo giÃƒÂ  che la \emph{policy} massimizzante è la \emph{policy} deterministica che per ciascuno stato seleziona l'azione che massimizza la funzione di valore dell'azione:
+\begin{equation}
+\pi_{k+1}(a \mid s) = \begin{cases} 1, & \text{se } a = \argmax_a q_k(s, a) \\ 0, & \text{se } a \ne \argmax_a q_k(s, a) \end{cases}
+\end{equation}
+
+\begin{itemize}
+    \item \textbf{Value Update} (Aggiornamento del Valore): dopo che è stata calcolata la \emph{policy} ottima per il passo corrente, possiamo aggiornare i valori dello stato come segue:
+    \begin{align}
+    v_{k+1}(s) &= \sum_{a \in \mathcal{A}} \pi_{k+1}(a \mid s) \underbrace{\left( \sum_{r \in \mathcal{R}} p(r \mid s, a)r + \gamma \sum_{s' \in \mathcal{S}} p(s' \mid s, a)v_k(s') \right)}_{q_k(s, a)}, \quad s \in \mathcal{S} \nonumber \\
+    &= \sum_{a \in \mathcal{A}} \pi_{k+1}(a \mid s) q_k(s, a)
+    \end{align}
+    e se utilizziamo l'espressione per la \emph{policy} deterministica ottima in \eqref{eq:value_iter_greedy_policy} otteniamo:
+    \begin{equation}
+    v_{k+1}(s) = \max_{a} q_k(s, a)
+    \end{equation}
+\end{itemize}
+
+In sintesi, l'algoritmo di value iteration itera i seguenti passaggi (lo pseudocodice è mostrato nell'Algoritmo 1):
+\[ v_k(s) \to q_k(s, a) \to \text{nuova policy greedy } \pi_{k+1}(s) \to \text{nuovo valore } v_{k+1}(s) = \max_{a} q_k(s, a) \]
+
+\begin{algorithm}[H]
+\caption{Algoritmo di Value Iteration}
+\Inizializza{I modelli di probabilitÃƒÂ  $p(r \mid s, a)$ e $p(s' \mid s, a)$ sono noti per ogni $(s, a)$. Stima iniziale $\bm{v}_0$.}
+\textbf{Obiettivo:} Ricerca del valore di stato ottimo e di una \emph{policy} ottima per la risoluzione dell'equazione di ottimalitÃƒÂ  di Bellman.\\
+\Mentre{$\| \bm{v}_k - \bm{v}_{k-1} \|$ è maggiore di una piccola soglia predefinita}{
+    \Per{ogni stato $s \in \mathcal{S}$}{
+        \Per{ogni azione $a \in \mathcal{A}(s)$}{
+            $q_k(s, a) = \sum_{r} p(r \mid s, a)r + \gamma \sum_{s'} p(s' \mid s, a)v_k(s')$
+        }
+        $a^*_k(s) = \argmax_a q_k(s, a)$ \\
+        $\pi_{k+1}(a \mid s) = \begin{cases} 1 & \text{se } a = a^*_k(s) \\ 0 & \text{altrimenti} \end{cases}$ \\
+        $v_{k+1}(s) = \max_a q_k(s, a)$
+    }
+}
+\end{algorithm}
+
+\newpage
+
+\subsection{Policy Iteration}
+
+Una strategia alternativa per trovare la \emph{policy} ottima e la funzione di valore ottima è l'algoritmo di \textbf{Policy Iteration}. La Policy Iteration non risolve direttamente la BOE, ma è strettamente legata alla value iteration. Ciascuna iterazione dell'algoritmo è suddivisa in due passaggi:
+\begin{itemize}
+    \item \textbf{Policy Evaluation} (Valutazione della Policy): in questo passaggio, i valori di stato vengono calcolati data la \emph{policy} corrente. In pratica, ciÃƒÂ² si ottiene risolvendo l'equazione di Bellman (1.44) (N.B. non la BOE):
+    \begin{equation}
+    \bm{v}_{\pi_k} = \bm{r}_{\pi_k} + \gamma \bm{P}_{\pi_k} \bm{v}_{\pi_k}
+    \end{equation}
+    dove $\pi_k$ è la \emph{policy} dell'iterazione precedente dell'algoritmo. Per risolvere l'equazione di Bellman possiamo utilizzare sia la soluzione in forma chiusa, sia quella iterativa descritta nella sezione 1.2.4. In pratica, si ricorre alla soluzione iterativa, ovvero:
+    \begin{equation}
+    \bm{v}_{\pi_k}^{(j+1)} = \bm{r}_{\pi_k} + \gamma \bm{P}_{\pi_k} \bm{v}_{\pi_k}^{(j)}, \quad j = 0, 1, 2, \dots
+    \end{equation}
+    Partiamo da una stima iniziale $\bm{v}_{\pi_k}^{(0)}$ per poi convergere a $\bm{v}_{\pi_k}$ per $j \to \infty$.
+
+    \item \textbf{Policy Improvement} (Miglioramento della Policy): nel secondo passaggio la \emph{policy} viene migliorata utilizzando i valori di stato aggiornati nel passaggio precedente. In pratica, ciÃƒÂ² si realizza come segue:
+    \begin{equation}
+    \pi_{k+1} = \argmax_{\pi \in \Pi} (\bm{r}_\pi + \gamma \bm{P}_\pi \bm{v}_{\pi_k})
+    \end{equation}
+\end{itemize}
+
+$\pi_{k+1}$ è migliore di $\pi_k$? La risposta è sÃƒÂ¬, poichÃƒÂ© possiamo dimostrare che $\bm{v}_{\pi_{k+1}} \ge \bm{v}_{\pi_k}$ per ogni $s \in \mathcal{S}$ (indicato anche semplicemente come $\bm{v}_{k+1} \ge \bm{v}_k$).
+
+\newpage
+
+\textit{*Materiale aggiuntivo - non richiesto per l'esame finale}
+
+\begin{proof}
+Sia $\bm{v}_{\pi_{k+1}}$ che $\bm{v}_{\pi_k}$ soddisfano l'equazione di Bellman, pertanto:
+\begin{align}
+\bm{v}_{\pi_k} &= \bm{r}_{\pi_k} + \gamma \bm{P}_{\pi_k} \bm{v}_{\pi_k} \nonumber \\
+\bm{v}_{\pi_{k+1}} &= \bm{r}_{\pi_{k+1}} + \gamma \bm{P}_{\pi_{k+1}} \bm{v}_{\pi_{k+1}}
+\end{align}
+
+PoichÃƒÂ© abbiamo $\pi_{k+1} = \argmax_\pi (\bm{r}_\pi + \gamma \bm{P}_\pi \bm{v}_{\pi_k})$, abbiamo anche:
+\begin{equation}
+\bm{r}_{\pi_k} + \gamma \bm{P}_{\pi_k} \bm{v}_{\pi_k} \le \bm{r}_{\pi_{k+1}} + \gamma \bm{P}_{\pi_{k+1}} \bm{v}_{\pi_k}
+\end{equation}
+dove abbiamo mantenuto $\bm{v}_{\pi_k}$ in quanto $\pi_{k+1}$ massimizza $\bm{r}_\pi + \gamma \bm{P}_\pi \bm{v}_{\pi_k}$. Se ora calcoliamo la differenza tra $\bm{v}_{\pi_k}$ e $\bm{v}_{\pi_{k+1}}$ otteniamo:
+\begin{align}
+\bm{v}_{\pi_k} - \bm{v}_{\pi_{k+1}} &= (\bm{r}_{\pi_k} + \gamma \bm{P}_{\pi_k} \bm{v}_{\pi_k}) - (\bm{r}_{\pi_{k+1}} + \gamma \bm{P}_{\pi_{k+1}} \bm{v}_{\pi_{k+1}}) \nonumber \\
+&\le (\bm{r}_{\pi_{k+1}} + \gamma \bm{P}_{\pi_{k+1}} \bm{v}_{\pi_k}) - (\bm{r}_{\pi_{k+1}} + \gamma \bm{P}_{\pi_{k+1}} \bm{v}_{\pi_{k+1}}) \nonumber \\
+&\le \gamma \bm{P}_{\pi_{k+1}} (\bm{v}_{\pi_k} - \bm{v}_{\pi_{k+1}})
+\end{align}
+
+Se iteriamo la precedente derivazione $n$ volte otteniamo:
+\begin{align}
+\bm{v}_{\pi_k} - \bm{v}_{\pi_{k+1}} &\le \gamma \bm{P}_{\pi_{k+1}} (\bm{v}_{\pi_k} - \bm{v}_{\pi_{k+1}}) \le \gamma^2 \bm{P}_{\pi_{k+1}}^2 (\bm{v}_{\pi_k} - \bm{v}_{\pi_{k+1}}) \le \dots \nonumber \\
+&\le \gamma^n \bm{P}_{\pi_{k+1}}^n (\bm{v}_{\pi_k} - \bm{v}_{\pi_{k+1}}) \le \lim_{n \to \infty} \gamma^n \bm{P}_{\pi_{k+1}}^n (\bm{v}_{\pi_k} - \bm{v}_{\pi_{k+1}}) = \bm{0}
+\end{align}
+
+Il limite tende a zero poichÃƒÂ© $\gamma^n \to 0$ per $n \to \infty$ e $\bm{P}_{\pi_{k+1}}^n$ è una matrice non negativa la cui somma delle righe è uguale a uno per tutte le righe (in quanto i suoi elementi rappresentano probabilitÃƒÂ ). Di conseguenza, si ha $\bm{v}_{\pi_k} - \bm{v}_{\pi_{k+1}} \le \bm{0} \implies \bm{v}_{\pi_k} \le \bm{v}_{\pi_{k+1}}$.
+\end{proof}
+
+Dobbiamo ora garantire che la policy iteration converga alla \emph{policy} ottima. Per verificarlo, consideriamo innanzitutto la sequenza di \emph{policy}: $\{\pi_0, \pi_1, \dots, \pi_k, \dots\}$ e la sequenza associata di valori di stato: $\{\bm{v}_{\pi_0}, \bm{v}_{\pi_1}, \dots, \bm{v}_{\pi_k}, \dots\}$, in cui i valori di stato migliorano continuamente, come abbiamo dimostrato nel riquadro precedente. Supponiamo che $\bm{v}^*$ sia il valore di stato ottimo. Si ha che $\bm{v}_{\pi_k} \le \bm{v}^*$ per ogni $k$. Sappiamo inoltre che $\bm{v}_{\pi_0} \le \bm{v}_{\pi_1} \le \bm{v}_{\pi_2} \le \dots \le \bm{v}_{\pi_k} \le \dots \le \bm{v}^*$. PoichÃƒÂ© $(\bm{v}_{\pi_k})$ è non decrescente e sempre limitata superiormente da $\bm{v}^*$, dal teorema della convergenza monotona consegue che $(\bm{v}_{\pi_k})$ converge a un valore costante, indicato con $\bm{v}_\infty$, per $k \to \infty$. La domanda è: si ha $\bm{v}_\infty = \bm{v}^*$? Per garantirlo, abbiamo il seguente teorema:
+
+\begin{theorem}[Convergenza di Policy Iteration]
+La sequenza di valori di stato $\{\bm{v}_{\pi_k}\}_{k=0}^\infty$ dell'algoritmo di policy iteration converge al valore di stato ottimo ($\bm{v}^*$). Come conseguenza, la sequenza di \emph{policy} $\{\pi_k\}_{k=0}^\infty$ converge a una \emph{policy} ottima.
+\end{theorem}
+
+Lo pseudocodice per la policy iteration è riportato nell'Algoritmo 2.
+
+\newpage
+
+\begin{algorithm}[H]
+\caption{Algoritmo di Policy Iteration}
+\Inizializza{Il modello di sistema $p(r \mid s, a)$ e $p(s' \mid s, a)$ è noto per ogni $(s, a)$. Stima iniziale $\pi_0$.}
+\textbf{Obiettivo:} Ricerca del valore di stato ottimo e di una \emph{policy} ottima.\\
+\Mentre{$\bm{v}_{\pi_k}$ non è converso}{
+    \Commento{Policy evaluation}
+    Inizializzazione: stima iniziale arbitraria $\bm{v}_{\pi_k}^{(0)}$ \\
+    \Mentre{$\bm{v}_{\pi_k}^{(j)}$ non è converso}{
+        \Per{ogni stato $s \in \mathcal{S}$}{
+            $v_{\pi_k}^{(j+1)}(s) = \sum_{a} \pi_k(a \mid s) \left[ \sum_r p(r \mid s, a)r + \gamma \sum_{s'} p(s' \mid s, a)v_{\pi_k}^{(j)}(s') \right]$
+        }
+    }
+    \Commento{Policy improvement}
+    \Per{ogni stato $s \in \mathcal{S}$}{
+        \Per{ogni azione $a \in \mathcal{A}$}{
+            $q_{\pi_k}(s, a) = \sum_r p(r \mid s, a)r + \gamma \sum_{s'} p(s' \mid s, a)v_{\pi_k}(s')$
+        }
+        $a^*_k(s) = \argmax_a q_{\pi_k}(s, a)$ \\
+        $\pi_{k+1}(a \mid s) = \begin{cases} 1 & \text{se } a = a^*_k(s) \\ 0 & \text{altrimenti} \end{cases}$
+    }
+}
+\end{algorithm}
+
+\newpage
+
+\section{Metodi Monte Carlo}
+
+Nel capitolo precedente abbiamo visto come risolvere la BOE utilizzando le tecniche di value iteration o di policy iteration. Sebbene non si sia posta molta enfasi su questo aspetto, è importante ricordare che la value iteration e la policy iteration possono essere applicate solo se il modello dell'ambiente è noto, ovvero se la matrice di transizione di stato $\bm{P}$ è nota. Questi approcci sono noti anche come strategie \textbf{model-based}.
+
+In molti problemi del mondo reale, l'assunzione di una conoscenza completa della matrice di transizione di stato è spesso eccessivamente restrittiva. Potremmo disporre di informazioni limitate sul processo che genera i nuovi stati o, nel peggiore dei casi, potremmo non averne affatto. In queste situazioni, è ancora possibile risolvere la BOE? Si scopre che ciÃƒÂ² è fattibile sfruttando il paradigma basato sui dati (\emph{data-driven}). PoichÃƒÂ© non disponiamo di informazioni sul modello dell'ambiente, cercheremo di stimarlo raccogliendo esperienza (ossia interagendo con esso) e utilizzando tale esperienza per stimare il modello sottostante. Questo è l'obiettivo dei \textbf{Metodi Monte Carlo} (\emph{Monte Carlo Methods} - MCM), che appartengono agli approcci \textbf{model-free}.
+
+\subsection{Una Prima Semplice Strategia Monte Carlo}
+
+Per comprendere questi approcci, riepiloghiamo l'algoritmo di policy iteration:
+\begin{itemize}
+    \item \textbf{Policy Evaluation}: in questo passaggio, i valori di stato vengono calcolati data la \emph{policy} corrente:
+    \begin{equation}
+    \bm{v}_{\pi_k} = \bm{r}_{\pi_k} + \gamma \bm{P}_{\pi_k} \bm{v}_{\pi_k}
+    \end{equation}
+    \item \textbf{Policy Improvement}: nel secondo passaggio la \emph{policy} viene migliorata utilizzando i valori di stato aggiornati nel passaggio precedente:
+    \begin{equation}
+    \pi_{k+1} = \argmax_{\pi} (\bm{r}_\pi + \gamma \bm{P}_\pi \bm{v}_{\pi_k})
+    \end{equation}
+\end{itemize}
+
+\newpage
+
+la quale, in forma elemento per elemento, diventa:
+\begin{align}
+\pi_{k+1}(s) &= \argmax_{\pi} \sum_{a \in \mathcal{A}} \pi_k(a \mid s) \left[ \sum_{r \in \mathcal{R}} p(r \mid s, a)r + \gamma \sum_{s'} p(s' \mid s, a)v_{\pi_k}(s') \right] \nonumber \\
+&= \argmax_{\pi} \sum_{a \in \mathcal{A}} \pi_k(a \mid s) q_{\pi_k}(s, a)
+\end{align}
+
+Nella policy iteration, che è model-based, calcoliamo prima $\bm{v}_{\pi_k}$ (utilizzando la matrice $\bm{P}$ nota) e poi la usiamo per calcolare $q_{\pi_k}(s, a) = \sum_r p(r \mid s, a)r + \gamma \sum_{s'} p(s' \mid s, a)v_{\pi_k}(s')$, per poi eseguire il passaggio di miglioramento.
+
+Le espressioni precedenti suggeriscono che, se non disponiamo di $\bm{P}$, dobbiamo calcolare $q_{\pi_k}(s, a)$ con un'altra strategia. Una volta calcolata $q_{\pi_k}(s, a)$, possiamo migliorare la \emph{policy} come nella policy iteration, poichÃƒÂ© nel secondo passaggio non abbiamo bisogno di $\bm{P}$. Per calcolare $q_{\pi_k}(s, a)$ dai dati, è utile ricordare la definizione della funzione di valore dell'azione:
+\begin{align}
+q_{\pi_k}(s, a) &= \mathbb{E}_\pi [g_t = g \mid s_t = s, a_t = a] \nonumber \\
+&= \mathbb{E}_\pi \left[ \sum_{k=0}^{\infty} \gamma^k r_{t+k+1} \;\middle|\; s_t = s, a_t = a \right] \nonumber \\
+&= \mathbb{E}_\pi [ r_{t+1} + \gamma r_{t+2} + \dots \mid s_t = s, a_t = a ]
+\end{align}
+
+PoichÃƒÂ© $q_{\pi_k}(s, a)$ è un valore atteso, invece di calcolarlo utilizzando il modello $\bm{P}$ (che, si ripete, è sconosciuto), possiamo calcolarlo campionando la distribuzione e calcolando la media campionaria:
+\begin{equation}
+q_{\pi_k}(s, a) = \mathbb{E}_\pi [g_t = g \mid s_t = s, a_t = a] \approx \frac{1}{N} \sum_{i=0}^{N-1} g_{\pi_k}^{(i)}(s, a)
+\end{equation}
+
+Sappiamo che, se $N \to \infty$, l'approssimazione diventerÃƒÂ  un'uguaglianza. Pertanto, l'intuizione alla base dei metodi MC consiste nel raccogliere esperienza interagendo con l'ambiente (ovvero eseguendo episodi) per calcolare $g_{\pi_k}^{(i)}(s, a)$ per tutte le possibili coppie $(s, a)$ e usarla per approssimare il valore atteso per ottenere $q_{\pi_k}(s, a)$.
+
+L'algoritmo MC piÃƒÂ¹ semplice, in pratica, presenta due passaggi fondamentali:
+\begin{itemize}
+    \item \textbf{Policy Evaluation}: in questo passaggio, $q_{\pi_k}(s, a)$ viene stimata per ogni $(s, a)$ raccogliendo molti episodi che iniziano da $(s, a)$ e utilizzandoli per calcolare i \emph{return} e farne la media.
+    \item \textbf{Policy Improvement}: usiamo semplicemente l'approccio greedy per aggiornare la \emph{policy}:
+    \begin{equation}
+    \pi_{k+1} = \argmax_{\pi} \sum_{a \in \mathcal{A}} \pi_k(a \mid s) q_{\pi_k}(s, a)
+    \end{equation}
+\end{itemize}
+
+\newpage
+
+che è:
+\begin{equation}
+\pi_{k+1}(a \mid s) = \begin{cases} 1, & \text{se } a = a^*_k(s) \\ 0, & \text{altrimenti} \end{cases}
+\end{equation}
+
+Lo pseudocodice dell'algoritmo è fornito nell'Algoritmo 3.
+
+\begin{algorithm}[H]
+\caption{Metodo MC di Base (variante model-free di policy iteration)}
+\Inizializza{Stima iniziale $\pi_0$.}
+\textbf{Obiettivo:} Ricerca di una \emph{policy} ottima.\\
+\Per{$k \in (0, 1, 2, \dots)$}{
+    \Per{ogni stato $s \in \mathcal{S}$}{
+        \Per{ogni azione $a \in \mathcal{A}(s)$}{
+            Raccogli un numero sufficiente di episodi che iniziano da $(s, a)$ seguendo $\pi_k$ \\
+            Valutazione della policy: $q_{\pi_k}(s, a) \approx q_k(s, a) =$ la media dei \emph{return} di tutti gli episodi che iniziano da $(s, a)$
+        }
+    }
+    \Commento{Policy improvement}
+    $a^*_k(s) = \argmax_a q_k(s, a)$ \\
+    $\pi_{k+1}(a \mid s) = \begin{cases} 1 & \text{se } a = a^*_k(s) \\ 0 & \text{altrimenti} \end{cases}$
+}
+\end{algorithm}
+
+PoichÃƒÂ© sappiamo che la policy iteration converge, anche questo algoritmo converge a patto che vengano raccolti abbastanza episodi per ogni $(s, a)$. Il problema di questa implementazione risiede nella scarsa efficienza campionaria (\emph{sample efficiency}): l'esperienza raccolta non viene sfruttata in modo efficace e l'algoritmo richiede molte interazioni per trovare la \emph{policy} ottima.
+
+\subsection{Monte Carlo Exploring Start}
+
+Per migliorare l'efficienza dell'algoritmo appena introdotto, ricordiamo che un episodio è una sequenza di stati e azioni:
+\begin{equation}
+s_1 \xrightarrow{a_2} s_2 \xrightarrow{a_4} s_1 \xrightarrow{a_2} s_2 \xrightarrow{a_3} s_5 \xrightarrow{a_1} \dots
+\end{equation}
+
+Ogni volta che si osserva una coppia stato-azione in un episodio, si dice che $(s, a)$ è stata \textbf{visitata}. L'algoritmo semplice sopra riportato utilizza solo la visita iniziale (\emph{initial visit}), ovvero l'intero episodio viene impiegato per stimare il valore dell'azione della sola coppia stato-azione iniziale. Tuttavia, durante l'episodio vengono visitate molte altre coppie stato-azione e potremmo utilizzare i \emph{return} ottenuti a partire da ciascuna di esse in poi per stimarne il rispettivo valore in un singolo
+
+\newpage
+
+episodio. CiÃƒÂ² diventa piÃƒÂ¹ chiaro notando che:
+\begin{align*}
+&s_1 \xrightarrow{a_2} s_2 \xrightarrow{a_4} s_1 \xrightarrow{a_2} s_2 \xrightarrow{a_3} s_5 \xrightarrow{a_1} \dots \quad \text{[episodio originale]} \\
+&s_2 \xrightarrow{a_4} s_1 \xrightarrow{a_2} s_2 \xrightarrow{a_3} s_5 \xrightarrow{a_1} \dots \quad \text{[sotto-episodio che inizia da } (s_2, a_4)\text{]} \\
+&s_1 \xrightarrow{a_2} s_2 \xrightarrow{a_3} s_5 \xrightarrow{a_1} \dots \quad \text{[sotto-episodio che inizia da } (s_1, a_2)\text{]} \\
+&s_2 \xrightarrow{a_3} s_5 \xrightarrow{a_1} \dots \quad \text{[sotto-episodio che inizia da } (s_2, a_3)\text{]} \\
+&s_5 \xrightarrow{a_1} \dots \quad \text{[sotto-episodio che inizia da } (s_5, a_1)\text{]}
+\end{align*}
+
+In pratica, ogni traiettoria che inizia da ciascuna coppia puÃƒÂ² essere vista come un episodio che parte da quella coppia. CiÃƒÂ² ci consente di utilizzare un singolo episodio per calcolare i \emph{return} per molteplici coppie stato-azione. Inoltre, una coppia potrebbe essere visitata piÃƒÂ¹ volte all'interno di un episodio: se contiamo solo la prima volta in cui la coppia viene visitata per stimarne il \emph{return}, la strategia viene definita \textbf{first-visit}, altrimenti ci si riferisce a soluzioni \textbf{every-visit}. Queste ultime sono, in generale, piÃƒÂ¹ efficienti dal punto di vista campionario.
+
+Un altro miglioramento per rendere l'approccio piÃƒÂ¹ efficiente si puÃƒÂ² ottenere notando che nell'Algoritmo 3 dobbiamo raccogliere piÃƒÂ¹ episodi prima di poter aggiornare la \emph{policy}. Possiamo invece utilizzare il \emph{return} di un singolo episodio per aggiornare la \emph{policy}. Il nuovo algoritmo che integra tutte queste considerazioni è noto come \textbf{Monte Carlo Exploring Starts} ed è fornito nell'Algoritmo 4.
+
+\begin{algorithm}[H]
+\caption{Metodo MC Exploring Starts (variante efficiente di MC Basic)}
+\Inizializza{Policy iniziale $\pi_0(a \mid s)$ e valore iniziale $q(s, a)$ per ogni $(s, a)$. $Returns(s, a) = 0$ e $Num(s, a) = 0$ per ogni $(s, a)$.}
+\textbf{Obiettivo:} Ricerca di una \emph{policy} ottima.\\
+\Per{ogni episodio}{
+    Generazione dell'episodio: Seleziona una coppia stato-azione iniziale $(s_0, a_0)$ e assicurati che tutte le coppie possano essere potenzialmente selezionate (questa è la condizione di \emph{exploring-starts}). Seguendo la \emph{policy} corrente, genera un episodio di lunghezza $T$: $s_0, a_0, r_1, \dots, s_{T-1}, a_{T-1}, r_T$.\\
+    Inizializzazione per ogni episodio: $g \leftarrow 0$\\
+    \Per{ogni passo dell'episodio, $t = T-1, T-2, \dots, 0$}{
+        $g \leftarrow \gamma g + r_{t+1}$ \\
+        $Returns(s_t, a_t) \leftarrow Returns(s_t, a_t) + g$ \\
+        $Num(s_t, a_t) \leftarrow Num(s_t, a_t) + 1$ \\
+        Valutazione della policy: $q(s_t, a_t) \leftarrow Returns(s_t, a_t) / Num(s_t, a_t)$
+    }
+    Miglioramento della policy: $\pi(a \mid s_t) = \begin{cases} 1 & \text{se } a = \argmax_a q(s_t, a) \\ 0 & \text{altrimenti} \end{cases}$
+}
+\end{algorithm}
+
+L'algoritmo viene chiamato \emph{exploring start} poichÃƒÂ© dobbiamo garantire che tutte le possibili coppie stato-azione vengano selezionate come coppie iniziali, altrimenti potremmo non essere in grado di stimare il loro valore dell'azione. Questa condizione, tuttavia, è difficile da soddisfare.
+
+\newpage
+
+\subsection{MC \texorpdfstring{$\epsilon$}{epsilon}-Greedy}
+
+Per rimuovere l'assunzione di \emph{exploring start} del metodo MC Exploring start, dobbiamo sfruttare le \textbf{soft policies} (politiche soffici). Una \emph{policy} è definita \emph{soft} se, per ciascuno stato, presenta una probabilitÃƒÂ  non nulla di selezionare ogni possibile azione. Intuitivamente, una \emph{soft policy} consente di visitare ogni coppia stato-azione in un singolo episodio, a patto che l'episodio sia sufficientemente lungo. Pertanto, con una \emph{soft policy} non necessitiamo di un numero elevato di episodi e, di conseguenza, possiamo rimuovere l'ipotesi di \emph{exploring start}.
+
+Come possiamo implementare le \emph{soft policies}? Una tipologia comune di \emph{soft policies} è nota come \textbf{policy $\epsilon$-greedy}, ossia \emph{policy} stocastiche che hanno una probabilitÃƒÂ  maggiore di selezionare l'azione greedy e probabilitÃƒÂ  non nulle di selezionare le altre. In pratica, esse sono definite come:
+\begin{equation}
+\pi(a \mid s) = \begin{cases} 1 - \frac{\epsilon}{|\mathcal{A}(s)|}(|\mathcal{A}(s)| - 1), & \text{per l'azione greedy} \\ \frac{\epsilon}{|\mathcal{A}(s)|}, & \text{per le altre } |\mathcal{A}(s)| - 1 \text{ azioni} \end{cases}
+\end{equation}
+
+Per selezionare un'azione nelle \emph{policy} $\epsilon$-greedy, campioniamo semplicemente un numero casuale $x \in [0, 1]$ seguendo una distribuzione uniforme e selezioniamo l'azione greedy se $x \ge \epsilon$. Altrimenti, selezioniamo casualmente una delle altre azioni se $x \le \epsilon$.
+
+Per modificare l'approccio MC exploring start, dobbiamo modificare leggermente il passaggio di miglioramento della \emph{policy}, poichÃƒÂ© ora utilizziamo \emph{policy} $\epsilon$-greedy. In pratica, il passaggio di miglioramento:
+\begin{equation}
+\pi_{k+1} = \argmax_{\pi \in \Pi_\epsilon} \sum_{a \in \mathcal{A}} \pi_k(a \mid s) q_{\pi_k}(s, a)
+\end{equation}
+dove $\Pi_\epsilon$ è l'insieme di tutte le \emph{policy} $\epsilon$-greedy, viene risolto da:
+\begin{equation}
+\pi_{k+1}(a \mid s) = \begin{cases} 1 - \frac{\epsilon}{|\mathcal{A}(s)|}(|\mathcal{A}(s)| - 1), & \text{se } a = a^*_k \\ \frac{\epsilon}{|\mathcal{A}(s)|}, & \text{se } a \ne a^*_k \end{cases}
+\end{equation}
+
+L'algoritmo è fornito nell'Algoritmo 5.
+
+La questione se le \emph{policy} $\epsilon$-greedy possano garantire \emph{policy} ottime ha una risposta sfumata. Da un lato, dato un numero sufficiente di campioni, l'algoritmo puÃƒÂ² convergere a una \emph{policy} $\epsilon$-greedy che è ottima all'interno dell'insieme $\Pi_\epsilon$. Tuttavia, questa \emph{policy} potrebbe non essere ottima nell'intero insieme $\Pi$. Se $\epsilon$ è sufficientemente piccolo, comunque, le \emph{policy} ottime in $\Pi_\epsilon$ sono quasi ottime in $\Pi$. Al contrario, l'ottimalitÃƒÂ  delle \emph{policy} $\epsilon$-greedy peggiora all'aumentare di $\epsilon$.
+
+\subsubsection{Exploration Vs Exploitation}
+
+Nel reinforcement learning esiste un compromesso (\emph{trade-off}) fondamentale tra esplorazione (\emph{exploration}) e sfruttamento (\emph{exploitation}). L'esplorazione comporta il tentativo di intraprendere azioni diverse per raccogliere informazioni e migliorare la valutazione della \emph{policy}. Lo sfruttamento si concentra sulla scelta dell'azione che presenta il valore piÃƒÂ¹ elevato. PoichÃƒÂ© i valori iniziali dell'azione potrebbero essere imprecisi, bilanciare entrambi gli aspetti è essenziale.
+
+Le \emph{policy} $\epsilon$-greedy aiutano a bilanciare questo compromesso intraprendendo prevalentemente l'azione migliore (sfruttamento / exploitation)
+
+\newpage
+
+mentre occasionalmente ne sperimentano altre (esplorazione / exploration). Esse vengono impiegate in vari metodi di reinforcement learning, inclusi i metodi Monte Carlo e l'apprendimento a differenze temporali (\emph{temporal-difference learning}). Le \emph{policy} ottime dovrebbero essere greedy, ma le \emph{policy} $\epsilon$-greedy danno la prioritÃƒÂ  all'esplorazione sacrificando in parte l'ottimalitÃƒÂ . Ridurre $\epsilon$ accresce lo sfruttamento, mentre aumentarlo favorisce l'esplorazione.
+
+\begin{algorithm}[H]
+\caption{MC $\epsilon$-Greedy (variante di MC Exploring Starts)}
+\Inizializza{Policy iniziale $\pi_0(a \mid s)$ e valore iniziale $q(s, a)$ per ogni $(s, a)$. $Returns(s, a) = 0$ e $Num(s, a) = 0$ per ogni $(s, a)$. $\epsilon \in (0, 1]$.}
+\textbf{Obiettivo:} Ricerca di una \emph{policy} ottima.\\
+\Per{ogni episodio}{
+    Generazione dell'episodio: Seleziona una coppia stato-azione iniziale $(s_0, a_0)$ (la condizione di \emph{exploring starts} non è richiesta). Seguendo la \emph{policy} corrente, genera un episodio di lunghezza $T$: $s_0, a_0, r_1, \dots, s_{T-1}, a_{T-1}, r_T$.\\
+    Inizializzazione per ogni episodio: $g \leftarrow 0$\\
+    \Per{ogni passo dell'episodio, $t = T - 1, T - 2, \dots, 0$}{
+        $g \leftarrow \gamma g + r_{t+1}$ \\
+        $Returns(s_t, a_t) \leftarrow Returns(s_t, a_t) + g$ \\
+        $Num(s_t, a_t) \leftarrow Num(s_t, a_t) + 1$ \\
+        Valutazione della policy: $q(s_t, a_t) \leftarrow Returns(s_t, a_t) / Num(s_t, a_t)$
+    }
+    Miglioramento della policy: Sia $a^* = \argmax_a q(s_t, a)$ e $\pi(a \mid s_t) = \begin{cases} 1 - \frac{\epsilon}{|\mathcal{A}(s)|}(|\mathcal{A}(s)| - 1) & \text{se } a = a^* \\ \frac{\epsilon}{|\mathcal{A}(s)|} & \text{altrimenti} \end{cases}$
+}
+\end{algorithm}
+
+%% AA 42 - 59
+\section*{Capitolo 5 \\ Apprendimento Per Differenza Temporale}
+
+I metodi di Apprendimento per Differenza Temporale (metodi TD, \emph{Temporal Difference}) possono essere visti come una combinazione degli approcci Monte Carlo e di Programmazione Dinamica (DP). Come i primi, non assumono la conoscenza del modello di transizione di stato e utilizzano l'esperienza per apprendere le funzioni di valore. Tuttavia, a differenza dei metodi MC, non stimano il ritorno attendendo il risultato finale (la fine dell'episodio), ma come la DP aggiornano le stime basandosi su altre stime (ovvero, effettuano il \emph{bootstrap}).
+
+\subsection{Forma Generale Dell'Apprendimento TD}
+
+Invece di attendere la fine di un intero episodio, c'è la possibilitÃƒÂ  di calcolare la funzione valore-azione e aggiornare la \emph{policy} durante l'episodio stesso? Le tecniche di differenza temporale cercano di rispondere a questa domanda. Per comprenderne l'intuizione, possiamo considerare il problema di stimare la media di una variabile casuale utilizzando alcuni campioni ottenuti dalla sua distribuzione. Si considerino $n$ campioni i.i.d. $\{x_i\}_{i=1}^n$. Il valore atteso di $X$ puÃƒÂ² essere approssimato da:
+
+\[
+E[X] \approx \bar{x} = \frac{1}{n} \sum_{i=1}^n x_i \tag{5.1}
+\]
+
+Questa approssimazione segue l'idea alla base dei metodi Monte Carlo. Il problema di questo approccio è che dobbiamo prima raccogliere tutti gli $n$ campioni e poi calcolare l'approssimazione del valore atteso.
+
+Alternativamente, possiamo calcolare la media in modo incrementale. In particolare, definiamo:
+
+\[
+w_{k+1} = \frac{1}{k} \sum_{i=1}^k x_i, \quad k = 1, 2, \dots
+\]
+
+di conseguenza, abbiamo:
+
+\[
+w_k = \frac{1}{k-1} \sum_{i=1}^{k-1} x_i, \quad k = 2, 3, \dots
+\]
+
+\newpage
+
+$w_{k+1}$ puÃƒÂ² quindi essere calcolato in termini di $w_k$ come:
+
+\begin{align*}
+w_{k+1} &= \frac{1}{k} \sum_{i=1}^k x_i = \frac{1}{k} \left( \sum_{i=1}^{k-1} x_i + x_k \right) \\
+&= \frac{1}{k} \left( (k-1)w_k + x_k \right) = w_k - \frac{1}{k}(w_k - x_k).
+\end{align*}
+
+Otteniamo quindi il seguente algoritmo incrementale:
+
+\[
+w_{k+1} = w_k - \frac{1}{k}(w_k - x_k).
+\]
+
+o, piÃƒÂ¹ in generale,
+
+\[
+w_{k+1} = w_k - \alpha(w_k - x_k).
+\]
+
+Con questa forma, possiamo aggiornare iterativamente la stima del valore atteso ogni volta che viene osservato un campione. Chiaramente, all'inizio della procedura, la stima sarÃƒÂ  scarsa, ma migliorerÃƒÂ  man mano che si acquisiscono nuovi campioni.
+
+Applichiamo ora il concetto di campionamento alla stima dell'equazione di Bellman, ovvero per stimare $v_\pi(s) \, \forall s \in \mathcal{S}$. Consideriamo di aver raccolto dell'esperienza interagendo con l'ambiente: $(s_0, r_1, s_1, r_2, \dots, s_t, r_{t+1}, s_{t+1})$ e ricordiamo la definizione della funzione di valore di stato (\emph{state-value function}):
+
+\[
+v_\pi(s) = E[R_{t+1} + \gamma G_{t+1} \mid S_t = s], \quad s \in \mathcal{S}
+\]
+
+che puÃƒÂ² essere riscritta come:
+
+\[
+v_\pi(s) = E[R_{t+1} + \gamma v_\pi(S_{t+1}) \mid S_t = s], \quad s \in \mathcal{S}
+\]
+
+dove utilizziamo le lettere maiuscole per indicare le variabili casuali. Definiamo ora la seguente quantitÃƒÂ  per ciascuno stato $s$:
+
+\[
+g(v_\pi(s_t)) \overset{\text{def}}{=} v_\pi(s_t) - E[R_{t+1} + \gamma v_\pi(S_{t+1}) \mid S_t = s_t] \tag{5.2}
+\]
+
+Il nostro obiettivo è trovare i valori $v_\pi(s_t)$ per ciascuno stato in modo che $g(v_\pi(s_t)) = 0$, ovvero dobbiamo trovare le radici di $g(v_\pi(s_t))$.
+
+Per trovare queste radici, possiamo sfruttare l'algoritmo di Robbins-Monro (la Discesa Stocastica del Gradiente - SGD deriva direttamente da questo algoritmo), spiegato nel riquadro sottostante.
+
+\newpage
+
+\begin{center}
+\framebox[\textwidth]{
+\begin{minipage}{0.95\textwidth}
+\vspace{0.2cm}
+Supponiamo di voler trovare la radice dell'equazione:
+
+\[
+g(w) = 0,
+\]
+
+dove $w \in \mathbb{R}$ è la variabile incognita e $g : \mathbb{R} \to \mathbb{R}$ è una funzione. Supponiamo inoltre che l'espressione di $g$ e della sua derivata sia ignota (ad esempio, si consideri la funzione ipotesi in una rete neurale che è complessa da calcolare e ignota prima che l'addestramento sia completato). Infine, supponiamo anche di poter ottenere solo un'osservazione rumorosa di $g(w)$:
+
+\[
+\tilde{g}(w, \eta) = g(w) + \eta,
+\]
+
+dove $\eta \in \mathbb{R}$ è l'errore di osservazione (non necessariamente gaussiano). Il nostro scopo è risolvere $g(w) = 0$ utilizzando $w$ e $\tilde{g}$.
+
+L'algoritmo di Robbins-Monro risolve questo problema utilizzando il seguente processo iterativo:
+
+\[
+w_{k+1} = w_k - a_k \tilde{g}(w_k, \eta_k), \quad k = 1, 2, 3, \dots \tag{5.3}
+\]
+
+dove $w_k$ è la $k$-esima stima della radice, $\tilde{g}(w_k, \eta_k)$ è la $k$-esima osservazione rumorosa, e $a_k$ è un coefficiente positivo.
+
+La convergenza di questa procedura alla radice effettiva $w^*$ è garantita dal teorema di Robbins-Monro:
+
+\begin{theorem}[Teorema di Robbins-Monro]
+L'algoritmo di Robbins-Monro in \eqref{eq:5.3}, se:
+\begin{enumerate}[label=(\alph*)]
+    \item $0 < c_1 \le \nabla_w g(w) \le c_2$ per ogni $w$;
+    \item $\sum_{k=1}^\infty a_k = \infty$ e $\sum_{k=1}^\infty a_k^2 < \infty$;
+    \item $E[\eta_k \mid H_k] = 0$ e $E[\eta_k^2 \mid H_k] < \infty$;
+\end{enumerate}
+dove $H_k = \{w_k, w_{k-1}, \dots\}$, allora $w_k$ converge quasi certamente alla radice $w^*$ che soddisfa $g(w^*) = 0$.
+\end{theorem}
+
+\begin{itemize}
+    \item La prima condizione, $0 < c_1 \le \nabla_w g(w)$, stabilisce che $g(w)$ debba essere una funzione strettamente crescente, il che implica che la radice di $g(w) = 0$ esista e sia unica (se $g(w)$ è decrescente, possiamo fare riferimento a $-g(w)$). Nel machine learning, spesso miriamo a minimizzare una funzione di perdita $L(w)$. In questo caso, $g(w) = \nabla_w L(w) = 0$ e la condizione per cui $g(w)$ sia una funzione crescente implica che la funzione di costo $J(w)$ sia convessa, un requisito comunemente adottato. La disuguaglianza $\nabla_w g(w) \le c_2$ indica che il gradiente di $g(w)$ è limitato superiormente.
+\end{itemize}
+\vspace{0.1cm}
+\end{minipage}
+}
+\end{center}
+
+\newpage
+
+\begin{center}
+\framebox[\textwidth]{
+\begin{minipage}{0.95\textwidth}
+\vspace{0.2cm}
+\begin{itemize}
+    \item La condizione $\sum_{k=1}^\infty a_k^2 < \infty$ significa che $\lim_{n \to \infty} \sum_{k=1}^n a_k^2$ è limitata superiormente. Essa richiede che $a_k$ converga a zero per $k \to \infty$. La condizione $\sum_{k=1}^\infty a_k = \infty$ significa che $\lim_{n \to \infty} \sum_{k=1}^n a_k$ sia infinitamente grande. Essa richiede che $a_k$ non converga a zero troppo rapidamente.
+    \item Riguardo alla terza condizione, possiamo osservare che un caso speciale si ha quando $\{\eta_k\}$ è una sequenza stocastica i.i.d. che soddisfa $E[\eta_k] = 0$ e $E[\eta_k^2] < \infty$. In questo caso, la terza condizione è valida poichÃƒÂ© $\eta_k$ è indipendente da $H_k$ e di conseguenza abbiamo $E[\eta_k \mid H_k] = E[\eta_k] = 0$ e $E[\eta_k^2 \mid H_k] = E[\eta_k^2]$.
+\end{itemize}
+\vspace{0.1cm}
+\end{minipage}
+}
+\end{center}
+
+Possiamo facilmente applicare l'algoritmo di Robbins-Monro a \eqref{eq:5.2}. L'osservazione rumorosa $\tilde{g}$ in questo caso diventa:
+
+\begin{align*}
+\tilde{g}(v_\pi(s_t)) &= v_\pi(s_t) - (r_{t+1} + \gamma v_\pi(s_{t+1})) \\
+&= \underbrace{v_\pi(s_t) - E[R_{t+1} + \gamma v_\pi(S_{t+1}) \mid S_t = s_t]}_{g(v_\pi(s_t))} \\
+&\quad + \underbrace{E[R_{t+1} + \gamma v_\pi(S_{t+1}) \mid S_t = s_t] - (r_{t+1} + \gamma v_\pi(s_{t+1}))}_{\eta}. \tag{5.4}
+\end{align*}
+
+Quindi, l'algoritmo di Robbins-Monro per il caso TD diventa:
+
+\[
+v_{t+1}(s_t) = v_t(s_t) - \alpha_t(s_t)\tilde{g}(v_t(s_t)) = v_t(s_t) - \alpha_t(s_t)[v_t(s_t) - (r_{t+1} + \gamma v_\pi(s_{t+1}))]
+\]
+
+dove $v_t(s_t)$ è la stima di $v_\pi(s_t)$ al tempo $t$, e $\alpha_t(s_t)$ è il tasso di apprendimento (\emph{learning rate}). Per completare l'algoritmo di apprendimento TD, notiamo che nell'espressione soprastante compare $v_\pi(s_{t+1})$, che non dipende da $t$. Questo accade perchÃƒÂ© l'algoritmo calcola il valore di stato per $s$ assumendo che il valore dello stato sia noto per tutti gli altri stati. Nella pratica, questa assunzione è restrittiva e gli approcci TD utilizzano il \emph{bootstrap} per i valori di stato di tutti gli stati, stimando ciascun valore di stato con i valori degli altri ottenuti tramite \emph{bootstrap} (i quali vengono a loro volta aggiornati). Pertanto, l'espressione soprastante viene modificata come segue:
+
+\begin{align*}
+v_{t+1}(s_t) &= v_t(s_t) - \alpha_t(s_t)[v_t(s_t) - (r_{t+1} + \gamma v_t(s_{t+1}))] \\
+v_{t+1}(s) &= v_t(s), \quad \forall s \neq s_t \tag{5.5}
+\end{align*}
+
+dove $\alpha_t(s_t)$ è il tasso di apprendimento. La convergenza di questa versione modificata (utilizzando $v_t(s_{t+1})$, per cui la convergenza garantita dal teorema di Robbins-Monro potrebbe non valere piÃƒÂ¹) è garantita dal seguente teorema:
+
+\begin{theorem}[Teorema 10. Convergenza dell'apprendimento TD]
+Dato una policy $\pi$, $v_t(s)$ converge quasi certamente a $v_\pi(s)$ per $t \to \infty$ per tutti i $s \in \mathcal{S}$ se $\sum_{t} \alpha_t(s) = \infty$ e $\sum_{t} \alpha_t^2(s) < \infty$ per tutti i $s \in \mathcal{S}$.
+\end{theorem}
+
+\newpage
+
+Analizziamo in dettaglio l'espressione dell'algoritmo di apprendimento TD:
+
+\[
+\underbrace{v_\pi(s_t)_{t+1}}_{\text{nuova stima}} = \underbrace{v_\pi(s_t)_t}_{\text{vecchia stima}} - \underbrace{\alpha}_{\text{dimensione del passo}} \left[ \underbrace{\underbrace{v_\pi(s_t)_t}_{\text{vecchia stima}} - \underbrace{(r_t + \gamma v_\pi(s_{t+1})_t)}_{\text{target}}}_{\text{errore}} \right] \tag{5.6}
+\]
+
+In particolare, utilizziamo il vecchio valore dello stato successivo $v_\pi(s_{t+1})_t$ e la \emph{reward} osservata ottenuta compiendo l'azione che termina in $s_{t+1}$ per stimare il ritorno $g_t$ per $s_t$. L'errore tra questo valore e la vecchia stima $v_\pi(s_t)_t$ viene utilizzato per aggiornarla. Questo è il motivo per cui diciamo che i metodi TD effettuano il \emph{bootstrap} (utilizzano la vecchia stima dello stato successivo per aggiornare la stima di $s_t$).
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{p{0.48\textwidth}|p{0.48\textwidth}}
+\toprule
+\textbf{Apprendimento TD} & \textbf{Apprendimento MC} \\
+\midrule
+\textbf{Incrementale:} L'apprendimento TD puÃƒÂ² aggiornare i valori di stato/azione immediatamente dopo aver ricevuto un campione di esperienza. & \textbf{Non-incrementale:} L'apprendimento MC deve attendere che un episodio sia stato completamente collezionato per calcolare il ritorno scontato dell'episodio. \\
+\midrule
+\textbf{Task continui:} L'apprendimento TD puÃƒÂ² gestire sia task episodici che continui. & \textbf{Task episodici:} L'apprendimento MC puÃƒÂ² gestire solo task episodici. \\
+\midrule
+\textbf{Bootstrapping:} L'apprendimento TD effettua il \emph{bootstrap} poichÃƒÂ© aggiorna i valori basandosi su stime precedenti, richiedendo una stima iniziale. & \textbf{Non-bootstrapping:} L'apprendimento MC non effettua il \emph{bootstrap}; stima direttamente i valori senza stime iniziali. \\
+\midrule
+\textbf{Bassa varianza di stima:} L'apprendimento TD ha una varianza inferiore poichÃƒÂ© coinvolge meno variabili casuali. Ad esempio, Sarsa ne utilizza tre: $R_{t+1}, S_{t+1}, A_{t+1}$. & \textbf{Alta varianza di stima:} L'apprendimento MC ha una varianza maggiore poichÃƒÂ© coinvolge molte variabili casuali, ad es. $R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \dots$. \\
+\bottomrule
+\end{tabularx}
+\caption{Confronto tra apprendimento TD e apprendimento MC}
+\end{table}
+
+\subsection{SARSA}
+
+La procedura introdotta nella sezione precedente puÃƒÂ² stimare solo i valori di stato. L'algoritmo SARSA che introduciamo in questa sezione, invece, è in grado di stimare i valori delle azioni. Supponiamo di avere dell'esperienza generata con:
+
+\[
+\pi : (s_0, a_0, r_1, s_1, a_1, \dots, s_t, a_t, r_{t+1}, s_{t+1}, a_{t+1}, \dots) \tag{5.7}
+\]
+
+Possiamo utilizzare il seguente algoritmo per stimare i valori delle azioni:
+
+\newpage
+
+\[
+q_{t+1}(s_t, a_t) = q_t(s_t, a_t) + \alpha_t(s_t, a_t)[r_{t+1} + \gamma q_t(s_{t+1}, a_{t+1}) - q_t(s_t, a_t)] \tag{5.8}
+\]
+
+\[
+q_{t+1}(s, a) = q_t(s, a), \quad \forall (s, a) \neq (s_t, a_t) \tag{5.9}
+\]
+
+dove $t = 0, 1, 2, \dots$ e $\alpha_t(s_t, a_t)$ è il tasso di apprendimento. $q_t(s_t, a_t)$ è la stima di $q^\pi(s_t, a_t)$.
+
+L'algoritmo viene chiamato SARSA poichÃƒÂ© a ogni iterazione utilizza Stato-Azione-Reward-Stato-Azione (\emph{State-Action-Reward-State-Action}), ovvero $(s_t, a_t, r_{t+1}, s_{t+1}, a_{t+1})$.
+
+L'algoritmo di cui sopra puÃƒÂ² essere utilizzato solo per stimare la funzione valore-azione. Possiamo accoppiarlo con una fase di miglioramento della \emph{policy} per implementare l'apprendimento della \emph{policy} stessa (si veda l'Algoritmo 6).
+
+\begin{algorithm}[H]
+\caption{Algoritmo Sarsa per il Reinforcement Learning}
+\Inizializza{
+  $\alpha_t(s, a) > 0$ per tutti i $(s, a)$ e tutti i $t$. $q_0(s, a)$ iniziale e policy $\epsilon$-greedy $\pi_0$ derivata da $q_0$.\\
+  \textbf{Obiettivo:} Apprendere una policy ottimale in grado di condurre l'agente allo stato obiettivo a partire da uno stato iniziale $s_0$.
+}
+\Per{ogni episodio}{
+  Genera $a_0$ in $s_0$ seguendo $\pi_0(s_0)$\;
+  \Se{$s_t$ ($t = 0, 1, 2, \dots$) non è lo stato obiettivo}{
+    Raccogli un campione di esperienza $(r_{t+1}, s_{t+1}, a_{t+1})$ dati $(s_t, a_t)$: genera $r_{t+1}, s_{t+1}$ interagendo con l'ambiente; genera $a_{t+1}$ seguendo $\pi_t(s_{t+1})$\;
+    Aggiorna il q-value per $(s_t, a_t)$:\\
+    $q_{t+1}(s_t, a_t) = q_t(s_t, a_t) - \alpha_t(s_t, a_t)[q_t(s_t, a_t) - (r_{t+1} + \gamma q_t(s_{t+1}, a_{t+1}))]$\;
+    Aggiorna la policy per $s_t$:\\
+    $\pi_{t+1}(a \mid s_t) = \begin{cases} 1 - \frac{\epsilon}{|\mathcal{A}(s_t)|}(|\mathcal{A}(s_t)| - 1) & \text{se } a = \argmax_a q_t(s_t, a) \\ \frac{\epsilon}{|\mathcal{A}(s_t)|} & \text{altrimenti} \end{cases}$\;
+    $s_t \leftarrow s_{t+1}$, $a_t \leftarrow a_{t+1}$\;
+  }
+}
+\end{algorithm}
+
+Ogni iterazione dell'algoritmo sopra descritto prevede due passaggi principali: l'aggiornamento del q-value della coppia stato-azione visitata e il successivo aggiornamento della \emph{policy} in modo che sia $\epsilon$-greedy. La \emph{policy} viene aggiornata immediatamente dopo l'aggiornamento del q-value e viene utilizzata per generare il campione di esperienza successivo.
+
+\newpage
+
+\subsection{Q-Learning}
+
+Mentre SARSA è progettato per stimare i valori delle azioni di una determinata \emph{policy} e, di conseguenza, deve essere combinato con una fase di miglioramento della \emph{policy} per convergere verso quella ottimale, introduciamo ora un algoritmo in grado di stimare direttamente i valori delle azioni ottimali e la \emph{policy} ottimale: il Q-Learning.
+
+L'algoritmo Q-learning aggiorna il q-value della coppia stato-azione utilizzando l'approccio di apprendimento per differenza temporale (TD). A differenza di Sarsa, il Q-learning aggiorna il q-value basandosi sul q-value massimo stimato della coppia stato-azione successiva. Questo rende il Q-learning piÃƒÂ¹ efficace nel trovare la \emph{policy} ottimale poichÃƒÂ© considera sempre la migliore azione possibile. La base matematica del Q-learning è l'equazione di ottimalitÃƒÂ  di Bellman, che garantisce la convergenza ai valori delle azioni ottimali.
+
+L'algoritmo Q-learning è definito come segue:
+
+\[
+q_{t+1}(s_t, a_t) = q_t(s_t, a_t) + \alpha_t(s_t, a_t)[q_t(s_t, a_t) - (r_{t+1} + \max_{a \in \mathcal{A}(s_{t+1})} q_t(s_{t+1}, a))] \tag{5.10}
+\]
+
+dove $t = 0, 1, 2, \dots$ Qui, $q_t(s_t, a_t)$ è la stima del valore ottimale dell'azione di $(s_t, a_t)$ e $\alpha_t(s_t, a_t)$ è il tasso di apprendimento per $(s_t, a_t)$. L'espressione del Q-learning è simile a quella di Sarsa. Essi differiscono solo nei loro target TD: il target TD del Q-learning è $r_{t+1} + \max_a q_t(s_{t+1}, a)$, mentre quello di Sarsa è $r_{t+1} + q_t(s_{t+1}, a_{t+1})$. Inoltre, dato $(s_t, a_t)$, Sarsa richiede $(r_{t+1}, s_{t+1}, a_{t+1})$ in ogni iterazione, mentre il Q-learning richiede semplicemente $(r_{t+1}, s_{t+1})$. Il Q-learning è un algoritmo di approssimazione stocastica per risolvere la seguente equazione:
+
+\[
+q(s, a) = E[R_{t+1} + \gamma \max_a q(S_{t+1}, a) \mid S_t = s, A_t = a] \tag{5.11}
+\]
+
+Si puÃƒÂ² dimostrare che questa equazione sia, in effetti, l'Equazione di OttimalitÃƒÂ  di Bellman per la funzione valore-azione.
+
+\subsubsection{Off-Policy Vs On-Policy}
+
+I concetti di apprendimento \emph{on-policy} e \emph{off-policy} sono fondamentali nel \emph{reinforcement learning}. Nell'apprendimento \emph{on-policy}, la \emph{behavior policy} (politica di comportamento), utilizzata per generare i campioni di esperienza, è la stessa della \emph{target policy} (politica obiettivo), ovvero quella che viene migliorata per convergere verso la politica ottimale. Sarsa è un esempio di algoritmo \emph{on-policy}.
+
+Al contrario, il Q-learning è un algoritmo \emph{off-policy}. CiÃƒÂ² significa che utilizza politiche diverse per generare i campioni di esperienza e per aggiornare la politica affinchÃƒÂ© diventi ottimale. Il vantaggio dell'apprendimento \emph{off-policy}, come nel Q-learning, è che puÃƒÂ² apprendere politiche ottimali basandosi su esperienze generate da altre politiche, che potrebbero essere esplorative o eseguite da un operatore umano. Questa capacitÃƒÂ  di sfruttare campioni di esperienza diversi migliora l'esplorazione e l'efficienza dell'apprendimento.
+
+L'apprendimento \emph{off-policy} puÃƒÂ² utilizzare una politica con spiccate capacitÃƒÂ  esplorative per generare...
+
+\newpage
+
+episodi diversi, garantendo che tutte le coppie stato-azione siano visitate a sufficienza. Questo si contrappone alla limitata capacitÃƒÂ  di esplorazione dei metodi \emph{on-policy} come Sarsa, che spesso si affidano a un valore ridotto di epsilon nelle loro politiche \emph{epsilon-greedy}.
+
+Per determinare se un algoritmo sia \emph{on-policy} o \emph{off-policy}, bisogna considerare il problema matematico che mira a risolvere e la natura dei campioni di esperienza richiesti.
+
+Sarsa è \emph{on-policy}: Sarsa compie due passaggi in ogni iterazione. Il primo passaggio consiste nel valutare una politica risolvendo la sua equazione di Bellman. Per fare ciÃƒÂ², necessitiamo di campioni generati da $\pi$. Pertanto, $\pi$ è la \emph{behavior policy}. Il secondo passaggio consiste nell'ottenere una politica migliorata sulla base dei valori stimati di $\pi$. Di conseguenza, $\pi$ è la \emph{target policy} che viene costantemente aggiornata e alla fine converge a una politica ottimale. Pertanto, la \emph{behavior policy} e la \emph{target policy} coincidono.
+
+Da un altro punto di vista, possiamo esaminare i campioni richiesti dall'algoritmo. I campioni richiesti da Sarsa in ogni iterazione includono $(s_t, a_t, r_{t+1}, s_{t+1}, a_{t+1})$. Come questi campioni vengono generati è illustrato di seguito:
+
+\[
+s_t \xrightarrow{\pi_b} a_t \xrightarrow{\text{modello}} r_{t+1}, s_{t+1} \xrightarrow{\pi_b} a_{t+1} \tag{5.12}
+\]
+
+La \emph{behavior policy} $\pi_b$ è quella che genera $a_t$ in $s_t$ e $a_{t+1}$ in $s_{t+1}$. L'algoritmo Sarsa mira a stimare il valore dell'azione di $(s_t, a_t)$ di una politica denotata come $\pi_T$, che è la \emph{target policy} in quanto viene migliorata in ogni iterazione sulla base dei valori stimati. Di fatto, $\pi_T$ è identica a $\pi_b$ poichÃƒÂ© la valutazione di $\pi_T$ si basa sui campioni $(r_{t+1}, s_{t+1}, a_{t+1})$, dove $a_{t+1}$ è generato seguendo $\pi_b$. In altre parole, la politica che Sarsa valuta è la stessa politica utilizzata per generare i campioni. Possiamo comprendere ciÃƒÂ² anche considerando che il target TD di SARSA è generato con la stessa politica utilizzata per selezionare $a_t$ da $s_t$.
+
+Q-learning è \emph{off-policy}. La ragione fondamentale è che il Q-learning è un algoritmo per risolvere l'equazione di ottimalitÃƒÂ  di Bellman, mentre Sarsa serve a risolvere l'equazione di Bellman di una data politica. Sebbene la risoluzione dell'equazione di Bellman possa valutare la politica associata, risolvere l'equazione di ottimalitÃƒÂ  di Bellman puÃƒÂ² generare direttamente i valori ottimali e le politiche ottimali.
+
+In particolare, i campioni richiesti dal Q-learning in ogni iterazione sono $(s_t, a_t, r_{t+1}, s_{t+1})$. Come questi campioni vengono generati è illustrato di seguito:
+
+\[
+s_t \xrightarrow{\pi_b} a_t \xrightarrow{\text{modello}} r_{t+1}, s_{t+1} \tag{5.13}
+\]
+
+La \emph{behavior policy} $\pi_b$ è quella che genera $a_t$ in $s_t$. L'algoritmo Q-learning mira a stimare il valore dell'azione ottimale di $(s_t, a_t)$. Questo processo di stima si basa sui campioni $(r_{t+1}, s_{t+1})$. Il processo di generazione di $(r_{t+1}, s_{t+1})$ non coinvolge $\pi_b$ poichÃƒÂ© è governato dal modello del sistema (o dall'interazione con l'ambiente). Pertanto, la stima del valore ottimale dell'azione di $(s_t, a_t)$ non coinvolge $\pi_b$ e possiamo utilizzare qualsiasi $b$ per generare $a_t$ in $s_t$. Inoltre, la \emph{target policy} $\pi_T$ in questo caso è la politica greedy
+
+\newpage
+
+ottenuta sulla base dei valori ottimali stimati. La \emph{behavior policy} non deve essere necessariamente la stessa di $\pi_T$.
+
+Un concetto che spesso viene confuso con \emph{on-policy}/\emph{off-policy} è l'apprendimento online (\emph{online learning}) rispetto all'apprendimento offline (\emph{offline learning}). L'apprendimento online prevede l'aggiornamento dei valori e delle politiche durante l'interazione con l'ambiente, mentre l'apprendimento offline utilizza dati di esperienza pre-raccolti senza interazione in tempo reale. Gli algoritmi \emph{on-policy} possono essere implementati in modalitÃƒÂ  online, ma non possono utilizzare dati generati da altre politiche. Gli algoritmi \emph{off-policy} possono essere implementati sia online che offline. Le implementazioni \emph{on-policy} e \emph{off-policy} del Q-learning sono fornite rispettivamente nell'Algoritmo 7 e nell'Algoritmo 8.
+
+\begin{algorithm}[H]
+\caption{Q-learning (on-policy)}
+\Inizializza{
+  $\alpha_t(s, a) > 0$ per tutti i $(s, a)$ e tutti i $t$.\\
+  $q_0(s, a)$ per tutti i $(s, a)$ e tutti i $t$.\\
+  Policy $\epsilon$-greedy iniziale $\pi_0$ derivata da $q_0$.\\
+  \textbf{Obiettivo:} Apprendere un percorso ottimale in grado di condurre l'agente allo stato obiettivo a partire da uno stato iniziale $s_0$.
+}
+\Per{ogni episodio}{
+  \Se{$s_t$ ($t = 0, 1, 2, \dots$) non è lo stato obiettivo}{
+    Raccogli il campione di esperienza $(a_t, r_{t+1}, s_{t+1})$ dato $s_t$: genera $a_t$ seguendo $\pi(s_t)$; genera $r_{t+1}, s_{t+1}$ interagendo con l'ambiente\;
+    Aggiorna il q-value per $(s_t, a_t)$:\\
+    $q_{t+1}(s_t, a_t) = q_t(s_t, a_t) + \alpha_t(s_t, a_t)[r_{t+1} + \max_a q_t(s_{t+1}, a) - q_t(s_t, a_t)]$\;
+    Aggiorna la policy per $s_t$:\\
+    $\pi_{t+1}(a \mid s_t) = \begin{cases} 1 - \frac{\epsilon}{|\mathcal{A}(s_t)|}(|\mathcal{A}(s_t)| - 1) & \text{se } a = \argmax_{a'} q_t(s_t, a') \\ \frac{\epsilon}{|\mathcal{A}(s_t)|} & \text{altrimenti} \end{cases}$\;
+  }
+}
+\end{algorithm}
+
+\newpage
+
+\begin{algorithm}[H]
+\caption{Q-learning (off-policy)}
+\Inizializza{
+  $\alpha_t(s, a) > 0$ per tutti i $(s, a)$ e tutti i $t$.\\
+  $q_0(s, a)$ per tutti i $(s, a)$.\\
+  Behavior policy $\pi_b(a \mid s)$.\\
+  \textbf{Obiettivo:} Apprendere una policy target ottimale $\pi_T$ utilizzando l'esperienza da $\pi_b$.
+}
+\Per{ogni episodio generato da $\pi_b$}{
+  \Per{ogni passo $t = 0, 1, 2, \dots$ dell'episodio}{
+    Aggiorna il q-value per $(s_t, a_t)$:\\
+    $q_{t+1}(s_t, a_t) = q_t(s_t, a_t) + \alpha_t(s_t, a_t)[r_{t+1} + \max_a q_t(s_{t+1}, a) - q_t(s_t, a_t)]$\;
+    Aggiorna la policy target per $s_t$:\\
+    $\pi_{T, t+1}(a \mid s_t) = \begin{cases} 1 & \text{se } a = \argmax_a q_{t+1}(s_t, a) \\ 0 & \text{altrimenti} \end{cases}$\;
+  }
+}
+\end{algorithm}
+
+\newpage
+
+\section*{Capitolo 6 \\ Approssimazione Della Funzione Di Valore}
+
+Finora abbiamo considerato approcci tabulari per il \emph{reinforcement learning}. Queste strategie, pur essendo semplici e facili da comprendere, non sono adatte a gestire problemi con spazi di stato e/o azione di grandi dimensioni. Per affrontare questo problema, in questo capitolo introduciamo l'approssimazione della funzione di valore (\emph{value function approximation}, VFA). In generale, vedremo come l'approssimazione della funzione possa essere utilizzata non solo per stimare i valori di stato, ma anche per approssimare direttamente le politiche.
+
+Per comprendere l'approssimazione della funzione di valore, consideriamo un semplice esempio. Supponiamo che vi siano $N$ stati i cui valori di stato sono $\{v_\pi(s)_i\}_{i=0}^{N-1}$ e che $\{\hat{v}_\pi(s)_i\}_{i=0}^{N-1}$ indichino le loro stime. Gli approcci tabulari memorizzano direttamente i valori di stato stimati in una tabella; aggiornare o accedere alle stime implica una semplice modifica o accesso a una cella specifica della tabella (si veda la Figura 6.1).
+
+D'altra parte, possiamo stimare i valori di stato anche utilizzando una funzione parametrizzata che approssima alcune coppie stato-valore per ricostruire la relazione che lega lo stato al valore associato. L'approssimatore di funzioni piÃƒÂ¹ semplice è una retta parametrizzata da un vettore $\bm{w}$ (si veda la Figura 6.2):
+
+\[
+\hat{v}(s, \bm{w}) = w_0 s + w_1 = [s, 1] \begin{bmatrix} w_0 \\ w_1 \end{bmatrix} = \bm{\phi}^T(s)\bm{w} \tag{6.1}
+\]
+
+Ci sono due prime importanti differenze che possiamo notare tra le strategie tabulari e quelle VFA:
+
+\begin{itemize}
+    \item Negli approcci tabulari, se vogliamo recuperare un valore, accediamo semplicemente alla cella associata nell'array. Invece, nella VFA, dobbiamo valutare una funzione fornendo come input un vettore di caratteristiche (\emph{feature vector}) che codifica le caratteristiche dello stato di cui...
+\end{itemize}
+
+% [IMMAGINE DAL PDF ORIGINALE] Stima dei valori di stato con approcci tabulari Ã¢â‚¬â€ Pagina 11 del PDF
+
+\newpage
+
+% [IMMAGINE DAL PDF ORIGINALE] Approssimazione della funzione di valore con una retta semplice Ã¢â‚¬â€ Pagina 12 del PDF
+
+% [IMMAGINE DAL PDF ORIGINALE] Confronto del processo di aggiornamento del valore di stato tra approcci tabulari e VFA Ã¢â‚¬â€ Pagina 12 del PDF
+
+...che siamo interessati a stimare. L'approssimatore di funzioni è piÃƒÂ¹ efficiente della sua controparte tabulare poichÃƒÂ© richiede meno memoria (tipicamente la dimensione di $\bm{w}$ è significativamente inferiore al numero di stati possibili $N$). Ciononostante, utilizzando un approssimatore di funzioni solitamente non siamo in grado di adattare perfettamente il valore di stato reale.
+
+\begin{itemize}
+    \item Negli approcci tabulari, se vogliamo aggiornare una stima del valore di stato, sostituiamo semplicemente il valore nella cella dell'array associata. Invece, nella VFA, dobbiamo aggiornare $\bm{w}$, il che cambierÃƒÂ  indirettamente anche i valori degli altri stati (si veda la Figura 6.3). Questo evidenzia anche un altro vantaggio della VFA: questi approcci sono in grado di generalizzare su stati che non vengono mai visitati durante l'esplorazione.
+\end{itemize}
+
+Ci sono diversi aspetti che devono essere presi in considerazione quando si utilizza la VFA. In primo luogo, è necessario scegliere l'approssimatore di funzioni. Una delle alternative piÃƒÂ¹ semplici consiste nell'impiegare un \textbf{approssimatore di funzioni lineare}: esso esegue una combinazione lineare di un vettore di caratteristiche (che puÃƒÂ² contenere combinazioni non lineari delle caratteristiche di input originali) utilizzando pesi apprendibili.
+
+Il secondo aspetto riguarda il modo in cui selezioniamo i pesi. Assumendo che il valore di stato reale sia noto per alcuni stati, possiamo sfruttare il ben noto paradigma dell'apprendimento supervisionato e ottimizzare la seguente funzione obiettivo:
+
+\[
+J = \sum_{i=0}^{N-1} (\hat{v}(s^{(i)}, \bm{w}) - v_\pi(s^{(i)}))^2 = \sum_{i=0}^{N-1} (\bm{\phi}(s^{(i)})^T \bm{w} - v_\pi(s^{(i)}))^2 \tag{6.2}
+\]
+
+\newpage
+
+In generale, la funzione obiettivo che cerchiamo di minimizzare per trovare il vettore $\bm{w}$ ottimale è il valore atteso del quadrato della differenza tra il valore di stato reale e quello stimato:
+
+\[
+J(\bm{w}) = E[(v_\pi(S) - \hat{v}(S, \bm{w}))^2] \tag{6.3}
+\]
+
+Per calcolare il valore atteso, abbiamo bisogno di una distribuzione degli stati. Una scelta ingenua è la distribuzione uniforme, che porta a:
+
+\[
+J(\bm{w}) = \frac{1}{N} \sum_{s \in \mathcal{S}} (v_\pi(s) - \hat{v}(s, \bm{w}))^2 \tag{6.4}
+\]
+
+Tuttavia, questa assunzione di solito non è verificata, poichÃƒÂ© nel processo di decisione markoviano gli stati vengono visitati con probabilitÃƒÂ  differenti. Un'assunzione piÃƒÂ¹ realistica consiste nell'utilizzare la distribuzione stazionaria $d_\pi(s)$:
+
+\[
+J(\bm{w}) = \sum_{s \in \mathcal{S}} d_\pi(s)(v_\pi(s) - \hat{v}(s, \bm{w}))^2 \tag{6.5}
+\]
+
+Per calcolare la distribuzione stazionaria abbiamo bisogno della matrice di transizione di stato $P_\pi$. Fortunatamente, in pratica non abbiamo bisogno di conoscere $d_\pi(s)$ poichÃƒÂ© l'ottimizzazione viene eseguita utilizzando tecniche di discesa stocastica del gradiente. In particolare, per trovare il vettore $\bm{w}$ ottimale:
+
+\[
+\bm{w}_{k+1} = \bm{w}_k - \alpha \nabla_{\bm{w}} J(\bm{w}_k) \tag{6.6}
+\]
+
+dove:
+
+\begin{align*}
+\nabla_{\bm{w}} J(\bm{w}_k) &= \nabla_{\bm{w}} E[(v_\pi(S) - \hat{v}(S, \bm{w}))^2] \\
+&= E[\nabla_{\bm{w}}(v_\pi(S) - \hat{v}(S, \bm{w}))^2] = -2E[(v_\pi(S) - \hat{v}(S, \bm{w}))\nabla_{\bm{w}}\hat{v}(S, \bm{w})] \tag{6.7}
+\end{align*}
+
+di conseguenza, abbiamo:
+
+\[
+\bm{w}_{k+1} = \bm{w}_k + \alpha 2 E[(v_\pi(S) - \hat{v}(S, \bm{w}_k))\nabla_{\bm{w}}\hat{v}(S, \bm{w}_k)] \tag{6.8}
+\]
+
+PoichÃƒÂ© il calcolo del valore atteso reale è problematico, ricorriamo alle tecniche SGD e approssimiamo il valore atteso con un campione (incorporiamo inoltre il fattore 2 nel tasso di apprendimento):
+
+\[
+\bm{w}_{t+1} = \bm{w}_t + \alpha_t (v_\pi(s_t) - \hat{v}(s_t, \bm{w}_t))\nabla_{\bm{w}}\hat{v}(s_t, \bm{w}_t) \tag{6.9}
+\]
+
+Sfortunatamente, l'Equazione \eqref{eq:6.9} non puÃƒÂ² essere implementata poichÃƒÂ© l'assunzione che il valore di stato sia noto per un numero ragionevole di stati è troppo restrittiva. Pertanto, dobbiamo approssimarlo, e vi sono due possibilitÃƒÂ  fondamentali:
+
+\begin{itemize}
+    \item \textbf{Monte Carlo VFA:} in questo caso generiamo un episodio completo e calcoliamo il ritorno di...
+\end{itemize}
+
+\newpage
+
+sconto a partire da uno stato $s_t$. Allora, l'Equazione \eqref{eq:6.9} diventa:
+
+\[
+\bm{w}_{t+1} = \bm{w}_t + \alpha_t (g_t - \hat{v}(s_t, \bm{w}_t))\nabla_{\bm{w}}\hat{v}(s_t, \bm{w}_t) \tag{6.10}
+\]
+
+\begin{itemize}
+    \item \textbf{TD VFA:} in questo caso utilizziamo $r_{t+1} + \gamma \hat{v}(s_{t+1}, \bm{w}_t)$ come approssimazione per $v_\pi(s_t)$. Di conseguenza, l'Equazione \eqref{eq:6.9} diventa:
+\end{itemize}
+
+\[
+\bm{w}_{t+1} = \bm{w}_t + \alpha_t (r_{t+1} + \gamma \hat{v}(s_{t+1}, \bm{w}_t) - \hat{v}(s_t, \bm{w}_t))\nabla_{\bm{w}}\hat{v}(s_t, \bm{w}_t) \tag{6.11}
+\]
+
+\subsection{VFA Per I Valori Delle Azioni}
+
+Introduciamo ora come stimare i valori delle azioni con le tecniche VFA. In particolare, estendiamo SARSA e Q-learning tabulari.
+
+\subsubsection{Sarsa Con Approssimazione Della Funzione}
+
+Per ottenere SARSA con approssimazione della funzione, sostituiamo semplicemente la funzione di valore di stato nell'Equazione \eqref{eq:6.11} con la funzione valore-azione. In particolare, supponiamo che $q(s, a)$ sia approssimata da $\hat{q}(s, a, \bm{w})$:
+
+\[
+\bm{w}_{t+1} = \bm{w}_t + \alpha_t [ r_{t+1} + \hat{q}(s_{t+1}, a_{t+1}, \bm{w}_t) - \hat{q}(s_t, a_t, \bm{w}_t) ] \nabla_{\bm{w}} \hat{q}(s_t, a_t, \bm{w}_t) \tag{6.12}
+\]
+
+Possiamo combinare la fase di stima del valore con una fase di miglioramento della \emph{policy} per apprendere politiche ottimali (si veda l'Algoritmo 9). Si noti che stimare accuratamente i valori delle azioni di una determinata \emph{policy} richiede che la \eqref{eq:6.12} venga eseguita un numero sufficiente di volte. Tuttavia, essa viene eseguita una sola volta prima di passare alla fase di miglioramento della \emph{policy}. Questo è analogo all'algoritmo Sarsa tabulare. Inoltre, l'implementazione fornita mira a risolvere il compito di trovare un buon percorso verso lo stato obiettivo a partire da uno stato iniziale prestabilito, e non puÃƒÂ² trovare la \emph{policy} ottimale per ogni stato. Tuttavia, puÃƒÂ² essere facilmente adattata a tale scopo.
+
+\subsubsection{Q-Learning Con Approssimazione Della Funzione}
+
+Il Q-learning tabulare puÃƒÂ² essere esteso all'approssimazione della funzione, in cui la regola di aggiornamento viene modificata per tenere conto degli approssimatori di funzioni:
+
+\[
+\bm{w}_{t+1} = \bm{w}_t + \alpha_t \left[ r_{t+1} + \max_{a \in \mathcal{A}(s_{t+1})} \hat{q}(s_{t+1}, a, \bm{w}_t) - \hat{q}(s_t, a_t, \bm{w}_t) \right] \nabla_{\bm{w}}\hat{q}(s_t, a_t, \bm{w}_t) \tag{6.13}
+\]
+
+La nuova regola di aggiornamento prevede la massimizzazione sui valori delle azioni dello stato successivo. Questo approccio puÃƒÂ² essere implementato sia in modalitÃƒÂ  \emph{on-policy} che \emph{off-policy} (si veda l'Algoritmo 10 per un'implementazione della versione \emph{on-policy}).
+
+\newpage
+
+\begin{algorithm}[H]
+\caption{SARSA con Approssimazione della Funzione}
+\Inizializza{
+  Parametro iniziale $\bm{w}_0$.\\
+  Policy iniziale $\pi_0$.\\
+  $\alpha_t(s, a) > 0$ per tutti i $t$.\\
+  \textbf{Obiettivo:} Apprendere una policy ottimale in grado di condurre l'agente allo stato obiettivo a partire da uno stato iniziale $s_0$.
+}
+\Per{ogni episodio}{
+  Genera $a_0$ in $s_0$ seguendo $\pi_0(s_0)$\;
+  \Se{$s_t$ ($t = 0, 1, 2, \dots$) non è lo stato obiettivo}{
+    Raccogli un campione di esperienza $(r_{t+1}, s_{t+1}, a_{t+1})$ dati $(s_t, a_t)$: genera $r_{t+1}, s_{t+1}$ interagendo con l'ambiente; genera $a_{t+1}$ seguendo $\pi_t(s_{t+1})$\;
+    Aggiorna il q-value:\\
+    $\bm{w}_{t+1} = \bm{w}_t + \alpha_t [ r_{t+1} + \gamma \hat{q}(s_{t+1}, a_{t+1}, \bm{w}_t) - \hat{q}(s_t, a_t, \bm{w}_t) ] \nabla_{\bm{w}} \hat{q}(s_t, a_t, \bm{w}_t)$\;
+    Aggiorna la policy per $s_t$:\\
+    $\pi_{t+1}(a \mid s_t) = \begin{cases} 1 - \frac{\epsilon}{|\mathcal{A}(s_t)|}(|\mathcal{A}(s_t)| - 1) & \text{se } a = \argmax_a \hat{q}(s_t, a, \bm{w}_{t+1}) \\ \frac{\epsilon}{|\mathcal{A}(s_t)|} & \text{altrimenti} \end{cases}$\;
+    $s_t \leftarrow s_{t+1}$, $a_t \leftarrow a_{t+1}$\;
+  }
+}
+\end{algorithm}
+
+\begin{algorithm}[H]
+\caption{Q-Learning con Approssimazione della Funzione (versione on-policy)}
+\Inizializza{
+  Parametro iniziale $\bm{w}_0$.\\
+  Policy iniziale $\pi_0$.\\
+  $\alpha_t(s, a) > 0$ per tutti i $t$.\\
+  \textbf{Obiettivo:} Apprendere una policy ottimale in grado di condurre l'agente allo stato obiettivo a partire da uno stato iniziale $s_0$.
+}
+\Per{ogni episodio}{
+  \Se{$s_t$ ($t = 0, 1, 2, \dots$) non è lo stato obiettivo}{
+    Raccogli un campione di esperienza $(r_{t+1}, s_{t+1}, a_{t+1})$ dati $(s_t)$: genera $a_t$ seguendo $\pi_t(s_t)$; genera $r_{t+1}, s_{t+1}$ interagendo con l'ambiente\;
+    Aggiorna il q-value:\\
+    $\bm{w}_{t+1} = \bm{w}_t + \alpha_t \left[ r_{t+1} + \gamma \max_{a \in \mathcal{A}(s_{t+1})} \hat{q}(s_{t+1}, a, \bm{w}_t) - \hat{q}(s_t, a_t, \bm{w}_t) \right] \nabla_{\bm{w}} \hat{q}(s_t, a_t, \bm{w}_t)$\;
+    Aggiorna la policy per $s_t$:\\
+    $\pi_{t+1}(a \mid s_t) = \begin{cases} 1 - \frac{\epsilon}{|\mathcal{A}(s_t)|}(|\mathcal{A}(s_t)| - 1) & \text{se } a = \argmax_a \hat{q}(s_t, a, \bm{w}_{t+1}) \\ \frac{\epsilon}{|\mathcal{A}(s_t)|} & \text{altrimenti} \end{cases}$\;
+  }
+}
+\end{algorithm}
+
+\newpage
+
+\subsection{Deep Q-Learning (DQN)}
+
+Se utilizziamo reti neurali profonde come approssimatori di funzioni nell'algoritmo Q-learning, otteniamo il DQN. Tuttavia, il DQN non si ottiene semplicemente sostituendo l'approssimatore con una DNN. L'implementazione aggiunge alcuni elementi particolari che richiedono ulteriori indagini.
+
+Ricordiamo che quando abbiamo introdotto i metodi VFA, abbiamo definito la seguente funzione obiettivo:
+
+\[
+J(\bm{w}) = \frac{1}{N} \sum_{s \in \mathcal{S}} (v_\pi(s) - \hat{v}(s, \bm{w}))^2 \tag{6.14}
+\]
+
+che puÃƒÂ² essere minimizzata con SGD come segue:
+
+\[
+\bm{w}_{k+1} = \bm{w}_k + \alpha 2 E[(v_\pi(S) - \hat{v}(S, \bm{w}))\nabla_{\bm{w}}\hat{v}(S, \bm{w})] \tag{6.15}
+\]
+
+Tuttavia, abbiamo notato che l'assunzione di conoscere il valore di stato reale $v_\pi(S)$ è troppo restrittiva e, pertanto, abbiamo sostituito quel valore con una stima, fornita dalle tecniche Monte Carlo o TD. Utilizzando quest'ultima, tuttavia, non abbiamo considerato che, quando sostituiamo il valore reale con un'approssimazione, il gradiente dipende anche dal target stimato. Questo puÃƒÂ² essere notato riscrivendo la funzione obiettivo nel caso TD: matematicamente, il deep Q-learning mira a minimizzare la seguente funzione obiettivo:
+
+\[
+J = E \left[ \left( R + \gamma \max_{a' \in \mathcal{A}(S')} \hat{q}(S', a'; \bm{w}) - \hat{q}(S, A; \bm{w}) \right)^2 \right] \tag{6.16}
+\]
+
+Quindi, quando si calcola il gradiente di $J$, dobbiamo tenere conto sia di $q(S', a'; \bm{w})$ che di $q(S, A; \bm{w})$. CiÃƒÂ² implica che cambiare i valori di $\bm{w}$ cambierÃƒÂ  o sposterÃƒÂ  anche il valore del target. Chiaramente, avere etichette o valori di target che cambiano durante l'ottimizzazione è qualcosa che potrebbe complicare significativamente l'ottimizzazione.
+
+Si noti che questo problema non è stato considerato nel VFA Q-Learning o in SARSA, poichÃƒÂ©, in pratica, quando utilizziamo approssimatori di funzioni piÃƒÂ¹ semplici (ad esempio, reti neurali lineari o poco profonde), questo problema ha un impatto limitato. Diventa invece significativo quando entrano in gioco le reti neurali profonde.
+
+Per affrontare questo problema, DQN assume che il valore del parametro utilizzato per calcolare il target in \eqref{eq:6.16} sia fisso. A questo scopo, introduce due reti principali: la \textbf{rete principale} (\emph{main network}) che rappresenta $\hat{q}(s, a; \bm{w})$ e la \textbf{rete target} (\emph{target network}) che rappresenta $\hat{q}(s, a; \bm{w}_T)$. L'obiettivo e l'espressione del gradiente diventano quindi:
+
+\[
+J = E \left[ \left( R + \gamma \max_{a \in \mathcal{A}(S')} \hat{q}(S', a; \bm{w}_T) - \hat{q}(S, A; \bm{w}) \right)^2 \right] \tag{6.17}
+\]
+
+\newpage
+
+\[
+\nabla_{\bm{w}} J = -E \left[ \left( R + \gamma \max_{a \in \mathcal{A}(S')} \hat{q}(S', a; \bm{w}_T) - \hat{q}(S, A; \bm{w}) \right) \nabla_{\bm{w}} \hat{q}(S, A; \bm{w}) \right] \tag{6.18}
+\]
+
+Pertanto, a differenza delle altre strategie VFA basate su TD, DQN introduce due elementi importanti:
+
+In primo luogo, come affermato in precedenza, DQN utilizza due reti: una rete principale (\emph{main network}) e una rete target (\emph{target network}). PiÃƒÂ¹ nello specifico, siano $\bm{w}$ e $\bm{w}_T$ i parametri rispettivamente della rete principale e della rete target. Essi sono inizialmente impostati sullo stesso valore.
+
+In ogni iterazione, estraiamo un mini-batch di campioni $(s, a, r, s')$ dal \emph{replay buffer} (si veda piÃƒÂ¹ avanti la spiegazione del \emph{replay buffer}). La rete principale prende come input $s$ e $a$. L'output $y = \hat{q}(s, a; \bm{w})$ è il q-value stimato. La rete target fornisce invece la stima $\hat{q}(s', a; \bm{w}_T)$ per calcolare $y_T = r + \gamma \max_{a \in \mathcal{A}(s')} q(s', a; \bm{w}_T)$. La rete principale viene aggiornata per minimizzare l'errore TD $(y - y_T)^2$.
+
+La rete principale viene aggiornata a ogni iterazione. Al contrario, la rete target viene impostata uguale alla rete principale ogni certo numero di iterazioni per soddisfare l'assunzione che $\bm{w}_T$ sia fisso quando si calcola il gradiente.
+
+La seconda tecnica è l'esperienza ripetuta (\emph{experience replay}). Dopo aver raccolto alcuni campioni di esperienza, non li utilizziamo nell'ordine in cui sono stati raccolti. Al contrario, li memorizziamo in un dataset chiamato \textbf{\emph{replay buffer}}. In particolare, sia $(s, a, r, s')$ un campione di esperienza e sia $\mathcal{B} = \{(s, a, r, s')\}$ il \emph{replay buffer}. Ogni volta che aggiorniamo la rete principale, possiamo estrarre un mini-batch di campioni di esperienza dal \emph{replay buffer}. L'estrazione dei campioni, o chiamata \emph{experience replay}, deve seguire una distribuzione uniforme.
+
+PerchÃƒÂ© abbiamo bisogno del \emph{replay buffer}? Per definire correttamente la funzione obiettivo di DQN, dobbiamo specificare le distribuzioni di probabilitÃƒÂ  per $S, A, R, S'$. Il modo piÃƒÂ¹ semplice per descrivere questa distribuzione è utilizzare la distribuzione uniforme.
+
+Tuttavia, nella pratica i campioni stato-azione potrebbero non essere distribuiti uniformemente, poichÃƒÂ© sono generati come una sequenza di campioni secondo la \emph{behavior policy}. In altre parole, l'ipotesi i.i.d. di SGD non è garantita e, di conseguenza, l'ottimizzazione difficilmente convergerÃƒÂ . ÃƒË† necessario rompere la correlazione tra i campioni nella sequenza per soddisfare l'assunzione di distribuzione uniforme. Per fare ciÃƒÂ², possiamo utilizzare la tecnica dell'\emph{experience replay} estraendo uniformemente i campioni dal \emph{replay buffer}. Un vantaggio del campionamento casuale è che ciascun campione di esperienza puÃƒÂ² essere utilizzato piÃƒÂ¹ volte, il che puÃƒÂ² aumentare l'efficienza dei dati. Questo è particolarmente importante quando si ha a disposizione una quantitÃƒÂ  limitata di dati.
+
+Lo pseudocodice generale di DQN è fornito nell'Algoritmo 11.
+
+\newpage
+
+\begin{algorithm}[H]
+\caption{Deep Q-Learning con Experience Replay}
+\Inizializza{
+  Una rete principale e una rete target con lo stesso parametro iniziale $\bm{w}$.\\
+  \textbf{Obiettivo:} Apprendere una rete target ottimale per approssimare i valori delle azioni ottimali a partire dai campioni di esperienza generati da una determinata behavior policy $\pi_b$.
+}
+Memorizza i campioni di esperienza generati da $\pi_b$ in un replay buffer $\mathcal{B} = \{(s, a, r, s')\}$\;
+\Per{ogni iterazione}{
+  Estrai uniformemente un mini-batch di campioni da $\mathcal{B}$\;
+  \Per{ogni campione $(s, a, r, s')$}{
+    Calcola il valore target come $y_T = r + \gamma \max_{a \in \mathcal{A}(s')} \hat{q}(s', a; \bm{w}_T)$, dove $\bm{w}_T$ è il parametro della rete target\;
+    Aggiorna la rete principale per minimizzare $(y_T - \hat{q}(s, a; \bm{w}))^2$ utilizzando il mini-batch di campioni\;
+  }
+  \Se{iteration mod $C == 0$}{
+    Imposta $\bm{w}_T = \bm{w}$\;
+  }
+}
+\end{algorithm}
+
+%% AA 60 - 81
+
+\section{Capitolo 7: Implementazione Del Deep Q-Network}
+\subsection{Background}
+Consideriamo un agente che interagisce con un ambiente eseguendo un'azione campionata da un insieme discreto e finito con $K$ azioni possibili:
+\begin{equation}
+a_t \in \{a_1, a_2, \dots, a_K\}
+\end{equation}
+
+Lo stato vero interno dell'ambiente al passo temporale $t$, cioÃƒÂ¨ $s_t$, è sconosciuto e non accessibile dall'agente, il quale ha invece accesso a un'osservazione $x_t \in \mathbb{R}^D$, dove $D$ è la dimensione dell'input (che assumiamo avere un'alta dimensionalitÃƒÂ ). Nel paper DQN originale, $x_t$ è un'immagine che raffigura la schermata di gioco.
+
+L'agente ha anche accesso a un \emph{reward} $r_t$. Il \emph{reward} puÃƒÂ² dipendere dall'insieme di coppie azione-osservazione osservate nel passato.
+
+\begin{center}
+\fbox{
+\begin{minipage}{0.95\textwidth}
+\textbf{N.B.} L'osservazione corrente $x_t$ è un'osservazione parziale dello stato nascosto $s_t$. Molte osservazioni si sovrappongono e rappresentano lo stesso $s_t$, il che si traduce in un significativo aliasing percettivo (\emph{perceptual aliasing}), rendendo impossibile catturare lo stato nascosto da una sola osservazione. Se, invece, si considerano sequenze di azione-osservazione, possiamo assumere che ciascuna sequenza rappresenti uno stato.
+\end{minipage}
+}
+\end{center}
+
+Si noti che, a causa della parziale osservabilitÃƒÂ  dello stato data una singola osservazione (un'immagine), le sequenze vengono utilizzate e preelaborate dalla funzione $\phi$ come rappresentazione dello stato. Nel paper, viene utilizzato uno stack di quattro frame consecutivi ritagliati dal gioco e dell'azione selezionata dalla \emph{behavior policy}.
+
+\subsection{Architettura Del Modello}
+\begin{itemize}
+    \item Le immagini sono sottocampionate a $84 \times 84$;
+    \item Uno stack di 4 immagini viene utilizzato per costruire l'input della rete;
+    \item Restituisce in output un valore per tutte le possibili azioni di un dato input, evitando passaggi in avanti (\emph{forward pass}) multipli e separati per ciascuna azione;
+\end{itemize}
+
+\subsection{Discussione Sull'Implementazione}
+Implementiamo DQN in Python utilizzando la libreria OpenAI Gym e PyTorch. Nel seguito, ci concentreremo sulla parte piÃƒÂ¹ importante del codice.
+
+\subsubsection{Replay Buffer}
+Iniziamo con il \emph{replay buffer}, che utilizziamo per memorizzare l'esperienza e campionare un batch di transizioni per la fase di addestramento:
+
+\begin{verbatim}
+class ReplayMemory(object):
+
+    def __init__(self, capacity):
+        self.memory = deque([], maxlen=capacity)
+
+    def push(self, *args):
+        self.memory.append(Transition(*args))
+
+    def sample(self, batch_size):
+        return random.sample(self.memory, batch_size)
+
+    def __len__(self):
+        return len(self.memory)
+\end{verbatim}
+
+La funzione \texttt{push} memorizza una transizione. Quando viene raggiunta la dimensione massima della coda, le vecchie transizioni vengono scartate e sostituite con quelle nuove. La funzione \texttt{sample} campiona casualmente un batch di esperienze. Questo è necessario per garantire che la SGD venga eseguita su campioni non correlati.
+
+\subsubsection{Il Modello Per Approssimare La Funzione q}
+Implementiamo una semplice rete neurale a tre strati che stima il valore $q$ di un dato stato (fornito come input) per tutte le possibili azioni (il numero di neuroni di output è uguale al numero di azioni possibili).
+
+\begin{verbatim}
+class DQN(nn.Module):
+
+    def __init__(self, n_observations, n_actions):
+        super(DQN, self).__init__()
+        self.layer1 = nn.Linear(n_observations, 128)
+        self.layer2 = nn.Linear(128, 128)
+        self.layer3 = nn.Linear(128, n_actions)
+
+    def forward(self, x):
+        x = F.relu(self.layer1(x))
+        x = F.relu(self.layer2(x))
+        return self.layer3(x)
+\end{verbatim}
+
+Successivamente, creiamo due istanze di reti DQN, una che funge da \emph{behavior policy} e l'altra che funge da \emph{target policy}:
+
+\begin{verbatim}
+policy_net = DQN(n_observations, n_actions).to(device)
+target_net = DQN(n_observations, n_actions).to(device)
+target_net.load_state_dict(policy_net.state_dict())
+
+optimizer = optim.AdamW(policy_net.parameters(), lr=LR, amsgrad=True)
+memory = ReplayMemory(10000)
+\end{verbatim}
+
+Si noti che le due reti hanno la stessa struttura ma parametri diversi. All'inizio dobbiamo assicurarci che i parametri delle due istanze siano gli stessi (quindi, carichiamo il dizionario degli stati (\emph{state dictionary}) della rete policy in quella target). Questo è necessario poichÃƒÂ© i pesi dei livelli della rete neurale sono inizializzati in modo casuale e, quindi, sono molto probabilmente diversi.
+
+Le due reti sono tenute separate per implementare la strategia del target stazionario al fine di evitare target in movimento. Ottimizzeremo la rete policy, mentre la rete target viene mantenuta fissa e ``guidata'' (\emph{steered}) periodicamente verso la policy dopo un certo numero di iterazioni di ottimizzazione.
+
+\subsubsection{Behavior Policy}
+DQN è un algoritmo \emph{off-policy}, quindi abbiamo bisogno di una \emph{behavior policy}. In questo caso scegliamo una politica $\epsilon$-greedy che seleziona un'azione casuale tra quelle possibili con probabilitÃƒÂ  $< \epsilon$, e l'azione massimizzante per lo stato dato con probabilitÃƒÂ  $> \epsilon$:
+
+\begin{verbatim}
+def select_action(state):
+    global steps_done
+    sample = random.random()
+    eps_threshold = EPS_END + (EPS_START - EPS_END) * \
+        math.exp(-1. * steps_done / EPS_DECAY)
+    steps_done += 1
+    if sample > eps_threshold:
+        with torch.no_grad():
+            return policy_net(state).max(1)[1].view(1, 1)
+    else:
+        return torch.tensor([[env.action_space.sample()]], device=device,
+                            dtype=torch.long)
+\end{verbatim}
+
+Il valore di $\epsilon$ viene ridotto man mano che l'addestramento procede. Questo serve per passare lentamente da una \emph{behavior policy} orientata all'esplorazione verso una politica orientata allo sfruttamento (\emph{exploitation}) man mano che ci si avvicina alla fine dell'ottimizzazione.
+
+Si noti che l'azione massimizzante viene selezionata in base al valore stimato dalla rete policy e non dalla rete target. Questo perchÃƒÂ© selezioniamo lo stato da aggiornare secondo la \emph{behavior policy}, mentre la politica target viene utilizzata solo per stimare il valore target (della coppia stato-azione successiva).
+
+\subsubsection{Ottimizzazione}
+Il ciclo di ottimizzazione itera sugli episodi. In ogni episodio resettiamo l'ambiente e compiamo interazioni fino a quando non viene raggiunto uno stato terminale o non viene soddisfatta la condizione di troncamento (ad esempio, viene raggiunto il numero massimo di iterazioni). L'azione viene selezionata in base alla \emph{behavior policy} $\epsilon$-greedy.
+
+Ogni tupla di esperienza (stato, azione, stato successivo, reward) viene memorizzata nel \emph{replay buffer} prima di ottimizzare il modello (si veda sotto).
+
+\begin{verbatim}
+for i_episode in range(num_episodes):
+    state, info = env.reset()
+    state = torch.tensor(state, dtype=torch.float32, device=device).unsqueeze(0)
+    for t in count():
+        action = select_action(state)
+        observation, reward, terminated, truncated, _ = env.step(action.item())
+        reward = torch.tensor([reward], device=device)
+        done = terminated or truncated
+
+        if terminated:
+            next_state = None
+        else:
+            next_state = torch.tensor(observation, dtype=torch.float32,
+                                      device=device).unsqueeze(0)
+
+        memory.push(state, action, next_state, reward)
+        state = next_state
+        optimize_model()
+
+        target_net_state_dict = target_net.state_dict()
+        policy_net_state_dict = policy_net.state_dict()
+        for key in policy_net_state_dict:
+            target_net_state_dict[key] = policy_net_state_dict[key]*TAU + \
+                                         target_net_state_dict[key]*(1-TAU)
+        target_net.load_state_dict(target_net_state_dict)
+\end{verbatim}
+
+Si noti che la rete target e la rete policy sono allineate con un aggiornamento morbido (\emph{soft update}), ossia i parametri della rete target vengono aggiornati in base ai suoi vecchi valori e ai nuovi valori forniti dalla rete policy.
+
+La routine di ottimizzazione è la seguente:
+
+\begin{verbatim}
+if len(memory) < BATCH_SIZE:
+    return
+transitions = memory.sample(BATCH_SIZE)
+batch = Transition(*zip(*transitions))
+
+non_final_mask = torch.tensor(tuple(map(lambda s: s is not None,
+                              batch.next_state)), device=device,
+                              dtype=torch.bool)
+non_final_next_states = torch.cat([s for s in batch.next_state
+                                   if s is not None])
+
+state_batch = torch.cat(batch.state)
+action_batch = torch.cat(batch.action)
+reward_batch = torch.cat(batch.reward)
+
+state_action_values = policy_net(state_batch).gather(1, action_batch)
+
+next_state_values = torch.zeros(BATCH_SIZE, device=device)
+with torch.no_grad():
+    next_state_values[non_final_mask] = \
+        target_net(non_final_next_states).max(1)[0]
+expected_state_action_values = (next_state_values * GAMMA) + reward_batch
+
+criterion = nn.SmoothL1Loss()
+loss = criterion(state_action_values, expected_state_action_values.unsqueeze(1))
+
+optimizer.zero_grad()
+loss.backward()
+torch.nn.utils.clip_grad_value_(policy_net.parameters(), 100)
+optimizer.step()
+\end{verbatim}
+
+Nessuna ottimizzazione viene eseguita finchÃƒÂ© nel \emph{replay buffer} non è memorizzato il numero minimo di campioni. Successivamente, viene prima fatta una distinzione tra gli stati che non hanno uno stato successivo nella transizione dell'esperienza (cioÃƒÂ¨ sono stati terminali) e tutti gli altri. Per i primi, il valore target è semplicemente il \emph{reward} osservato dopo aver eseguito l'azione, mentre per gli stati successivi non terminali dobbiamo sommare il valore stimato $q(s', a')$ della rete target.
+
+Si noti che, poichÃƒÂ© la rete predice il valore $q$ per tutte le possibili azioni, raccogliamo e utilizziamo solo i valori predetti per l'azione che è stata effettivamente eseguita al momento dell'interazione con l'ambiente per calcolare la \emph{loss}.
+
+\newpage
+
+\section{Capitolo 8: Metodi Policy Gradient}
+Finora, gli approcci basati sul valore introdotti erano volti a trovare la funzione di valore ottimale e poi usarla per calcolare la politica ottimale. Diversamente dagli approcci basati sul valore (sia tabulari che basati su approssimazione di funzioni), in questo capitolo consideriamo strategie che parametrizzano direttamente la politica, senza utilizzare esplicitamente la funzione di valore. Quest'ultima potrebbe comunque essere utilizzata per apprendere la funzione della politica, ma non sarÃƒÂ  impiegata per la selezione delle azioni. In particolare, indichiamo la politica con la seguente notazione: $\pi(a|s, \theta)$, per sottolineare che la politica dipende da un insieme di parametri che devono essere addestrati.
+
+Chiaramente, dobbiamo definire una funzione obiettivo che esprima quanto sia buona l'attuale parametrizzazione della politica e ottimizzare il parametro $\theta$ per migliorare tale obiettivo:
+\begin{equation}
+\theta_{t+1} = \theta_t + \alpha \nabla \hat{J}(\theta_t)
+\end{equation}
+dove il cappello sopra il gradiente della funzione obiettivo indica che si tratta di una stima del gradiente reale ottenuta con approcci a gradiente stocastico. Questa regola generale si applica a tutte le possibili strategie di gradiente della politica, indipendentemente dal fatto che stimino anche la funzione di valore (cioÃƒÂ¨ approcci \emph{actor-critic}) o meno.
+
+\subsection{Vantaggi Dei Metodi Policy Gradient}
+\begin{itemize}
+    \item La politica $\pi(a|s, \theta)$ puÃƒÂ² essere parametrizzata arbitrariamente, purchÃƒÂ© sia differenziabile. Ad esempio, se lo spazio delle azioni è discreto, possiamo usare una rete neurale per predire le preferenze per ciascuna azione, ovvero $h(a, s, \theta)$, e poi usare una funzione softmax per ottenere le probabilitÃƒÂ :
+    \begin{equation}
+    \pi(a|s, \theta) = \frac{e^{h(a, s, \theta)}}{\sum_{b \in \mathcal{A}} e^{h(b, s, \theta)}}
+    \end{equation}
+
+    \item In generale, le politiche stocastiche sono preferite per garantire l'esplorazione, ma possono anche approssimare politiche deterministiche. Questo è diverso dalle politiche $\epsilon$-greedy utilizzate negli approcci basati sul valore, che invece hanno sempre una probabilitÃƒÂ  non nulla di selezionare azioni non massimizzanti. Negli approcci basati sul valore, l'ottimizzazione viene eseguita sulla funzione di valore e, quindi, anche se riduciamo lentamente il valore di $\epsilon$ verso lo zero, stiamo semplicemente usando un espediente per approssimare il comportamento deterministico. Invece, i valori delle azioni si avvicineranno ai loro valori finali che saranno inferiori a 1 e maggiori di zero per la maggior parte delle azioni. Nei metodi di gradiente della politica, invece, poichÃƒÂ© ottimizziamo direttamente le preferenze d'azione, possiamo apprendere politiche stocastiche che sono ottimali, cioÃƒÂ¨ potrebbero esserci stati in determinati compiti in cui la selezione di piÃƒÂ¹ di un'azione con probabilitÃƒÂ  non nulla è ottimale e non un espediente per garantire l'esplorazione. Se invece il gradiente della politica ritiene che la scelta deterministica sia da preferire, puÃƒÂ² sempre approssimarla riducendo le probabilitÃƒÂ  delle altre azioni.
+
+    \item Relativamente all'ultimo punto, il gradiente della politica puÃƒÂ² apprendere politiche stocastiche ottimali.
+
+    \item Inoltre, evitando di stimare la funzione di valore possiamo catturare quelle situazioni in cui approssimare direttamente la politica potrebbe essere molto piÃƒÂ¹ semplice (cioÃƒÂ¨ sono richiesti modelli piÃƒÂ¹ semplici);
+
+    \item Scegliendo la parametrizzazione della politica possiamo iniettare conoscenza pregressa sulla forma della politica.
+
+    \item Infine, poichÃƒÂ© ottimizziamo direttamente la politica parametrizzata, le probabilitÃƒÂ  delle azioni cambiano in modo fluido, mentre negli approcci basati sul valore potremmo riscontrare improvvisi cambiamenti nelle probabilitÃƒÂ  dovuti a variazioni nei valori di azione stimati. Questo garantisce all'atto pratico migliori proprietÃƒÂ  di convergenza.
+\end{itemize}
+
+\subsection{Teorema Del Gradiente Della Politica}
+Dobbiamo ottimizzare la politica affinchÃƒÂ© il nostro agente si comporti in modo ottimale (o quasi ottimale) rispetto al compito da svolgere. In pratica, sappiamo che un buon comportamento è quello che massimizza una qualche funzione che tiene conto del \emph{reward}. Questo potrebbe apparire complesso, poichÃƒÂ© i cambiamenti nella politica si riflettono sulla funzione che codifica il vantaggio, ma questo dipende dalla distribuzione degli stati incontrati, che sono correlati alle transizioni ambientali che sono sconosciute (siamo in uno scenario \emph{model-free}). Fortunatamente, abbiamo il Teorema del Gradiente della Politica (\emph{Policy Gradient Theorem} - PGT). Per ottenere una definizione e una dimostrazione rigorosa del PGT, dobbiamo prima definire le possibili funzioni obiettivo che vengono ottimizzate per trovare la politica.
+
+\begin{center}
+\fbox{
+\begin{minipage}{0.95\textwidth}
+\small
+\textbf{*Materiale aggiuntivo - non considerato per l'esame finale} \\
+Le distribuzioni stazionarie o distribuzioni di stato stazionario o distribuzioni limite descrivono il comportamento a lungo termine dei processi decisionali di Markov. Data una matrice di probabilitÃƒÂ  di transizione $\bm{P}_{\pi} \in \mathbb{R}^{|\mathcal{S}| \times |\mathcal{S}|}$, esprimiamo con $\bm{P}_{\pi}^k$ la matrice il cui elemento $i, j$ codifica la probabilitÃƒÂ  di passare da $i$ a $j$ in esattamente $k$ passi. \\
+Data una distribuzione di stato iniziale $\bm{d}_0 \in \mathbb{R}^{|\mathcal{S}|}$, sotto certe condizioni vale:
+\begin{equation}
+\bm{P}_{\pi}^k \to \bm{W} = \bm{1}_{|\mathcal{S}|} \bm{d}_{\pi}^T \quad \text{per } k \to \infty
+\end{equation}
+il che implica che:
+\begin{equation}
+\bm{d}_k^T = \bm{d}_0^T \bm{P}_{\pi}^k = \bm{d}_0^T \bm{W} = \bm{d}_0^T \bm{1}_{|\mathcal{S}|} \bm{d}_{\pi}^T = \bm{d}_{\pi}^T \quad \text{per } k \to \infty
+\end{equation}
+significando che la distribuzione degli stati converge a un vettore costante $\bm{d}_{\pi}^T$ ed è indipendente dallo stato iniziale. PoichÃƒÂ© abbiamo:
+\begin{equation}
+\bm{d}_{\pi}^T = \bm{d}_{\pi}^T \bm{P}_{\pi}
+\end{equation}
+la distribuzione stazionaria è uguale all'autovettore sinistro associato all'autovalore 1 di $\bm{P}_{\pi}$. \\
+Le distribuzioni stazionarie esistono e sono uniche per processi di Markov regolari (condizione sufficiente, ma non necessaria). Un processo di Markov è regolare se:
+\begin{itemize}
+    \item è irriducibile, cioÃƒÂ¨ se tutti gli stati comunicano tra loro, il che significa che per tutte le coppie di stati $i, j$, esiste un intero finito $k$ tale che $[\bm{P}_{\pi}]^k_{i, j} > 0$.
+    \item esiste uno stato tale che $[\bm{P}_{\pi}]_{i, i} > 0$.
+\end{itemize}
+Una volta determinata una politica, un processo decisionale di Markov diventa un processo di Markov. In generale, le politiche di esplorazione portano a processi di Markov regolari. Le politiche $\epsilon$-greedy, in particolare, portano spesso a processi di Markov regolari e, pertanto, sono preferite.
+\end{minipage}
+}
+\end{center}
+
+\subsection{Obiettivi Per I Metodi Policy Gradient}
+Di seguito, elenchiamo e descriviamo alcune delle metriche popolari utilizzate nei metodi di gradiente della politica.
+
+\subsubsection{Valore Medio Dello Stato}
+\begin{equation}
+\bar{v}_{\pi} = \bm{d}_{\pi}^T \bm{v}_{\pi} = \sum_s d_{\pi}(s) v_{\pi}(s) = \mathbb{E}_{S \sim d_{\pi}} [v_{\pi}(S)]
+\end{equation}
+dove $\bm{d}_{\pi} = [\dots, d_{\pi}(s), \dots]^T \in \mathbb{R}^{|\mathcal{S}|}$ e $\bm{v}_{\pi} = [\dots, v_{\pi}(s), \dots]^T \in \mathbb{R}^{|\mathcal{S}|}$.
+
+$\bm{d}_{\pi}$ è il vettore della distribuzione degli stati e puÃƒÂ² essere scelto arbitrariamente, ad esempio, per dare piÃƒÂ¹ peso ad alcuni stati. ÃƒË† utile distinguere tra due casi: se la distribuzione degli stati è indipendente o dipendente dalla politica $\pi$.
+
+\paragraph{Distribuzione degli stati indipendente da $\pi$}
+In questo caso, indichiamo $\bm{d}_{\pi}$ come $\bm{d}_0$ e la metrica del valore medio dello stato come $\bar{v}_{\pi}^0$. Una possibilitÃƒÂ  è trattare tutti gli stati allo stesso modo (distribuzione uniforme), cioÃƒÂ¨ $d_0(s) = \frac{1}{|\mathcal{S}|}$. Un'altra possibilitÃƒÂ  è concentrarsi su uno stato specifico. In quest'ultimo caso, la metrica è semplicemente $\bar{v}_{\pi}(s_0)$. PuÃƒÂ² essere vista come una metrica media impostando $d_0(s = s_0) = 1$ e $d_0(s \neq s_0) = 0$:
+\begin{equation}
+\bar{v}_{\pi}(s_0) = \sum_{s \in \mathcal{S}} d_0(s) v_{\pi}(s)
+\end{equation}
+Questa particolare versione della metrica dello stato medio viene spesso chiamata metrica del valore dello stato iniziale (\emph{Start-state value metrics}).
+
+\paragraph{Distribuzione degli stati dipendente da $\pi$}
+In questo caso, uno dei modi piÃƒÂ¹ convenienti per definire la distribuzione degli stati è selezionarla come la distribuzione stazionaria che soddisfa:
+\begin{equation}
+\bm{d}_{\pi}^T \bm{P}_{\pi} = \bm{d}_{\pi}^T
+\end{equation}
+dove $\bm{P}_{\pi}$ è la matrice di probabilitÃƒÂ  di transizione di stato. Selezionare $\bm{d}_{\pi}$ in questo modo ha senso poichÃƒÂ© la distribuzione stazionaria esprime il comportamento a lungo termine del processo di Markov e, pertanto, gli stati che sono maggiormente visitati nel lungo periodo meritano di essere associati ad un peso maggiore.
+
+\subsubsection{Reward Medio A Un Passo O Reward Medio}
+Indichiamo con $\bm{r}_{\pi} = [\dots, r_{\pi}(s), \dots]^T$ il vettore dei \emph{reward} immediati a un passo, dove:
+\begin{equation}
+r_{\pi}(s) = \sum_{a \in \mathcal{A}} \pi(a|s) r(s, a) = \sum_{a \in \mathcal{A}} \pi(a|s) \sum_r r p(r|s, a)
+\end{equation}
+La metrica puÃƒÂ² essere definita come:
+\begin{equation}
+\bar{r}_{\pi} = \bm{d}_{\pi}^T \bm{r}_{\pi} = \sum_{s \in \mathcal{S}} d_{\pi}(s) r_{\pi}(s) = \mathbb{E}_{S \sim d_{\pi}} [r_{\pi}(S)]
+\end{equation}
+dove $\bm{d}_{\pi}$ è nuovamente la distribuzione stazionaria del processo di Markov.
+
+\subsubsection{*Considerazioni Sulle Metriche {\normalfont\small(Materiale aggiuntivo - non considerato per l'esame finale)}}
+Discutiamo alcune considerazioni su queste metriche:
+\begin{itemize}
+    \item Le metriche sono funzioni di $\pi$, che è a sua volta una funzione dei parametri apprendibili $\theta$, pertanto le metriche sono funzioni di $\theta$ e possono essere ottimizzate.
+    \item $\bar{r}_{\pi}$ è piÃƒÂ¹ a breve termine (\emph{short-sighted}) rispetto a $\bar{v}_{\pi}$. Tuttavia, nel caso scontato, sono equivalenti a meno di un fattore $(1 - \gamma)$:
+\end{itemize}
+
+\begin{lemma}
+In the discounted case, it holds that
+\begin{equation}
+\bar{r}_{\pi} = (1 - \gamma) \bar{v}_{\pi}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Si noti che $\bar{v}_{\pi} = \bm{d}_{\pi}^T \bm{v}_{\pi}$ e $\bar{r}_{\pi} = \bm{d}_{\pi}^T \bm{r}_{\pi}$ e che $\bm{v}_{\pi}$ e $\bm{r}_{\pi}$ soddisfano l'equazione di Bellman in forma matriciale-vettoriale, cioÃƒÂ¨ $\bm{v}_{\pi} = \bm{r}_{\pi} + \gamma \bm{P}_{\pi} \bm{v}_{\pi}$. Moltiplicando entrambi i lati dell'equazione per $\bm{d}_{\pi}^T$ otteniamo:
+\begin{equation}
+\bar{v}_{\pi} = \bar{r}_{\pi} + \gamma \bm{d}_{\pi}^T \bm{P}_{\pi} \bm{v}_{\pi} = \bar{r}_{\pi} + \gamma \bm{d}_{\pi}^T \bm{v}_{\pi} = \bar{r}_{\pi} + \gamma \bar{v}_{\pi}
+\end{equation}
+La terza uguaglianza si ottiene poichÃƒÂ© $\bm{d}_{\pi}$ è stazionaria. Riorganizzando l'equazione, otteniamo $\bar{r}_{\pi} = (1 - \gamma) \bar{v}_{\pi}$.
+\end{proof}
+
+\begin{itemize}
+    \item Un'uguaglianza utile per la formulazione del \emph{reward} medio $\bar{r}_{\pi}$ è la seguente:
+    \begin{equation}
+    \bar{r}_{\pi} = \lim_{n \to \infty} \frac{1}{n} \mathbb{E} \left[ \sum_{k=1}^n R_{t+k} \mid s_t = s_0 \right] = \sum_{s \in \mathcal{S}} d_{\pi}(s) r_{\pi}(s)
+    \end{equation}
+\end{itemize}
+
+\begin{proof}
+\begin{align*}
+\bar{r}_{\pi} &= \lim_{n \to \infty} \frac{1}{n} \mathbb{E} \left[ \sum_{k=1}^n R_{t+k} \mid s_t = s_0 \right] \\
+&= \lim_{n \to \infty} \frac{1}{n} \sum_{k=1}^n \mathbb{E} [R_{t+k} \mid s_t = s_0] \\
+&= \lim_{k \to \infty} \mathbb{E} [R_{t+k} \mid s_t = s_0]
+\end{align*}
+dove l'ultima uguaglianza deriva dalla media di Cesaro, ovvero se $\{a_k\}_{k=1}^{\infty}$ è una sequenza convergente, allora $\{\frac{1}{n} \sum_{k=1}^n a_k\}$ è anch'essa convergente e vale $\lim_{n \to \infty} \frac{1}{n} \sum_{k=1}^n a_k = \lim_{k \to \infty} a_k$. Possiamo continuare a riorganizzare l'equazione grazie alla legge delle aspettative totali:
+\begin{align*}
+&= \lim_{k \to \infty} \mathbb{E} [R_{t+k} \mid s_t = s_0] \\
+&= \lim_{k \to \infty} \sum_{s \in \mathcal{S}} \mathbb{E} [R_{t+k} \mid s_{t+k-1} = s, s_t = s_0] p^{k-1}(s \mid s_0) \\
+&= \lim_{k \to \infty} \sum_{s \in \mathcal{S}} \mathbb{E} [R_{t+k} \mid s_{t+k-1} = s] p^{k-1}(s \mid s_0) \\
+&= \lim_{k \to \infty} \sum_{s \in \mathcal{S}} r_{\pi}(s) p^{k-1}(s \mid s_0)
+\end{align*}
+la terza uguaglianza vale a causa della proprietÃƒÂ  di Markov, mentre la quarta per definizione del \emph{reward} immediato. Ora, poichÃƒÂ© $\lim_{k \to \infty} p^{k-1}(s \mid s_0) = d_{\pi}(s)$ a causa della proprietÃƒÂ  della distribuzione stazionaria, otteniamo:
+\begin{equation}
+\bar{r}_{\pi} = \lim_{k \to \infty} \sum_{s \in \mathcal{S}} r_{\pi}(s) p^{k-1}(s \mid s_0) = \sum_{s \in \mathcal{S}} r_{\pi}(s) d_{\pi}(s)
+\end{equation}
+\end{proof}
+
+\subsection{*Gradienti Dei Diversi Obiettivi Nel Caso Scontato {\normalfont\small(Materiale aggiuntivo - non considerato per l'esame finale)}}
+Inizieremo derivando i gradienti per le tre metriche introdotte nel caso scontato. Per prima cosa, introduciamo e dimostriamo il seguente Lemma.
+
+\begin{lemma}
+\textbf{Gradient of $v_{\pi}(s)$.} In the discounted case, it holds $\forall s \in \mathcal{S}$ that
+\begin{equation}
+\nabla_{\theta} v_{\pi}(s) = \sum_{s'} \text{Pr}_{\pi}(s' \mid s) \sum_a \nabla_{\theta} \pi(a \mid s', \theta) q_{\pi}(s', a)
+\end{equation}
+where
+\begin{equation}
+\text{Pr}_{\pi}(s' \mid s) = \sum_{k=0}^{\infty} \gamma^k \text{Pr}(s \to s', k, \pi) = [(\bm{I}_{|\mathcal{S}|} - \gamma \bm{P}_{\pi})^{-1}]_{s, s'}
+\end{equation}
+è la probabilitÃƒÂ  totale scontata che modella la transizione da $s$ a $s'$ sotto $\pi$. $\text{Pr}(s \to s', k, \pi)$ denota la probabilitÃƒÂ  di passare da $s$ a $s'$ eseguendo esattamente $k$ passi sotto $\pi$.
+\end{lemma}
+
+\begin{proof}
+\begin{align*}
+\nabla_{\theta} v_{\pi}(s) &= \nabla_{\theta} \left[ \sum_a \pi(a \mid s) q_{\pi}(s, a) \right] \\
+&= \sum_a [\nabla_{\theta} \pi(a \mid s, \theta) q_{\pi}(s, a) + \pi(a \mid s, \theta) \nabla_{\theta} q_{\pi}(s, a)]
+\end{align*}
+poichÃƒÂ© abbiamo $q_{\pi}(s, a) = \sum_r p(r \mid s, a) r + \gamma \sum_{s'} p(s' \mid s, a) v_{\pi}(s')$, allora:
+\begin{equation}
+\nabla_{\theta} q_{\pi}(s, a) = 0 + \gamma \sum_{s'} p(s' \mid s, a) \nabla_{\theta} v_{\pi}(s')
+\end{equation}
+Sostituendo nuovamente nell'Eq. 8.19 otteniamo:
+\begin{equation}
+\nabla_{\theta} v_{\pi}(s) = \sum_a \left[ \nabla_{\theta} \pi(a \mid s, \theta) q_{\pi}(s, a) + \gamma \pi(a \mid s, \theta) \sum_{s'} p(s' \mid s, a) \nabla_{\theta} v_{\pi}(s') \right]
+\end{equation}
+che ha una piacevole forma ricorrente. Trasformiamo l'equazione in forma matriciale-vettoriale.
+In primo luogo, indichiamo con $u(s) = \sum_a \nabla_{\theta} \pi(a \mid s, \theta) q_{\pi}(s, a)$. Successivamente, consideriamo che $\sum_a \pi(a \mid s, \theta) \sum_{s'} p(s' \mid s, a) = \sum_{s'} \sum_a \pi(a \mid s, \theta) p(s' \mid s, a) = \sum_{s'} \sum_a p(s', a \mid s) = \sum_{s'} p(s' \mid s) = [\bm{P}_{\pi}]_{s, s'}$, quindi possiamo riscrivere la 8.21 come:
+
+\begin{align*}
+\begin{bmatrix}
+\vdots \\
+\nabla_{\theta} v_{\pi}(s) \\
+\vdots
+\end{bmatrix}
+&=
+\begin{bmatrix}
+\frac{\partial v_{\pi}(s_0)}{\partial \theta_0} \\
+\frac{\partial v_{\pi}(s_0)}{\partial \theta_1} \\
+\vdots \\
+\frac{\partial v_{\pi}(s_0)}{\partial \theta_{m-1}} \\
+\vdots \\
+\frac{\partial v_{\pi}(s_{|\mathcal{S}|})}{\partial \theta_{m-1}}
+\end{bmatrix}
+=
+\begin{bmatrix}
+\sum_a \frac{\partial \pi(a \mid s_0, \theta)}{\partial \theta_0} q_{\pi}(s, a) \\
+\sum_a \frac{\partial \pi(a \mid s_0, \theta)}{\partial \theta_1} q_{\pi}(s, a) \\
+\vdots \\
+\sum_a \frac{\partial \pi(a \mid s_0, \theta)}{\partial \theta_{m-1}} q_{\pi}(s, a) \\
+\vdots \\
+\sum_a \frac{\partial \pi(a \mid s_{|\mathcal{S}|}, \theta)}{\partial \theta_{m-1}} q_{\pi}(s, a)
+\end{bmatrix}
++ \gamma (\bm{P}_{\pi} \otimes \bm{I}_m)
+\begin{bmatrix}
+\frac{\partial v_{\pi}(s_0)}{\partial \theta_0} \\
+\frac{\partial v_{\pi}(s_0)}{\partial \theta_1} \\
+\vdots \\
+\frac{\partial v_{\pi}(s_0)}{\partial \theta_{m-1}} \\
+\vdots \\
+\frac{\partial v_{\pi}(s_{|\mathcal{S}|})}{\partial \theta_{m-1}}
+\end{bmatrix} \\
+&=
+\begin{bmatrix}
+\frac{\partial v_{\pi}(s_0)}{\partial \theta_0} \\
+\frac{\partial v_{\pi}(s_0)}{\partial \theta_1} \\
+\vdots \\
+\frac{\partial v_{\pi}(s_0)}{\partial \theta_{m-1}} \\
+\vdots \\
+\frac{\partial v_{\pi}(s_{|\mathcal{S}|})}{\partial \theta_{m-1}}
+\end{bmatrix}
+=
+\begin{bmatrix}
+\sum_a \frac{\partial \pi(a \mid s_0, \theta)}{\partial \theta_0} q_{\pi}(s, a) \\
+\sum_a \frac{\partial \pi(a \mid s_0, \theta)}{\partial \theta_1} q_{\pi}(s, a) \\
+\vdots \\
+\sum_a \frac{\partial \pi(a \mid s_0, \theta)}{\partial \theta_{m-1}} q_{\pi}(s, a) \\
+\vdots \\
+\sum_a \frac{\partial \pi(a \mid s_{|\mathcal{S}|}, \theta)}{\partial \theta_{m-1}} q_{\pi}(s, a)
+\end{bmatrix}
++ \gamma \left(
+\begin{bmatrix}
+p_{s_0, s_0} & \dots & p_{s_0, s_{|\mathcal{S}|}} \\
+p_{s_1, s_0} & \dots & p_{s_1, s_{|\mathcal{S}|}} \\
+& \vdots & \\
+p_{s_{|\mathcal{S}|}, s_0} & \dots & p_{s_{|\mathcal{S}|}, s_{|\mathcal{S}|}}
+\end{bmatrix}
+\otimes
+\begin{bmatrix}
+1, 0, \dots, 0 \\
+0, 1, \dots, 0 \\
+\vdots \\
+0, 0, \dots, 1
+\end{bmatrix}
+\right)
+\begin{bmatrix}
+\frac{\partial v_{\pi}(s_0)}{\partial \theta_0} \\
+\frac{\partial v_{\pi}(s_0)}{\partial \theta_1} \\
+\vdots \\
+\frac{\partial v_{\pi}(s_0)}{\partial \theta_{m-1}} \\
+\vdots \\
+\frac{\partial v_{\pi}(s_{|\mathcal{S}|})}{\partial \theta_{m-1}}
+\end{bmatrix} \\
+&=
+\begin{bmatrix}
+\frac{\partial v_{\pi}(s_0)}{\partial \theta_0} \\
+\frac{\partial v_{\pi}(s_0)}{\partial \theta_1} \\
+\vdots \\
+\frac{\partial v_{\pi}(s_0)}{\partial \theta_{m-1}} \\
+\vdots \\
+\frac{\partial v_{\pi}(s_{|\mathcal{S}|})}{\partial \theta_{m-1}}
+\end{bmatrix}
+=
+\begin{bmatrix}
+\sum_a \frac{\partial \pi(a \mid s_0, \theta)}{\partial \theta_0} q_{\pi}(s, a) \\
+\sum_a \frac{\partial \pi(a \mid s_0, \theta)}{\partial \theta_1} q_{\pi}(s, a) \\
+\vdots \\
+\sum_a \frac{\partial \pi(a \mid s_0, \theta)}{\partial \theta_{m-1}} q_{\pi}(s, a) \\
+\vdots \\
+\sum_a \frac{\partial \pi(a \mid s_{|\mathcal{S}|}, \theta)}{\partial \theta_{m-1}} q_{\pi}(s, a)
+\end{bmatrix}
++ \gamma \left(
+\begin{bmatrix}
+p_{s_0, s_0}, 0, \dots, p_{s_0, s_1}, 0, \dots, p_{s_0, s_{|\mathcal{S}|}}, 0, \dots \\
+0, p_{s_0, s_0}, \dots, 0, p_{s_0, s_1}, \dots, 0, p_{s_0, s_{|\mathcal{S}|}}, \dots \\
+\vdots \\
+p_{s_1, s_0}, 0, \dots, p_{s_1, s_1}, 0, \dots, p_{s_1, s_{|\mathcal{S}|}}, 0, \dots \\
+\vdots
+\end{bmatrix}
+\right)
+\begin{bmatrix}
+\frac{\partial v_{\pi}(s_0)}{\partial \theta_0} \\
+\frac{\partial v_{\pi}(s_0)}{\partial \theta_1} \\
+\vdots \\
+\frac{\partial v_{\pi}(s_0)}{\partial \theta_{m-1}} \\
+\vdots \\
+\frac{\partial v_{\pi}(s_{|\mathcal{S}|})}{\partial \theta_{m-1}}
+\end{bmatrix}
+\end{align*}
+
+e, in breve,
+\begin{equation}
+\nabla_{\theta} \bm{v}_{\pi} = \bm{u} + \gamma (\bm{P}_{\pi} \otimes \bm{I}_{|\mathcal{S}|}) \nabla_{\theta} \bm{v}_{\pi}
+\end{equation}
+che è un'equazione lineare in $\nabla_{\theta} \bm{v}_{\pi}$ e puÃƒÂ² essere risolta come:
+\begin{align*}
+\nabla_{\theta} \bm{v}_{\pi} &= (\bm{I}_{|\mathcal{S}|m} - \gamma \bm{P}_{\pi} \otimes \bm{I}_m)^{-1} \bm{u} \\
+&= (\bm{I}_{|\mathcal{S}|} \otimes \bm{I}_m - \gamma \bm{P}_{\pi} \otimes \bm{I}_m)^{-1} \bm{u} \\
+&= [(\bm{I}_{|\mathcal{S}|} - \gamma \bm{P}_{\pi})^{-1} \otimes \bm{I}_m] \bm{u}
+\end{align*}
+Per ogni stato, in particolare, abbiamo:
+\begin{align*}
+\nabla_{\theta} v(s)_{\pi} &= \sum_{s'} [(\bm{I}_{|\mathcal{S}|} - \gamma \bm{P}_{\pi})^{-1}]_{s, s'} u(s') \\
+&= \sum_{s'} [(\bm{I}_{|\mathcal{S}|} - \gamma \bm{P}_{\pi})^{-1}]_{s, s'} \sum_a \nabla_{\theta} \pi(a \mid s', \theta) q_{\pi}(s', a)
+\end{align*}
+Ora, poichÃƒÂ© abbiamo:
+\begin{equation}
+[(\bm{I}_{|\mathcal{S}|} - \gamma \bm{P}_{\pi})^{-1}]_{s, s'} = [\bm{I}]_{s, s'} + \gamma [\bm{P}_{\pi}]_{s, s'} + \gamma^2 [\bm{P}_{\pi}^2]_{s, s'} + \dots = \sum_{k=0}^{\infty} \gamma^k [\bm{P}_{\pi}^k]_{s, s'}
+\end{equation}
+e poichÃƒÂ© $[\bm{P}_{\pi}^k]_{s, s'}$ è la probabilitÃƒÂ  di passare da $s$ a $s'$ in esattamente $k$ passi, allora $[(\bm{I}_{|\mathcal{S}|} - \gamma \bm{P}_{\pi})^{-1}]_{s, s'}$ è la probabilitÃƒÂ  di passare da $s$ a $s'$ in un numero qualsiasi di passi, cioÃƒÂ¨ $\text{Pr}_{\pi}(s' \mid s)$. Di conseguenza, abbiamo infine:
+\begin{equation}
+\nabla_{\theta} v_{\pi}(s) = \sum_{s'} \text{Pr}_{\pi}(s' \mid s) \sum_a \nabla_{\theta} \pi(a \mid s', \theta) q_{\pi}(s', a)
+\end{equation}
+\end{proof}
+
+Grazie al Lemma 2 possiamo dimostrare il seguente teorema.
+
+\begin{theorem}
+\textbf{Gradient of $v_{\pi}(s_0)$ (start-state value metric).} In the discounted case where $\gamma \in [0, 1)$, the gradient of $v_{\pi}(s_0)$ is:
+\begin{equation}
+\nabla_{\theta} v_{\pi}(s_0) = \mathbb{E} [\nabla_{\theta} \log \pi(A \mid S, \theta) q_{\pi}(S, A)]
+\end{equation}
+where $S \sim \rho_{\pi}$, $A \sim \pi(s, \theta)$ and:
+\begin{equation}
+\rho(s) = \text{Pr}_{\pi}(s \mid s_0) = \sum_{k=0}^{\infty} \gamma^k \text{Pr}(s_0 \to s, k, \pi) = [(\bm{I}_{|\mathcal{S}|} - \gamma \bm{P}_{\pi})^{-1}]_{s_0, s}
+\end{equation}
+è la probabilitÃƒÂ  totale scontata di passare da $s_0$ a $s$ sotto la politica $\pi$.
+\end{theorem}
+
+\begin{proof}
+Ricordiamo che $v_{\pi}(s_0) = \sum_s d_0(s) v_{\pi}(s)$, quindi:
+\begin{equation}
+\nabla_{\theta} v_{\pi}(s_0) = \nabla_{\theta} \sum_s d_0(s) v_{\pi}(s) = \sum_s d_0(s) \nabla_{\theta} v_{\pi}(s)
+\end{equation}
+Sostituendo il Lemma 2 otteniamo:
+\begin{align*}
+\nabla_{\theta} v_{\pi}(s_0) &= \sum_s d_0(s) \nabla_{\theta} v_{\pi}(s) = \sum_s d_0(s) \sum_{s'} \text{Pr}_{\pi}(s' \mid s) \sum_a \nabla_{\theta} \pi(a \mid s', \theta) q_{\pi}(s', a) \\
+&= \sum_{s'} \sum_s d_0(s) \text{Pr}_{\pi}(s' \mid s) \sum_a \nabla_{\theta} \pi(a \mid s', \theta) q_{\pi}(s', a) \\
+&= \sum_{s'} \rho_{\pi}(s') \sum_a \nabla_{\theta} \pi(a \mid s', \theta) q_{\pi}(s', a) \\
+&= \sum_{s'} \rho_{\pi}(s') \sum_a \pi(a \mid s', \theta) \frac{\nabla_{\theta} \pi(a \mid s', \theta)}{\pi(a \mid s', \theta)} q_{\pi}(s', a) \\
+&= \sum_{s'} \rho_{\pi}(s') \sum_a \pi(a \mid s', \theta) \nabla_{\theta} \log \pi(a \mid s', \theta) q_{\pi}(s', a) \\
+&= \mathbb{E} [\nabla_{\theta} \log \pi(a \mid s', \theta) q_{\pi}(s', a)]
+\end{align*}
+dove $S \sim \rho_{\pi}$ e $A \sim \pi(s, \theta)$. Inoltre, poichÃƒÂ© $d_0(s \neq s_0) = 0$, si ha:
+\begin{equation}
+\rho(s') = \sum_s d_0(s) \text{Pr}_{\pi}(s' \mid s) = \text{Pr}_{\pi}(s' \mid s_0)
+\end{equation}
+che è la probabilitÃƒÂ  totale scontata di passare da $s_0$ a $s'$ sotto la politica $\pi$.
+\end{proof}
+
+\begin{center}
+\fbox{
+\begin{minipage}{0.95\textwidth}
+\textbf{N.B.} $\rho_{\pi}(s')$ è diversa da $d_{\pi}$. La prima esprime la probabilitÃƒÂ  di passare da un qualsiasi stato (secondo $d_0(s)$) a $s'$ in un numero qualsiasi di passi (cioÃƒÂ¨ in uno, due o $k$ passi in generale). Invece, $d_{\pi}$ è la distribuzione dello stato stazionario, che esprime la probabilitÃƒÂ  di trovarsi nello stato $s'$ nel lungo periodo, cioÃƒÂ¨ dopo molti passi del processo di Markov e non anche dopo 1 o pochi passi. Inoltre, $\rho_{\pi}(s')$ dipende dalla distribuzione dello stato iniziale, mentre $d_{\pi}$ no.
+\end{minipage}
+}
+\end{center}
+
+Forniamo ora il gradiente per le altre due metriche, cioÃƒÂ¨ $\bar{v}_{\pi}$ e $\bar{r}_{\pi}$.
+
+\begin{theorem}
+\textbf{Gradient of $\bar{v}_{\pi}$ and $\bar{r}_{\pi}$.} In the discounted case where $\gamma \in [0, 1)$, the gradient of $\bar{v}_{\pi}$ and $\bar{r}_{\pi}$ are respectively:
+\begin{equation}
+\nabla_{\theta} \bar{v}_{\pi} \approx \frac{1}{1 - \gamma} \sum_s d_{\pi}(s) \sum_a \nabla_{\theta} \pi(a \mid s, \theta) q_{\pi}(s, a)
+\end{equation}
+and
+\begin{equation}
+\nabla_{\theta} \bar{r}_{\pi} \approx \sum_s d_{\pi}(s) \sum_a \nabla_{\theta} \pi(a \mid s, \theta) q_{\pi}(s, a)
+\end{equation}
+dove le approssimazioni sono piÃƒÂ¹ accurate quando $\gamma$ è vicino a 1.
+\end{theorem}
+
+\begin{proof}
+Dalla definizione di $\bar{v}_{\pi}$, segue che:
+\begin{equation}
+\nabla_{\theta} \bar{v}_{\pi} = \nabla_{\theta} \sum_s d_{\pi}(s) v_{\pi}(s) = \sum_s \nabla_{\theta} d_{\pi}(s) v_{\pi}(s) + \sum_s d_{\pi}(s) \nabla_{\theta} v_{\pi}(s)
+\end{equation}
+Sostituendo la forma matriciale-vettoriale del Lemma 2 nel secondo termine, otteniamo:
+\begin{align*}
+\sum_s d_{\pi}(s) \nabla_{\theta} v_{\pi}(s) &= (\bm{d}_{\pi}^T \otimes \bm{I}_m) \nabla_{\theta} \bm{v}_{\pi}(s) = (\bm{d}_{\pi}^T \otimes \bm{I}_m) [(\bm{I}_{|\mathcal{S}|} - \gamma \bm{P}_{\pi})^{-1} \otimes \bm{I}_m] \bm{u} \\
+&= [\bm{d}_{\pi}^T (\bm{I}_{|\mathcal{S}|} - \gamma \bm{P}_{\pi})^{-1}] \otimes \bm{I}_m \bm{u}
+\end{align*}
+poichÃƒÂ© abbiamo:
+\begin{equation}
+\bm{d}_{\pi}^T (\bm{I}_{|\mathcal{S}|} - \gamma \bm{P}_{\pi})^{-1} = \frac{1}{1 - \gamma} \bm{d}_{\pi}^T
+\end{equation}
+il che puÃƒÂ² essere verificato moltiplicando entrambi i lati dell'equazione per $(\bm{I}_{|\mathcal{S}|} - \gamma \bm{P}_{\pi})^{-1}$, otteniamo:
+\begin{align*}
+\sum_s d_{\pi}(s) \nabla_{\theta} v_{\pi}(s) &= \frac{1}{1 - \gamma} \bm{d}_{\pi}^T \otimes \bm{I}_m \bm{u} \\
+&= \frac{1}{1 - \gamma} \sum_s d_{\pi}(s) \sum_a \nabla_{\theta} \pi(a \mid s, \theta) q_{\pi}(s, a)
+\end{align*}
+Il primo termine nell'Eq 8.35 diventa trascurabile per $\gamma \to 1$, pertanto:
+\begin{equation}
+\nabla_{\theta} \bar{v}_{\pi} \approx \frac{1}{1 - \gamma} \sum_s d_{\pi}(s) \sum_a \nabla_{\theta} \pi(a \mid s, \theta) q_{\pi}(s, a)
+\end{equation}
+e grazie al Lemma 1 otteniamo anche:
+\begin{equation}
+\nabla_{\theta} \bar{r}_{\pi} = (1 - \gamma) \nabla_{\theta} \bar{v}_{\pi} \approx \sum_s d_{\pi}(s) \sum_a \nabla_{\theta} \pi(a \mid s, \theta) q_{\pi}(s, a)
+\end{equation}
+\end{proof}
+
+Possiamo utilizzare il trucco dei logaritmi (\emph{log-trick}) per esprimere l'espressione nel Teorema 12 come valori attesi:
+\begin{align*}
+\nabla_{\theta} \bar{v}_{\pi} &\approx \frac{1}{1 - \gamma} \sum_s d_{\pi}(s) \sum_a \nabla_{\theta} \pi(a \mid s, \theta) q_{\pi}(s, a) \\
+&\approx \frac{1}{1 - \gamma} \sum_s d_{\pi}(s) \sum_a \pi(a \mid s, \theta) \frac{\nabla_{\theta} \pi(a \mid s, \theta)}{\pi(a \mid s, \theta)} q_{\pi}(s, a) \\
+&\approx \frac{1}{1 - \gamma} \mathbb{E} [\nabla_{\theta} \log \pi(A \mid S, \theta) q_{\pi}(S, A)]
+\end{align*}
+e, similmente,
+\begin{equation}
+\nabla_{\theta} \bar{r}_{\pi} \approx \mathbb{E} [\nabla_{\theta} \log \pi(A \mid S, \theta) q_{\pi}(S, A)]
+\end{equation}
+dove $S \sim d_{\pi}(s)$ e $A \sim \pi(a \mid s, \theta)$. Si noti che le espressioni sono le stesse di $\nabla_{\theta} v_{\pi}(s)$ fornite nel Teorema 11. Tuttavia, come menzionato in precedenza, la distribuzione degli stati è diversa. Qui usiamo $d_{\pi}(s)$ (cioÃƒÂ¨ la distribuzione stazionaria degli stati), mentre per $\nabla_{\theta} v_{\pi}(s)$ campioniamo da $\rho_{\pi}(s)$.
+
+\subsubsection{Considerazioni Sul Teorema Del Gradiente Della Politica}
+\begin{itemize}
+    \item Esprimere il gradiente con il valore atteso è piÃƒÂ¹ conveniente poichÃƒÂ© l'aspettativa puÃƒÂ² essere approssimata con campioni grazie alla teoria della SGD. In pratica, campioniamo uno stato per eseguire la SGD e ci chiediamo se prendere l'aspettativa rispetto a questo campione sia uguale o approssimi il risultato del teorema del gradiente della politica, che garantisce la proporzionalitÃƒÂ  al gradiente. In questo caso, prendere l'aspettativa rispetto alla distribuzione degli stati equivale a sommare sulla distribuzione dello stato stazionario ottenuta seguendo $\pi$ e, pertanto, l'uguaglianza è dimostrata.
+    \item $\pi(a \mid s, \theta)$ deve essere positiva per tutti i $s, a$ poichÃƒÂ© è una probabilitÃƒÂ  (e per garantire che $\log \pi(a \mid s, \theta)$ sia valida). Questo puÃƒÂ² essere ottenuto con funzioni softmax.
+    \item PoichÃƒÂ© $\pi(a \mid s, \theta) > 0 \ \forall a$, la politica parametrizzata è stocastica e quindi esplorativa.
+\end{itemize}
+
+\begin{center}
+\fbox{
+\begin{minipage}{0.95\textwidth}
+In generale, con la SGD, sotto l'ipotesi di campioni i.i.d., abbiamo:
+\begin{align*}
+\mathbb{E}_{n \sim \mathcal{D}} [\nabla L_n(\theta)] \\
+\nabla \mathbb{E}_{n \sim \mathcal{D}} [L_n(\theta)] \\
+\nabla \sum_{i=0}^N [P(n=i) L_i(\theta)] \\
+\nabla \frac{1}{N} \sum_{i=0}^N [L_i(\theta)] \\
+\nabla L(\theta)
+\end{align*}
+dove abbiamo definito la loss come $L(\theta) = \frac{1}{N} \sum_{n=0}^N L_n(\theta)$ e $\mathcal{D}$ è il dataset.
+\end{minipage}
+}
+\end{center}
+
+\subsection{*Gradienti Nel Caso Non Scontato {\normalfont\small(Materiale aggiuntivo - non considerato per l'esame finale)}}
+Nel caso non scontato, cioÃƒÂ¨ $\gamma = 1$, il ritorno puÃƒÂ² essere illimitato. Pertanto, le funzioni di valore di stato e di azione devono essere definite diversamente. Una possibilitÃƒÂ  è sottrarre a ciascun \emph{reward} il \emph{reward} medio associato alla politica:
+\begin{align*}
+v_{\pi}(s) &= \mathbb{E} [(R_{t+1} - \bar{r}_{\pi}) + (R_{t+2} - \bar{r}_{\pi}) + \dots \mid S_t = s]   \\
+q_{\pi}(s, a) &= \mathbb{E} [(R_{t+1} - \bar{r}_{\pi}) + (R_{t+2} - \bar{r}_{\pi}) + \dots \mid S_t = s, A_t = a]
+\end{align*}
+Soddisfano ancora l'equazione di Bellman, che viene leggermente modificata come segue:
+\begin{equation}
+v_{\pi}(s) = \sum_a \pi(a \mid s, \theta) \left[ \sum_r p(r \mid s, a)(r - \bar{r}_{\pi}) + \sum_{s'} p(s' \mid s, a) v_{\pi}(s') \right]
+\end{equation}
+e, poichÃƒÂ© $v_{\pi}(s) = \sum_a \pi(a \mid s, \theta) q_{\pi}(s, a)$, allora:
+\begin{align*}
+q_{\pi}(s, a) &= \sum_r p(r \mid s, a)(r - \bar{r}_{\pi}) + \sum_{s'} p(s' \mid s, a) v_{\pi}(s') \\
+&= r(s, a) - \bar{r}_{\pi} + \sum_{s'} p(s' \mid s, a) v_{\pi}(s')
+\end{align*}
+
+\subsubsection{Equazione Di Poisson}
+L'equazione di Bellman per $v_{\pi}(s)$ puÃƒÂ² anche essere espressa in forma matriciale-vettoriale:
+\begin{equation}
+\bm{v}_{\pi} = \bm{r}_{\pi} - \bar{r}_{\pi} \bm{1}_{|\mathcal{S}|} + \bm{P}_{\pi} \bm{v}_{\pi}
+\end{equation}
+dove $r(s)_{\pi} = \sum_r r p(r \mid s) = \sum_a \pi(a \mid s) \sum_r r p(r \mid s, a)$. Questa equazione viene anche chiamata Equazione di Poisson e la sua soluzione è fornita dal seguente teorema:
+
+\begin{theorem}
+\textbf{Solution for the Poisson Equation.} Let
+\begin{equation}
+\bm{v}_{\pi}^* = (\bm{I}_{|\mathcal{S}|} - \bm{P}_{\pi} + \bm{1}_{|\mathcal{S}|} \bm{d}_{\pi}^T)^{-1} \bm{r}_{\pi}
+\end{equation}
+Allora $\bm{v}_{\pi}^*$ è una soluzione dell'equazione di Poisson e qualsiasi soluzione ha la forma di:
+\begin{equation}
+\bm{v}_{\pi} = \bm{v}_{\pi}^* + c_{\pi} \bm{1}
+\end{equation}
+dove $c_{\pi}$ è una costante che dipende da $\pi$.
+\end{theorem}
+
+\begin{proof}
+La soluzione di $\bm{v}_{\pi}$ non è unica. Se sostituiamo $\bar{r}_{\pi} = \bm{d}_{\pi}^T \bm{r}_{\pi}$ nell'Eq. (8.48) otteniamo:
+\begin{equation}
+\bm{v}_{\pi} = \bm{r}_{\pi} - \bm{1}_{|\mathcal{S}|} \bm{d}_{\pi}^T \bm{r}_{\pi} + \bm{P}_{\pi} \bm{v}_{\pi}
+\end{equation}
+quindi,
+\begin{equation}
+(\bm{I}_{|\mathcal{S}|} - \bm{P}_{\pi}) \bm{v}_{\pi} = (\bm{I}_{|\mathcal{S}|} - \bm{1}_{|\mathcal{S}|} \bm{d}_{\pi}^T) \bm{r}_{\pi}
+\end{equation}
+Chiaramente, $(\bm{I}_{|\mathcal{S}|} - \bm{P}_{\pi})$ è singolare poichÃƒÂ© $(\bm{I}_{|\mathcal{S}|} - \bm{P}_{\pi}) \bm{1}_{|\mathcal{S}|} = 0$ per qualsiasi $\pi$. Pertanto, la soluzione della Eq. (8.52) non è unica. Di conseguenza, se $\bm{v}_{\pi}^*$ è una soluzione, allora anche $\bm{v}_{\pi}^* + \bm{x}$ è una soluzione, dove $\bm{x} \in \text{Null}(\bm{I}_{|\mathcal{S}|} - \bm{P}_{\pi})$. Quando $\bm{P}_{\pi}$ è irriducibile, allora $\text{Null}(\bm{I}_{|\mathcal{S}|} - \bm{P}_{\pi}) = \text{Span}\{\bm{1}_{|\mathcal{S}|}\}$, quindi qualsiasi soluzione ha la forma di:
+\begin{equation}
+\bm{v}_{\pi} = \bm{v}_{\pi}^* + c_{\pi} \bm{1}
+\end{equation}
+
+Come trovare una soluzione specifica? Mostriamo che $\bm{v}_{\pi}^*$ è una soluzione dell'Eq. (8.51). Sia:
+\begin{equation}
+\bm{A} = \bm{I}_{|\mathcal{S}|} - \bm{P}_{\pi} + \bm{1}_{|\mathcal{S}|} \bm{d}_{\pi}^T
+\end{equation}
+Allora, $\bm{v}_{\pi}^* = \bm{A}^{-1} \bm{r}_{\pi}$. Se sostituiamo questo nell'Eq. (8.51) otteniamo:
+\begin{equation}
+\bm{A}^{-1} \bm{r}_{\pi} = \bm{r}_{\pi} - \bm{1}_{|\mathcal{S}|} \bm{d}_{\pi}^T \bm{r}_{\pi} + \bm{P}_{\pi} \bm{A}^{-1} \bm{r}_{\pi}
+\end{equation}
+Riorganizzando, otteniamo:
+\begin{equation}
+(-\bm{A}^{-1} + \bm{I}_{|\mathcal{S}|} - \bm{1}_{|\mathcal{S}|} \bm{d}_{\pi}^T + \bm{P}_{\pi} \bm{A}^{-1}) \bm{r}_{\pi} = 0
+\end{equation}
+Moltiplicando l'equazione precedente per $\bm{A} \bm{A}^{-1}$ otteniamo:
+\begin{equation}
+(-\bm{I}_{|\mathcal{S}|} + \bm{A} - \bm{1}_{|\mathcal{S}|} \bm{d}_{\pi}^T \bm{A} + \bm{P}_{\pi}) \bm{A}^{-1} \bm{r}_{\pi} = 0
+\end{equation}
+Il termine tra parentesi è zero perchÃƒÂ©:
+\begin{align*}
+-\bm{I}_{|\mathcal{S}|} + \bm{A} - \bm{1}_{|\mathcal{S}|} \bm{d}_{\pi}^T \bm{A} + \bm{P}_{\pi} &= -\bm{I}_{|\mathcal{S}|} + (\bm{I}_{|\mathcal{S}|} - \bm{P}_{\pi} + \bm{1}_{|\mathcal{S}|} \bm{d}_{\pi}^T) - \bm{1}_{|\mathcal{S}|} \bm{d}_{\pi}^T \bm{A} + \bm{P}_{\pi} \\
+&= 0
+\end{align*}
+Pertanto, $\bm{v}_{\pi}^*$ è una soluzione.
+
+\textbf{N.B.} $\bm{A}$ deve essere invertibile affinchÃƒÂ© il calcolo precedente sia valido. Esiste un risultato che lo garantisce.
+\end{proof}
+
+\subsubsection{Gradienti Per La Metrica Del Reward Medio}
+Nonostante non vi sia una soluzione unica per $\bm{v}_{\pi}$, il valore di $\bar{r}_{\pi}$ è invece unico, infatti dall'equazione di Poisson $\bm{v}_{\pi} = \bm{r}_{\pi} - \bar{r}_{\pi} \bm{1}_{|\mathcal{S}|} + \bm{P}_{\pi} \bm{v}_{\pi}$ segue:
+\begin{align*}
+\bar{r}_{\pi} \bm{1}_{|\mathcal{S}|} &= \bm{r}_{\pi} + (\bm{P}_{\pi} - \bm{I}_{|\mathcal{S}|}) \bm{v}_{\pi} \\
+&= \bm{r}_{\pi} + (\bm{P}_{\pi} - \bm{I}_{|\mathcal{S}|}) (\bm{v}_{\pi}^* + c \bm{1}_{|\mathcal{S}|}) \\
+&= \bm{r}_{\pi} + (\bm{P}_{\pi} - \bm{I}_{|\mathcal{S}|}) \bm{v}_{\pi}^*
+\end{align*}
+ossia, il valore indeterminato $c$ è scomparso e possiamo calcolare il gradiente di $\bar{r}_{\pi}$ nel caso non scontato.
+
+\begin{center}
+\fbox{
+\begin{minipage}{0.95\textwidth}
+Qui non calcoliamo il gradiente per $\bar{v}_{\pi}$, ma è possibile ottenerlo aggiungendo vincoli per ottenere una soluzione unica.
+\end{minipage}
+}
+\end{center}
+
+\begin{theorem}
+\textbf{Gradient of $\bar{r}_{\pi}$ in the undiscounted case.} Il gradiente del \emph{reward} medio $\bar{r}_{\pi}$ nel caso non scontato è:
+\begin{align*}
+\nabla_{\theta} \bar{r}_{\pi} &= \sum_s d_{\pi}(s) \sum_a \nabla_{\theta} \pi(a \mid s, \theta) q_{\pi}(s, a) \\
+&= \mathbb{E} [\nabla_{\theta} \log \pi(A \mid S, \theta) q_{\pi}(S, A)]
+\end{align*}
+dove $S \sim d_{\pi}$ e $A \sim \pi(S, A)$. Si noti che, nel caso non scontato, abbiamo una relazione di uguaglianza e non un'approssimazione.
+\end{theorem}
+
+\begin{proof}
+In primo luogo, dalla relazione tra $v_{\pi}(s)$ e $q_{\pi}(s, a)$ abbiamo:
+\begin{align*}
+\nabla_{\theta} v_{\pi}(s) &= \nabla_{\theta} \left[ \sum_{a \in \mathcal{A}} \pi(a \mid s, \theta) q_{\pi}(s, a) \right] \\
+&= \sum_{a \in \mathcal{A}} [\nabla_{\theta} \pi(a \mid s, \theta) q_{\pi}(s, a) + \pi(a \mid s, \theta) \nabla_{\theta} q_{\pi}(s, a)]
+\end{align*}
+PoichÃƒÂ©, nel caso non scontato, $q_{\pi}(s, a)$ soddisfa l'Eq. (8.47) e poichÃƒÂ© $r(s, a)$ è indipendente da $\theta$, abbiamo:
+\begin{equation}
+\nabla_{\theta} q_{\pi}(s, a) = 0 - \nabla_{\theta} \bar{r}_{\pi} + \sum_{s'} p(s' \mid s, a) \nabla_{\theta} v_{\pi}(s')
+\end{equation}
+Sostituendo questo nuovamente nella (8.61) otteniamo:
+\begin{align*}
+\nabla_{\theta} v_{\pi}(s) &= \sum_{a \in \mathcal{A}} \left[ \nabla_{\theta} \pi(a \mid s, \theta) q_{\pi}(s, a) + \pi(a \mid s, \theta) \left( -\nabla_{\theta} \bar{r}_{\pi} + \sum_{s'} p(s' \mid s, a) \nabla_{\theta} v_{\pi}(s') \right) \right] \\
+&= \sum_{a \in \mathcal{A}} \nabla_{\theta} \pi(a \mid s, \theta) q_{\pi}(s, a) - \nabla_{\theta} \bar{r}_{\pi} + \sum_{a \in \mathcal{A}} \pi(a \mid s, \theta) \sum_{s'} p(s' \mid s, a) \nabla_{\theta} v_{\pi}(s')
+\end{align*}
+Impostando $u(s) = \sum_{a \in \mathcal{A}} \nabla_{\theta} \pi(a \mid s, \theta) q_{\pi}(s, a)$ e notando che $\sum_{a \in \mathcal{A}} \pi(a \mid s, \theta) \sum_{s'} p(s' \mid s, a) \nabla_{\theta} v_{\pi}(s') = \sum_{s'} p(s' \mid s) \nabla_{\theta} v_{\pi}(s')$ possiamo riscrivere l'equazione in forma matriciale-vettoriale:
+
+\begin{align*}
+\begin{bmatrix}
+\vdots \\
+\nabla_{\theta} v_{\pi}(s) \\
+\vdots
+\end{bmatrix}
+&=
+\begin{bmatrix}
+\vdots \\
+u(s) \\
+\vdots
+\end{bmatrix}
+- \bm{1}_{|\mathcal{S}|} \otimes \nabla_{\theta} \bar{r}_{\pi} + (\bm{P}_{\pi} \otimes \bm{I}_m)
+\begin{bmatrix}
+\vdots \\
+\nabla_{\theta} v_{\pi}(s') \\
+\vdots
+\end{bmatrix} \\
+&=
+\begin{bmatrix}
+\sum_a \frac{\partial \pi(a \mid s_0, \theta)}{\partial \theta_0} q_{\pi}(s, a) \\
+\sum_a \frac{\partial \pi(a \mid s_0, \theta)}{\partial \theta_1} q_{\pi}(s, a) \\
+\vdots \\
+\sum_a \frac{\partial \pi(a \mid s_0, \theta)}{\partial \theta_{m-1}} q_{\pi}(s, a) \\
+\vdots \\
+\sum_a \frac{\partial \pi(a \mid s_{|\mathcal{S}|}, \theta)}{\partial \theta_{m-1}} q_{\pi}(s, a)
+\end{bmatrix}
+-
+\begin{bmatrix}
+1 \\
+1 \\
+\vdots \\
+1
+\end{bmatrix}
+\otimes
+\begin{bmatrix}
+\frac{\partial \bar{r}_{\pi}}{\partial \theta_0} \\
+\frac{\partial \bar{r}_{\pi}}{\partial \theta_1} \\
+\vdots \\
+\frac{\partial \bar{r}_{\pi}}{\partial \theta_m}
+\end{bmatrix}
++
+\begin{bmatrix}
+p_{s_0, s_0} & \dots & p_{s_0, s_{|\mathcal{S}|}} \\
+p_{s_1, s_0} & \dots & p_{s_1, s_{|\mathcal{S}|}} \\
+& \vdots & \\
+p_{s_{|\mathcal{S}|}, s_0} & \dots & p_{s_{|\mathcal{S}|}, s_{|\mathcal{S}|}}
+\end{bmatrix}
+\otimes
+\begin{bmatrix}
+1, 0, \dots, 0 \\
+0, 1, \dots, 0 \\
+\vdots \\
+0, 0, \dots, 1
+\end{bmatrix}
+\begin{bmatrix}
+\vdots \\
+\nabla_{\theta} v_{\pi}(s') \\
+\vdots
+\end{bmatrix} \\
+&=
+\begin{bmatrix}
+\sum_a \frac{\partial \pi(a \mid s_0, \theta)}{\partial \theta_0} q_{\pi}(s, a) \\
+\sum_a \frac{\partial \pi(a \mid s_0, \theta)}{\partial \theta_1} q_{\pi}(s, a) \\
+\vdots \\
+\sum_a \frac{\partial \pi(a \mid s_0, \theta)}{\partial \theta_{m-1}} q_{\pi}(s, a) \\
+\vdots \\
+\sum_a \frac{\partial \pi(a \mid s_{|\mathcal{S}|}, \theta)}{\partial \theta_{m-1}} q_{\pi}(s, a)
+\end{bmatrix}
+-
+\begin{bmatrix}
+\frac{\partial \bar{r}_{\pi}}{\partial \theta_0} \\
+\frac{\partial \bar{r}_{\pi}}{\partial \theta_1} \\
+\vdots \\
+\frac{\partial \bar{r}_{\pi}}{\partial \theta_m} \\
+\vdots \\
+\frac{\partial \bar{r}_{\pi}}{\partial \theta_m}
+\end{bmatrix}
++
+\begin{bmatrix}
+p_{s_0, s_0}, 0, \dots, p_{s_0, s_1}, 0, \dots, p_{s_0, s_{|\mathcal{S}|}}, 0, \dots \\
+0, p_{s_0, s_0}, \dots, 0, p_{s_0, s_1}, \dots, 0, p_{s_0, s_{|\mathcal{S}|}}, \dots \\
+\vdots \\
+p_{s_1, s_0}, 0, \dots, p_{s_1, s_1}, 0, \dots, p_{s_1, s_{|\mathcal{S}|}}, 0, \dots \\
+\vdots
+\end{bmatrix}
+\begin{bmatrix}
+\vdots \\
+\nabla_{\theta} v_{\pi}(s') \\
+\vdots
+\end{bmatrix}
+\end{align*}
+
+che puÃƒÂ² essere scritta in modo conciso come:
+\begin{align*}
+\nabla_{\theta} \bm{v}_{\pi} &= \bm{u} - \bm{1}_{|\mathcal{S}|} \otimes \nabla_{\theta} \bar{r}_{\theta} + (\bm{P}_{\pi} \otimes \bm{I}_m) \nabla_{\theta} \bm{v}_{\pi} \\
+\bm{1}_{|\mathcal{S}|} \otimes \nabla_{\theta} \bar{r}_{\theta} &= \bm{u} + (\bm{P}_{\pi} \otimes \bm{I}_m) \nabla_{\theta} \bm{v}_{\pi} - \nabla_{\theta} \bm{v}_{\pi}
+\end{align*}
+Moltiplicando per $\bm{d}_{\pi}^T \otimes \bm{I}_m$ otteniamo:
+\begin{equation}
+\bm{d}_{\pi}^T \bm{1}_{|\mathcal{S}|} \otimes \nabla_{\theta} \bar{r}_{\pi} = \bm{d}_{\pi}^T \otimes \bm{I}_m \bm{u} + (\bm{d}_{\pi}^T \bm{P}_{\pi}) \otimes \bm{I}_m \nabla_{\theta} \bm{v}_{\pi} - \bm{d}_{\pi}^T \otimes \bm{I}_m \nabla_{\theta} \bm{v}_{\pi} = \bm{d}_{\pi}^T \otimes \bm{I}_m \bm{u}
+\end{equation}
+Quindi,
+\begin{align*}
+\nabla_{\theta} \bar{r}_{\pi} &= \bm{d}_{\pi}^T \otimes \bm{I}_m \bm{u} \\
+&= \sum_{s \in \mathcal{S}} d_{\pi}(s) u(s) \\
+&= \sum_{s \in \mathcal{S}} d_{\pi}(s) \sum_{a \in \mathcal{A}} \nabla_{\theta} \pi(a \mid s, \theta) q_{\pi}(s, a)
+\end{align*}
+\end{proof}
+
+%% AA 82 - 89
+\chapter{REINFORCE}
+
+Grazie al Teorema del \emph{Policy Gradient}, introduciamo il primo algoritmo per ottimizzare la \emph{policy}. Ricordando l'algoritmo di ascesa del gradiente per massimizzare $J(\theta)$:
+\begin{align}
+\theta_{t+1} &= \theta_t + \alpha\nabla_\theta J(\theta_t) \label{eq:9.1} \\
+&= \theta_t + \alpha \mathbb{E} \left[ \ln \pi(A|S; \theta_t)q_\pi(S, A) \right] \label{eq:9.2}
+\end{align}
+dove $\alpha > 0$ è un \emph{learning rate} costante. Poiché il vero gradiente in (9.31) è sconosciuto, lo sostituiamo con un gradiente stocastico:
+\begin{equation}
+\theta_{t+1} = \theta_t + \alpha\nabla_\theta \ln \pi(a_t | s_t; \theta_t) q_t(s_t, a_t) \label{eq:9.3}
+\end{equation}
+dove $q_t(s_t, a_t)$ è un'approssimazione di $q_\pi(s_t, a_t)$. Se $q_t(s_t, a_t)$ viene ottenuto tramite stima Monte Carlo, ossia sommando i \emph{reward} ottenuti lungo un episodio, l'algoritmo viene chiamato \textbf{REINFORCE} o \textbf{Monte Carlo policy gradient}.
+
+La forma generale in \eqref{eq:9.3} può essere utilizzata per ottenere molti altri algoritmi di \emph{policy gradient} estendendola. Esaminiamo tale espressione più nel dettaglio. Poiché:
+\begin{equation}
+\nabla \ln \pi(a_t | s_t; \theta_t) = \frac{\nabla_\theta \pi(a_t | s_t; \theta_t)}{\pi(a_t | s_t; \theta_t)} \label{eq:9.4}
+\end{equation}
+possiamo sostituire questa relazione in \eqref{eq:9.3}:
+\begin{equation}
+\theta_{t+1} = \theta_t + \alpha \frac{q_t(s_t, a_t)}{\pi(a_t | s_t; \theta_t)} \nabla_\theta \pi(a_t | s_t; \theta_t) \label{eq:9.5}
+\end{equation}
+e, introducendo $\beta_t = \frac{q_t(s_t, a_t)}{\pi(a_t | s_t; \theta_t)}$, otteniamo:
+\begin{equation}
+\theta_{t+1} = \theta_t + \alpha\beta_t \nabla_\theta \pi(a_t | s_t; \theta_t) \label{eq:9.6}
+\end{equation}
+
+Da questa espressione notiamo due aspetti importanti:
+
+Il primo riguarda come il segno di $\beta_t$ sia legato alla probabilità di selezionare la coppia $(s_t, a_t)$:
+\begin{itemize}[noitemsep]
+    \item Se $\beta_t \ge 0$, la probabilità di scegliere $(s_t, a_t)$ aumenta, ossia $\pi(a_t | s_t; \theta_{t+1}) \ge \pi(a_t | s_t; \theta_t)$.
+    \item Se $\beta_t < 0$, la probabilità di scegliere $(s_t, a_t)$ diminuisce, ossia $\pi(a_t | s_t; \theta_{t+1}) < \pi(a_t | s_t; \theta_t)$.
+\end{itemize}
+
+Possiamo dimostrare le considerazioni di cui sopra come segue: quando $\theta_{t+1} - \theta_t$ è sufficientemente piccolo, possiamo eseguire uno sviluppo di Taylor di $\pi(a_t | s_t; \theta_{t+1})$ come segue:
+\begin{align}
+\pi(a_t | s_t; \theta_{t+1}) &\approx \pi(a_t | s_t; \theta_t) + \left(\nabla_\theta \pi(a_t | s_t; \theta_t)\right)^T (\theta_{t+1} - \theta_t) \label{eq:9.7} \\
+&= \pi(a_t | s_t; \theta_t) + \alpha\beta_t \left(\nabla_\theta \pi(a_t | s_t; \theta_t)\right)^T \left(\nabla_\theta \pi(a_t | s_t; \theta_t)\right) \label{eq:9.8} \\
+&= \pi(a_t | s_t; \theta_t) + \alpha\beta_t \|\nabla_\theta \pi(a_t | s_t; \theta_t)\|_2^2 \label{eq:9.9}
+\end{align}
+
+Di conseguenza, è chiaro che quando $\beta_t \ge 0$ allora $\pi(a_t | s_t; \theta_{t+1}) \ge \pi(a_t | s_t; \theta_t)$ e, viceversa, quando $\beta_t < 0$ allora $\pi(a_t | s_t; \theta_{t+1}) < \pi(a_t | s_t; \theta_t)$.
+
+La seconda considerazione riguarda il compromesso tra esplorazione e sfruttamento (\emph{exploration vs exploitation trade-off}). Infatti, l'espressione $\beta_t = \frac{q_t(s_t, a_t)}{\pi(a_t | s_t; \theta_t)}$ può essere interpretata anche nel modo seguente: da un lato, $\beta_t$ è proporzionale a $q_t(s_t, a_t)$. Pertanto, se $q_t(s_t, a_t)$ è grande, allora $\pi(a_t | s_t; \theta_t)$ viene incrementata in modo che la probabilità di selezionare $a_t$ aumenti. Di conseguenza, l'algoritmo tenta di sfruttare (\emph{exploit}) le azioni con valori più elevati.
+
+Dall'altro lato, $\beta_t$ è inversamente proporzionale a $\pi(a_t | s_t; \theta_t)$ quando $q_t(s_t, a_t) > 0$. Come risultato, se la probabilità di selezionare $a_t$ è piccola, allora $\pi(a_t | s_t; \theta_t)$ viene aumentata in modo che la probabilità di selezionare $a_t$ cresca. Pertanto, l'algoritmo tenta di esplorare (\emph{explore}) azioni con basse probabilità.
+
+Come possiamo campionare $S$ e $A$? Lo stato può essere campionato secondo la distribuzione stazionaria $d_\pi$ o la distribuzione di probabilità totale scontata $\rho_\pi$. Al contrario, $A$ può essere campionata secondo la distribuzione $\pi(A|S, \theta)$ e, di conseguenza, è \emph{on-policy}.
+
+Tuttavia, il modo ideale di campionare stati e azioni ha una bassa efficienza di campionamento (\emph{sample efficiency}). Infatti, dovremmo campionare una coppia stato-azione, eseguire l'intero episodio per calcolare il ritorno e aggiornare la coppia stato-azione iniziale. Un'alternativa più efficiente consiste nel campionare uno stato iniziale, generare un episodio e aggiornare tutte le coppie stato-azione incontrate durante l'episodio iterando su di esso (si veda l'Algoritmo 12). In questo modo, tuttavia, l'approccio esegue gli aggiornamenti in modalità \emph{off-policy}, poiché aggiorniamo i parametri della policy a ogni passo temporale $\theta_t, \theta_{t+1}, \dots$ utilizzando i campioni ottenuti con la policy $\pi(A|S, \theta_t)$ invece di utilizzare campioni provenienti da $\pi(A|S, \theta_t), \pi(A|S, \theta_{t+1}), \dots$. Ciononostante, l'approccio è spesso considerato \emph{on-policy} nella sua forma ideale, mentre l'implementazione \emph{off-policy} viene utilizzata per motivi di efficienza di campionamento.
+
+\newpage
+
+\begin{algorithm}[H]
+\caption{REINFORCE}
+\label{alg:reinforce}
+\Inizializza{Parametro iniziale $\theta$, $\alpha > 0$, $\gamma \in (0, 1)$}\;
+\Commento{Obiettivo: Apprendere una policy ottima per massimizzare $J(\theta)$}\;
+\Per{ogni episodio}{
+    Genera un episodio $\{s_0, a_0, r_1, \dots, s_T, a_T, r_{T+1}\}$ seguendo $\pi(\theta)$\;
+    \Per{$t = 0$ a $T - 1$}{
+        Aggiornamento del valore: $q_t(s_t, a_t) = \sum_{k=t+1}^{T} \gamma^{k-t-1} r_k$\;
+        Aggiornamento della policy: $\theta \leftarrow \theta + \alpha \nabla_\theta \ln \pi(a_t|s_t; \theta) q_t(s_t, a_t)$\;
+    }
+}
+\end{algorithm}
+
+\section{*Implementazione (Materiale Aggiuntivo - Non Considerato Per L'Esame Finale)}
+
+Implementiamo REINFORCE in Python utilizzando la libreria OpenAI Gym e PyTorch. Di seguito ci concentreremo sulla parte più importante del codice.
+
+\subsection{Il Modello Per Approssimare La Funzione \texorpdfstring{$\pi(a_t|s_t)$}{pi(at|st)}}
+
+Implementiamo una semplice rete neurale a tre strati che stima la media e la deviazione standard della gaussiana che verrà utilizzata per campionare l'azione. Si noti che questo è necessario poiché stiamo considerando problemi con uno spazio delle azioni continuo.
+
+\begin{verbatim}
+class Policy_Network(nn.Module):
+    def __init__(self, obs_space_dims: int, action_space_dims: int):
+        super().__init__()
+        hidden_space1 = 16
+        hidden_space2 = 32
+
+        self.shared_net = nn.Sequential(
+            nn.Linear(obs_space_dims, hidden_space1),
+            nn.Tanh(),
+            nn.Linear(hidden_space1, hidden_space2),
+            nn.Tanh(),
+        )
+
+        self.policy_mean_net = nn.Sequential(
+            nn.Linear(hidden_space2, action_space_dims)
+        )
+
+        self.policy_stddev_net = nn.Sequential(
+            nn.Linear(hidden_space2, action_space_dims)
+        )
+
+    def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+        shared_features = self.shared_net(x.float())
+
+        action_means = self.policy_mean_net(shared_features)
+        action_stddevs = torch.log(
+            1 + torch.exp(self.policy_stddev_net(shared_features))
+        )
+
+        return action_means, action_stddevs
+\end{verbatim}
+
+\subsection{Behavior Policy}
+
+REINFORCE è considerato un approccio \emph{on-policy}, sebbene la sua implementazione pratica segua una strategia \emph{off-policy}. Poiché stiamo considerando problemi di controllo continuo, dobbiamo campionare le azioni da una distribuzione di probabilità. In questo caso, consideriamo una distribuzione gaussiana la cui media e deviazione standard sono stimate dalla rete della policy.
+
+\begin{verbatim}
+def sample_action(self, state: np.ndarray) -> float:
+    state = torch.tensor(np.array([state]))
+    action_means, action_stddevs = self.net(state)
+
+    distrib = Normal(action_means[0] + self.eps, action_stddevs[0] + self.eps)
+    action = distrib.sample()
+    prob = distrib.log_prob(action)
+
+    action = action.numpy()
+
+    self.probs.append(prob)
+
+    return action
+\end{verbatim}
+
+Si noti che salviamo anche la log-probabilità associata all'azione campionata per calcolare il passo di aggiornamento nell'algoritmo REINFORCE (si veda sotto).
+
+\subsection{Ottimizzazione}
+
+Di seguito forniamo lo pseudocodice per la procedura di ottimizzazione di REINFORCE.
+
+\begin{verbatim}
+for episode in range(total_num_episodes):
+    obs, info = wrapped_env.reset()
+    done = False
+    while not done:
+        action = agent.sample_action(obs)
+
+        obs, reward, terminated, truncated, info = wrapped_env.step(action)
+        agent.rewards.append(reward)
+
+        done = terminated or truncated
+
+    reward_over_episodes.append(wrapped_env.return_queue[-1])
+    agent.update()
+\end{verbatim}
+
+Durante un episodio, memorizziamo semplicemente il \emph{reward} osservato. Solo una volta terminato l'episodio chiamiamo la funzione di aggiornamento (REINFORCE è un approccio Monte Carlo, pertanto dobbiamo attendere fino alla fine dell'episodio). Il passo di aggiornamento è dettagliato di seguito:
+
+\begin{verbatim}
+def update(self):
+    running_g = 0
+    gs = []
+
+    for R in self.rewards[::-1]:
+        running_g = R + self.gamma * running_g
+        gs.insert(0, running_g)
+
+    deltas = torch.tensor(gs)
+
+    loss = 0
+    for log_prob, delta in zip(self.probs, deltas):
+        loss += log_prob.mean() * delta * (-1)
+
+    self.optimizer.zero_grad()
+    loss.backward()
+    self.optimizer.step()
+
+    self.probs = []
+    self.rewards = []
+\end{verbatim}
+
+In primo luogo, l'algoritmo itera all'indietro sulla lista dei \emph{reward} e accumula in una variabile il ritorno (moltiplicandolo per il fattore di sconto). Successivamente, la \emph{loss} viene costruita moltiplicando la log-probabilità di un'azione per il ritorno accumulato (fino allo stato in cui quella determinata azione è stata selezionata). Il $-1$ è necessario poiché minimizziamo la \emph{loss} (il \emph{policy gradient} è invece definito per massimizzare la funzione obiettivo).
+
+\newpage
+
+\chapter{Metodi Actor-Critic}
+
+Il termine \emph{actor-critic} si riferisce a un insieme di approcci che incorporano sia il paradigma basato sulla \emph{policy} sia quello basato sul valore. L'\emph{actor} è l'entità che calcola la \emph{policy}, mentre il \emph{critic} è l'entità che stima il valore dell'azione intrapresa dall'\emph{actor}. Da un'altra prospettiva, le strategie \emph{actor-critic} sono comunque algoritmi di \emph{policy gradient}.
+
+Se ricordiamo l'algoritmo di ascesa del gradiente per massimizzare l'obiettivo generale $J(\theta)$, abbiamo:
+\begin{align}
+\theta_{t+1} &= \theta_t + \alpha\nabla_\theta J(\theta) \nonumber \\
+&= \theta_t + \alpha \mathbb{E}_{S \sim \eta} \left[ \sum_{A \in \mathcal{A}} q_\pi(S, A)\nabla\pi(A|S, \theta) \right] \nonumber \\
+&= \theta_t + \alpha \mathbb{E}_{S \sim \eta, A \sim \pi} \left[ \nabla_\theta \log \pi(A|S, \theta)q_\pi(S, A) \right] \label{eq:10.1}
+\end{align}
+dove $\eta$ è la distribuzione degli stati, ovvero la distribuzione di stato stazionario $d_\pi$ o la distribuzione di probabilità totale scontata $\rho_\pi$.
+
+Poiché il vero gradiente è sconosciuto (dovremmo calcolare la media su tutti gli stati e le azioni), lo approssimiamo con la sua versione stocastica utilizzando i campioni:
+\begin{equation}
+\theta_{t+1} = \theta_t + \alpha\nabla_\theta \log \pi(a_t | s_t, \theta)q_\pi(s_t, a_t) \label{eq:10.2}
+\end{equation}
+
+L'equazione \eqref{eq:10.2} mostra che l'algoritmo è basato sulla \emph{policy} poiché aggiorniamo i parametri della \emph{policy}. D'altra parte, esso è anche basato sul valore poiché dobbiamo stimare $q_\pi(s_t, a_t)$. Abbiamo due possibilità:
+\begin{itemize}[noitemsep]
+    \item Se $q_\pi(s_t, a_t)$ è stimato eseguendo un episodio e sommando tutti i \emph{reward}, ossia tramite l'apprendimento Monte Carlo, l'algoritmo corrispondente è chiamato \textbf{Monte Carlo Policy Gradient} o \textbf{REINFORCE} (che abbiamo descritto nel capitolo precedente).
+    \item Se invece $q_\pi(s_t, a_t)$ è stimato tramite l'apprendimento TD (\emph{TD learning}), ci riferiamo all'algoritmo come \textbf{actor-critic}.
+\end{itemize}
+
+Nei metodi \emph{actor-critic}, il \emph{critic} è esso stesso un approssimatore (ad esempio, una rete neurale), parametrizzato per stimare il valore di una determinata coppia stato-azione. I suoi parametri sono tuttavia diversi da quelli della rete della \emph{policy}. L'algoritmo è mostrato in Figura \ref{fig:actor_critic_pseudo}, in cui il \emph{critic} viene aggiornato utilizzando la strategia SARSA.
+
+\begin{figure}[H]
+    \centering
+    % [IMMAGINE DAL PDF ORIGINALE] Algoritmo 10.1: Il più semplice algoritmo actor-critic (QAC) — Pagina 8 del PDF
+    \caption{Pseudocodice dell'algoritmo actor-critic. Fonte dell'immagine da [2]}
+    \label{fig:actor_critic_pseudo}
+\end{figure}
+
+\end{document}

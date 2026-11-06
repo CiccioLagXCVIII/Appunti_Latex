@@ -1,0 +1,180 @@
+%!TEX program = xelatex
+% ==============================================================================
+% AA CONFIGURAZIONE DI BASE ED ENGINE
+% ==============================================================================
+% BB CLASSE DEL DOCUMENTO
+\documentclass[11pt, a4paper, landscape]{article}
+
+% ==============================================================================
+% AA LINGUA, FONT E TIPOGRAFIA
+% ==============================================================================
+% BB GESTIONE FONT XELATEX
+\usepackage{fontspec}
+\setmainfont{Latin Modern Roman}
+
+% BB LOCALIZZAZIONE LINGUISTICA
+\usepackage[italian]{babel}
+
+% BB TIPOGRAFIA E MICRO-ESTENSIONI
+\usepackage[protrusion=true]{microtype}
+\raggedbottom
+
+% ==============================================================================
+% AA LAYOUT DI PAGINA E SPAZIATURA PARAGRAFI
+% ==============================================================================
+% BB GEOMETRIA DEI MARGINI
+\usepackage[left=1.4cm, right=1.4cm, top=2.2cm, bottom=1.4cm]{geometry}
+
+% BB CONTROLLO SPAZIATURA TRA PARAGRAFI
+\usepackage[skip=3pt plus 1pt minus 1pt]{parskip}
+
+% ==============================================================================
+% AA MOTORE DEI COLORI E MACRO LOCALI
+% ==============================================================================
+% BB CARICAMENTO CORE XCOLOR IN SPAZIO GRAY PURO
+\usepackage[gray]{xcolor}
+% BB MACRO PER I SIGMA MONOCROMATICI ED ESTENSIONE RIGHE
+\newcommand{\sigone}{\boldsymbol{\sigma_1}}
+\newcommand{\sigtwo}{\boldsymbol{\sigma_2}}
+\newcommand{\sigthree}{\boldsymbol{\sigma_3}}
+\newcommand{\sigfour}{\boldsymbol{\sigma_4}}
+\newcommand{\sigfive}{\boldsymbol{\sigma_5}}
+\newcommand{\sigsix}{\boldsymbol{\sigma_6}}
+\newcommand{\sigseven}{\boldsymbol{\sigma_7}}
+\renewcommand{\arraystretch}{1.3}
+
+% ==============================================================================
+% AA MATEMATICA E SIMBOLI SCIENTIFICI
+% ==============================================================================
+% BB PACCHETTI MATEMATICI UNICODE
+\usepackage{mathtools}
+\usepackage[warnings-off={mathtools-overbracket,mathtools-colon}]{unicode-math}
+\setmathfont{Latin Modern Math}
+
+% BB METRICHE MATRICI E FORMULE DISPLAY
+\setlength{\arraycolsep}{10pt}
+\setlength{\abovedisplayskip}{3pt plus 1pt minus 1pt}
+\setlength{\belowdisplayskip}{3pt plus 1pt minus 1pt}
+\setlength{\abovedisplayshortskip}{0pt plus 1pt}
+\setlength{\belowdisplayshortskip}{2pt plus 1pt minus 1pt}
+\allowdisplaybreaks
+
+% ==============================================================================
+% AA GRAFICA ED ELEMENTI FLOTTANTI
+% ==============================================================================
+% BB MOTORE DI INCLUSIONE GRAFICA E GESTIONE RIGIDA
+\usepackage{graphicx}
+\usepackage{float}
+
+% ==============================================================================
+% AA TITOLI E STRUTTURA DEL DOCUMENTO (MONOCROMATICI NERI)
+% ==============================================================================
+% BB PACCHETTO TITLESEC
+\usepackage{titlesec}
+
+% BB FORMATTAZIONE TIPOGRAFICA (TITOLI NERI)
+\titleformat{\section}{\normalfont\Large\bfseries}{\thesection}{1em}{}
+\titleformat{name=\section,numberless}{\normalfont\Large\bfseries}{}{0pt}{}
+\titleformat{\subsection}{\normalfont\large\bfseries}{\thesubsection}{1em}{}
+\titleformat{name=\subsection,numberless}{\normalfont\large\bfseries}{}{0pt}{}
+\titleformat{\subsubsection}{\normalfont\normalsize\bfseries}{\thesubsubsection}{1em}{}
+\titleformat{name=\subsubsection,numberless}{\normalfont\normalsize\bfseries}{}{0pt}{}
+
+% BB SPAZIATURA VERTICALE DEI TITOLI
+\titlespacing*{\section}{0pt}{1.2ex plus 0.4ex minus 0.2ex}{0.6ex plus 0.2ex}
+\titlespacing*{\subsection}{0pt}{1ex plus 0.3ex minus 0.2ex}{0.5ex plus 0.2ex}
+\titlespacing*{\subsubsection}{0pt}{0.8ex plus 0.2ex minus 0.1ex}{0.4ex plus 0.1ex}
+
+% ==============================================================================
+% AA INTEGRAZIONE AMBIENTE MATLAB
+% ==============================================================================
+% BB CARICAMENTO PACCHETTO MATLAB
+\usepackage{matlab}
+
+% BB ATTIVAZIONE SEGNALIBRI E INDICE MATLAB
+\matlabmultipletitles
+\matlabhastoc
+
+% BB PERSONALIZZAZIONE BOX CODICE SORGENTE (Margini compatti per pagina orizzontale singola)
+\mdfdefinestyle{matlabcode}{%
+  topline=false,
+  bottomline=false,
+  rightline=false,
+  leftline=true,
+  linewidth=2.5pt,
+  linecolor=codeframe,
+  backgroundcolor=codebg,
+  innertopmargin=3pt,
+  innerbottommargin=3pt,
+  innerleftmargin=7pt,
+  innerrightmargin=6pt,
+  skipabove=2pt,
+  skipbelow=2pt
+}
+
+% ==============================================================================
+% AA IPERTESTO, SEGNALIBRI ED ELENCHI
+% ==============================================================================
+% BB CONFIGURAZIONE HYPERREF E METADATI PDF
+\hypersetup{
+    hidelinks,
+    pdfauthor={Francesco Lo Verde},
+    pdftitle={Cinematica Diretta Manipolatore Stanford - Configurazione Orizzontale}
+}
+
+% BB SEGNALIBRI AVANZATI
+\usepackage{bookmark}
+
+% BB FORMATTAZIONE ELENCHI PUNTATI E NUMERATI
+\usepackage{enumitem}
+\setlist{itemsep=3.5pt plus 1pt minus 1pt, topsep=4pt plus 1pt minus 1pt, partopsep=0pt, parsep=1pt}
+
+\begin{document}
+\subsection*{CINEMATICA DIRETTA MANIPOLATORE STANFORD}
+
+\begin{matlabcode}
+T06 = simplify(T03 * T36);
+
+fprintf('Matrice Di Trasformazione Omogenea ^{0}T_{6}:\n');
+
+disp(T06);
+\end{matlabcode}
+\begin{matlaboutput}
+Matrice Di Trasformazione Omogenea ^{0}T_{6}:
+\end{matlaboutput}
+
+\begin{matlabsymbolicoutput}
+\[
+\begin{pmatrix}
+    -s(q_1)\,\sigfour - c(q_1)c(q_2)\,\sigone - c(q_1)c(q_6)s(q_2)s(q_5) &
+    c(q_1)s(q_2)s(q_5)s(q_6) - c(q_1)c(q_2)\,\sigtwo - s(q_1)\,\sigthree &
+    \sigfive &
+    q_3\,c(q_1)s(q_2) - d_2\,s(q_1) + d_6\,\sigfive \\[8pt]
+
+    c(q_1)\,\sigfour - c(q_2)s(q_1)\,\sigone - c(q_6)s(q_1)s(q_2)s(q_5) &
+    c(q_1)\,\sigthree - c(q_2)s(q_1)\,\sigtwo + s(q_1)s(q_2)s(q_5)s(q_6) &
+    \sigsix &
+    d_2\,c(q_1) + q_3\,s(q_1)s(q_2) + d_6\,\sigsix \\[8pt]
+
+    s(q_2)\,\sigone - c(q_2)c(q_6)s(q_5) &
+    s(q_2)\,\sigtwo + c(q_2)s(q_5)s(q_6) &
+    \sigseven &
+    q_3\,c(q_2) + d_6\,\sigseven \\[8pt]
+
+    0 & 0 & 0 & 1
+\end{pmatrix}
+\]
+\end{matlabsymbolicoutput}
+
+\vspace{2pt}
+\textbf{Dove:}
+\[
+\begin{aligned}
+\sigone   &= s(q_4)s(q_6) - c(q_4)c(q_5)c(q_6) &\hspace{3cm} \sigfive   &= c(q_1)c(q_5)s(q_2) - s(q_1)s(q_4)s(q_5) + c(q_1)c(q_2)c(q_4)s(q_5) \\[4pt]
+\sigtwo   &= c(q_6)s(q_4) + c(q_4)c(q_5)s(q_6) &\hspace{3cm} \sigsix    &= c(q_5)s(q_1)s(q_2) + c(q_1)s(q_4)s(q_5) + c(q_2)c(q_4)s(q_1)s(q_5) \\[4pt]
+\sigthree &= c(q_4)c(q_6) - c(q_5)s(q_4)s(q_6) &\hspace{3cm} \sigseven  &= c(q_2)c(q_5) - c(q_4)s(q_2)s(q_5) \\[4pt]
+\sigfour  &= c(q_4)s(q_6) + c(q_5)c(q_6)s(q_4)
+\end{aligned}
+\]
+
+\end{document}

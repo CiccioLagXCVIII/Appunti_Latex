@@ -1,0 +1,893 @@
+﻿\documentclass[11pt, a4paper]{article}
+
+%---------------------------------------------------------
+% Lingua E Codifica
+%---------------------------------------------------------
+\usepackage[italian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+
+%---------------------------------------------------------
+% Layout Di Pagina E Tipografia
+%---------------------------------------------------------
+\usepackage[margin=2cm, top=1.5cm, bottom=1.5cm]{geometry}
+\usepackage{parskip}
+\usepackage{microtype}
+
+%---------------------------------------------------------
+% Gestione Dei Colori
+%---------------------------------------------------------
+\usepackage[table]{xcolor}
+\definecolor{darkgreen}{RGB}{0,100,0}
+
+%---------------------------------------------------------
+% Matematica E Simboli
+%---------------------------------------------------------
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{mathtools}
+\usepackage{siunitx}
+
+% BB OTTIMIZZAZIONE MATRICI LUNGHE PER LA STAMPA
+\setlength{\arraycolsep}{10pt}
+\usepackage{bm}
+\usepackage{arydshln}
+
+
+%---------------------------------------------------------
+% Grafica, Immagini E Tabelle
+%---------------------------------------------------------
+\usepackage{graphicx}
+\graphicspath{{./Images/Image Transforms/}}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, patterns, angles, quotes, calc}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+
+%---------------------------------------------------------
+% Link, Riferimenti Ed Elenchi
+%---------------------------------------------------------
+\usepackage[unicode]{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+    citecolor=blue,
+    pdftitle={Capitolo 5 - Image Transforms},
+    pdfauthor={Francesco Lo Verde},
+    pdfpagemode=FullScreen,
+}
+\usepackage{bookmark}
+\usepackage{enumitem}
+\setlist{noitemsep}
+
+%---------------------------------------------------------
+% Personalizzazione Titoli E Altri Pacchetti
+%---------------------------------------------------------
+\usepackage{titlesec}
+\titleformat{\section}{\normalfont\LARGE\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\Large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalfont\large\bfseries}{\thesubsubsection}{1em}{}
+
+\usepackage{comment}
+\newtheorem{theorem}{Definizione}
+
+% Pacchetto per gli algoritmi
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+
+\SetKwData{Dati}{Input}
+\SetKwData{Risultato}{Output}
+\SetKw{Inizializza}{Inizializza}
+\SetKwFor{Per}{per}{fai}{fine per}
+\SetKwIF{Se}{AltrimentiSe}{Altrimenti}{se}{allora}{altrimenti se}{allora}{fine se}
+\SetKwComment{Commento}{// }{}
+
+\author{Francesco Lo Verde}
+\begin{document}
+\section{Introduzione Alle Trasformazioni E Allineamento Delle Immagini}
+
+Il problema di calcolare la trasformazione geometrica tra due o più immagini rappresenta uno dei pilastri fondamentali della visione artificiale e della percezione robotica. Comprendere come i punti di un'immagine si proiettino o si allineino rispetto a un'altra inquadratura consente di abilitare svariate applicazioni reali, tra le quali spiccano:
+\begin{itemize}[noitemsep]
+    \item \textbf{Mosaico di immagini} (\emph{image mosaicing} o \emph{stitching}): la ricomposizione di più viste parziali per ottenere un'unica immagine panoramica ad ampio campo visivo.
+    \item \textbf{Odometria visiva} (\emph{visual odometry}): la stima della traiettoria e della posa di un robot analizzando i cambiamenti geometrici sequenziali nei fotogrammi catturati dalle telecamere di bordo.
+    \item \textbf{Verifica nel recupero di immagini} (\emph{verification in image retrieval}): la validazione geometrica della presenza di un oggetto all'interno di un database di immagini, confermando che i punti chiave corrispondano secondo un modello fisico coerente.
+    \item \textbf{Struttura dal movimento} (\emph{Structure from Motion}, SfM): la ricostruzione tridimensionale di una scena e delle posizioni della telecamera a partire da una sequenza di immagini bidimensionali non calibrate.
+    \item \textbf{Ricostruzione 3D} (\emph{3D reconstruction}): la generazione di modelli tridimensionali densi di oggetti o ambienti reali.
+\end{itemize}
+
+% [IMMAGINE RIF INTERVALLO 1-31] Esempio di allineamento e sovrapposizione di due immagini di un corridoio interno per la creazione di un mosaico — Slide 1 / Pagina 1 del PDF
+
+Per uno studio approfondito di queste tematiche, si rimanda al testo di riferimento: \textbf{Szeliski, Capitolo 3.6}.
+
+\subsection{Definizione Del Rapporto Geometrico Tra Immagini}
+
+Per comprendere la natura geometrica che lega due immagini diverse della stessa scena, consideriamo due scenari emblematici. Nel primo scenario, viene mostrata la copertina di un libro (``Making Comics'' di Scott McCloud) e una fotografia di una scrivania disordinata in cui la medesima copertina appare ruotata, traslata e rimpicciolita su un piano.
+
+% [IMMAGINE RIF INTERVALLO 1-31] Copertina originale del libro affiancata alla fotografia di una scrivania in cui la copertina è inserita e deformata — Slide 4 / Pagina 4 del PDF
+
+La relazione geometrica bidimensionale che lega i pixel della copertina isolata a quelli della copertina sulla scrivania è una \textbf{trasformazione di similarità} (\emph{similarity transformation}), la quale combina operazioni di traslazione, rotazione e variazione di scala uniforme.
+
+Nel secondo scenario, consideriamo due fotografie scattate dall'interno di un edificio, le quali inquadrano porzioni sovrapposte dello stesso atrio da prospettive leggermente diverse.
+
+% [IMMAGINE RIF INTERVALLO 1-31] Due viste parziali adiacenti dell'atrio interno di un edificio — Slide 5 / Pagina 5 del PDF
+
+Se desideriamo unire queste due immagini per generare un'unica vista panoramica (mosaico), la semplice trasformazione di similarità non è più sufficiente. La transizione prospettica richiede una modellazione più complessa delle deformazioni spaziali.
+
+% [IMMAGINE RIF INTERVALLO 1-31] Mosaico finale risultante dall'unione prospettica delle due immagini dell'atrio — Slide 6 / Pagina 6 del PDF
+
+Questo processo di deformazione e riallineamento delle coordinate prende il nome di \textbf{warping} dell'immagine.
+
+\newpage
+
+\section{Filtraggio E Warping Delle Immagini}
+
+Per comprendere l'operazione di warping, è fondamentale distinguerla nettamente dal filtraggio spaziale delle immagini (\emph{image filtering}). La differenza risiede nel dominio su cui le operazioni agiscono:
+
+\textbf{Filtraggio delle immagini}: agisce sul \textbf{codominio} (l'intervallo dei valori di intensità dei pixel, o \emph{range}). La trasformazione modifica i valori di luminosità o colore, mantenendo inalterata la posizione spaziale dei pixel. Formalmente, data un'immagine di input $f(x)$ e una funzione di trasformazione $h$, l'immagine filtrata $g(x)$ è definita come:
+\[
+g(x) = h(f(x))
+\]
+
+\textbf{Warping delle immagini}: agisce sul \textbf{dominio} spaziale dell'immagine (le coordinate dei pixel). La trasformazione sposta geometricamente i pixel da una coordinata all'altra, lasciando idealmente inalterati i valori di intensità del colore originario, se non per ragioni di interpolazione. Formalmente, definendo una funzione di mappatura delle coordinate $h(x)$, l'immagine deformata $g(x)$ è espressa come:
+\[
+g(x) = f(h(x))
+\]
+
+% [IMMAGINE RIF INTERVALLO 1-31] Grafici di confronto tra filtraggio (modifica delle ampiezze sul codominio) e warping (modifica e traslazione delle coordinate sul dominio) — Slide 7 / Pagina 7 del PDF
+
+Un esempio visivo chiarisce questa distinzione applicando le due trasformazioni alla fotografia di una casa in montagna:
+
+% [IMMAGINE RIF INTERVALLO 1-31] Fotografia di una casa di montagna: a sinistra l'effetto del filtraggio sul range (variazione di luminosità/contrasto), a destra l'effetto del warping sul dominio (deformazione geometrica di schiacciamento) — Slide 8 / Pagina 8 del PDF
+
+Mentre il filtraggio modifica l'aspetto cromatico o la nitidezza (ad esempio aumentando la luminosità), il warping applica una deformazione geometrica che distorce la struttura spaziale dell'immagine (ad esempio schiacciandola lungo una direzione).
+
+\newpage
+
+\section{Trasformazioni Parametriche Globali}
+
+Le trasformazioni geometriche più utilizzate nella pratica appartengono alla classe delle \textbf{trasformazioni parametriche globali}. Una trasformazione $T$ si definisce \textbf{globale} quando:
+\begin{enumerate}[noitemsep]
+    \item Si applica in modo identico a qualsiasi punto $p$ dell'immagine.
+    \item Può essere descritta interamente da un numero molto ridotto di parametri numerici.
+\end{enumerate}
+
+Le deformazioni geometriche globali più comuni includono la traslazione, la rotazione e la variazione di proporzione (\emph{aspect ratio}).
+
+% [IMMAGINE RIF INTERVALLO 1-31] Esempi di warping parametrico globale (traslazione, rotazione, deformazione di aspect ratio) applicati alla foto della casa — Slide 9 / Pagina 9 del PDF
+
+La trasformazione $T$ agisce come una ``macchina di cambiamento delle coordinate'' che mappa un punto generico $\bm{p} = (x, y)$ appartenente all'immagine sorgente in un nuovo punto $\bm{p}' = (x', y')$ appartenente all'immagine di destinazione:
+\[
+\bm{p}' = T(\bm{p})
+\]
+
+% [IMMAGINE RIF INTERVALLO 1-31] Schema concettuale della trasformazione T che mappa la coordinata p=(x,y) nella nuova coordinata p'=(x',y') — Slide 10 / Pagina 10 del PDF
+
+Se limitiamo la nostra analisi alle \textbf{trasformazioni lineari}, il legame tra le coordinate può essere espresso in forma matriciale tramite una matrice di trasformazione bidimensionale $\bm{T}$ di dimensioni $2 \times 2$:
+\[
+\bm{p}' = \bm{T}\bm{p} \implies \begin{bmatrix} x' \\ y' \end{bmatrix} = \bm{T} \begin{bmatrix} x \\ y \end{bmatrix}
+\]
+
+\subsection{Principali Trasformazioni Lineari}
+
+Le trasformazioni lineari bidimensionali sono combinazioni di quattro operazioni fondamentali: variazione di scala (\emph{scale}), rotazione (\emph{rotation}), inclinazione o taglio (\emph{shear}) e riflessione (\emph{mirror}).
+
+La generica trasformazione lineare si esprime come:
+\[
+\begin{bmatrix} x' \\ y' \end{bmatrix} = \begin{bmatrix} a & b \\ c & d \end{bmatrix} \begin{bmatrix} x \\ y \end{bmatrix}
+\]
+
+Analizziamo nel dettaglio la formulazione matematica di queste operazioni.
+
+\subsubsection{Scala Uniforme}
+La variazione di scala uniforme moltiplica ogni coordinata spaziale per un fattore di scala costante $s$. La matrice di scala $\bm{S}$ è definita come:
+\[
+\bm{S} = \begin{bmatrix} s & 0 \\ 0 & s \end{bmatrix}
+\]
+
+% [IMMAGINE RIF INTERVALLO 1-31] Effetto della scala uniforme applicata alla foto del London Eye con origine fissa in (0,0) — Slide 12 / Pagina 12 del PDF
+
+\subsubsection{Rotazione}
+La rotazione di un punto di un angolo $\theta$ in senso antiorario attorno all'origine $(0,0)$ è governata dalla matrice di rotazione ortogonale $\bm{R}$:
+\[
+\bm{R} = \begin{bmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{bmatrix}
+\]
+
+% [IMMAGINE RIF INTERVALLO 1-31] Effetto della rotazione di un angolo theta applicata alla foto del London Eye — Slide 13 / Pagina 13 del PDF
+
+Una proprietà fondamentale delle matrici di rotazione pure riguarda il calcolo della loro inversa. Poiché $\bm{R}$ è una matrice ortogonale, l'inversa coincide esattamente con la sua trasposta:
+\[
+\boxed{\bm{R}^{-1} = \bm{R}^T}
+\]
+
+\subsubsection{Riflessione (Specchiatura)}
+La riflessione proietta simmetricamente i punti rispetto a un asse di riferimento.
+\begin{itemize}
+    \item \textbf{Riflessione 2D rispetto all'asse Y}: le coordinate subiscono la trasformazione $x' = -x$ e $y' = y$. La corrispondente matrice $\bm{T}$ è:
+    \[
+    \bm{T} = \begin{bmatrix} -1 & 0 \\ 0 & 1 \end{bmatrix}
+    \]
+    \item \textbf{Riflessione 2D rispetto alla bisettrice $y = x$}: le coordinate vengono scambiate, ovvero $x' = y$ e $y' = x$. La corrispondente matrice $\bm{T}$ è:
+    \[
+    \bm{T} = \begin{bmatrix} 0 & 1 \\ 1 & 0 \end{bmatrix}
+    \]
+\end{itemize}
+
+\subsection{Proprietà Delle Trasformazioni Lineari}
+
+Le trasformazioni lineari regolate da matrici $2 \times 2$ esibiscono cinque proprietà geometriche fondamentali:
+\begin{itemize}[noitemsep]
+    \item \textbf{Mappatura dell'origine}: l'origine del sistema di riferimento viene sempre mappata in se stessa ($\bm{0} \to \bm{0}$).
+    \item \textbf{Conservazione delle linee}: le linee rette nell'immagine sorgente rimangono linee rette nell'immagine trasformata.
+    \item \textbf{Conservazione del parallelismo}: linee originariamente parallele rimangono parallele dopo la trasformazione.
+    \item \textbf{Conservazione dei rapporti}: i rapporti tra le lunghezze di segmenti collineari rimangono invariati.
+    \item \textbf{Chiusura rispetto alla composizione}: applicare in cascata più trasformazioni lineari equivale ad applicare un'unica trasformazione lineare la cui matrice è il prodotto delle singole matrici di partenza. Ad esempio, date tre trasformazioni consecutive:
+    \[
+    \begin{bmatrix} x' \\ y' \end{bmatrix} = \begin{bmatrix} a & b \\ c & d \end{bmatrix} \begin{bmatrix} e & f \\ g & h \end{bmatrix} \begin{bmatrix} i & j \\ k & l \end{bmatrix} \begin{bmatrix} x \\ y \end{bmatrix}
+    \]
+\end{itemize}
+
+\subsection{Il Limite Delle Trasformazioni Lineari: La Traslazione}
+
+Consideriamo ora l'operazione di \textbf{traslazione 2D}, che sposta ogni punto di un offset costante lungo gli assi coordinati:
+\[
+\begin{aligned}
+x' &= x + t_x \\
+y' &= y + t_y
+\end{aligned}
+\]
+
+Sorge spontanea una domanda: \emph{è possibile rappresentare questa operazione mediante una matrice $2 \times 2$?}
+
+La risposta è \textbf{NO}. La traslazione non mappa l'origine in se stessa (se $x=0, y=0$, allora $x'=t_x, y'=t_y \neq 0$). Di conseguenza, la traslazione \textbf{non è un'operazione lineare} se espressa in coordinate cartesiane bidimensionali. Per superare questa limitazione e unificare la traslazione con le trasformazioni lineari, è necessario introdurre un formalismo matematico differente.
+
+\newpage
+
+\section{Trasformazioni Affini E Coordinate Omogenee}
+
+Per integrare la traslazione all'interno del calcolo matriciale, si introducono le \textbf{coordinate omogenee}. Un punto 2D cartesiano $(x, y)$ viene rappresentato nello spazio proiettivo come un vettore a tre componenti:
+\[
+\bm{p} = \begin{bmatrix} x \\ y \\ 1 \end{bmatrix}
+\]
+
+Grazie a questa formulazione, la combinazione di una trasformazione lineare (descritta dai parametri $a, b, d, e$) e di una traslazione (descritta da $c, f$) può essere espressa come un'unica moltiplicazione matrice-vettore. Questa classe di trasformazioni prende il nome di \textbf{trasformazioni affini}:
+\[
+\begin{bmatrix} x' \\ y' \\ w \end{bmatrix} = \begin{bmatrix} a & b & c \\ d & e & f \\ 0 & 0 & 1 \end{bmatrix} \begin{bmatrix} x \\ y \\ w \end{bmatrix}
+\]
+
+Nelle applicazioni standard su piani affini, il fattore di scala proiettivo è posto a $w = 1$.
+
+\subsection{Proprietà Delle Trasformazioni Affini}
+
+Le trasformazioni affini estendono le proprietà delle trasformazioni lineari introducendo un importante cambiamento:
+\begin{itemize}[noitemsep]
+    \item \textbf{\textcolor{red}{L'origine non mappa necessariamente nell'origine}}: a causa della presenza dei termini di traslazione $c$ e $f$, il punto $(0,0)$ viene mappato in $(c,f)$.
+    \item \textbf{Le linee mappano in linee}.
+    \item \textbf{Le linee parallele rimangono parallele}.
+    \item \textbf{I rapporti di lunghezza sono preservati}.
+    \item \textbf{Chiusura rispetto alla composizione}.
+\end{itemize}
+
+Se consideriamo nuovamente l'immagine dell'atrio dell'edificio ricomposta a mosaico:
+
+% [IMMAGINE RIF INTERVALLO 1-31] Mosaico del corridoio proposto per verificare visivamente il parallelismo delle linee — Slide 18 / Pagina 18 del PDF
+
+Possiamo chiederci se tale allineamento sia descrivibile tramite una trasformazione affine. Osservando le linee del soffitto e del pavimento, si nota chiaramente che linee originariamente parallele convergono verso un punto di fuga. Poiché il parallelismo non è stato preservato, questa trasformazione \textbf{non è affine}.
+
+\newpage
+
+\section{Trasformazioni Proiettive O Omografie}
+
+Per modellare la convergenza prospettica e la perdita di parallelismo osservata nel mosaico, dobbiamo estendere ulteriormente la matrice di trasformazione. Partendo dalla struttura affine proiettiva:
+\[
+\begin{bmatrix} a & b & c \\ d & e & f \\ 0 & 0 & 1 \end{bmatrix}
+\]
+ci chiediamo cosa accada se andiamo a modificare l'ultima riga della matrice, introducendo dei valori non nulli al posto degli zeri.
+
+Questa operazione ci conduce alle \textbf{trasformazioni proiettive}, note anche come \textbf{omografie} (\emph{homographies}) o \textbf{mappe prospettiche planari} (\emph{planar perspective maps}). La matrice di omografia $\bm{H}$ è una matrice di dimensioni $3 \times 3$ definita come:
+\[
+\bm{H} = \begin{bmatrix} a & b & c \\ d & e & f \\ g & h & 1 \end{bmatrix}
+\]
+
+% [IMMAGINE RIF INTERVALLO 1-31] Esempi di omografia applicata a un'immagine di un'ape (che assume una deformazione trapezoidale) e ad un graffito deformato prospetticamente — Slide 20 / Pagina 20 del PDF
+
+\subsection{Geometria Del Warping Con Omografie}
+
+L'omografia mappa punti da un piano proiettivo a un altro piano proiettivo. Questo fenomeno si comprende analizzando la relazione spaziale tra il piano dell'immagine fisica e i piani di proiezione virtuali.
+
+% [IMMAGINE RIF INTERVALLO 1-31] Schemi geometrici che mostrano la proiezione dell'immagine su un piano frontale rispetto a un piano inclinato inferiore, evidenziando le zone nere prive di pixel mappati — Slide 21 / Pagina 21 del PDF
+
+Quando deformiamo un'immagine tramite un'omografia per proiettarla su un piano differente (ad esempio, passando da un piano frontale a un piano inclinato inferiore), si possono generare delle aree vuote. Queste zone scure prendono il nome di \textbf{aree nere in cui nessun pixel viene mappato} (\emph{black area where no pixel maps to}).
+
+L'omografia è lo strumento matematico corretto per descrivere l'allineamento delle due immagini dell'atrio mostrate in precedenza:
+
+% [IMMAGINE RIF INTERVALLO 1-31] Allineamento corretto dell'atrio dell'edificio tramite omografia — Slide 22 / Pagina 22 del PDF
+
+\subsection{Formulazione Matematica E Proprietà}
+
+La trasformazione proiettiva opera sulle coordinate omogenee nel modo seguente:
+\[
+\begin{bmatrix} x' \\ y' \\ w' \end{bmatrix} = \begin{bmatrix} a & b & c \\ d & e & f \\ g & h & i \end{bmatrix} \begin{bmatrix} x \\ y \\ w \end{bmatrix}
+\]
+
+Poiché il risultato è definito a meno di un fattore di scala globale, le coordinate cartesiane reali dell'immagine di destinazione si ottengono dividendo la prima e la seconda componente omogenea per la terza componente $w'$:
+\[
+x'_{cartesiano} = \frac{x'}{w'}, \quad y'_{cartesiano} = \frac{y'}{w'}
+\]
+
+Le proprietà geometriche delle trasformazioni proiettive sono:
+\begin{itemize}[noitemsep]
+    \item \textbf{L'origine non mappa necessariamente nell'origine}.
+    \item \textbf{Le linee mappano in linee}.
+    \item \textbf{\textcolor{red}{Le linee parallele non rimangono necessariamente parallele}}: l'effetto prospettico introduce punti di fuga all'infinito.
+    \item \textbf{\textcolor{red}{I rapporti non sono preservati}}.
+    \item \textbf{Chiusura rispetto alla composizione}.
+\end{itemize}
+
+\newpage
+
+\section{Gerarchia Delle Trasformazioni 2D}
+
+Le trasformazioni spaziali bidimensionali analizzate costituiscono una struttura di gruppi nidificati (\textbf{nested set of groups}), in cui ogni classe di trasformazione è un sottogruppo di quella ad essa successiva in termini di complessità e gradi di libertà (\emph{Degrees of Freedom}, D.O.F.). Tali gruppi sono chiusi rispetto alla composizione e contengono l'elemento inverso.
+
+% [IMMAGINE RIF INTERVALLO 1-31] Diagramma a frecce della gerarchia delle trasformazioni 2D (da traslazione a proiettiva) con le relative deformazioni geometriche subite da un quadrato — Slide 24 / Pagina 24 del PDF
+
+La tabella seguente riassume le caratteristiche fondamentali di ciascuna trasformazione:
+
+\begin{table}[H]
+\centering
+\caption{Proprietà e classificazione delle trasformazioni geometriche 2D.}
+\label{tab:trasformazioni}
+\begin{tabularx}{\textwidth}{l c c l c}
+\toprule
+\textbf{Nome} & \textbf{Matrice} & \textbf{\# D.O.F.} & \textbf{Preserva:} & \textbf{Icona} \\
+\midrule
+Traslazione & $\begin{bmatrix} \bm{I} & \mid & \bm{t} \end{bmatrix}_{2 \times 3}$ & 2 & orientamento, lunghezze, aree & $\square$ \\
+Rigida (Euclidea) & $\begin{bmatrix} \bm{R} & \mid & \bm{t} \end{bmatrix}_{2 \times 3}$ & 3 & lunghezze, aree, angoli & $\diamondsuit$ \\
+Similarità & $\begin{bmatrix} s\bm{R} & \mid & \bm{t} \end{bmatrix}_{2 \times 3}$ & 4 & angoli, rapporti di lunghezze & $\diamondsuit$ \\
+Affine & $\begin{bmatrix} \bm{A} \end{bmatrix}_{2 \times 3}$ & 6 & parallelismo, rapporti di aree & $\square$ \\
+Proiettiva & $\begin{bmatrix} \tilde{\bm{H}} \end{bmatrix}_{3 \times 3}$ & 8 & linee rette & $\square$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Ciascun livello aggiunge gradi di libertà consentendo deformazioni progressivamente più flessibili, riducendo al contempo il numero di proprietà geometriche preservate dal movimento.
+
+\newpage
+
+\section{Calcolo Delle Trasformazioni Per L'Allineamento}
+
+Supponiamo di disporre di un insieme di corrispondenze (\emph{matches}) puntuali accoppiate tra due immagini distinte $A$ e $B$.
+
+% [IMMAGINE RIF INTERVALLO 1-31] Corrispondenze puntuali identificate tra la copertina di un libro isolata e la stessa copertina all'interno della scena disordinata — Slide 25 / Pagina 25 del PDF
+
+Il problema fondamentale consiste nel determinare i parametri della trasformazione geometrica $T$ che mappa i punti dell'immagine $A$ in quelli dell'immagine $B$, massimizzando l'accordo (\emph{agreement}) globale con l'insieme di corrispondenze individuate.
+
+% [IMMAGINE RIF INTERVALLO 1-31] Due inquadrature adiacenti del corridoio affiancate dal relativo mosaico finale, a rappresentare il problema della stima di T — Slide 26 / Pagina 26 del PDF
+
+\subsection{Il Caso Semplice: Stima Di Una Traslazione}
+
+Per comprendere il funzionamento formale dell'algoritmo di stima, partiamo dal caso più semplice: la ricerca di una pura traslazione spaziale definita dal vettore $\bm{t} = (x_t, y_t)$.
+
+Consideriamo due immagini che mostrano il Golden Gate Bridge traslato l'uno rispetto all'altro, in cui sono stati estratti $n$ punti di controllo corrispondenti.
+
+% [IMMAGINE RIF INTERVALLO 1-31] Due inquadrature parziali del Golden Gate Bridge collegate da vettori di corrispondenza puntuale — Slide 27 / Pagina 27 del PDF
+
+Sia $(\bm{x}_i, \bm{y}_i)$ la coordinata del punto $i$-esimo nell'immagine di partenza e sia $(\bm{x}'_i, \bm{y}'_i)$ la coordinata del corrispondente punto nell'immagine di arrivo.
+
+% [IMMAGINE RIF INTERVALLO 1-31] Esempio di annotazione delle coordinate dei punti corrispondenti sull'immagine del ponte — Slide 28 / Pagina 28 del PDF
+
+Per una singola coppia di punti $i$, lo spostamento parziale è calcolato come:
+\[
+\text{Dislocamento del match } i = (x'_i - x_i, \; y'_i - y_i)
+\]
+
+Se la trasformazione fosse priva di rumore o di errori di misura, ogni coppia di punti fornirebbe l'esatto vettore di traslazione globale. Nella realtà, a causa di imperfezioni nell'estrazione delle coordinate, ogni accoppiamento fornisce una stima leggermente diversa. La soluzione più immediata consiste nel calcolare il dislocamento medio (\emph{mean displacement}) su tutte le $n$ corrispondenze disponibili:
+\[
+\boxed{(x_t, y_t) = \left( \frac{1}{n}\sum_{i=1}^{n} (x'_i - x_i), \; \frac{1}{n}\sum_{i=1}^{n} (y'_i - y_i) \right)}
+\]
+
+\subsection{Formulazione Come Sistema Di Equazioni Lineari}
+
+Possiamo interpretare il medesimo problema sotto una luce diversa, utile per essere generalizzata a trasformazioni più complesse. Per ogni punto di controllo $i$ valgono le equazioni:
+\[
+\begin{aligned}
+x_i + x_t &= x'_i \\
+y_i + y_t &= y'_i
+\end{aligned}
+\]
+
+In questo contesto, analizziamo la struttura del problema:
+\begin{itemize}[noitemsep]
+    \item \textbf{Elementi noti}: le coordinate dei punti misurati nelle due immagini, ossia $(x_i, y_i)$ e $(x'_i, y'_i)$.
+    \item \textbf{Elementi incogniti}: i parametri della traslazione spaziale, ossia $(x_t, y_t)$.
+    \item \textbf{Numero di incognite}: $2$ parametri ($x_t$ e $y_t$).
+    \item \textbf{Numero di equazioni}: per ogni coppia di punti corrispondenti disponiamo di $2$ equazioni cartesiane indipendenti. Per un insieme di $n$ punti, avremo un totale di $2n$ equazioni.
+\end{itemize}
+
+Quando disponiamo di un numero di corrispondenze superiore a uno ($n > 1$), il numero di equazioni cartesiane indipendenti ($2n$) supera il numero di incognite da stimare ($2$). Ci troviamo quindi di fronte a un sistema di equazioni lineari \textbf{sovradeterminato} (\emph{overdetermined}). Per risolvere un sistema di questo tipo in presenza di rumore, si ricorre alla formulazione dei \textbf{minimi quadrati} (\emph{least squares}).
+
+\subsection{Formulazione Ai Minimi Quadrati}
+
+Per ciascuna coppia di punti $i$, definiamo i \textbf{residui} (\emph{residuals}) $r_{x_i}$ e $r_{y_i}$ come la discrepanza tra la posizione predetta dal modello matematico e la reale misura osservata sull'immagine d'arrivo:
+\[
+\begin{aligned}
+r_{x_i}(x_t) &= (x_i + x_t) - x'_i \\
+r_{y_i}(y_t) &= (y_i + y_t) - y'_i
+\end{aligned}
+\]
+
+L'obiettivo del metodo dei minimi quadrati consiste nel determinare i parametri $(x_t, y_t)$ che minimizzano la somma dei quadrati di tutti i residui sull'intero dataset di punti. Definiamo pertanto la funzione di costo quadratica $C(x_t, y_t)$:
+\[
+C(x_t, y_t) = \sum_{i=1}^{n} \left( r_{x_i}(x_t)^2 + r_{y_i}(y_t)^2 \right)
+\]
+
+Andando a sostituire le definizioni dei residui all'interno della funzione di costo, otteniamo:
+\[
+C(x_t, y_t) = \sum_{i=1}^{n} \left[ \left( (x_i + x_t) - x'_i \right)^2 + \left( (y_i + y_t) - y'_i \right)^2 \right]
+\]
+
+Per minimizzare $C(x_t, y_t)$, calcoliamo le derivate parziali rispetto alle variabili decisionali $x_t$ e $y_t$ e le imponiamo uguali a zero. Per la componente lungo l'asse $X$:
+\[
+\frac{\partial C}{\partial x_t} = 2 \sum_{i=1}^{n} (x_i + x_t - x'_i) = 0
+\]
+Semplificando il fattore costante $2$ ed esplicitando la sommatoria:
+\[
+\sum_{i=1}^{n} x_i + \sum_{i=1}^{n} x_t - \sum_{i=1}^{n} x'_i = 0
+\]
+Poiché $x_t$ è indipendente dall'indice della sommatoria $i$, si ha $\sum_{i=1}^{n} x_t = n x_t$:
+\[
+n x_t = \sum_{i=1}^{n} (x'_i - x_i) \implies \boxed{x_t = \frac{1}{n} \sum_{i=1}^{n} (x'_i - x_i)}
+\]
+
+Seguendo lo stesso identico procedimento per la componente lungo l'asse $Y$:
+\[
+\frac{\partial C}{\partial y_t} = 2 \sum_{i=1}^{n} (y_i + y_t - y'_i) = 0 \implies \boxed{y_t = \frac{1}{n} \sum_{i=1}^{n} (y'_i - y_i)}
+\]
+
+Questo sviluppo analitico dimostra matematicamente perché, nel caso specifico delle trasmissioni pure, la soluzione ottimale ai minimi quadrati coincida esattamente con il calcolo del dislocamento medio dei punti.
+
+\section{Formulazione Matriciale Dei Minimi Quadrati}
+
+Nel calcolo dell'allineamento spaziale tramite traslazione pura, abbiamo visto come sia possibile determinare lo spostamento complessivo mediando le differenze tra le coordinate dei punti corrispondenti. Tuttavia, per formalizzare questo problema in modo rigoroso e preparare il terreno a modelli di movimento più complessi, è conveniente riscrivere il sistema di equazioni lineari sovradeterminato in forma matriciale.
+
+Considerando $n$ coppie di punti corrispondenti, per ciascuna delle quali valgono le relazioni spaziali di traslazione $x_i + x_t = x'_i$ e $y_i + y_t = y'_i$, possiamo isolare i termini incogniti $x_t$ e $y_t$ e strutturare l'intero sistema come segue:
+
+\[
+\begin{bmatrix}
+1 & 0 \\
+0 & 1 \\
+1 & 0 \\
+0 & 1 \\
+\vdots & \vdots \\
+1 & 0 \\
+0 & 1
+\end{bmatrix}
+\begin{bmatrix}
+x_t \\
+y_t
+\end{bmatrix}
+=
+\begin{bmatrix}
+x'_1 - x_1 \\
+y'_1 - y_1 \\
+x'_2 - x_2 \\
+y'_2 - y_2 \\
+\vdots \\
+x'_n - x_n \\
+y'_n - y_n
+\end{bmatrix}
+\]
+
+Questa formulazione compatta esprime il sistema lineare nella classica forma algebrica:
+\[
+\bm{A}\bm{t} = \bm{b}
+\]
+dove le tre componenti presentano le seguenti dimensioni:
+\begin{itemize}[noitemsep]
+    \item $\bm{A}$ è una matrice di disegno di dimensioni $2n \times 2$, che codifica la struttura geometrica del problema.
+    \item $\bm{t} = [x_t, y_t]^T$ è il vettore colonna delle incognite di dimensioni $2 \times 1$.
+    \item $\bm{b}$ è il vettore dei termini noti di dimensioni $2n \times 1$, contenente le differenze misurate tra le coordinate dei punti.
+\end{itemize}
+
+\newpage
+
+\section{Risoluzione Dei Minimi Quadrati E Equazioni Normali}
+
+Poiché il sistema $\bm{A}\bm{t} = \bm{b}$ è sovraterminato ($2n > 2$), non esiste in generale una soluzione esatta che soddisfi contemporaneamente tutte le equazioni a causa del rumore di misura. L'obiettivo matematico consiste quindi nel determinare il vettore dei parametri $\bm{t}$ che minimizza la norma quadratica del residuo, definita come:
+\[
+\min_{\bm{t}} \lVert\bm{A}\bm{t} - \bm{b}\rVert^2
+\]
+
+Per ricavare la soluzione in forma chiusa, introduciamo il metodo delle \textbf{equazioni normali}. La soluzione ottimale che minimizza l'errore quadratico soddisfa la seguente relazione lineare:
+\[
+\bm{A}^T\bm{A}\bm{t} = \bm{A}^T\bm{b}
+\]
+Moltiplicando a sinistra per l'inversa della matrice quadrata $\bm{A}^T\bm{A}$ (sotto l'ipotesi che essa sia a rango pieno e quindi invertibile), si ottiene la soluzione dei minimi quadrati:
+\[
+\boxed{\bm{t} = (\bm{A}^T\bm{A})^{-1}\bm{A}^T\bm{b}}
+\]
+
+\subsection{Derivazione Matematica Passo Dopo Passo}
+
+Per comprendere l'origine di questa espressione fondamentale, svolgiamo i passaggi di minimizzazione utilizzando il calcolo matriciale. Per comodità di calcolo, definiamo la funzione di costo quadratica come la norma al quadrato del vettore di errore $\bm{b} - \bm{A}\bm{t}$:
+\[
+\lVert\bm{b} - \bm{A}\bm{t}\rVert^2 = (\bm{b} - \bm{A}\bm{t})^T(\bm{b} - \bm{A}\bm{t})
+\]
+Sviluppiamo il prodotto ricordando che l'operatore di trasposizione applicato a un prodotto di matrici inverte l'ordine dei fattori, ovvero $(\bm{A}\bm{t})^T = \bm{t}^T\bm{A}^T$:
+\begin{align*}
+(\bm{b} - \bm{A}\bm{t})^T(\bm{b} - \bm{A}\bm{t}) &= (\bm{b}^T - \bm{t}^T\bm{A}^T)(\bm{b} - \bm{A}\bm{t}) \\
+&= \bm{b}^T\bm{b} - \bm{b}^T\bm{A}\bm{t} - \bm{t}^T\bm{A}^T\bm{b} + \bm{t}^T\bm{A}^T\bm{A}\bm{t}
+\end{align*}
+
+Dato che il termine $\bm{b}^T\bm{A}\bm{t}$ è uno scalare (prodotto di vettori e matrici che restituisce una dimensione $1 \times 1$), esso coincide con la sua trasposta:
+\[
+\bm{b}^T\bm{A}\bm{t} = (\bm{b}^T\bm{A}\bm{t})^T = \bm{t}^T\bm{A}^T\bm{b}
+\]
+Questo ci consente di sommare i due termini centrali dell'espressione, semplificando la funzione di costo nella forma:
+\[
+\lVert\bm{b} - \bm{A}\bm{t}\rVert^2 = \bm{b}^T\bm{b} - 2\bm{b}^T\bm{A}\bm{t} + \bm{t}^T\bm{A}^T\bm{A}\bm{t}
+\]
+
+Procediamo ora calcolando la derivata parziale rispetto al vettore delle incognite $\bm{t}$ per individuare il punto di minimo. Facciamo riferimento alle seguenti regole di derivazione vettoriale:
+\[
+\frac{\partial}{\partial \bm{x}} \left(\bm{c}^T\bm{x}\right) = \bm{c} \quad \text{e} \quad \frac{\partial}{\partial \bm{x}} \left(\bm{x}^T\bm{M}\bm{x}\right) = \left(\bm{M} + \bm{M}^T\right)\bm{x}
+\]
+Se la matrice quadrata $\bm{M}$ è simmetrica, l'espressione si riduce a $2\bm{M}\bm{x}$. Nel nostro caso, la matrice $\bm{A}^T\bm{A}$ è intrinsecamente simmetrica, in quanto $(\bm{A}^T\bm{A})^T = \bm{A}^T\bm{A}$. Applicando queste identità alla nostra funzione di costo, otteniamo:
+\[
+\frac{\partial}{\partial \bm{t}} \lVert\bm{b} - \bm{A}\bm{t}\rVert^2 = \bm{0} - 2\bm{A}^T\bm{b} + 2\bm{A}^T\bm{A}\bm{t}
+\]
+
+Imponendo la derivata parziale pari a zero per trovare l'ottimo, si ha:
+\[
+-2\bm{A}^T\bm{b} + 2\bm{A}^T\bm{A}\bm{t} = \bm{0} \implies \bm{A}^T\bm{A}\bm{t} = \bm{A}^T\bm{b}
+\]
+Isolando il vettore $\bm{t}$, giungiamo nuovamente alla formulazione della pseudoinversa:
+\[
+\bm{t} = (\bm{A}^T\bm{A})^{-1}\bm{A}^T\bm{b}
+\]
+
+\newpage
+
+\section{Analogia Con La Regressione Lineare}
+
+La formulazione matriciale dei minimi quadrati appena sviluppata è matematicamente identica al problema classico della \textbf{regressione lineare} (\emph{linear regression}).
+
+% [IMMAGINE RIF INTERVALLO 33-64] Grafico bidimensionale (Time vs Mileage) con punti e retta di regressione y = mx + b — Slide 5 / Pagina 5 del PDF
+
+Dato un insieme di $n$ punti di coordinate cartesiane $(x_i, y_i)$, l'obiettivo è determinare i parametri di pendenza $m$ e intercetta $b$ della retta $y = mx + b$ che meglio si adatta alle osservazioni sperimentali.
+
+% [IMMAGINE RIF INTERVALLO 33-64] Grafico bidimensionale che evidenzia l'errore residuo (distanza verticale) dei punti rispetto alla retta rossa — Slide 6 / Pagina 6 del PDF
+
+La discrepanza verticale tra il valore osservato $y_i$ e il valore predetto sulla retta definisce l'errore residuo. La funzione di costo da minimizzare è data dalla somma dei residui al quadrato:
+\[
+\text{Cost}(m, b) = \sum_{i=1}^{n} |y_i - (mx_i + b)|^2
+\]
+
+Possiamo convertire questa formulazione in forma matriciale $\bm{A}\bm{x} = \bm{b}$ esprimendo il sistema lineare come:
+\[
+\begin{bmatrix}
+x_1 & 1 \\
+x_2 & 1 \\
+\vdots & \vdots \\
+x_n & 1
+\end{bmatrix}
+\begin{bmatrix}
+m \\
+b
+\end{bmatrix}
+=
+\begin{bmatrix}
+y_1 \\
+y_2 \\
+\vdots \\
+y_n
+\end{bmatrix}
+\]
+Questa equivalenza formale evidenzia come lo stimatore dei minimi quadrati sia uno strumento matematico universale per la risoluzione di problemi di adattamento di modelli lineari.
+
+\newpage
+
+\section{Stima Di Trasformazioni Affini}
+
+Quando il modello di movimento tra due immagini non è una semplice traslazione ma una \textbf{trasformazione affine} (\emph{affine transformation}), la relazione geometrica coinvolge sei parametri incogniti ($a, b, c, d, e, f$):
+\[
+\begin{bmatrix}
+x' \\
+y' \\
+w'
+\end{bmatrix}
+=
+\begin{bmatrix}
+a & b & c \\
+d & e & f \\
+0 & 0 & 1
+\end{bmatrix}
+\begin{bmatrix}
+x \\
+y \\
+w
+\end{bmatrix}
+\]
+
+Per analizzare la risoluzione di questo problema, rispondiamo a quattro quesiti fondamentali:
+\begin{itemize}[noitemsep]
+    \item \textbf{Quante sono le incognite?} Le incognite sono $6$ (i coefficienti della matrice affine proiettiva).
+    \item \textbf{Quante equazioni si ottengono da ciascun accoppiamento?} Ogni coppia di punti corrispondenti fornisce $2$ equazioni cartesiane indipendenti, una per la coordinata $X$ e una per la coordinata $Y$.
+    \item \textbf{Di quanti accoppiamenti abbiamo bisogno?} Essendoci $6$ incognite, sono necessarie almeno $3$ corrispondenze non collineari per determinare una soluzione univoca.
+    \item \textbf{Perché usarne di più?} L'utilizzo di un numero di punti superiore a $3$ consente di mediare il rumore di misura e migliorare la robustezza della stima tramite l'approccio ai minimi quadrati.
+\end{itemize}
+
+I residui cartesiani lungo gli assi coordinati per ciascun punto $i$ sono definiti come:
+\[
+\begin{aligned}
+r_{x_i}(a, b, c, d, e, f) &= (ax_i + by_i + c) - x'_i \\
+r_{y_i}(a, b, c, d, e, f) &= (dx_i + ey_i + f) - y'_i
+\end{aligned}
+\]
+
+L'obiettivo è minimizzare la funzione di costo globale:
+\[
+C(a, b, c, d, e, f) = \sum_{i=1}^{n} \left( r_{x_i}(a, b, c, d, e, f)^2 + r_{y_i}(a, b, c, d, e, f)^2 \right)
+\]
+
+Per risolvere il problema, organizziamo il sistema lineare nella forma matriciale $\bm{A}\bm{t} = \bm{b}$:
+\[
+\begin{bmatrix}
+x_1 & y_1 & 1 & 0 & 0 & 0 \\
+0 & 0 & 0 & x_1 & y_1 & 1 \\
+x_2 & y_2 & 1 & 0 & 0 & 0 \\
+0 & 0 & 0 & x_2 & y_2 & 1 \\
+& & \vdots & & & \\
+x_n & y_n & 1 & 0 & 0 & 0 \\
+0 & 0 & 0 & x_n & y_n & 1
+\end{bmatrix}
+\begin{bmatrix}
+a \\
+b \\
+c \\
+d \\
+e \\
+f
+\end{bmatrix}
+=
+\begin{bmatrix}
+x'_1 \\
+y'_1 \\
+x'_2 \\
+y'_2 \\
+\vdots \\
+x'_n \\
+y'_n
+\end{bmatrix}
+\]
+In questa rappresentazione, la matrice di disegno $\bm{A}$ ha dimensioni $2n \times 6$, il vettore dei parametri $\bm{t}$ ha dimensioni $6 \times 1$ e il vettore dei termini noti $\bm{b}$ ha dimensioni $2n \times 1$.
+
+\newpage
+
+\section{Stima Di Omografie (Trasformazioni Proiettive)}
+
+Nel caso di proiezioni prospettiche, l'obiettivo è calcolare la trasformazione proiettiva (omografia) per raddrizzare o allineare due immagini.
+
+% [IMMAGINE RIF INTERVALLO 33-64] Coppia di immagini di un corridoio con punti p e p' corrispondenti per illustrare l'unwarping omografico — Slide 11 / Pagina 11 del PDF
+
+Per effettuare questa operazione di rettifica spaziale, dobbiamo risolvere il sistema di equazioni proiettive nella forma:
+\[
+w\bm{p}' = \bm{H}\bm{p}
+\]
+Questa espressione è lineare nelle incognite rappresentate dal fattore di scala proiettivo $w$ e dai coefficienti di $\bm{H}$. Essendo definita a meno di un fattore di scala arbitrario, l'omografia possiede $8$ gradi di libertà indipendenti.
+
+Riscrivendo l'operazione in forma matriciale proiettiva introducendo un parametro di scala $a$:
+\[
+\begin{bmatrix}
+ax'_i \\
+ay'_i \\
+a
+\end{bmatrix}
+=
+\begin{bmatrix}
+h_{00} & h_{01} & h_{02} \\
+h_{10} & h_{11} & h_{12} \\
+h_{20} & h_{21} & h_{22}
+\end{bmatrix}
+\begin{bmatrix}
+x_i \\
+y_i \\
+1
+\end{bmatrix}
+\]
+
+Per convertire questa relazione in coordinate reali non omogenee, dividiamo la prima e la seconda riga per la terza, ottenendo:
+\[
+x'_i = \frac{h_{00}x_i + h_{01}y_i + h_{02}}{h_{20}x_i + h_{21}y_i + h_{22}}, \quad y'_i = \frac{h_{10}x_i + h_{11}y_i + h_{12}}{h_{20}x_i + h_{21}y_i + h_{22}}
+\]
+
+Queste equazioni risultano fortemente non lineari se considerate rispetto alle coordinate dei pixel. Tuttavia, possiamo linearizzarle rispetto ai parametri incogniti $h_{jk}$ dell'omografia mediante semplici passaggi algebrici di moltiplicazione incrociata:
+\begin{align*}
+x'_i \left(h_{20}x_i + h_{21}y_i + h_{22}\right) &= h_{00}x_i + h_{01}y_i + h_{02} \\
+y'_i \left(h_{20}x_i + h_{21}y_i + h_{22}\right) &= h_{10}x_i + h_{11}y_i + h_{12}
+\end{align*}
+
+Sviluppando i prodotti e raggruppando tutti i termini sul lato sinistro, otteniamo un sistema lineare omogeneo in cui ciascun accoppiamento fornisce $2$ equazioni lineari distinte:
+\begin{align*}
+h_{00}x_i + h_{01}y_i + h_{02} - h_{20}x'_i x_i - h_{21}x'_i y_i - h_{22}x'_i &= 0 \\
+h_{10}x_i + h_{11}y_i + h_{12} - h_{20}y'_i x_i - h_{21}y'_i y_i - h_{22}y'_i &= 0
+\end{align*}
+
+Prendendo in considerazione l'intero insieme di $n$ corrispondenze estratte, possiamo organizzare il sistema nella forma omogenea $\bm{A}\bm{h} = \bm{0}$:
+\[
+\begin{bmatrix}
+x_1 & y_1 & 1 & 0 & 0 & 0 & -x'_1 x_1 & -x'_1 y_1 & -x'_1 \\
+0 & 0 & 0 & x_1 & y_1 & 1 & -y'_1 x_1 & -y'_1 y_1 & -y'_1 \\
+& & \vdots & & & & & & \\
+x_n & y_n & 1 & 0 & 0 & 0 & -x'_n x_n & -x'_n y_n & -x'_n \\
+0 & 0 & 0 & x_n & y_n & 1 & -y'_n x_n & -y'_n y_n & -y'_n
+\end{bmatrix}
+\begin{bmatrix}
+h_{00} \\ h_{01} \\ h_{02} \\ h_{10} \\ h_{11} \\ h_{12} \\ h_{20} \\ h_{21} \\ h_{22}
+\end{bmatrix}
+=
+\begin{bmatrix}
+0 \\ 0 \\ \vdots \\ 0 \\ 0
+\end{bmatrix}
+\]
+In questa espressione, la matrice $\bm{A}$ presenta dimensioni $2n \times 9$, mentre il vettore colonna delle incognite $\bm{h}$ ha dimensioni $9 \times 1$.
+
+Per evitare la soluzione banale $\bm{h} = \bm{0}$, formuliamo il problema di minimizzazione vincolando $\bm{h}$ ad essere un vettore unitario:
+\[
+\min_{\bm{h}} \lVert\bm{A}\bm{h}\rVert^2_2 \quad \text{s.t.} \quad \lVert\bm{h}\rVert^2_2 = 1
+\]
+La soluzione ottimale ai minimi quadrati $\hat{\bm{h}}$ è data dall'**autovettore della matrice $\bm{A}^T\bm{A}$ associato all'autovalore più piccolo**. Trattandosi di un sistema con $8$ gradi di libertà indipendenti, l'algoritmo richiede la presenza di un numero minimo di accoppiamenti pari a **4 o più punti** in posizione generale.
+
+\newpage
+
+\section{Robustezza Dell'Allineamento E Gestione Degli Outlier}
+
+L'algoritmo standard per l'allineamento delle immagini si articola nelle seguenti fasi:
+\begin{enumerate}[noitemsep]
+    \item Calcolo delle feature locali d'immagine (punti chiave) per le viste $A$ e $B$.
+    \item Accoppiamento (\emph{matching}) spaziale delle feature estratte tra $A$ e $B$.
+    \item Stima della matrice di omografia tra $A$ e $B$ tramite il metodo dei minimi quadrati sull'insieme delle corrispondenze.
+\end{enumerate}
+
+Questo approccio lineare lineare presenta tuttavia una forte criticità: \emph{cosa succede in caso di accoppiamenti errati?}
+
+% [IMMAGINE RIF INTERVALLO 33-64] Corrispondenze puntuali tra la copertina del libro e la scrivania che evidenziano gli inliers (verdi) e gli outliers (rossi) — Slide 15 / Pagina 15 del PDF
+
+Nelle applicazioni pratiche, l'algoritmo di corrispondenza genera inevitabilmente sia accoppiamenti corretti, detti \textbf{inlier}, sia accoppiamenti errati dovuti a rumore o ambiguità visive, detti \textbf{outlier}.
+
+% [IMMAGINE RIF INTERVALLO 33-64] Grafico di regressione lineare che mostra come i minimi quadrati tradizionali falliscano a causa degli outliers — Slide 16 / Pagina 16 del PDF
+
+Se proviamo ad applicare il metodo classico dei minimi quadrati in presenza di outlier, l'influenza quadratica delle misure errate sposta significativamente il modello di retta o di trasformazione lontano dalla reale configurazione geometrica dei dati. Per garantire la robustezza dell'allineamento, abbiamo la necessità di introdurre una funzione di costo differente o un meccanismo di filtraggio dei dati.
+
+\newpage
+
+\section{L'Algoritmo RANSAC (RAndom SAmple Consensus)}
+
+Il metodo più celebre e utilizzato per risolvere il problema degli outlier è l'algoritmo \textbf{RANSAC} (\emph{RAndom SAmple Consensus}), basato su uno schema iterativo di generazione e test delle ipotesi (\emph{hypothesize-and-test}).
+
+% [IMMAGINE RIF INTERVALLO 33-64] Diagramma con punti dispersi ed esempio di conteggio inliers (linea rossa con 3 inliers, linea verde con 20 inliers) — Slide 18-20 / Pagine 18-20 del PDF
+
+L'intuizione alla base di RANSAC si fonda sulla seguente assunzione geometrica: tutti i punti inlier convergeranno verso lo stesso modello matematico coerente, mentre il numero limitato di outlier fornirà risultati incoerenti e discordanti tra loro. Di conseguenza, campionando un numero minimo di punti per stimare un modello candidato, quest'ultimo otterrà un elevato numero di consensi (punti vicini al modello, detti \textbf{inlier}) solo se calcolato a partire da soli punti corretti.
+
+A differenza del metodo dei minimi quadrati, l'algoritmo RANSAC non ammette una soluzione diretta in forma chiusa. Si procede pertanto implementando il seguente schema algoritmico iterativo:
+
+\begin{algorithm}[H]
+\Dati{Insieme totale delle corrispondenze, Soglia di tolleranza dell'errore, Numero massimo di tentativi $S$}
+\Risultato{Modello ottimale con il maggior numero di inlier associati}
+\Inizializza{Inlier massimi registrati = 0}\;
+\Per{ogni tentativo da $1$ a $S$}{
+    1. Seleziona in modo casuale il sottoinsieme minimo di punti $k$ necessario per definire la trasformazione\;
+    2. Ipotizza un modello calcolando i parametri della trasformazione su questo set minimo\;
+    3. Calcola la funzione di errore residuo per tutte le restanti corrispondenze del dataset rispetto al modello ipotizzato\;
+    4. Conta e seleziona come inlier del tentativo tutti i punti il cui errore risulta inferiore alla soglia di tolleranza\;
+    \Se{il numero di inlier corrente è superiore a quello massimo registrato}{
+        Salva il modello corrente come migliore ipotesi temporanea\;
+        Aggiorna il numero massimo di inlier\;
+    }
+}
+Restituisci il modello che ha totalizzato il maggior numero complessivo di inlier\;
+\caption{Algoritmo RANSAC per la stima robusta}
+\end{algorithm}
+
+% [IMMAGINE RIF INTERVALLO 33-64] Esempio visivo di stima di traslazione tra due viste della facciata di un edificio tramite frecce di corrispondenza — Slide 22-25 / Pagine 22-25 del PDF
+
+% [IMMAGINE RIF INTERVALLO 33-64] Esempio visivo di adattamento di una retta tramite RANSAC in presenza di rumore elevato — Slide 27 / Pagina 27 del PDF
+
+L'idea teorica che garantisce la convergenza dell'algoritmo si riassume nella celebre massima di Tolstoy adattata alla computer vision da Alyosha Efros: \emph{``Tutti i buoni accoppiamenti si somigliano; ogni accoppiamento errato è errato a modo suo''}.
+
+\newpage
+
+\section{Parametrizzazione E Analisi Probabilistica Di RANSAC}
+
+Il corretto funzionamento dell'algoritmo RANSAC dipende in modo critico dalla selezione dei suoi parametri di controllo:
+\begin{itemize}[noitemsep]
+    \item \textbf{Soglia di tolleranza dell'inlier} (\emph{inlier threshold}): definisce la massima distanza consentita affinché un punto sia considerato coerente con il modello. Il rumore di misura degli inlier viene tipicamente modellato come una distribuzione gaussiana con deviazione standard nota (ad esempio, ponendo la soglia a un valore prudenziale di $3$ pixel).
+    \item \textbf{Numero di tentativi o round} ($S$): rappresenta il numero minimo di iterazioni necessarie a garantire con un'elevata probabilità di successo $P$ (solitamente posta al $99\%$) di selezionare almeno un sottoinsieme iniziale composto interamente da punti inlier.
+\end{itemize}
+
+Supponiamo di stimare una trasformazione geometrica caratterizzata da una percentuale di outlier pari al $20\%$, e di voler calcolare il numero di tentativi $S$ necessari a garantire il successo. Possiamo ricavare analiticamente questo valore tramite un'analisi probabilistica.
+
+Definiamo:
+\begin{itemize}[noitemsep]
+    \item $p$ come la probabilità che una singola corrispondenza selezionata a caso sia un inlier valido.
+    \item $k$ come il numero minimo di punti campione richiesto per calcolare il modello geometrico in ogni tentativo.
+    \item $P$ come la probabilità complessiva desiderata di ottenere almeno un tentativo di successo (cioè un tentativo in cui tutti i $k$ punti scelti siano inlier reali) dopo $S$ round.
+\end{itemize}
+
+La probabilità che un singolo tentativo sia composto interamente da inlier è espressa come:
+\[
+P_{\text{successo\_singolo}} = p^k
+\]
+Di conseguenza, la probabilità che un singolo tentativo fallisca (cioè che contenga almeno un outlier) è:
+\[
+P_{\text{fallimento\_singolo}} = 1 - p^k
+\]
+La probabilità che tutti gli $S$ tentativi indipendenti falliscano consecutivamente è pari a:
+\[
+P_{\text{fallimento\_totale}} = \left(1 - p^k\right)^S
+\]
+Imponendo che la probabilità di successo globale sia pari a $P$, otteniamo la relazione di equivalenza:
+\[
+1 - P = \left(1 - p^k\right)^S
+\]
+
+Applichiamo il logaritmo a entrambi i membri della relazione per isolare il numero di tentativi $S$:
+\[
+\log(1 - P) = S \log\left(1 - p^k\right)
+\]
+Poiché la base logaritmica di un valore compreso tra 0 e 1 genera un termine negativo, dividendo otteniamo la formula finale per il calcolo del numero minimo di iterazioni:
+\[
+\boxed{S = \frac{\log(1 - P)}{\log\left(1 - p^k\right)}}
+\]
+
+Questa equazione evidenzia come il valore di $S$ cresca in modo estremamente rapido al crescere del parametro $k$ (numero di punti necessari per trial). Per questa ragione, per qualsiasi tipologia di trasformazione, è di fondamentale importanza utilizzare sempre il **numero minimo possibile $k$ di punti campione** per stimare il modello all'interno del ciclo iterativo.
+
+\subsection{Determinazione Del Numero Di Campioni Per Modello}
+
+Il numero minimo di punti $k$ per ogni tentativo RANSAC dipende strettamente dal modello di movimento adottato per l'allineamento. Ciascun accoppiamento fornisce $2$ equazioni cartesiane indipendenti. Possiamo quindi dedurre il valore ottimale di $k$ dividendo il numero di gradi di libertà (D.O.F.) di ciascuna trasformazione per $2$:
+\begin{itemize}[noitemsep]
+    \item \textbf{Traslazione} ($2$ D.O.F.): richiede un numero minimo di punti pari a $k = 1$.
+    \item \textbf{Rigida (Euclidea)} ($3$ D.O.F.): richiede un numero minimo di punti pari a $k = 2$.
+    \item \textbf{Similarità} ($4$ D.O.F.): richiede un numero minimo di punti pari a $k = 2$.
+    \item \textbf{Affine} ($6$ D.O.F.): richiede un numero minimo di punti pari a $k = 3$.
+    \item \textbf{Proiettiva (Omografia)} ($8$ D.O.F.): richiede un numero minimo di punti pari a $k = 4$.
+\end{itemize}
+
+\newpage
+
+\section{Vantaggi, Svantaggi E Schemi Di Votazione Alternativi}
+
+L'algoritmo RANSAC è uno degli strumenti più robusti nella moderna visione artificiale, ma presenta compromessi operativi che devono essere attentamente valutati in fase di sviluppo.
+
+\subsection{Analisi Dei Vantaggi E Degli Svantaggi}
+
+Le principali caratteristiche di RANSAC possono essere schematizzate nel modo seguente:
+
+\textbf{Vantaggi}:
+\begin{itemize}[noitemsep]
+    \item \textbf{Semplicità e generalità}: la logica dell'algoritmo è lineare, intuitiva e facilmente implementabile.
+    \item \textbf{Flessibilità applicativa}: è utilizzabile per la risoluzione di un'ampia gamma di problemi di adattamento geometrico e stima parametrica.
+    \item \textbf{Efficacia pratica}: mostra eccellenti prestazioni nella rimozione di outlier in scenari reali e rumorosi.
+\end{itemize}
+
+\textbf{Svantaggi}:
+\begin{itemize}[noitemsep]
+    \item \textbf{Calibrazione dei parametri}: richiede un processo empirico di taratura per la soglia di tolleranza e la definizione del numero di round.
+    \item \textbf{Costo computazionale}: in presenza di percentuali di outlier molto elevate, il numero di iterazioni necessarie a garantire la convergenza cresce in modo esponenziale.
+    \item \textbf{Sensibilità alle frazioni di inlier}: l'efficacia del metodo decade rapidamente qualora la percentuale di inlier all'interno del dataset sia estremamente bassa.
+    \item \textbf{Incompletezza statistica}: le prestazioni possono essere migliorate affiancando a RANSAC schemi di campionamento guidati o euristici, superando l'approccio puramente casuale (\emph{brute-force sampling}).
+\end{itemize}
+
+\subsection{Inquadramento Negli Schemi Di Votazione}
+
+Dal punto di vista teorico, l'algoritmo RANSAC costituisce un classico esempio di **schema di fitting basato su votazione** (\emph{voting-based fitting scheme}). In questo paradigma, ogni modello candidato rappresenta un'ipotesi che viene sottoposta a scrutinio: ciascun punto del dataset esprime un voto di preferenza (selezionandosi come inlier) qualora l'ipotesi risulti coerente con la propria posizione spaziale. Al termine del processo, l'ipotesi che ha totalizzato il maggior numero di preferenze viene decretata vincitrice.
+
+Oltre a RANSAC, esistono svariati altri algoritmi che sfruttano il medesimo principio di votazione per l'estrazione di forme geometriche e l'allineamento di strutture, tra i quali spicca per popolarità la \textbf{Trasformata di Hough} (\emph{Hough transform}).
+\end{document}
