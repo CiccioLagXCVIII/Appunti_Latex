@@ -3562,7 +3562,7 @@ dove \(\exp(\cdot)\) denota l'operatore \textbf{esponenziale di matrice}. Questo
 Questo metodo garantisce che l'orientamento aggiornato rimanga sempre sulla varietà \(SO(3)\), preservando la struttura geometrica del problema ed evitando gli artefatti numerici dell'integrazione Euleriana.
 \newpage
 \section{Velocità Angolare}
-La relazione fondamentale che lega la variazione di orientamento alla velocità angolare è espressa dall'equazione \(\dot{\bm{R}}\bm{R}^{T} = \bm{S}(\bm{\omega})\). Questa formula non è sempre di immediata applicazione, perché le rotazioni vengono definite tramite un set di parametri più intuitivi, come gli angoli di Eulero, gli angoli RPY (Roll, Pitch, Yaw) o la rappresentazione asse-angolo. Quindi bisogna collegare la velocità angolare \(\bm{\omega}\) alle derivate temporali di questi parametri.
+In generale, la relazione fondamentale che lega la variazione di orientamento alla velocità angolare è espressa da \(\bm{S}(\bm{\omega}) = \dot{\bm{R}}\bm{R}^{T} =\). Tuttavia, nella pratica l'orientamento viene spesso descritto tramite rappresentazioni specifiche come la notazione asse-angolo, gli angoli di Eulero oppure la terna Roll-Pitch-Yaw. Di conseguenza, è necessario mettere in relazione la velocità angolare direttamente con le derivate temporali di questi parametri.
 \subsection{Rotazioni Elementari}
 Si consideri una rotazione di un angolo \(\phi(t)\), variabile nel tempo, attorno all'asse \(x\). La matrice di rotazione associata è:
 \[
@@ -3635,8 +3635,8 @@ Questo risultato conferma in modo rigoroso l'intuizione fisica: una rotazione at
 \end{itemize}
 
 \newpage
-\subsection{Angoli di Eulero ZYX (RPY)}
-Consideriamo ora una rappresentazione più complessa, quella degli angoli Roll-Pitch-Yaw (RPY), che corrisponde a una sequenza di rotazioni intrinseche ZYX. La matrice di rotazione complessiva è data dal prodotto:
+\subsection{Angoli di Eulero ZYX}
+Consideriamo un orientamento rappresentato tramite angoli di Eulero ZYX (equivalente a una sequenza Roll-Pitch-Yaw rispetto agli assi fissi). La matrice di rotazione complessiva è data dal prodotto:
 \[
     \bm{R}_{RPY}(\phi, \theta, \psi) = \bm{R}_z(\phi)\bm{R}_y(\theta)\bm{R}_x(\psi)
 \]
@@ -3644,7 +3644,7 @@ La sua derivata temporale si calcola applicando la regola di derivazione del pro
 \[
     \dot{\bm{R}} = \dot{\bm{R}}_z\bm{R}_y\bm{R}_x + \bm{R}_z\dot{\bm{R}}_y\bm{R}_x + \bm{R}_z\bm{R}_y\dot{\bm{R}}_x
 \]
-Per trovare la matrice \(\bm{S}(\bm{\omega})\), post-moltiplichiamo \(\dot{\bm{R}}\) per \(\bm{R}^T = (\bm{R}_z\bm{R}_y\bm{R}_x)^T = \bm{R}_x^T\bm{R}_y^T\bm{R}_z^T\). L'espressione si scompone in tre termini:
+Per trovare la matrice antisimmetrica \(\bm{S}(\bm{\omega})\), post-moltiplichiamo \(\dot{\bm{R}}\) per \(\bm{R}^T = (\bm{R}_z\bm{R}_y\bm{R}_x)^T = \bm{R}_x^T\bm{R}_y^T\bm{R}_z^T\). L'espressione si scompone in tre contributi:
 \[
     \bm{S}(\bm{\omega}) = \dot{\bm{R}}\bm{R}^T =
     \underbrace{(\dot{\bm{R}}_z\bm{R}_y\bm{R}_x)(\bm{R}_x^T\bm{R}_y^T\bm{R}_z^T)}_{\text{Termine 1}} +
@@ -3658,42 +3658,65 @@ Sfruttando l'ortogonalità delle matrici di rotazione (\(\bm{R}\bm{R}^T = \bm{I}
     \text{Termine 3} &= \bm{R}_z\bm{R}_y(\dot{\bm{R}}_x\bm{R}_x^T)\bm{R}_y^T\bm{R}_z^T = \bm{R}_z\bm{R}_y \bm{S}_x(\dot{\psi}) \bm{R}_y^T\bm{R}_z^T
 \end{align*}
 
-Ognuno di questi termini ha un'interpretazione fisica:
+Ognuno di questi termini ha un'interpretazione fisica precisa:
 \begin{itemize}
-    \item \(\bm{S}_z(\dot{\phi})\) è la velocità angolare dovuta alla rotazione Z, espressa nel sistema di riferimento fisso.
-    \item \(\bm{R}_z \bm{S}_y(\dot{\theta}) \bm{R}_z^T\) è la velocità angolare della rotazione Y, originariamente definita nel sistema ruotato da Z, ma riportata nel sistema fisso tramite una trasformazione di similarità.
-    \item \(\bm{R}_z\bm{R}_y \bm{S}_x(\dot{\psi}) \bm{R}_y^T\bm{R}_z^T\) è la velocità angolare della rotazione X, riportata nel sistema fisso.
+    \item \(\bm{S}_z(\dot{\phi})\) è la velocità angolare dovuta alla rotazione attorno a Z, già espressa nella terna base fissa.
+    \item \(\bm{R}_z \bm{S}_y(\dot{\theta}) \bm{R}_z^T\) è la velocità angolare dovuta alla rotazione attorno a Y, originariamente definita nella terna ruotata da Z e riportata nella terna fissa tramite la trasformazione di similarità.
+    \item \(\bm{R}_z\bm{R}_y \bm{S}_x(\dot{\psi}) \bm{R}_y^T\bm{R}_z^T\) è la velocità angolare dovuta alla rotazione attorno a X, riportata analogamente nella terna fissa.
 \end{itemize}
-La somma di questi contributi fornisce la velocità angolare totale \(\bm{S}(\bm{\omega})\). Dopo aver eseguito i calcoli matriciali (denotando \(c_\theta = \cos\theta, s_\theta = \sin\theta\)):
+Svolgendo i prodotti matriciali (ponendo per brevità \(c_\alpha = \cos\alpha\) e \(s_\alpha = \sin\alpha\)), otteniamo le espressioni esplicite dei tre contributi:
 \[
-    \bm{S}_z(\dot{\phi}) = \dot{\phi} \begin{bmatrix} 0 & -1 & 0 \\ 1 & 0 & 0 \\ 0 & 0 & 0 \end{bmatrix}
+    \bm{S}_z(\dot{\phi}) = \begin{bmatrix} 0 & -\dot{\phi} & 0 \\ \dot{\phi} & 0 & 0 \\ 0 & 0 & 0 \end{bmatrix}
+    \qquad\qquad
+    \bm{R}_z \bm{S}_y(\dot{\theta}) \bm{R}_z^T = \begin{bmatrix} 0 & 0 & c_{\phi}\dot{\theta} \\ 0 & 0 & s_{\phi}\dot{\theta} \\ -c_{\phi}\dot{\theta} & -s_{\phi}\dot{\theta} & 0 \end{bmatrix}
 \]
 \[
-    \bm{R}_z \bm{S}_y(\dot{\theta}) \bm{R}_z^T = \dot{\theta} \begin{bmatrix} 0 & 0 & c_{\phi} \\ 0 & 0 & s_{\phi} \\ -c_{\phi} & -s_{\phi} & 0 \end{bmatrix}
+    \bm{R}_z\bm{R}_y \bm{S}_x(\dot{\psi}) \bm{R}_y^T\bm{R}_z^T = \begin{bmatrix} 0 & s_{\theta}\dot{\psi} & c_{\theta}s_{\phi}\dot{\psi} \\ -s_{\theta}\dot{\psi} & 0 & -c_{\theta}c_{\phi}\dot{\psi} \\ -c_{\theta}s_{\phi}\dot{\psi} & c_{\theta}c_{\phi}\dot{\psi} & 0 \end{bmatrix}
 \]
+Sommando termine a termine, si ottieme la matrice antisimmetrica complessiva \(\bm{S}(\bm{\omega})\)
+\begin{comment}
 \[
-    \bm{R}_z\bm{R}_y \bm{S}_x(\dot{\psi}) \bm{R}_y^T\bm{R}_z^T = \dot{\psi} \begin{bmatrix} 0 & s_{\theta} & c_{\theta}s_{\phi} \\ -s_{\theta} & 0 & -c_{\theta}c_{\phi} \\ -c_{\theta}s_{\phi} & c_{\theta}c_{\phi} & 0 \end{bmatrix}
+    \bm{S}(\bm{\omega}) =
+    \begin{bmatrix}
+        0 & -(\dot{\phi} - s_\theta \dot{\psi}) & (c_\phi \dot{\theta} + c_\theta s_\phi \dot{\psi}) \\
+        (\dot{\phi} - s_\theta \dot{\psi}) & 0 & -(c_\theta c_\phi \dot{\psi} - s_\phi \dot{\theta}) \\
+        -(c_\phi \dot{\theta} + c_\theta s_\phi \dot{\psi}) & (c_\theta c_\phi \dot{\psi} - s_\phi \dot{\theta}) & 0
+    \end{bmatrix}
 \]
-Sommando i tre termini, si ottiene \(\bm{S}(\bm{\omega})\). Si osserva che la matrice risultante è lineare nelle velocità \(\dot{\psi}, \dot{\theta}, \dot{\phi}\). Questa linearità permette di estrarre il vettore \(\bm{\omega}\) e di scrivere la relazione in forma matriciale:
+\end{comment}
+e ricordando la struttura generale di una matrice antisimmetrica associata a un vettore \(\bm{\omega} = [\omega_x, \omega_y, \omega_z]^T\) è possibile estrarre direttamente le tre componenti (equazioni) della velocità angolare:
 \[
-    \bm{\omega} = \bm{M}(\psi, \theta, \phi)
+    \begin{cases}
+        \omega_x = -s_{\phi}\dot{\theta} + c_{\theta}c_{\phi}\dot{\psi} \\
+        \omega_y = c_{\phi}\dot{\theta} + c_{\theta}s_{\phi}\dot{\psi} \\
+        \omega_z = \dot{\phi} - s_{\theta}\dot{\psi}
+    \end{cases}
+\]
+Essendo le tre equazioni lineari rispetto alle derivate temporali degli angoli \(\dot{\phi}, \dot{\theta}, \dot{\psi}\), il sistema si può scrivere come:
+\[
+    \bm{\omega} = \bm{M}(\phi, \theta)
+    \begin{bmatrix}
+        \dot{\phi} \\
+        \dot{\theta} \\
+        \dot{\psi}
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        0 & -s_{\phi} & c_{\theta}c_{\phi}\\
+        0 & c_{\phi} & c_{\theta}s_{\phi}\\
+        1 & 0 & -s_{\theta}
+    \end{bmatrix}
     \begin{bmatrix}
         \dot{\phi} \\
         \dot{\theta} \\
         \dot{\psi}
     \end{bmatrix}
 \]
-dove \(\bm{M}\), talvolta chiamato Jacobiano analitico, è la matrice che mappa le derivate degli angoli di Eulero alla velocità angolare nello spazio:
+La matrice \(\bm{M}\) è invertibile se e solo se il suo determinante è non nullo, ovvero:
 \[
-    \bm{M}(\theta, \phi) =
-    \begin{bmatrix}
-        0 & -s_{\phi} & c_{\theta}c_{\phi}\\
-        0 & c_{\phi} & c_{\theta}s_{\phi}\\
-        1 & 0 & -s_{\theta}
-    \end{bmatrix}
+    \det(\bm{M}) = 1 \cdot (-s_\phi^2 c_\theta - c_\phi^2 c_\theta) = -c_\theta (s_\phi^2 + c_\phi^2) = -\cos\theta
 \]
-Questa matrice è invertibile se e solo se il suo determinante è non nullo. Il determinante è \(\det(\bm{M}) = -\cos(\theta)\). Quando \(\cos(\theta) = 0\), cioè per \(\theta = \pm 90^\circ\), la matrice diventa singolare. Questa condizione è nota come \textbf{gimbal lock}, e in tale configurazione non è possibile determinare univocamente le velocità \(\dot{\psi}, \dot{\theta}, \dot{\phi}\) a partire da un dato \(\bm{\omega}\).
-\subsection{Derivata Formula Di Rodrigues}
+Quando \(\cos\theta = 0\), ossia per \(\theta = \pm 90^\circ\), la matrice diventa singolare. Questa condizione è nota come \textbf{singolarità di rappresentazione} (o \textbf{gimbal lock}): in tale configurazione si perde un grado di libertà e non è più possibile risalire univocamente alle velocità degli angoli \(\dot{\phi}, \dot{\theta}, \dot{\psi}\) a partire da una velocità angolare \(\bm{\omega}\) assegnata.\subsection{Derivata Formula Di Rodrigues}
 Infine, si considera la rappresentazione asse-angolo, formalizzata dalla formula di Rodrigues. La matrice di rotazione è definita da un asse (versore) \(\bm{r}\) e un angolo \(\theta(t)\):
 \[
     \bm{R}(\theta, \bm{r}) = \bm{r}\bm{r}^T + (\bm{I} - \bm{r}\bm{r}^T)\cos(\theta) + \bm{S}(\bm{r})\sin(\theta)
@@ -3705,26 +3728,23 @@ Assumendo che l'asse di rotazione \(\bm{r}\) sia costante nel tempo e solo l'ang
 La relazione tra la velocità angolare \(\bm{\omega}\) e la derivata dell'angolo \(\dot{\theta}\) si otterrebbe, come nei casi precedenti, calcolando \(\bm{S}(\bm{\omega}) = \dot{\bm{R}}\bm{R}^T\). Sebbene l'espressione algebrica risultante sia complessa, essa rivela un legame fondamentale: nel caso di un asse di rotazione fisso, la velocità angolare è semplicemente \(\bm{\omega} = \dot{\theta}\bm{r}\), un vettore allineato con l'asse di rotazione e con magnitudine pari alla velocità di rotazione scalare.
 \newpage
 \section{Jacobiano Analitico e Geometrico}
-Lo \textbf{Jacobiano} è una matrice che mappa le velocità definite nello spazio dei giunti alle velocità definite nello spazio operativo. Quindi, stabilisce una relazione di linearità tra il vettore delle velocità dei giunti, \(\dot{\bm{q}}\), e il vettore delle velocità dell'end effector.\\
-La distinzione tra le diverse formulazioni dello Jacobiano risiede nel modo in cui la velocità dell'end-effector viene rappresentata.
+Lo \textbf{Jacobiano} è una matrice che mappa le velocità definite nello spazio dei giunti in quelle definite nello spazio operativo, stabilendo così una relazione lineare tra il vettore delle velocità di giunto \(\dot{\bm{q}}\) e il vettore delle velocità dell'end-effector. A seconda del modo in cui viene rappresentata la velocità dell'end-effector, si distinguono due diverse formulazioni dello Jacobiano: quella analitica e quella geometrica.
 
 \subsection{Jacobiano Analitico}
-Lo \textbf{Jacobiano Analitico}, denotato con \(\bm{J}_r(\bm{q})\), si ottiene attraverso la derivazione della funzione di cinematica diretta. Per poter calcolare questo Jacobiano, è indispensabile che la posa dell'end-effector sia espressa tramite una \textbf{rappresentazione minima}. Di conseguenza, la posa è descritta da un vettore \(\bm{p} \in \mathbb{R}^3\) che definisce la posizione e da un vettore \(\bm{\phi}\) che rappresenta l'orientamento utilizzando il numero minimo di parametri.
+Lo \textbf{Jacobiano analitico}, denotato con \(\bm{J}_r(\bm{q})\), si ottiene derivando direttamente la funzione di cinematica diretta. Affinché tale calcolo sia possibile, è indispensabile esprimere la posa dell'end-effector mediante una \textbf{rappresentazione minima}, descrivendola cioè attraverso un vettore \(\bm{p} \in \mathbb{R}^3\) per la posizione e un vettore \(\bm{\phi}\) che definisce l'orientamento con il numero minimo di parametri.
 
-Per ottenere la relazione tra le velocità, si deriva rispetto al tempo l'equazione della cinematica diretta, applicando la regola della catena:
+Derivando rispetto al tempo l'equazione della cinematica diretta e applicando la regola della catena, si ricava la relazione tra le velocità:
 \[
     \dot{\bm{r}} = \frac{d}{dt}\bm{f}_r(\bm{q}(t)) = \frac{\partial \bm{f}_r(\bm{q})}{\partial \bm{q}} \frac{d\bm{q}(t)}{dt}
 \]
-Questa equazione definisce il legame tra la velocità delle coordinate di posa \(\dot{\bm{r}}\) e la velocità dei giunti \(\dot{\bm{q}}\) attraverso lo Jacobiano analitico \(\bm{J}_r(\bm{q})\):
+Da questa espressione emerge direttamente il legame lineare tra la derivata temporale delle coordinate di posa \(\dot{\bm{r}}\) e la velocità dei giunti \(\dot{\bm{q}}\) tramite lo Jacobiano analitico \(\bm{J}_r(\bm{q})\):
 \[
     \dot{\bm{r}} = \bm{J}_r(\bm{q}) \; \dot{\bm{q}}
 \]
-Lo Jacobiano analitico è la matrice Jacobiana della funzione vettoriale \(\bm{f}_r\), le cui colonne sono le derivate parziali di \(\bm{f}_r\) rispetto a ciascuna variabile di giunto.
-
-Il vantaggio di questo approccio risiede nella sua derivazione matematica diretta. Tuttavia, il suo principale svantaggio è che le \textbf{singolarità} delle rappresentazioni minime si trasmettono alla struttura del Jacobiano analitico, rendendolo non invertibile.
+Dal punto di vista matematico, \(\bm{J}_r(\bm{q})\) coincide dunque con la matrice Jacobiana della funzione vettoriale \(\bm{f}_r\), le cui colonne sono costituite dalle derivate parziali di \(\bm{f}_r\) rispetto a ciascuna variabile di giunto. Sebbene questo approccio offra il vantaggio di una derivazione matematica immediata, presenta come principale svantaggio il fatto che le \textbf{singolarità} proprie delle rappresentazioni minime si trasferiscono alla struttura dello Jacobiano analitico, rendendolo non invertibile in tali configurazioni.
 
 \subsubsection{Esempio: Jacobiano Analitico del Robot RR Planare}
-Si consideri un manipolatore planare con due giunti rotoidali (RR), avente bracci di lunghezza \(l_1\) e \(l_2\). La cinematica diretta, espressa in una rappresentazione minima, descrive la posizione \((p_x, p_y)\) e l'orientamento \(\phi\) dell'end-effector nel piano:
+A titolo di esempio, si consideri un manipolatore planare a due giunti rotoidali (RR) con bracci di lunghezza \(l_1\) e \(l_2\). Utilizzando una rappresentazione minima, la cinematica diretta descrive la posizione \((p_x, p_y)\) e l'orientamento \(\phi\) dell'end-effector nel piano come:
 \[
     \bm{r} = \begin{bmatrix} p_x \\ p_y \\ \phi \end{bmatrix} =
     \begin{bmatrix}
@@ -3733,12 +3753,12 @@ Si consideri un manipolatore planare con due giunti rotoidali (RR), avente bracc
         q_1 + q_2
     \end{bmatrix}
 \]
-Lo Jacobiano analitico \(\bm{J}_r(\bm{q})\) si ottiene calcolando le derivate parziali delle componenti di \(\bm{r}\) rispetto alle variabili di giunto \(q_1\) e \(q_2\).
+Per determinare lo Jacobiano analitico \(\bm{J}_r(\bm{q})\), si calcolano le derivate parziali delle componenti del vettore \(\bm{r}\) rispetto alle variabili di giunto \(q_1\) e \(q_2\).
 
 \noindent
 \begin{minipage}{0.48\textwidth}
-    Le derivate parziali per la prima colonna\\
-    (rispetto a \(q_1\)) sono:
+    Le derivate parziali relative alla prima colonna\\
+    (rispetto a \(q_1\)) risultano:
     \begin{align*}
         \frac{\partial p_x}{\partial q_1} &= -l_1 \sin(q_1) - l_2 \sin(q_1+q_2) \\
         \frac{\partial p_y}{\partial q_1} &= l_1 \cos(q_1) + l_2 \cos(q_1+q_2) \\
@@ -3747,8 +3767,8 @@ Lo Jacobiano analitico \(\bm{J}_r(\bm{q})\) si ottiene calcolando le derivate pa
 \end{minipage}
 \hfill
 \begin{minipage}{0.48\textwidth}
-    Le derivate parziali per la seconda colonna\\
-    (rispetto a \(q_2\)) sono:
+    Le derivate parziali relative alla seconda colonna\\
+    (rispetto a \(q_2\)) risultano:
     \begin{align*}
         \frac{\partial p_x}{\partial q_2} &= -l_2 \sin(q_1+q_2) \\
         \frac{\partial p_y}{\partial q_2} &= l_2 \cos(q_1+q_2) \\
@@ -3756,7 +3776,7 @@ Lo Jacobiano analitico \(\bm{J}_r(\bm{q})\) si ottiene calcolando le derivate pa
     \end{align*}
 \end{minipage}
 
-Assemblando queste componenti, si ottiene la matrice Jacobiana analitica:
+Affiancando le due colonne così calcolate, si ottiene infine la matrice Jacobiana analitica:
 \[
     \bm{J}_r(\bm{q}) =
     \begin{bmatrix}
@@ -3767,12 +3787,12 @@ Assemblando queste componenti, si ottiene la matrice Jacobiana analitica:
 \]
 \newpage
 \subsection{Jacobiano Geometrico}
-Lo \textbf{Jacobiano geometrico}, denotato con \(\bm{J}(\bm{q})\), risolve le criticità legate alle configurazioni singolari. Consiste in una rappresentazione \textit{non minima} della velocità, ma più significativa. Invece di derivare la rappresentazione della posa, si esprime direttamente la velocità dell'end-effector in termini di:
+Per superare le criticità legate alle singolarità di rappresentazione, si introduce lo \textbf{Jacobiano geometrico}, denotato con \(\bm{J}(\bm{q})\), il quale adotta una descrizione \textit{non minima} ma fisicamente più significativa della velocità. Anziché derivare rispetto al tempo i parametri della posa, la velocità dell'end-effector viene espressa direttamente attraverso due grandezze cinematiche:
 \begin{itemize}
-    \item \(\bm{v}_e\): La \textbf{velocità lineare} di un punto solidale all'end-effector (tipicamente l'origine).
-    \item \(\bm{\omega}_e\): La \textbf{velocità angolare} del corpo rigido che costituisce l'end-effector.
+    \item \(\bm{v}_e\): la \textbf{velocità lineare} di un punto solidale all'end-effector (tipicamente l'origine);
+    \item \(\bm{\omega}_e\): la \textbf{velocità angolare} del corpo rigido che costituisce l'end-effector.
 \end{itemize}
-La relazione differenziale assume quindi la forma:
+Con questa scelta, la relazione cinematica differenziale assume la forma:
 \[
     \begin{bmatrix}
         \bm{v}_e \\
@@ -3781,17 +3801,16 @@ La relazione differenziale assume quindi la forma:
     =
     \bm{J}(\bm{q})\dot{\bm{q}}
 \]
-Per calcolare lo Jacobiano Geometrico si utilizza il \textbf{principio di sovrapposizione degli effetti}.\\
-La velocità totale dell'end-effector (sia lineare che angolare) è data dalla somma vettoriale dei contributi individuali di ogni giunto. Questo si esprime come:
+Il calcolo dello Jacobiano geometrico si fonda sul \textbf{principio di sovrapposizione degli effetti}, secondo cui la velocità complessiva dell'end-effector, sia lineare che angolare, è data dalla somma vettoriale dei contributi prodotti singolarmente da ciascun giunto:
 \[
     \begin{cases}
         \displaystyle{\bm{v}_e = \sum_{i=1}^n \bm{J}_{Li}(\bm{q})\dot{q}_i} \\
-       \displaystyle{ \bm{\omega}_e = \sum_{i=1}^n \bm{J}_{Ai}(\bm{q})\dot{q}_i}
+        \displaystyle{\bm{\omega}_e = \sum_{i=1}^n \bm{J}_{Ai}(\bm{q})\dot{q}_i}
     \end{cases}
 \]
-Dove \(\bm{J}_{Li}\) e \(\bm{J}_{Ai}\) sono i vettori \(3 \times 1\)  della \(i\)-esima colonna dello Jacobiano geometrico. In particolare, \(\bm{J}_{Li}\) rappresenta il contributo del giunto \(i\) alla velocità lineare dell'end-effector, mentre \(\bm{J}_{Ai}\) ne rappresenta il contributo del giunto \(i\) alla velocità angolare.
+In questo sistema, \(\bm{J}_{Li}\) e \(\bm{J}_{Ai}\) sono i due vettori che compongono la \(i\)-esima colonna dello Jacobiano geometrico e descrivono il contributo del giunto \(i\) rispettivamente alla velocità lineare e alla velocità angolare dell'end-effector.
 
-Di conseguenza, per determinare la colonna \(i\)-esima dello Jacobiano, si analizza l'effetto cinematico prodotto dalla velocità del giunto \(i\), ponendo tutte le altre velocità di giunto nulle (\(\dot{q}_j = 0\) per \(j \neq i\)).
+Di conseguenza, per determinare la colonna \(i\)-esima dello Jacobiano è sufficiente analizzare l'effetto cinematico prodotto dalla sola velocità del giunto \(i\), ponendo nulle tutte le altre velocità di giunto (\(\dot{q}_j = 0\) per \(j \neq i\)).
 \newpage
 
 \subsubsection{Calcolo Dettagliato Dello Jacobiano Geometrico}
@@ -3835,98 +3854,97 @@ Di conseguenza, per determinare la colonna \(i\)-esima dello Jacobiano, si anali
     \end{tikzpicture}
 \end{minipage}
 \begin{minipage}[c]{0.5\textwidth}
-    Il calcolo dello Jacobiano geometrico si basa su un approccio ricorsivo che propaga le velocità lungo la catena cinematica del manipolatore dalla base fino all'end-effector. In pratica vogliamo esprimere la velocità del corpo \(i\) (sia lineare che angolare) in funzione della velocità del corpo precedente, \(i-1\) e del moto relativo del giunto \(i\).
+    Il calcolo dello Jacobiano geometrico si basa su un approccio ricorsivo che propaga le velocità lungo la catena cinematica del manipolatore, procedendo dalla base fino all'end-effector. L'obiettivo consiste quindi nell'esprimere la velocità (sia lineare che angolare) del corpo \(i\) in funzione della velocità del corpo precedente \(i-1\) e del moto relativo introdotto dal giunto \(i\).
 \end{minipage}
 
-Sapendo che la posizione dell'origine del sistema di riferimento solidale al corpo \(i\), può essere espressa rispetto all'origine del sistema di riferimento precedente tramite:
+A tale scopo, si parte dalla relazione cinematica che esprime la posizione dell'origine del sistema di riferimento solidale al corpo \(i\) rispetto all'origine del sistema di riferimento precedente:
 \[
     \bm{p}_i = \;^{0}\bm{p}_{i-1} + \;^{0}\bm{R}_{i-1} \;^{i-1}{\bm{r}}_{\; i-1, \; i}
 \]
-Dove \(^{0}\bm{p}_{i-1}\) e \(^{0}\bm{R}_{i-1} \) sono, rispettivamente, posizione e orientamento del sistema di riferimento \(i-1\) rispetto al sistema di riferimento fisso e \(^{i-1}{\bm{r}}_{\; i-1, \; i}\) è il vettore che congiunge le origini dei sistemi di riferimento \(i-1\) e \(i\). Il prodotto con la matrice di rotazione permette di esprimerlo nelle coordinate della terna base.
+dove \(^{0}\bm{p}_{i-1}\) e \(^{0}\bm{R}_{i-1} \) rappresentano, rispettivamente, la posizione e l'orientamento del sistema di riferimento \(i-1\) rispetto al sistema di riferimento fisso, mentre \(^{i-1}{\bm{r}}_{\; i-1, \; i}\) è il vettore che congiunge le origini dei sistemi di riferimento \(i-1\) e \(i\) e il prodotto con la matrice di rotazione consente di esprimerlo nelle coordinate della terna base.
 
-Analogamente, per gli \textbf{orientamenti}, la matrice di rotazione \(\;^{0}\bm{R}_i\) che descrive l'orientamento della terna \(i\) rispetto al sistema di riferimento fisso si ottiene componendo la rotazione della terna precedente, \(\bm{R}_{i-1}\), con la rotazione relativa tra la terna \(i\) e la \(i-1\), denotata con \(^{i-1}{\bm{R}}_i\):
+Analogamente, per quanto riguarda gli \textbf{orientamenti}, la matrice di rotazione \(^{0}\bm{R}_i\) che descrive l'orientamento della terna \(i\) rispetto al sistema di riferimento fisso si ottiene componendo la rotazione della terna precedente, \(\bm{R}_{i-1}\), con la rotazione relativa tra la terna \(i\) e la \(i-1\), denotata con \(^{i-1}{\bm{R}}_i\):
 \[
     \;^{0}\bm{R}_i = \;^{0}\bm{R}_{i-1} \;^{i-1}{\bm{R}}_i
 \]
-Per ottenere una relazione ricorsiva per le velocità angolari, deriviamo rispetto al tempo la formula degli orientamenti. Applicando la regola di derivazione del prodotto:
+Per ricavare una relazione ricorsiva per le velocità angolari, si deriva rispetto al tempo la formula degli orientamenti applicando la regola di derivazione del prodotto:
 \[
-    \dot{\bm{R}}_i = \dot{\bm{R}}_{i-1} \;^{i-1}{\bm{R}}_i + \bm{R}_{i-1} \dot{\;^{i-1}{\bm{R}}}_i
+    \dot{\bm{R}}_i = \dot{\bm{R}}_{i-1} \;^{i-1}{\bm{R}}_i + \bm{R}_{i-1} \;^{i-1}\dot{{\bm{R}}}_i
 \]
-Ricordando la relazione fondamentale che lega la derivata di una matrice di rotazione alla velocità angolare \(\bm{\omega}\) attraverso la matrice antisimmetrica \(\dot{\bm{R}} = \bm{S}(\bm{\omega})\bm{R}\) e sostituendo nella derivata, si ottiene:
+Sfruttando la relazione fondamentale che lega la derivata di una matrice di rotazione alla velocità angolare \(\bm{\omega}\), ossia \(\bm{S}(\bm{\omega}) = \dot{\bm{R}} \bm{R}^{T}\), e sostituendola nella derivata appena calcolata, si ottiene:
 \[
     \bm{S}(\bm{\omega}_i)\bm{R}_i = \bm{S}(\bm{\omega}_{i-1})\bm{R}_{i-1}\;^{i-1}{\bm{R}}_i + \bm{R}_{i-1} \left( \bm{S}(\;^{i-1}{\bm{\omega}}_i) \;^{i-1}{\bm{R}}_i \right)
 \]
-Dove \(\bm{\omega}_i\) e \(\bm{\omega}_{i-1}\) sono le velocità angolari dei corpi \(i\) e \(i-1\) espresse nella terna base, mentre \(^{i-1}{\bm{\omega}}_i\) è la velocità angolare relativa del corpo \(i\) rispetto al corpo \(i-1\), espressa nella terna \(i-1\).
+in cui \(\bm{\omega}_i\) e \(\bm{\omega}_{i-1}\) sono le velocità angolari dei corpi \(i\) e \(i-1\) espresse nella terna base, mentre \(^{i-1}{\bm{\omega}}_i\) è la velocità angolare relativa del corpo \(i\) rispetto al corpo \(i-1\), espressa nella terna \(i-1\).
 
-Analizziamo i termini a destra dell'equazione:
+Analizziamo ora separatamente i due termini a destra dell'equazione:
 \begin{enumerate}
-    \item Il primo termine si semplifica immediatamente riconoscendo che \(\bm{R}_{i-1}\;^{i-1}{\bm{R}}_i = \bm{R}_i\). Quindi:
+    \item Il primo termine si semplifica immediatamente riconoscendo che \(\bm{R}_{i-1}\;^{i-1}{\bm{R}}_i = \bm{R}_i\), da cui segue:
     \[
         \bm{S}(\bm{\omega}_{i-1})\bm{R}_{i-1}\;^{i-1}{\bm{R}}_i = \bm{S}(\bm{\omega}_{i-1})\bm{R}_i
     \]
-    \item Il secondo termine richiede più attenzione. La velocità angolare \(^{i-1}{\bm{\omega}}_i\) è espressa in una terna diversa rispetto alle altre che compaiono in questo termine. Al fine di poterle sommare si devono esprimere tutte nella stessa terna (quella base). Ricordando la proprietà di trasformazione delle matrici antisimmetriche \(\bm{R}\bm{S}(\bm{\omega})\bm{R}^T = \bm{S}(\bm{R}\bm{\omega})\).\\
-    Ricordando che \(\bm{R}_{i-1}^T\bm{R}_{i-1} = \bm{I}\) e applicando la proprietà appena discussa, il termine diventa
+    \item Il secondo termine richiede invece maggiore attenzione, poiché la velocità angolare \(^{i-1}{\bm{\omega}}_i\) è espressa in una terna diversa rispetto alle altre grandezze che compaiono nell'equazione; per poter sommare i vari contributi è necessario esprimerli tutti nella stessa terna (quella base). Sfruttando l'identità \(\bm{R}_{i-1}^T\bm{R}_{i-1} = \bm{I}\) e la proprietà di trasformazione delle matrici antisimmetriche \(\bm{R}\bm{S}(\bm{\omega})\bm{R}^T = \bm{S}(\bm{R}\bm{\omega})\), il termine si riscrive come:
     \[
         \bm{R}_{i-1} \left( \bm{S}(\;^{i-1}{\bm{\omega}}_i) \;^{i-1}{\bm{R}}_i \right) = \underbrace{\bm{R}_{i-1} \bm{S}(\;^{i-1}{\bm{\omega}}_i) \textcolor{red}{\bm{R}_{i-1}^T}}_{= \; \bm{S}(\bm{R}\bm{\omega})}\textcolor{red}{\bm{R}_{i-1}}\;^{i-1}{\bm{R}}_i =
     \]
     \[
         = \bm{S}(\bm{R}_{i-1}\;^{i-1}{\bm{\omega}}_{i}) \; \underbrace{\bm{R}_{i-1} \;^{i-1}{\bm{R}}_i}_{\bm{R}_i}
     \]
-    Dove \(\bm{R}_{i-1}\;^{i-1}{\bm{\omega}}_{i}\) rappresenta la velocità angolare del giunto \(i\) espressa nelle coordinate della terna base.
+    dove \(\bm{R}_{i-1}\;^{i-1}{\bm{\omega}}_{i}\) rappresenta la velocità angolare relativa del giunto \(i\) espressa nelle coordinate della terna base.
     \newpage
-    Ponendo \({}^{0}\bm{\omega}_{i-1,i} = \bm{R}_{i-1}\;^{i-1}{\bm{\omega}}_i\), il secondo termine diventa
+    Ponendo quindi \({}^{0}\bm{\omega}_{i-1,i} = \bm{R}_{i-1}\;^{i-1}{\bm{\omega}}_i\), il secondo termine assume la forma compatta:
     \[
         \bm{R}_{i-1} \left( \bm{S}(\;^{i-1}{\bm{\omega}}_i) \;^{i-1}{\bm{R}}_i \right) = \bm{S}({}^{0}\bm{\omega}_{i-1,i})\bm{R}_i
     \]
 \end{enumerate}
 
-Sostituendo le forme semplificate nell'equazione di partenza, otteniamo:
+Sostituendo le due espressioni semplificate nell'equazione di partenza e raccogliendo a destra \(\bm{R}_i\), si ottiene:
 \[
     \bm{S}(\bm{\omega}_i)\bm{R}_i = \bm{S}(\bm{\omega}_{i-1})\bm{R}_i + \bm{S}({}^{0}\bm{\omega}_{i-1,i})\bm{R}_i
 \]
 \[
     \bm{S}(\bm{\omega}_i)\bm{R}_i = \biggl[\bm{S}(\bm{\omega}_{i-1}) + \bm{S}({}^{0}\bm{\omega}_{i-1,i})\biggr]\bm{R}_i
 \]
-Essendo \(\bm{R}_i\) non singolare, post-moltiplicando ambo i membri per \(\bm{R}_i^T\) si ottiene:
+Essendo \(\bm{R}_i\) non singolare, è possibile post-moltiplicare ambo i membri per \(\bm{R}_i^T\), ricavando:
 \[
     \bm{S}(\bm{\omega}_i) = \bm{S}(\bm{\omega}_{i-1}) + \bm{S}({}^{0}\bm{\omega}_{i-1,i})
 \]
-La mappatura \(\bm{S}(\cdot)\) è lineare quindi relazione vale anche per i vettori argomento, ottenendo la regola di composizione additiva per le velocità angolari:
+Poiché l'operatore \(\bm{S}(\cdot)\) è lineare, la medesima relazione vale direttamente anche per i vettori argomento, fornendo così la regola di composizione additiva per le velocità angolari:
 \[
     \bm{\omega}_i = \bm{\omega}_{i-1} + {}^{0}\bm{\omega}_{i-1,i}
 \]
-Quindi: la velocità angolare totale del corpo \(i\) è la somma della velocità angolare del corpo precedente e della velocità angolare relativa fornita dal giunto \(i\).
+In conclusione, la velocità angolare totale del corpo \(i\) è data dalla somma tra la velocità angolare del corpo precedente e la velocità angolare relativa fornita dal giunto \(i\).
 
-Per ottenere la velocità lineare \(\dot{\bm{p}}_i\), si deriva rispetto al tempo la relazione ricorsiva delle posizioni:
+Per ricavare la velocità lineare \(\dot{\bm{p}}_i\), si deriva rispetto al tempo la relazione ricorsiva delle posizioni:
 \[
     \dot{\bm{p}}_i = \frac{d}{dt} \biggl( \;^{0}\bm{p}_{i-1} + \;^{0}\bm{R}_{i-1} \;^{i-1}{\bm{r}}_{\; i-1, \; i} \biggr) = \;^{0}\dot{\bm{p}}_{i-1} + \frac{d}{dt} \biggl( {}^{0}\bm{R}_{i-1} \;^{i-1}{\bm{r}}_{\; i-1, \; i} \biggr)
 \]
-Il secondo termine rappresenta la velocità dell'origine della terna \(i\) solidale al corpo \(i-1\) (il braccio) che si muove. Per calcolarne la derivata, si devono considerare due contributi:
+Nel secondo termine compare la derivata del prodotto tra la matrice di rotazione \({}^{0}\bm{R}_{i-1}\) e il vettore \({}^{i-1}{\bm{r}}_{\; i-1, \; i}\), entrambi variabili nel tempo. Tale derivata tiene conto di due contributi:
 \begin{enumerate}
-    \item La rotazione del corpo \(i-1\), descritta da \(\bm{\omega}_{i-1}\).
-    \item La variazione del vettore \(^{i-1}{\bm{r}}_i\) nel tempo, che dà origine alla velocità lineare relativa.
+    \item la rotazione del corpo \(i-1\), descritta dalla velocità angolare \(\bm{\omega}_{i-1}\);
+    \item la variazione nel tempo del vettore \(^{i-1}{\bm{r}}_i\), che dà origine alla velocità lineare relativa.
 \end{enumerate}
-Applicando la \textbf{formula di Poisson}, la derivata di un vettore espresso in una terna rotante è:
+Per sviluppare questa derivata si utilizza la \textbf{formula di Poisson}, che esprime la derivata temporale di un vettore espresso in una terna rotante:
 \[
     \frac{d}{dt}(\bm{R}\bm{v}) = \dot{\bm{R}}\bm{v} + \bm{R}\dot{\bm{v}} = (\bm{S}(\bm{\omega})\bm{R})\bm{v} + \bm{R}\dot{\bm{v}} = \bm{\omega} \times (\bm{R}\bm{v}) + \bm{R}\dot{\bm{v}}
 \]
-Applicando a questo caso
+Applicando questo risultato al termine in esame, si ottiene:
 \[
     \frac{d}{dt} \biggl( {}^{0}\bm{R}_{i-1} \;{}^{i-1}{\bm{r}}_{\; i-1, \; i} \biggr) = \bm{\omega} \times ({}^{0}\bm{R}_{i-1} \; \;{}^{i-1}{\bm{r}}_{\; i-1, \; i}) + {}^{0}\bm{R}_{i-1} \; \;{}^{i-1}{\dot{\bm{r}}}_{\; i-1, \; i}
 \]
-Il secondo termine è per definizione la velocità lineare relativa del giunto \(i\) espressa in coordinate base, che indichiamo con \(\bm{v}_{i-1,i}\). Sostituendo questo risultato nell'espressione per \(\dot{\bm{p}}_i\), si ottiene la formula ricorsiva per la velocità lineare:
+Il termine \({}^{0}\bm{R}_{i-1} \;{}^{i-1}{\dot{\bm{r}}}_{\; i-1, \; i}\) è, per definizione, la velocità lineare relativa del giunto \(i\) espressa nella terna base e viene indicato con \(\bm{v}_{i-1,i}\). Sostituendo nell'espressione di \(\dot{\bm{p}}_i\), si ha:
 \[
     \dot{\bm{p}}_i = \;^{0}\dot{\bm{p}}_{i-1} + \bm{\omega} \times ({}^{0}\bm{R}_{i-1} \; \;{}^{i-1}{\bm{r}}_{\; i-1, \; i}) + \bm{v}_{i-1,i}
 \]
-Si osserva che
+Ricavando infine dalla relazione delle posizioni l'uguaglianza:
 \[
     \bm{p}_i = \;^{0}\bm{p}_{i-1} + \;^{0}\bm{R}_{i-1} \;^{i-1}{\bm{r}}_{\; i-1, \; i} \qquad \longrightarrow \qquad \bm{p}_i - \;^{0}\bm{p}_{i-1} = \;^{0}\bm{R}_{i-1} \;^{i-1}{\bm{r}}_{\; i-1, \; i}
 \]
-Quindi la precedente diventa
+si giunge alla forma finale della formula ricorsiva per la velocità lineare:
 \[
     \dot{\bm{p}}_i = \;^{0}\dot{\bm{p}}_{i-1} + \bm{\omega} \times (\bm{p}_i - \;^{0}\bm{p}_{i-1}) + \bm{v}_{i-1,i}
 \]
-Dove \(\;^{0}\dot{\bm{p}}_{i-1}\)  è la velocità traslazionale dell'origine del sistema di riferimento \(i-1\), \(\bm{\omega} \times (\bm{p}_i - \;^{0}\bm{p}_{i-1})\) è la velocità tangenziale del punto \(p_i\) indotta dalla rotazione del corpo \(i-1\) attorno all'origine \(p_{i-1}\) e \(\bm{v}_{i-1,i}\) è la velocità lineare relativa, ovvero la velocità dell'origine \(p_i\) rispetto a \(p_{i-1}\) causata esclusivamente dal moto del giunto \(i\)
+La velocità lineare \(\dot{\bm{p}}_i\) è quindi la somma di tre termini: \(\;^{0}\dot{\bm{p}}_{i-1}\) è la velocità di traslazione dell'origine del sistema di riferimento \(i-1\), \(\bm{\omega} \times (\bm{p}_i - \;^{0}\bm{p}_{i-1})\) è la velocità tangenziale del punto \(p_i\) indotta dalla rotazione del corpo \(i-1\) attorno all'origine \(p_{i-1}\), e \(\bm{v}_{i-1,i}\) è la velocità lineare relativa dell'origine \(p_i\) rispetto a \(p_{i-1}\) dovuta esclusivamente al moto del giunto \(i\).
 
 \newpage
 \subsection{Specializzazione Per Tipi di Giunto}
@@ -4044,7 +4062,7 @@ Lo Jacobiano geometrico, denotato con \(\bm{J}(\bm{q})\), è la matrice \(6 \tim
         \bm{v}_e \\
         \bm{\omega}_e
     \end{bmatrix}}_{\in \mathbb{R}^{6}}
-    =
+    \;=\;
     \underbrace{\begin{bmatrix}
         \bm{J}_{L}(\bm{q})\\
         \hline
