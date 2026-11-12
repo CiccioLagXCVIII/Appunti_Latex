@@ -1732,14 +1732,14 @@ Questa convenzione presenta alcuni casi di ambiguità, per i quali si seguono de
 
 Una volta definiti i sistemi di riferimento \(RF_{i}\), la posa della terna \(i\) rispetto alla terna \(i-1\) è descritta da quattro parametri.
 
-\begin{minipage}[h]{0.48\textwidth}
-    \subsubsection*{Parametro \(\bm{a_{i}}\)}
-    Rappresenta la distanza tra gli assi \(z_{i-1}\) e \(z_{i}\), misurata lungo l'asse \(x_i\). È un parametro fisso che dipende dalla geometria del braccio \(i\).
+\begin{minipage}[h]{0.45\textwidth}
+    \subsubsection*{Parametro \(\bm{\theta_{i}}\)}
+    Rappresenta l'angolo tra gli assi \(x_{i-1}\) e \(x_i\), misurato intorno all'asse \(z_{i-1}\). Se il giunto \(i\) è rotoidale, \(\theta_i\) è la variabile di giunto. Altrimenti, è un parametro fisso. La convenzione del segno positivo è una rotazione antioraria da \(x_{i-1}\) a \(x_i\) vista lungo \(z_{i-1}\).
 \end{minipage}
 \hfill
-\begin{minipage}[h]{0.48\textwidth}
+\begin{minipage}[h]{0.45\textwidth}
     \begin{center}
-        \includegraphics[width=0.75\linewidth]{DH_Images/DH_5.jpg}
+        \includegraphics[width=0.75\textwidth]{DH_Images/DH_8.jpg}
     \end{center}
 \end{minipage}
 
@@ -1771,14 +1771,14 @@ Una volta definiti i sistemi di riferimento \(RF_{i}\), la posa della terna \(i\
 
 \vspace{1cm}
 
-\begin{minipage}[h]{0.45\textwidth}
-    \subsubsection*{Parametro \(\bm{\theta_{i}}\)}
-    Rappresenta l'angolo tra gli assi \(x_{i-1}\) e \(x_i\), misurato intorno all'asse \(z_{i-1}\). Se il giunto \(i\) è rotoidale, \(\theta_i\) è la variabile di giunto. Altrimenti, è un parametro fisso. La convenzione del segno positivo è una rotazione antioraria da \(x_{i-1}\) a \(x_i\) vista lungo \(z_{i-1}\).
+\begin{minipage}[h]{0.48\textwidth}
+    \subsubsection*{Parametro \(\bm{a_{i}}\)}
+    Rappresenta la distanza tra gli assi \(z_{i-1}\) e \(z_{i}\), misurata lungo l'asse \(x_i\). È un parametro fisso che dipende dalla geometria del braccio \(i\).
 \end{minipage}
 \hfill
-\begin{minipage}[h]{0.45\textwidth}
+\begin{minipage}[h]{0.48\textwidth}
     \begin{center}
-        \includegraphics[width=0.75\textwidth]{DH_Images/DH_8.jpg}
+        \includegraphics[width=0.75\linewidth]{DH_Images/DH_5.jpg}
     \end{center}
 \end{minipage}
 
@@ -4126,34 +4126,34 @@ I contributi di ciascun tipo di giunto alla velocità lineare e angolare dell'en
 
 \newpage
 \subsection{Analisi Della Mobilità Tramite Jacobiano}
-Fissata una specifica configurazione dei giunti $\bm{q}$, si può determinare quali movimenti l'end-effector può compiere istantaneamente. Quindi, Per una data configurazione, l'insieme di tutte le velocità che l'end-effector può assumere, è lo \textbf{Spazio Immagine} della matrice Jacobiana, indicato con $R(\bm{J})$. La dimensione di questo spazio, è definita dal rango della matrice, $\rho(\bm{J})$ e a seconda di questo valore possiamo trovarci in due situazioni distinte.
+Fissata una specifica configurazione dei giunti $\bm{q}$, è possibile determinare quali movimenti l'end-effector può compiere istantaneamente. In tale configurazione, l'insieme di tutte le velocità che l'end-effector può assumere coincide con lo \textbf{spazio immagine} della matrice Jacobiana, indicato con $R(\bm{J})$. La dimensione di questo sottospazio è definita dal rango della matrice, $\rho(\bm{J})$, e in base al suo valore si possono presentare due situazioni distinte.
 
-\paragraph{Configurazione Non-Singolare (Rango Pieno)}\mbox{}\\
-Una configurazione è non-singolare quando il rango dello Jacobiano è massimo e coincide con la dimensione $m$ dello spazio di lavoro (con $m \le n$, dove $n$ è il numero di giunti). In questo caso, lo spazio delle velocità raggiungibili copre l'intero spazio di lavoro $\mathbb{R}^m$, e quindi il manipolatore gode della massima mobilità. Scegliendo opportunamente le velocità dei giunti, è possibile muovere l'end-effector istantaneamente in qualsiasi direzione desiderata.
+\paragraph{Configurazione Non Singolare (Rango Pieno)}\mbox{}\\
+Una configurazione è non singolare quando il rango dello Jacobiano è massimo e coincide con la dimensione $m$ dello spazio di lavoro (con $m \le n$, dove $n$ è il numero di giunti). In questo caso, l'insieme delle velocità raggiungibili copre l'intero spazio $\mathbb{R}^m$ e il manipolatore gode della massima mobilità: scegliendo opportunamente le velocità dei giunti, è infatti possibile muovere istantaneamente l'end-effector in qualsiasi direzione desiderata.
 
 \paragraph{Configurazione Singolare (Rango Deficiente)}\mbox{}\\
-Una configurazione è singolare se il rango della Jacobiana è inferiore alla dimensione dello spazio di lavoro, ovvero $\rho(\bm{J}) < m$. In questa condizione, lo spazio delle velocità raggiungibili è un sottospazio proprio di $\mathbb{R}^m$ e quindi la mobilità del robot è limitata. Questo significa che esistono delle \textbf{direzioni di moto precluse}, ovvero delle velocità che l'end-effector è istantaneamente incapace di produrre, indipendentemente dalla velocità impressa ai giunti
+Una configurazione è invece singolare quando il rango dello Jacobiano risulta inferiore alla dimensione dello spazio di lavoro, ovvero $\rho(\bm{J}) < m$. In questa condizione, lo spazio delle velocità raggiungibili si riduce a un sottospazio proprio di $\mathbb{R}^m$ e la mobilità del robot risulta limitata. Ciò implica l'esistenza di \textbf{direzioni di moto precluse}, ossia velocità che l'end-effector è istantaneamente incapace di produrre, indipendentemente dalle velocità impresse ai giunti.
 
 \subsubsection{Identificare le Direzioni di Moto Precluse}
-Attraverso la cinematica differenziale, lo Jacobiano mette in relazione le velocità dei giunti con le velocità lineari e angolari dell'end-effector. Si può scomporre lo spazio delle velocità dell'end-effector in due sottospazi ortogonali e complementari: lo spazio immagine dello Jacobiano $R(\bm{J})$, e lo spazio nullo della sua trasposta, $N(\bm{J}^T)$. Questa scomposizione, espressa dalla relazione:
+Attraverso la cinematica differenziale, lo Jacobiano mette in relazione le velocità dei giunti con le velocità lineari e angolari dell'end-effector. In particolare, lo spazio delle velocità dell'end-effector può essere scomposto in due sottospazi ortogonali e complementari: lo spazio immagine dello Jacobiano, $R(\bm{J})$, e il nucleo della sua trasposta, $N(\bm{J}^T)$. Tale scomposizione è espressa dalla relazione:
 \[
     \mathbb{R}^m = R(\bm{J}) \oplus N(\bm{J}^T)
 \]
-Questo significa che ogni vettore di velocità $\dot{\bm{r}}$ nello spazio di lavoro può essere visto unicamente come la somma di una componente in $R(\bm{J})$ e una in $N(\bm{J}^T)$.
+Ciò significa che ogni vettore di velocità $\dot{\bm{r}}$ nello spazio di lavoro può essere espresso in modo univoco come somma di una componente appartenente a $R(\bm{J})$ e di una appartenente a $N(\bm{J}^T)$.
 
-Da ciò ne consegue una distinzione netta:
+Da questa proprietà consegue una distinzione netta tra due tipologie di direzioni:
 \begin{itemize}
-    \item Le \textbf{Direzioni Di Moto Raggiungibili} sono tutte quelle che appartengono allo spazio immagine dello Jacobiano, $R(\bm{J})$. Questo sottospazio è generato dalle combinazioni lineari delle colonne $\bm{J}_{i}$ e rappresenta l'insieme di tutte le velocità che l'end-effector può generare a partire da una specifica configurazione del vettore delle variabili di giunto \(\bm{q}\)
-    \item Le \textbf{Direzioni Di Moto Precluse}, sono le direzioni che si trovano nel nucleo della Jacobiana trasposta $N(\bm{J}^T)$. Questo sottospazio è ortogonale a $R(\bm{J})$ e contiene tutte le direzioni di velocità che l'end-effector non è in grado di eseguire in una data configurazione. In pratica, per trovare le direzioni in cui il movimento del robot è bloccato basta calcolare una base per il kernel di $\bm{J}^T$.
+    \item Le \textbf{direzioni di moto raggiungibili} sono tutte quelle che appartengono allo spazio immagine dello Jacobiano, $R(\bm{J})$. Questo sottospazio è generato dalle combinazioni lineari delle colonne $\bm{J}_{i}$ e rappresenta l'insieme di tutte le velocità che l'end-effector può generare a partire da una specifica configurazione \(\bm{q}\) del vettore delle variabili di giunto.
+    \item Le \textbf{direzioni di moto precluse} sono invece quelle che appartengono al nucleo dello Jacobiano trasposto, $N(\bm{J}^T)$. Questo sottospazio, ortogonale a $R(\bm{J})$, contiene tutte le direzioni di velocità che l'end-effector non è in grado di eseguire nella configurazione considerata. In pratica, per individuare le direzioni lungo le quali il movimento del robot è bloccato è sufficiente calcolare una base per il kernel di $\bm{J}^T$.
 \end{itemize}
 
 \subsubsection{Distinzione Fondamentale: Direzioni Precluse e Automovimenti}
-È molto importante notare che il concetto di \textit{direzione di moto preclusa} è diverso dal concetto di \textit{automovimento}, in quanto sono due fenomeni diversi e appartengono a sottospazi differenti.
+È importante non confondere il concetto di \textit{direzione di moto preclusa} con quello di \textit{automovimento}, poiché si tratta di due fenomeni distinti che appartengono a sottospazi differenti:
 
 \begin{itemize}
-    \item \textbf{Direzioni di Moto Precluse ($N(\bm{J}^T)$):} Sono \textit{velocità dell'end-effector} che il robot non può fisicamente realizzare. Sono una \textbf{limitazione intrinseca} del manipolatore in una specifica configurazione.
+    \item \textbf{Direzioni di Moto Precluse ($N(\bm{J}^T)$):} Sono \textit{velocità dell'end-effector} che il robot non può fisicamente realizzare e costituiscono una \textbf{limitazione intrinseca} del manipolatore in una specifica configurazione.
 
-    \item \textbf{Automovimenti ($N(\bm{J})$):} Sono \textit{velocità dei giunti} che, anche se fanno muovere la struttura del robot, \textbf{non producono una variazione della posa dell'end-effector} ($\dot{\bm{r}} = \bm{J}\dot{\bm{q}} = \bm{0}$). Rappresentano una \textbf{capacità aggiuntiva} del robot, tipica dei sistemi ridondanti. Un esempio pratico è la capacità di un braccio robotico con più di sei giunti di riposizionare il gomito per evitare una collisione, il tutto senza che la posa dell'end-effector cambi.
+    \item \textbf{Automovimenti ($N(\bm{J})$):} Sono invece \textit{velocità dei giunti} che, pur mettendo in movimento la struttura del robot, \textbf{non producono alcuna variazione della posa dell'end-effector} ($\dot{\bm{r}} = \bm{J}\dot{\bm{q}} = \bm{0}$). Rappresentano una \textbf{capacità aggiuntiva} del robot, tipica dei sistemi ridondanti: un esempio pratico è un braccio robotico con più di sei giunti capace di riposizionare il gomito per evitare una collisione senza che la posa dell'end-effector cambi.
 \end{itemize}
 
 % \[
@@ -4165,7 +4165,7 @@ Da ciò ne consegue una distinzione netta:
 
 \newpage
 \subsection{Esempio: Jacobiano Geometrico Del Robot Planare RR}
-In questa sezione si applica il metodo sistematico per il calcolo del Jacobiano geometrico, uno strumento matematico fondamentale che mette in relazione le velocità dei giunti di un robot con le velocità lineari e angolari del suo end-effector. L'analisi è svolta per un robot planare a due giunti rotoidali (RR), come mostrato in figura.
+In questa sezione si applica il metodo sistematico per il calcolo dello Jacobiano geometrico, lo strumento matematico fondamentale che mette in relazione le velocità dei giunti di un robot con le velocità lineari e angolari del suo end-effector. L'analisi è svolta su un robot planare a due giunti rotoidali (RR), come mostrato in figura.
 
 \begin{minipage}[r]{0.25\textwidth}
     \centering
@@ -4173,7 +4173,7 @@ In questa sezione si applica il metodo sistematico per il calcolo del Jacobiano 
 \end{minipage}
 \hfill
 \begin{minipage}[c]{0.73\textwidth}
-    Il primo passo consiste nel definire le matrici di trasformazione omogenea che descrivono la posizione e l'orientamento di ogni terna solidale ai bracci rispetto alla terna base. Utilizzando la convenzione di Denavit-Hartenberg, si ottengono le seguenti matrici. Per semplicità di notazione, si adotta la forma compatta \(c_i = \cos(q_i)\), \(s_i = \sin(q_i)\), \(c_{ij} = \cos(q_i + q_j)\) e \(s_{ij} = \sin(q_i + q_j)\).
+    Il primo passo consiste nel definire le matrici di trasformazione omogenea che descrivono la posizione e l'orientamento di ciascuna terna solidale ai bracci rispetto alla terna base. Applicando la convenzione di Denavit-Hartenberg e adottando, per semplicità di notazione, la forma compatta \(c_i = \cos(q_i)\), \(s_i = \sin(q_i)\), \(c_{ij} = \cos(q_i + q_j)\) e \(s_{ij} = \sin(q_i + q_j)\), si ottengono le seguenti matrici:
     \[
         \resizebox{\linewidth}{!}{\(\displaystyle
         \;^{0}{\bm{T}}_0 = \bm{I}_{4 \times 4}
@@ -4195,27 +4195,27 @@ In questa sezione si applica il metodo sistematico per il calcolo del Jacobiano 
         \end{bmatrix}
         \)}
     \]
-    Da queste matrici si estraggono i vettori necessari per costruire le colonne del Jacobiano.
+    Da queste matrici verranno estratti i vettori necessari per costruire le colonne dello Jacobiano.
 \end{minipage}
 
-Lo Jacobiano \(\bm{J}(\bm{q})\) è una matrice \(6 \times 2\) (poiché l'end-effector si muove nello spazio 3D e il robot ha 2 gradi di libertà) le cui colonne \( \bm{J}_i \) rappresentano il contributo del giunto \(i\)-esimo alla velocità dell'end-effector.
+Nel caso in esame, lo Jacobiano \(\bm{J}(\bm{q})\) è una matrice \(6 \times 2\) (poiché l'end-effector si muove nello spazio 3D e il robot ha 2 gradi di libertà), le cui colonne \(\bm{J}_i\) rappresentano il contributo del giunto \(i\)-esimo alla velocità dell'end-effector.
 
-\paragraph{Calcolo Per La Colonna 1 (Giunto 1)}
-La prima colonna del Jacobiano, \(\bm{J}_1\), descrive l'effetto della velocità del primo giunto, \(\dot{q}_1\), sulla velocità dell'end-effector. Poiché il giunto 1 è rotoidale, la sua colonna è data da:
+\paragraph{Calcolo per la Colonna 1 (Giunto 1)}
+La prima colonna dello Jacobiano, \(\bm{J}_1\), descrive l'effetto della velocità del primo giunto, \(\dot{q}_1\), sulla velocità dell'end-effector. Poiché il giunto 1 è rotoidale, essa è data da:
 \[ \bm{J}_1 = \begin{bmatrix} \bm{J}_{L1} \\ \bm{J}_{A1} \end{bmatrix} = \begin{bmatrix} \bm{z}_0 \times (\bm{p}_{0,e} - \bm{p}_{0,0}) \\ \bm{z}_0 \end{bmatrix} \]
-dove \(\bm{z}_0\) è l'asse di rotazione del giunto 1 e \((\bm{p}_{0,e} - \bm{p}_{0,0})\) è il vettore "braccio di leva" che va dall'origine del giunto 1 all'end-effector.
+dove \(\bm{z}_0\) è l'asse di rotazione del giunto 1 e \((\bm{p}_{0,e} - \bm{p}_{0,0})\) è il vettore ``braccio di leva'' che va dall'origine del giunto 1 all'end-effector. Individuiamo quindi i due vettori necessari:
 
 \begin{itemize}
-    \item \textbf{Asse di rotazione \(\bm{z}_0\):} Il primo giunto ruota attorno all'asse \(z\) della terna base (terna 0). Questo vettore è quindi per definizione:
+    \item \textbf{Asse di rotazione \(\bm{z}_0\):} Il primo giunto ruota attorno all'asse \(z\) della terna base (terna 0); questo vettore è quindi, per definizione:
     \[ \bm{z}_0 = \begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix} \]
-    \item \textbf{Vettore Leva \(\bm{p}_{0,e}\):} È il vettore posizione dell'end-effector rispetto alla terna base. Questo vettore si estrae direttamente dalla quarta colonna della matrice di trasformazione totale \(\;^{0}{\bm{T}}_2\). L'origine del giunto 1 coincide con l'origine della terna base, quindi \(\bm{p}_{0,0} = \bm{0}\) e il braccio di leva è semplicemente \(\bm{p}_{0,e}\).
+    \item \textbf{Vettore leva \(\bm{p}_{0,e}\):} È il vettore posizione dell'end-effector rispetto alla terna base e si estrae direttamente dalla quarta colonna della matrice di trasformazione totale \(\;^{0}{\bm{T}}_2\). Poiché l'origine del giunto 1 coincide con quella della terna base, si ha \(\bm{p}_{0,0} = \bm{0}\) e il braccio di leva si riduce semplicemente a \(\bm{p}_{0,e}\):
     \[ \bm{p}_{0,e} = \begin{bmatrix} l_1 c_1 + l_2 c_{12} \\ l_1 s_1 + l_2 s_{12} \\ 0 \end{bmatrix} \]
 \end{itemize}
-Essendo un giunto rotoidale, si applicano le formule per calcolare la parte angolare (\(\bm{J}_{A1}\)) e lineare (\(\bm{J}_{L1}\)) della colonna:
+Sostituendo tali vettori nelle formule del giunto rotoidale, si ottengono la parte angolare (\(\bm{J}_{A1}\)) e quella lineare (\(\bm{J}_{L1}\)) della colonna. La componente angolare risulta immediatamente:
 \[
     \bm{J}_{A1} = \bm{z}_0 = \begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix}
 \]
-La parte lineare si ottiene dal prodotto vettoriale tra l'asse di rotazione e il braccio di leva:
+mentre la componente lineare si ricava dal prodotto vettoriale tra l'asse di rotazione e il braccio di leva:
 \[
     \bm{J}_{L1} = \bm{z}_0 \times \bm{p}_{0,e} =
     \begin{vmatrix}
@@ -4227,14 +4227,14 @@ La parte lineare si ottiene dal prodotto vettoriale tra l'asse di rotazione e il
 \]
 
 \paragraph{Calcolo per la Colonna 2 (Giunto 2)}
-La seconda colonna, \(\bm{J}_2\), descrive l'effetto della velocità del secondo giunto, \(\dot{q}_2\). La formula generale è:
+Analogamente, la seconda colonna, \(\bm{J}_2\), descrive l'effetto della velocità del secondo giunto, \(\dot{q}_2\), sulla velocità dell'end-effector. Trattandosi anch'esso di un giunto rotoidale, la formula generale è:
 \[ \bm{J}_2 = \begin{bmatrix} \bm{J}_{L2} \\ \bm{J}_{A2} \end{bmatrix} = \begin{bmatrix} \bm{z}_1 \times (\bm{p}_{0,e} - \bm{p}_{0,1}) \\ \bm{z}_1 \end{bmatrix} \]
-dove \(\bm{z}_1\) è l'asse di rotazione del giunto 2 e \((\bm{p}_{0,e} - \bm{p}_{0,1})\) è il vettore che congiunge l'origine del giunto 2 con l'end-effector.
+dove \(\bm{z}_1\) è l'asse di rotazione del giunto 2 e \((\bm{p}_{0,e} - \bm{p}_{0,1})\) è il vettore che congiunge l'origine del giunto 2 all'end-effector. Ricaviamo entrambi i vettori:
 
 \begin{itemize}
-    \item \textbf{Asse di rotazione \(\bm{z}_1\):} È l'asse di rotazione del secondo giunto, espresso nelle coordinate della terna base. Si ottiene estraendo la terza colonna della matrice di rotazione \(\prescript{0}{}{\bm{R}}_1\), che è la sottomatrice \(3 \times 3\) in alto a sinistra di \(\prescript{0}{}{\bm{T}}_1\). In questo caso planare, l'asse di rotazione è sempre parallelo all'asse \(z\) globale.
+    \item \textbf{Asse di rotazione \(\bm{z}_1\):} È l'asse di rotazione del secondo giunto espresso nelle coordinate della terna base. Si ottiene estraendo la terza colonna della matrice di rotazione \(\prescript{0}{}{\bm{R}}_1\), ovvero la sottomatrice \(3 \times 3\) in alto a sinistra di \(\prescript{0}{}{\bm{T}}_1\). In questo caso planare, l'asse di rotazione rimane sempre parallelo all'asse \(z\) globale:
     \[ \bm{z}_1 = \begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix} \]
-    \item \textbf{Vettore Leva \(\bm{p}_{1,e}\):} È il vettore che va dall'origine del giunto 2 all'end-effector, calcolato come \(\bm{p}_{1,e} = \bm{p}_{0,e} - \bm{p}_{0,1}\). Il vettore \(\bm{p}_{0,1}\) (posizione del giunto 2 rispetto alla base) si trova nella quarta colonna di \(\prescript{0}{}{\bm{T}}_1\).
+    \item \textbf{Vettore leva \(\bm{p}_{1,e}\):} È il vettore che va dall'origine del giunto 2 all'end-effector, calcolato come \(\bm{p}_{1,e} = \bm{p}_{0,e} - \bm{p}_{0,1}\). Estraendo dalla quarta colonna di \(\prescript{0}{}{\bm{T}}_1\) il vettore \(\bm{p}_{0,1}\) (posizione del giunto 2 rispetto alla base), si ottiene:
     \[
         \bm{p}_{1,e} =
         \begin{bmatrix} l_1 c_1 + l_2 c_{12} \\ l_1 s_1 + l_2 s_{12} \\ 0 \end{bmatrix}
@@ -4244,7 +4244,7 @@ dove \(\bm{z}_1\) è l'asse di rotazione del giunto 2 e \((\bm{p}_{0,e} - \bm{p}
         \begin{bmatrix} l_2 c_{12} \\ l_2 s_{12} \\ 0 \end{bmatrix}
     \]
 \end{itemize}
-Anche il secondo giunto è rotoidale, quindi si usano le stesse formule:
+Applicando quindi le medesime formule usate per il primo giunto, si ricavano le due componenti della seconda colonna:
 \[
     \bm{J}_{A2} = \bm{z}_1 = \begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix}
 \]
@@ -4258,8 +4258,8 @@ Anche il secondo giunto è rotoidale, quindi si usano le stesse formule:
     = \begin{bmatrix} -l_2 s_{12} \\ l_2 c_{12} \\ 0 \end{bmatrix}
 \]
 
-\paragraph{Jacobiano Geometrico Completo}\(\mbox{}\)\\
-Assemblando le colonne calcolate, si ottiene lo Jacobiano geometrico completo. La matrice è strutturata con la parte relativa alla velocità lineare (\(\bm{J}_L\)) nelle prime tre righe e quella relativa alla velocità angolare (\(\bm{J}_A\)) nelle ultime tre.
+\paragraph{Jacobiano Geometrico Completo}\mbox{}\\
+Assemblando le colonne appena calcolate, si ottiene lo Jacobiano geometrico completo, strutturato con la parte relativa alla velocità lineare (\(\bm{J}_L\)) nelle prime tre righe e quella relativa alla velocità angolare (\(\bm{J}_A\)) nelle ultime tre:
 \[
     \bm{J}(\bm{q}) =
     \begin{bmatrix}
@@ -4277,7 +4277,7 @@ Assemblando le colonne calcolate, si ottiene lo Jacobiano geometrico completo. L
         1 & 1
     \end{bmatrix}
 \]
-La relazione tra le velocità dei giunti \(\dot{\bm{q}} = [\dot{q}_1, \dot{q}_2]^T\) e le velocità dell'end-effector \(\bm{\dot{r}}_e = [\bm{v}_e^T, \bm{\omega}_e^T]^T\) è data da \(\bm{\dot{r}}_e = \bm{J}(\bm{q})\dot{\bm{q}}\). Espandendo questa equazione, si ottengono le espressioni per la velocità lineare \(\bm{v}_e\) e angolare \(\bm{\omega}_e\):
+La relazione differenziale tra le velocità dei giunti \(\dot{\bm{q}} = [\dot{q}_1, \dot{q}_2]^T\) e le velocità dell'end-effector \(\bm{\dot{r}}_e = [\bm{v}_e^T, \bm{\omega}_e^T]^T\) è data da \(\bm{\dot{r}}_e = \bm{J}(\bm{q})\dot{\bm{q}}\). Espandendo questo prodotto, si ottengono le espressioni della velocità lineare \(\bm{v}_e\) e di quella angolare \(\bm{\omega}_e\):
 \[
     \bm{v}_e =
     \begin{bmatrix} -l_1 s_1 - l_2 s_{12} \\ l_1 c_1 + l_2 c_{12} \\ 0 \end{bmatrix} \dot{q}_1
@@ -4291,43 +4291,43 @@ La relazione tra le velocità dei giunti \(\dot{\bm{q}} = [\dot{q}_1, \dot{q}_2]
     \begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix} \dot{q}_2
     = \begin{bmatrix} 0 \\ 0 \\ \dot{q}_1 + \dot{q}_2 \end{bmatrix}
 \]
-Queste equazioni mostrano esplicitamente come la velocità di ciascun giunto contribuisca al moto dell'End Effector. La velocità angolare totale, ad esempio, è semplicemente la somma delle velocità angolari dei due giunti, come è logico attendersi in un sistema planare.
+Queste equazioni mostrano esplicitamente come la velocità di ciascun giunto contribuisca al moto dell'end-effector: la velocità angolare totale, ad esempio, risulta semplicemente la somma delle velocità angolari dei due giunti, come è logico attendersi in un sistema planare.
 
 \newpage
 \subsection{Relazione tra Singolarità e Jacobiano}
 \subsubsection{Richiami di Algebra Lineare}
 
-La matrice Jacobiana \(\bm{J}\) è lo strumento matematico che crea un ponte tra lo spazio delle velocità dei giunti e lo spazio delle velocità dell'end-effector, secondo la relazione \(\bm{\dot{r}} = \bm{J}(\bm{q})\dot{\bm{q}}\). Le configurazioni in cui un robot perde la capacità di muoversi in certe direzioni, note come singolarità, sono interamente descritte dalle proprietà algebriche della matrice Jacobiana. Analizziamo i concetti fondamentali.
+La matrice Jacobiana \(\bm{J}\) è lo strumento matematico che collega lo spazio delle velocità dei giunti allo spazio delle velocità dell'end-effector secondo la relazione \(\bm{\dot{r}} = \bm{J}(\bm{q})\dot{\bm{q}}\). Le configurazioni in cui un robot perde la capacità di muoversi in certe direzioni, note come singolarità, sono interamente descritte dalle proprietà algebriche di tale matrice. Analizziamone di seguito i concetti fondamentali:
 
 \begin{itemize}
-    \item \textbf{Rango di una Matrice:} Data una matrice $\bm{J} \in \mathbb{R}^{m \times n}$, il suo \textit{rango}, denotato con $\rho(\bm{J})$, è il massimo numero di colonne (o righe) linearmente indipendenti. Fisicamente, il rango rappresenta il numero di direzioni indipendenti lungo le quali l'end-effector può muoversi (sia in traslazione che in rotazione). Il rango è sempre limitato dalla dimensione più piccola della matrice:
+    \item \textbf{Rango Di Una Matrice:} Data una matrice $\bm{J} \in \mathbb{R}^{m \times n}$, il suo \textit{rango}, denotato con $\rho(\bm{J})$, è il numero massimo di colonne (o righe) linearmente indipendenti. Fisicamente, esso rappresenta il numero di direzioni indipendenti lungo le quali l'end-effector può muoversi (sia in traslazione sia in rotazione). Tale valore è sempre limitato dalla dimensione più piccola della matrice:
     \[
         \rho(\bm{J}) \leq \min\{m, n\}
     \]
 
-    \item \textbf{Rango Pieno e Rango Carente:} Si dice che la matrice \(\bm{J}\) ha \textit{rango pieno} quando il suo rango raggiunge il valore massimo possibile, ovvero $\rho(\bm{J}) = \min\{m, n\}$. In questa condizione, il robot ha la massima manovrabilità possibile per la sua struttura. Se, in una certa configurazione \(\bm{q}\), il rango diminuisce, $\rho(\bm{J}) < \min\{m, n\}$, si dice che la matrice è \textit{rango-carente} (o \textit{rank-deficient}), e il robot si trova in una \textbf{singolarità}.
+    \item \textbf{Rango Pieno E Rango Carente:} Si dice che la matrice \(\bm{J}\) ha \textit{rango pieno} quando il suo rango raggiunge il valore massimo possibile, ovvero $\rho(\bm{J}) = \min\{m, n\}$; in questa condizione, il robot gode della massima manovrabilità consentita dalla propria struttura. Se invece, in una certa configurazione \(\bm{q}\), il rango diminuisce risultando $\rho(\bm{J}) < \min\{m, n\}$, la matrice è detta \textit{rango-carente} (o \textit{rank-deficient}) e il robot si trova in una \textbf{singolarità}.
 
-    \item \textbf{Matrice Singolare e Non-Singolare (per matrici quadrate):} Nel caso comune di robot non ridondanti, dove il numero di giunti \(n\) è uguale al numero di gradi di libertà dell'end-effector \(m\), lo Jacobiano è una matrice quadrata ($\bm{J} \in \mathbb{R}^{n \times n}$).
+    \item \textbf{Matrice Singolare E Non Singolare (Per Matrici Quadrate):} Nel caso comune di robot non ridondanti, in cui il numero di giunti \(n\) è uguale al numero di gradi di libertà dell'end-effector \(m\), lo Jacobiano è una matrice quadrata ($\bm{J} \in \mathbb{R}^{n \times n}$):
     \begin{itemize}
-        \item Una matrice quadrata è detta \textbf{non-singolare} se ha rango pieno ($\rho(\bm{J}) = n$). Questa condizione è equivalente ad affermare che il suo determinante è non nullo ($\det(\bm{J}) \neq 0$) e che esiste la sua unica matrice inversa $\bm{J}^{-1}$, tale che $\bm{J}\bm{J}^{-1} = \bm{J}^{-1}\bm{J} = \bm{I}$. L'invertibilità è cruciale: permette di calcolare in modo univoco le velocità dei giunti \(\dot{\bm{q}}\) necessarie per ottenere una data velocità dell'end-effector \(\bm{\dot{r}}\) tramite la relazione \(\dot{\bm{q}} = \bm{J}^{-1}\bm{\dot{r}}\).
-        \item Una matrice quadrata è detta \textbf{singolare} se non è invertibile. Ciò accade precisamente quando la matrice è rango-carente ($\rho(\bm{J}) < n$), ovvero quando il suo determinante è nullo. In una configurazione singolare, il robot perde uno o più gradi di libertà e non è più possibile mappare univocamente le velocità cartesiane a quelle dei giunti.
+        \item Una matrice quadrata è detta \textbf{non singolare} se ha rango pieno ($\rho(\bm{J}) = n$). Questa condizione equivale ad affermare che il suo determinante è non nullo ($\det(\bm{J}) \neq 0$) e che esiste un'unica matrice inversa $\bm{J}^{-1}$, tale che $\bm{J}\bm{J}^{-1} = \bm{J}^{-1}\bm{J} = \bm{I}$. L'invertibilità è cruciale perché permette di calcolare in modo univoco le velocità dei giunti \(\dot{\bm{q}}\) necessarie per ottenere una data velocità dell'end-effector \(\bm{\dot{r}}\) tramite la relazione \(\dot{\bm{q}} = \bm{J}^{-1}\bm{\dot{r}}\).
+        \item Una matrice quadrata è invece detta \textbf{singolare} se non è invertibile, il che accade precisamente quando è rango-carente ($\rho(\bm{J}) < n$), ovvero quando il suo determinante è nullo. In una configurazione singolare, il robot perde uno o più gradi di libertà e non è più possibile ricondurre univocamente le velocità cartesiane a quelle dei giunti.
     \end{itemize}
 
-    \item \textbf{Immagine (o Spazio delle Colonne):} L'\textit{immagine} di \(\bm{J}\), indicata con $R(\bm{J})$, è il sottospazio vettoriale generato dalle colonne di \(\bm{J}\). In termini pratici, rappresenta l'insieme di \textbf{tutte le possibili velocità dell'end-effector} \(\bm{\dot{r}}\) che il robot può generare.
+    \item \textbf{Immagine (O Spazio delle Colonne):} L'\textit{immagine} di \(\bm{J}\), indicata con $R(\bm{J})$, è il sottospazio vettoriale generato dalle colonne di \(\bm{J}\). In termini pratici, rappresenta l'insieme di \textbf{tutte le possibili velocità dell'end-effector} \(\bm{\dot{r}}\) che il robot può generare:
     \[
         R(\bm{J}) = \{\bm{\dot{r}} \in \mathbb{R}^{m} \mid \exists \dot{\bm{q}} \in \mathbb{R}^{n} \text{ tale che } \bm{\dot{r}} = \bm{J}\dot{\bm{q}}\}
     \]
-    La dimensione di questo sottospazio è esattamente il rango della matrice:
+    La dimensione di questo sottospazio coincide esattamente con il rango della matrice:
     \[
         \dim(R(\bm{J})) = \rho(\bm{J})
     \]
-    Quando il robot entra in una singolarità, il rango \(\rho(\bm{J})\) diminuisce, e con esso si "restringe" lo spazio delle velocità raggiungibili dall'end-effector.
+    Quando il robot entra in una singolarità, il rango \(\rho(\bm{J})\) diminuisce e, con esso, si ``restringe'' lo spazio delle velocità raggiungibili dall'end-effector.
 
-    \item \textbf{Nucleo (o Spazio Nullo):} Il \textit{nucleo} di \(\bm{J}\), indicato con $N(\bm{J})$, è il sottospazio dei vettori di velocità dei giunti \(\dot{\bm{q}}\) che producono una velocità nulla dell'end-effector.
+    \item \textbf{Nucleo (O Spazio Nullo):} Il \textit{nucleo} di \(\bm{J}\), indicato con $N(\bm{J})$, è il sottospazio dei vettori di velocità dei giunti \(\dot{\bm{q}}\) che producono una velocità nulla dell'end-effector:
     \[
         N(\bm{J}) = \{\dot{\bm{q}} \in \mathbb{R}^{n} \mid \bm{J}\dot{\bm{q}} = \bm{0}\}
     \]
-    Un nucleo non banale (cioè che non contiene solo il vettore nullo) implica l'esistenza di \textbf{movimenti interni} dei giunti che non modificano la posa dell'end-effector. Questo fenomeno è la base della \textbf{ridondanza} nei robot.
+    Un nucleo non banale (cioè che non contiene soltanto il vettore nullo) implica l'esistenza di \textbf{movimenti interni} dei giunti che non modificano la posa dell'end-effector. Questo fenomeno è alla base della \textbf{ridondanza} nei robot.
     \newpage
     \item \textbf{Teorema Rango-Nullità:} Questo teorema fondamentale lega le dimensioni dell'immagine e del nucleo al numero di giunti \(n\) (la dimensione dello spazio di partenza):
     \[
@@ -4337,33 +4337,33 @@ La matrice Jacobiana \(\bm{J}\) è lo strumento matematico che crea un ponte tra
     \[
         \dim(N(\bm{J})) = n - \rho(\bm{J})
     \]
-    Questa relazione ci dice che se il rango diminuisce (singolarità), la dimensione dello spazio nullo aumenta. Anche per un robot non ridondante, in una singolarità compare un nucleo non banale, che si manifesta come un moto istantaneo dei giunti che non produce movimento dell'end-effector.
+    Questa relazione mostra che, se il rango diminuisce in una singolarità, la dimensione dello spazio nullo aumenta. Pertanto, anche per un robot non ridondante, in una configurazione singolare compare un nucleo non banale, che si manifesta come un moto istantaneo dei giunti privo di effetto sul movimento dell'end-effector.
 
-    \item \textbf{Sottospazi Fondamentali e Decomposizione Ortogonale:} Per una comprensione completa della trasformazione operata da \(\bm{J}\), si analizzano i quattro sottospazi fondamentali: l'immagine \(R(\bm{J})\), il nucleo \(N(\bm{J})\), e i corrispondenti spazi per la sua trasposta, \(R(\bm{J}^T)\) e \(N(\bm{J}^T)\). Questi sottospazi permettono di decomporre gli spazi di partenza (velocità dei giunti, \(\mathbb{R}^n\)) e di arrivo (velocità dell'end-effector, \(\mathbb{R}^m\)) in componenti ortogonali.
+    \item \textbf{Sottospazi Fondamentali E Decomposizione Ortogonale:} Per una comprensione completa della trasformazione operata da \(\bm{J}\), si analizzano i quattro sottospazi fondamentali: l'immagine \(R(\bm{J})\) e il nucleo \(N(\bm{J})\), insieme ai corrispondenti sottospazi della trasposta, \(R(\bm{J}^T)\) e \(N(\bm{J}^T)\). Questi sottospazi permettono di decomporre gli spazi di partenza (velocità dei giunti, \(\mathbb{R}^n\)) e di arrivo (velocità dell'end-effector, \(\mathbb{R}^m\)) in componenti ortogonali:
     \[
     \begin{cases}
         R(\bm{J}) \oplus N(\bm{J}^T) = \mathbb{R}^{m} \\
         R(\bm{J}^T) \oplus N(\bm{J}) = \mathbb{R}^{n}
     \end{cases}
     \]
-    Il simbolo \(\oplus\) denota la \textit{somma diretta}, che implica che ogni vettore dello spazio può essere scritto in modo \textbf{unico} come somma di un vettore da ciascun sottospazio.
+    Il simbolo \(\oplus\) denota la \textit{somma diretta}, a indicare che ogni vettore dello spazio considerato può essere scritto in modo \textbf{unico} come somma di un vettore appartenente a ciascuno dei due sottospazi.
 
     La seconda relazione, $R(\bm{J}^T) \oplus N(\bm{J}) = \mathbb{R}^{n}$, è particolarmente significativa:
     \begin{itemize}
-        \item Lo spazio \(R(\bm{J}^T)\) è l'insieme delle velocità dei giunti che sono "efficienti", ovvero che producono un movimento dell'end-effector.
+        \item Lo spazio \(R(\bm{J}^T)\) è l'insieme delle velocità dei giunti ``efficienti'', ossia quelle che producono un movimento dell'end-effector.
         \item Lo spazio \(N(\bm{J})\) è l'insieme delle velocità dei giunti che corrispondono a moti interni (inefficienti dal punto di vista del movimento dell'end-effector).
     \end{itemize}
-    Questa decomposizione ci dice che qualsiasi vettore di velocità dei giunti \(\dot{\bm{q}}\) può essere scomposto in modo univoco in una componente che muove l'end-effector e una che non lo fa.
+    Tale decomposizione mostra dunque che qualsiasi vettore di velocità dei giunti \(\dot{\bm{q}}\) può essere scomposto in modo univoco in una componente che muove l'end-effector e in una componente che non lo fa.
 \end{itemize}
 
 
 \newpage
 \subsection{Spazio Dei Giunti E Spazio Dei Compiti}
-Nell'analisi cinematica è fondamentale la matrice Jacobiana, indicata con $\bm{J}$, che non è una matrice costante. Infatti, dipende dalla configurazione del robot, la quale è descritta dal vettore delle variabili di giunto $\bm{q}$. Questa dipendenza implica che tutte le proprietà fondamentali dello Jacobiano come il rango $\rho$, lo spazio immagine $R$, e il nucleo $N$ siano proprietà \textit{locali}, che variano al variare di $\bm{q}$:
+Nell'analisi cinematica la matrice Jacobiana $\bm{J}$ riveste un ruolo centrale e non è costante, poiché dipende dalla configurazione istantanea del robot descritta dal vettore delle variabili di giunto $\bm{q}$. Questa dipendenza implica che tutte le proprietà fondamentali dello Jacobiano, come il rango $\rho$, lo spazio immagine $R$ e il nucleo $N$, siano grandezze \textit{locali} che variano al variare di $\bm{q}$:
 \[
     \rho(\bm{J}) = \rho(\bm{J}(\bm{q})), \quad R(\bm{J}) = R(\bm{J}(\bm{q})), \quad N(\bm{J}) = N(\bm{J}(\bm{q}))
 \]
-La relazione cinematica differenziale, espressa dall'equazione $\bm{v} = \bm{J}(\bm{q})\dot{\bm{q}}$, fornisce la chiave per dare un'interpretazione fisica diretta a questi sottospazi matematici.
+La relazione cinematica differenziale, espressa dall'equazione $\bm{v} = \bm{J}(\bm{q})\dot{\bm{q}}$, fornisce la chiave per attribuire un'interpretazione fisica diretta a questi sottospazi matematici:
 
 \begin{center}
     \resizebox{0.75\linewidth}{!}{%
@@ -4397,22 +4397,20 @@ La relazione cinematica differenziale, espressa dall'equazione $\bm{v} = \bm{J}(
 \end{center}
 
 \begin{itemize}
-    \item \textbf{Spazio Velocità Raggiungibili:} Lo spazio immagine dello Jacobiano, $R(\bm{J}(\bm{q}))$, noto anche come \textit{spazio delle velocità generalizzate}, rappresenta l'intero insieme di velocità (sia lineari che angolari) che l'end-effector è in grado di raggiungere in una specifica configurazione $\bm{q}$. Questo spazio si ottiene considerando tutte le possibili combinazioni di velocità dei giunti $\dot{\bm{q}}$. Quando il rango della matrice è massimo e coincide con la dimensione dello spazio dei compiti ($m$), ovvero $\rho(\bm{J}(\bm{q})) = m$, il robot gode della massima manovrabilità e quindi l'end-effector può muoversi istantaneamente in qualsiasi direzione dello spazio operativo $\mathbb{R}^{m}$.
+    \item \textbf{Spazio delle Velocità Raggiungibili:} Lo spazio immagine dello Jacobiano, $R(\bm{J}(\bm{q}))$, noto anche come \textit{spazio delle velocità generalizzate}, rappresenta l'intero insieme delle velocità (sia lineari sia angolari) che l'end-effector è in grado di raggiungere in una specifica configurazione $\bm{q}$, considerando tutte le possibili combinazioni delle velocità di giunto $\dot{\bm{q}}$. Quando il rango della matrice è massimo e coincide con la dimensione dello spazio dei compiti ($m$), ovvero $\rho(\bm{J}(\bm{q})) = m$, il robot gode della massima manovrabilità e l'end-effector può muoversi istantaneamente in qualsiasi direzione dello spazio operativo $\mathbb{R}^{m}$.
 
-    \item \textbf{Direzioni Di Moto Precluse:} Quando, in una data configurazione $\bm{q}$, il rango dello Jacobiano scende al di sotto della dimensione dello spazio dei compiti ($\rho(\bm{J}(\bm{q})) < m$), emergono delle limitazioni. In queste condizioni, esistono delle direzioni nello spazio operativo $\mathbb{R}^{m}$ lungo le quali l'end-effector non può muoversi, indipendentemente dalla velocità dei giunti. Queste direzioni "proibite" sono definite dal sottospazio $N(\bm{J}^T(\bm{q}))$. Una configurazione che presenta questa perdita di mobilità è definita \textit{configurazione singolare} o, più semplicemente, \textit{singolarità}.
+    \item \textbf{Direzioni di Moto Precluse:} Quando, in una data configurazione $\bm{q}$, il rango dello Jacobiano scende al di sotto della dimensione dello spazio dei compiti ($\rho(\bm{J}(\bm{q})) < m$), emergono delle limitazioni alla mobilità. In queste condizioni esistono infatti delle direzioni nello spazio operativo $\mathbb{R}^{m}$ lungo le quali l'end-effector non può muoversi, indipendentemente dalle velocità impresse ai giunti. Tali direzioni ``proibite'' sono individuate dal sottospazio $N(\bm{J}^T(\bm{q}))$, e ogni configurazione caratterizzata da questa perdita di mobilità è definita \textit{configurazione singolare} o, più semplicemente, \textit{singolarità}.
 
-    \item \textbf{Automovimenti:} Se lo spazio nullo dello Jacobiano, $N(\bm{J}(\bm{q}))$, non è banale, cioè se contiene vettori non nulli, allora è fisicamente possibile avere combinazioni di velocità dei giunti non nulle ($\dot{\bm{q}} \neq \bm{0}$) che producono una velocità dell'end-effector pari a zero ($\bm{v} = \bm{0}$). Questi movimenti, che modificano la configurazione interna del robot senza spostare l'end-effector, sono chiamati \textit{automovimenti}. Questa caratteristica è tipica dei \textit{robot ridondanti}, ovvero quei robot in cui il numero di giunti è maggiore della dimensione dello spazio dei compiti ($n > m$). Per tali sistemi, la condizione $N(\bm{J}(\bm{q})) \neq \{\bm{0}\}$ è sempre verificata.
+    \item \textbf{Automovimenti:} Se lo spazio nullo dello Jacobiano, $N(\bm{J}(\bm{q}))$, non è banale (ossia contiene vettori non nulli), risultano fisicamente possibili combinazioni di velocità di giunto non nulle ($\dot{\bm{q}} \neq \bm{0}$) che producono una velocità nulla dell'end-effector ($\bm{v} = \bm{0}$). Questi moti, che modificano la configurazione interna del manipolatore senza spostarne l'end-effector, prendono il nome di \textit{automovimenti}. Si tratta di una caratteristica tipica dei \textit{robot ridondanti}, ovvero quei sistemi in cui il numero di giunti supera la dimensione dello spazio dei compiti ($n > m$), per i quali la condizione $N(\bm{J}(\bm{q})) \neq \{\bm{0}\}$ è sempre verificata.
 \end{itemize}
 
 \newpage
-\subsection{Analisi della Mobilità nello Spazio dei Compiti: Robot RRR Planare}
-Si consideri un manipolatore planare composto da tre giunti rotoidali (configurazione RRR). Per semplificare i calcoli, assumiamo che tutti i bracci abbiano la stessa lunghezza, pari a uno: $l_1 = l_2 = l_3 = 1$.
+\subsection{Analisi Della Mobilità Robot RRR Planare}
+Consideriamo un manipolatore RRR planare con tre bracci di uguale lunghezza unitaria, ossia $l_1 = l_2 = l_3 = l = 1$. Questo robot ha il compito di controllare la posizione dell'end-effector nel piano $xy$, descritta dal vettore $\bm{r} = [x, y]^T$, di conseguenza, lo spazio dei compiti ha dimensione $m = 2$. Poiché il manipolatore possiede tre giunti indipendenti $q_1, q_2, q_3$ (corrispondenti a tre gradi di libertà), lo spazio dei giunti ha invece dimensione $n = 3$.
 
-Il compito che vogliamo assegnare a questo robot è il controllo della \textbf{posizione} dell' end-effector nel piano $xy$. Tale posizione è descritta dal vettore $\bm{r} = [x, y]^T$. Lo spazio in cui il compito è definito (lo "spazio dei compiti") ha quindi dimensione $m=2$. D'altra parte, il robot è descritto da tre variabili di giunto indipendenti ($q_1, q_2, q_3$), per cui il suo spazio di configurazione (o "spazio dei giunti") ha dimensione $n=3$.
+Dal momento che il numero di gradi di libertà del robot supera la dimensione richiesta per eseguire il compito ($n > m$), il sistema risulta \textbf{ridondante} rispetto a tale compito: esistono cioè infinite configurazioni dei giunti che consentono all'end-effector di raggiungere la medesima posizione nel piano.
 
-Poiché il numero di gradi di libertà del robot ($n=3$) è maggiore del numero di gradi di libertà richiesti per eseguire il compito ($m=2$), il robot è definito \textbf{ridondante} rispetto a questo specifico compito. Ciò significa che esistono infinite configurazioni dei giunti che permettono all'end-effector di raggiungere la stessa posizione nel piano.
-
-Lo spazio di lavoro raggiungibile (primario) del manipolatore, ovvero l'insieme di tutti i punti raggiungibili dall'end-effector con almeno un orientamento, è un cerchio pieno di raggio 3 (unità), ottenuto quando tutti i bracci sono completamente estesi in linea retta; l'end-effector può raggiungere anche l'origine ripiegando opportunamente i bracci (disuguaglianza triangolare $l_1 \le l_2 + l_3$). Il cerchio di raggio 1 (unità) corrisponde invece allo spazio di lavoro di destrezza (secondario), all'interno del quale l'end-effector può assumere qualsiasi orientamento.
+Prima di impostare il modello cinematico, è utile caratterizzare lo spazio di lavoro del manipolatore, illustrato nelle due figure seguenti. Il \textbf{workspace primario} (o spazio operativo primario), ovvero l'insieme di tutti i punti che l'end-effector può raggiungere con almeno un orientamento, corrisponde a un cerchio pieno di raggio $l_{1} + l_{2} + l_{3} = 3l$, ottenuto quando i bracci sono completamente estesi; l'end-effector può inoltre raggiungere l'origine ripiegando opportunamente i bracci su sé stessi. Il \textbf{workspace secondario} (o spazio operativo secondario), invece, è il cerchio di raggio $l$ all'interno del quale il manipolatore può raggiungere ogni punto con qualsiasi orientamento.
 
 \begin{figure}[h!]
     \centering
@@ -4429,8 +4427,8 @@ Lo spazio di lavoro raggiungibile (primario) del manipolatore, ovvero l'insieme 
     \end{minipage}
 \end{figure}
 
-\paragraph{Passo 1: Cinematica Diretta e Matrici di Trasformazione.}
-Il primo passo per poter analizzare la mobilità del robot è derivare il suo modello cinematico diretto. Come sappiamo, si deve calcolare la funzione matematica che ci fornisce la posizione (e l'orientamento) dell'end-effector a partire da una data configurazione del vettore delle variabili di giunto $\bm{q} = [q_1, q_2, q_3]^T$. Per ottenere questo modello, utilizziamo la \textbf{convenzione di Denavit-Hartenberg (DH)}. I parametri DH per il nostro manipolatore RRR planare sono riportati nella tabella:
+\paragraph{Passo 1: Cinematica Diretta e Matrici di Trasformazione}
+Per analizzare la mobilità del robot occorre innanzitutto derivarne il modello cinematico diretto, ovvero la relazione che esprime la posizione (e l'orientamento) dell'end-effector in funzione della configurazione assunta dal vettore delle variabili di giunto $\bm{q} = [q_1, q_2, q_3]^T$. A tal fine si adotta la \textbf{convenzione di Denavit-Hartenberg (DH)}, i cui parametri per il manipolatore RRR planare sono riportati nella tabella seguente:
 
 \begin{table}[h!]
     \centering
@@ -4445,9 +4443,9 @@ Il primo passo per poter analizzare la mobilità del robot è derivare il suo mo
     \end{tabular}
 \end{table}
 
-Sostituendo questi parametri nella matrice di trasformazione omogenea standard, si ottengono le matrici che descrivono la posa (posizione e orientamento) di ogni terna di riferimento solidale a un braccio rispetto alla terna precedente.
+Sostituendo questi parametri nella matrice di trasformazione omogenea standard, si ricavano le matrici che descrivono la posa (posizione e orientamento) di ciascuna terna solidale a un braccio rispetto alla terna precedente.
 \newpage
-Data la semplicità della cinematica planare e la scelta dei parametri DH, le matrici sono:
+Data la semplicità della cinematica planare e la scelta dei parametri DH, le tre matrici di trasformazione parziali assumono la forma:
 \[
     \resizebox{\linewidth}{!}{\(\displaystyle
     {}^0\bm{A}_1(q_1) =
@@ -4473,9 +4471,9 @@ Data la semplicità della cinematica planare e la scelta dei parametri DH, le ma
     \end{bmatrix}
     \)}
 \]
-Dove, per compattezza, si adotta la notazione $c_i = \cos(q_i)$ e $s_i = \sin(q_i)$.
+dove, per compattezza, si adotta la notazione $c_i = \cos(q_i)$ e $s_i = \sin(q_i)$.
 
-La posa completa dell'end-effector (terna $\{3\}$) rispetto alla base del robot (terna $\{0\}$) si ottiene componendo queste trasformazioni, ovvero moltiplicando le matrici singole: ${}^0\bm{A}_3(\bm{q}) = {}^0\bm{A}_1(q_1) {}^1\bm{A}_2(q_2) {}^2\bm{A}_3(q_3)$. Il risultato di questo prodotto è:
+La posa complessiva dell'end-effector (terna $\{3\}$) rispetto alla base del robot (terna $\{0\}$) si ottiene quindi componendo in sequenza queste trasformazioni attraverso il prodotto ${}^0\bm{A}_3(\bm{q}) = {}^0\bm{A}_1(q_1)\,{}^1\bm{A}_2(q_2)\,{}^2\bm{A}_3(q_3)$, da cui risulta:
 \[
     {}^0\bm{A}_3(\bm{q}) =
     \begin{bmatrix}
@@ -4485,7 +4483,7 @@ La posa completa dell'end-effector (terna $\{3\}$) rispetto alla base del robot 
         0 & 0 & 0 & 1
     \end{bmatrix}
 \]
-Dove si è usata la notazione $c_{12} = \cos(q_1+q_2)$, $s_{123} = \sin(q_1+q_2+q_3)$. La quarta colonna di questa matrice rappresenta il vettore posizione dell'origine della terna $\{3\}$ rispetto alla terna $\{0\}$. Poiché il nostro compito riguarda solo la posizione planare, estraiamo le prime due componenti di questo vettore per ottenere la funzione di cinematica diretta che ci interessa:
+dove si prosegue con l'analoga notazione compatta per le somme angolari (come $c_{12} = \cos(q_1+q_2)$ e $s_{123} = \sin(q_1+q_2+q_3)$). La quarta colonna di questa matrice rappresenta il vettore posizione dell'origine della terna $\{3\}$ rispetto alla terna $\{0\}$. Poiché il compito assegnato riguarda unicamente la posizione nel piano $xy$, si estraggono le prime due componenti di tale vettore per ottenere la funzione di cinematica diretta di interesse:
 \[
     \bm{r}(\bm{q}) =
     \begin{bmatrix} x(\bm{q}) \\ y(\bm{q}) \end{bmatrix} =
@@ -4495,26 +4493,27 @@ Dove si è usata la notazione $c_{12} = \cos(q_1+q_2)$, $s_{123} = \sin(q_1+q_2+
     \end{bmatrix}
 \]
 
-\paragraph{Passo 2: Calcolo del Jacobiano Geometrico.}
-Lo Jacobiano è una matrice che lega le velocità nello spazio dei giunti ($\dot{\bm{q}}$) alle velocità nello spazio dei compiti. In particolare, il \textbf{Jacobiano geometrico} $\bm{J}(\bm{q}) \in \mathbb{R}^{6 \times 3}$ mappa le velocità angolari dei tre giunti alla velocità spaziale dell'end-effector, composta da un vettore di velocità lineare $\bm{v} \in \mathbb{R}^3$ e un vettore di velocità angolare $\bm{\omega} \in \mathbb{R}^3$.
+\paragraph{Passo 2: Calcolo del Jacobiano Geometrico}
+Nota la cinematica diretta, il passo successivo consiste nel determinare lo Jacobiano, ossia la matrice che lega le velocità nello spazio dei giunti ($\dot{\bm{q}}$) alle velocità nello spazio dei compiti. In particolare, si ricava dapprima lo \textbf{Jacobiano geometrico} $\bm{J}(\bm{q}) \in \mathbb{R}^{6 \times 3}$, che mappa le velocità angolari dei tre giunti nella velocità spaziale completa dell'end-effector, composta dal vettore di velocità lineare $\bm{v} \in \mathbb{R}^3$ e dal vettore di velocità angolare $\bm{\omega} \in \mathbb{R}^3$.
 
-La sua struttura si costruisce colonna per colonna, dove ogni colonna $\bm{J}_i$ rappresenta il contributo del giunto $i$-esimo alla velocità dell'end-effector. Per i giunti rotoidali, la formula è:
+La matrice $\bm{J}(\bm{q})$ si costruisce colonna per colonna, in modo che ciascuna colonna $\bm{J}_i$ esprima il contributo del giunto $i$-esimo alla velocità dell'end-effector. Trattandosi esclusivamente di giunti rotoidali, per ciascuna colonna vale la formula:
 \[
 \bm{J}_i =
 \begin{bmatrix} \bm{J}_{Li} \\ \bm{J}_{Ai} \end{bmatrix} =
 \begin{bmatrix} \bm{z}_{i-1} \times (\bm{p}_E - \bm{p}_{i-1}) \\ \bm{z}_{i-1} \end{bmatrix}
 \]
-Dove:
+dove:
 \begin{itemize}
-    \item $\bm{z}_{i-1}$: È il versore che indica l'asse di rotazione del giunto $i$.
-    \item $(\bm{p}_E - \bm{p}_{i-1})$: È il vettore che va dall'origine del giunto $i$ alla punta dell'end-effector (il "braccio di leva").
+    \item $\bm{z}_{i-1}$ è il versore che indica l'asse di rotazione del giunto $i$;
+    \item $(\bm{p}_E - \bm{p}_{i-1})$ è il vettore che congiunge l'origine del giunto $i$ alla punta dell'end-effector (il cosiddetto ``braccio di leva'').
 \end{itemize}
 
-Dato che il nostro è un robot planare, tutti i giunti ruotano attorno ad assi paralleli all'asse $z$ del sistema di riferimento base. Pertanto, i vettori degli assi di rotazione sono costanti e uguali:
+Poiché il manipolatore è planare, tutti i giunti ruotano attorno ad assi paralleli all'asse $z$ del sistema di riferimento base; di conseguenza, i versori degli assi di rotazione sono costanti e coincidono tra loro:
 \[
     \bm{z}_0 = \bm{z}_1 = \bm{z}_2 = \begin{bmatrix} 0 & 0 & 1 \end{bmatrix}^T
 \]
-Per calcolare i vettori "braccio di leva", dobbiamo trovare le posizioni delle origini dei sistemi di riferimento di ciascun giunto ($\bm{p}_0, \bm{p}_1, \bm{p}_2$) e la posizione dell'end-effector ($\bm{p}_E$). Queste possono essere estratte dalle matrici di trasformazione parziali:
+\newpage
+I vettori ``braccio di leva'' ($\bm{p}_0, \bm{p}_1, \bm{p}_2$) e la posizione dell'end-effector ($\bm{p}_E$), si estraggono dalle rispettive matrici di trasformazione parziali:
 \[
 \begin{aligned}
     % Leva Giunto 1
@@ -4525,7 +4524,7 @@ Per calcolare i vettori "braccio di leva", dobbiamo trovare le posizioni delle o
     \bm{p}_{2,E} &= \bm{p}_E - \bm{p}_2 = \begin{bmatrix} x \\ y \\ 0 \end{bmatrix} - \begin{bmatrix} c_1+c_{12} \\ s_1+s_{12} \\ 0 \end{bmatrix} = \begin{bmatrix} c_{123} \\ s_{123} \\ 0 \end{bmatrix}
 \end{aligned}
 \]
-Procediamo ora con il calcolo esplicito delle colonne del Jacobiano tramite il prodotto vettoriale:
+Calcolando esplicitamente i prodotti vettoriali, si ottengono le singole colonne dello Jacobiano:
 \[
 \begin{alignedat}{2}
     % Colonna 1
@@ -4536,7 +4535,7 @@ Procediamo ora con il calcolo esplicito delle colonne del Jacobiano tramite il p
     \bm{J}_{L3} &= \bm{z}_2 \times \bm{p}_{2,E} = \begin{bmatrix} -s_{123} \\ c_{123} \\ 0 \end{bmatrix} &\quad \bm{J}_{A3} &= \bm{z}_2 = \begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix}
 \end{alignedat}
 \]
-Assemblando queste colonne, otteniamo lo Jacobiano geometrico completo $6 \times 3$:
+Infine, assemblando queste tre colonne, si ottiene lo Jacobiano geometrico completo di dimensioni $6 \times 3$:
 \[
     \bm{J}(\bm{q}) =
     \begin{bmatrix}
@@ -4553,11 +4552,11 @@ Assemblando queste colonne, otteniamo lo Jacobiano geometrico completo $6 \times
 \]
 
 \paragraph{Passo 3: Dal Jacobiano Geometrico al Jacobiano Analitico}
-Lo Jacobiano geometrico descrive l'intera velocità spaziale dell'end-effector. Tuttavia, il nostro compito è stato definito in modo più semplice: controllare solo la posizione planare $\bm{r} = [x, y]^T$. Non siamo interessati né alla velocità lungo l'asse $z$ (che è sempre nulla per un robot planare), né alla velocità angolare.
+Lo Jacobiano geometrico appena ricavato descrive l'intera velocità spaziale dell'end-effector nello spazio tridimensionale. Tuttavia, il compito assegnato al manipolatore è più specifico, poiché richiede di controllare esclusivamente la posizione planare $\bm{r} = [x, y]^T$; non interessano dunque né la velocità lineare lungo l'asse $z$ (peraltro sempre nulla in un robot planare) né la velocità angolare.
 
-Pertanto, per i nostri scopi, possiamo estrarre dallo Jacobiano geometrico solo le righe che ci interessano, ovvero quelle che corrispondono alle velocità $\dot{x}$ (prima riga) e $\dot{y}$ (seconda riga). Questo processo ci fornisce lo \textbf{Jacobiano di Posizione} $\bm{J}_r(\bm{q}) \in \mathbb{R}^{2 \times 3}$, una matrice che lega direttamente le velocità dei giunti alla velocità cartesiana dell'end-effector nel piano, secondo la relazione fondamentale: $\dot{\bm{r}} = \bm{J}_r(\bm{q})\dot{\bm{q}}$.
+È pertanto sufficiente estrarre dallo Jacobiano geometrico le sole righe di interesse, ossia quelle corrispondenti alle componenti di velocità $\dot{x}$ (prima riga) e $\dot{y}$ (seconda riga). Questa riduzione fornisce lo \textbf{Jacobiano di posizione} $\bm{J}_r(\bm{q}) \in \mathbb{R}^{2 \times 3}$, una matrice che lega direttamente le velocità dei giunti alla velocità cartesiana dell'end-effector nel piano secondo la relazione fondamentale $\dot{\bm{r}} = \bm{J}_r(\bm{q})\dot{\bm{q}}$.
 
-Vale la pena notare che si sarebbe potuto ottenere lo stesso risultato derivando direttamente la funzione di posizione $\bm{r}(\bm{q})$ rispetto al vettore dei giunti $\bm{q}$:
+In questo caso, lo Jacobiano di posizione coincide esattamente con lo \textbf{Jacobiano analitico}, poiché lo stesso risultato si ottiene derivando direttamente la funzione di posizione $\bm{r}(\bm{q})$ rispetto al vettore delle variabili di giunto $\bm{q}$:
 \[
     \bm{J}_r(\bm{q}) = \frac{\partial \bm{r}(\bm{q})}{\partial \bm{q}} =
     \begin{bmatrix}
@@ -4570,12 +4569,12 @@ Vale la pena notare che si sarebbe potuto ottenere lo stesso risultato derivando
         c_{1} + c_{12} + c_{123} & c_{12} + c_{123} & c_{123}
     \end{bmatrix}
 \]
-Questa matrice finale, di dimensioni $2 \times 3$, è lo strumento analitico cruciale che ci permetterà di studiare le configurazioni singolari del robot. Le singolarità si verificano in quelle configurazioni di giunti $\bm{q}$ in cui il rango di $\bm{J}_r$ scende al di sotto del suo valore massimo (che in questo caso è 2), indicando che il robot perde la capacità di muovere il suo end-effector in una o più direzioni del piano.
+Questa matrice finale, di dimensioni $2 \times 3$, costituisce lo strumento analitico cruciale per studiare le configurazioni singolari del robot: le \textit{singolarità} si verificano infatti nelle configurazioni $\bm{q}$ in cui il rango di $\bm{J}_r(\bm{q})$ scende al di sotto del suo valore massimo (pari a $2$ in questo caso), indicando che il manipolatore perde la capacità di muovere istantaneamente l'end-effector lungo una o più direzioni del piano.
 
 \newpage
 \paragraph{Analisi di Caso 1: Robot Ripiegato (Configurazione Non Singolare)}
 \mbox{}\\ % Forza l'inizio di una nuova linea
-Per comprendere il significato pratico del Jacobiano, iniziamo analizzando una configurazione specifica e intuitivamente robusta: $\bm{q}_1 = [0, \pi/2, -\pi/2]^T$. Come mostra la figura, in questa posa il robot è parzialmente ripiegato su se stesso, lontano dai limiti del suo spazio di lavoro.
+Per tradurre in pratica quanto appena ricavato, si analizza dapprima una configurazione specifica lontana dai limiti dello spazio di lavoro: $\bm{q}_1 = [0, \pi/2, -\pi/2]^T$. Come mostra la figura, in questa posa il robot risulta parzialmente ripiegato su sé stesso.
 
 \begin{minipage}[b]{0.33\textwidth}
     \centering
@@ -4583,7 +4582,7 @@ Per comprendere il significato pratico del Jacobiano, iniziamo analizzando una c
 \end{minipage}
 \hfill
 \begin{minipage}[b]{0.65\textwidth}
-    Per prima cosa, calcoliamo lo Jacobiano in questa configurazione sostituendo i valori degli angoli nella matrice $\bm{J}_r(\bm{q})$ che abbiamo derivato in precedenza. Otteniamo:
+    Per prima cosa, si valuta lo Jacobiano in questa configurazione sostituendo i valori degli angoli nella matrice $\bm{J}_r(\bm{q})$ derivata al passo precedente, ottenendo:
     \[
         \bm{J}_r(\bm{q}_1) =
         \begin{bmatrix}
@@ -4593,13 +4592,12 @@ Per comprendere il significato pratico del Jacobiano, iniziamo analizzando una c
     \]
 \end{minipage}
 
-L'analisi algebrica di questa matrice ci fornisce un quadro completo della mobilità del robot.
+L'analisi algebrica di questa matrice fornisce un quadro completo della mobilità del manipolatore nella configurazione considerata.
 
-\subparagraph{Rango e Spazio Immagine (Direzioni Moto Possibili)}
-Il rango della matrice \(\bm{J}_r(\bm{q}_i)\) ci dice quante direzioni indipendenti può generare e siccome è una matrice $2 \times 3$, il rango massimo è 2. Osservando $\bm{J}_r(\bm{q}_1)$, si nota che le prime due colonne, $\begin{bmatrix}-1 \\ 2\end{bmatrix}$ e $\begin{bmatrix}-1 \\ 1\end{bmatrix}$, non sono proporzionali, e quindi sono linearmente indipendenti. Questo è sufficiente per affermare che il rango della matrice è il massimo possibile: $\rho(\bm{J}_r(\bm{q}_1)) = 2$.
+\subparagraph{Rango e Spazio Immagine (Direzioni di Moto Possibili)}
+Il rango della matrice \(\bm{J}_r(\bm{q}_1)\) indica quante direzioni di moto indipendenti l'end-effector può generare nel piano; trattandosi di una matrice $2 \times 3$, il valore massimo possibile del rango è $2$. Osservando $\bm{J}_r(\bm{q}_1)$, si nota subito che le prime due colonne, $\begin{bmatrix}-1 \\ 2\end{bmatrix}$ e $\begin{bmatrix}-1 \\ 1\end{bmatrix}$, non sono proporzionali e sono quindi linearmente indipendenti. Ciò è sufficiente per concludere che il rango raggiunge il massimo possibile: $\rho(\bm{J}_r(\bm{q}_1)) = 2$.
 
-Poiché il rango è uguale alla dimensione dello spazio del compito ($m=2$), la matrice ha \textbf{rango pieno}. Questo, per definizione, significa che la configurazione \textbf{non è singolare}.
-Lo spazio immagine $R(\bm{J}_r(\bm{q}_1))$, che è l'insieme di tutte le velocità dell'end-effector che possono essere generate, è lo spazio generato dalle colonne della matrice. Poiché abbiamo due colonne linearmente indipendenti in uno spazio 2D, esse generano l'intero piano:
+Poiché il rango coincide con la dimensione dello spazio dei compiti ($m=2$), la matrice ha \textit{rango pieno} e, per definizione, la configurazione $\bm{q}_1$ \textbf{non è singolare}. Lo spazio immagine $R(\bm{J}_r(\bm{q}_1))$, ovvero l'insieme di tutte le velocità realizzabili dall'end-effector, è generato dalle colonne della matrice; disponendo di due colonne linearmente indipendenti in uno spazio bidimensionale, esse generano l'intero piano:
 \[
     R(\bm{J}_r(\bm{q}_1)) = \mathrm{span}\left\{
     \begin{bmatrix} -1 \\ 2 \end{bmatrix},
@@ -4607,21 +4605,21 @@ Lo spazio immagine $R(\bm{J}_r(\bm{q}_1))$, che è l'insieme di tutte le velocit
     \begin{bmatrix} 0 \\ 1 \end{bmatrix}
     \right\} = \mathbb{R}^{2}
 \]
-In questa configurazione, il robot gode della massima mobilità. Qualunque direzione di movimento si desideri per l'end-effector nel piano, esiste una combinazione di velocità dei giunti in grado di produrla.
+In questa configurazione il robot gode pertanto della massima mobilità: per qualunque direzione di movimento si desideri imprimere all'end-effector nel piano, esiste sempre una combinazione di velocità dei giunti in grado di produrla.
 
-\subparagraph{Nucleo e Automovimenti (Moti Interni).}
-Poiché il robot è ridondante ($n=3 > m=2$), ci aspettiamo di poter muovere i giunti senza che l'end-effector si sposti. Il \textbf{nucleo} (o spazio nullo) dello Jacobiano, $N(\bm{J}_r)$, descrive esattamente questi movimenti. Il teorema rango-nullità ci dice la sua dimensione: $\dim(N(\bm{J}_r)) = n - \rho = 3 - 2 = 1$.
-Ciò significa che esiste un'unica "direzione" fondamentale di movimento nello spazio dei giunti che risulta in una velocità nulla dell'end-effector. Questo sottospazio è generato dal vettore:
+\subparagraph{Nucleo e Automovimenti (Moti Interni)}
+Poiché il robot è ridondante ($n=3 > m=2$), oltre alla mobilità esterna appena verificata è possibile muovere i giunti mantenendo fermo l'end-effector. Il \textbf{nucleo} (o spazio nullo) dello Jacobiano, $N(\bm{J}_r(\bm{q}_1))$, descrive esattamente questi movimenti e, per il teorema rango-nullità, ha dimensione $\dim(N(\bm{J}_r(\bm{q}_1))) = n - \rho = 3 - 2 = 1$.
+Esiste dunque un'unica ``direzione'' fondamentale nello spazio dei giunti che produce una velocità nulla dell'end-effector; questo sottospazio è generato dal vettore:
 \[
     N(\bm{J}_r(\bm{q}_1)) = \mathrm{span}\left\{ \begin{bmatrix} 1 \\ -1 \\ -1 \end{bmatrix} \right\}
 \]
-Questo vettore descrive un \textit{automovimento}. Se imponiamo una velocità dei giunti proporzionale a questo vettore, ad esempio $\dot{\bm{q}} = [k, -k, -k]^T$ per una qualsiasi costante $k \neq 0$, i bracci del robot si riconfigureranno internamente, ma la punta dell'end-effector rimarrà istantaneamente ferma. Questa è la diretta manifestazione della ridondanza del manipolatore.
+Tale vettore rappresenta un \textit{automovimento}: imponendo una velocità dei giunti proporzionale a esso, ad esempio $\dot{\bm{q}} = [k, -k, -k]^T$ per qualsiasi costante $k \neq 0$, i bracci del robot si riconfigurano internamente mentre la punta dell'end-effector rimane istantaneamente ferma. Questa proprietà costituisce la diretta manifestazione della ridondanza del manipolatore.
 
 \newpage
 
 \paragraph{Analisi di Caso 2: Robot Esteso (Singolarità di Bordo)}
 \mbox{}\\
-Consideriamo ora uno scenario completamente diverso: la configurazione $\bm{q}_2 = [0, 0, 0]^T$. Questa posa corrisponde a un robot completamente esteso lungo l'asse x, al limite del suo spazio di lavoro.
+Consideriamo ora uno scenario opposto, corrispondente alla configurazione $\bm{q}_2 = [0, 0, 0]^T$: in questa posa il robot è completamente esteso lungo l'asse $x$, esattamente al limite del proprio spazio di lavoro.
 
 \begin{minipage}[c]{0.33\textwidth}
     \centering
@@ -4629,7 +4627,7 @@ Consideriamo ora uno scenario completamente diverso: la configurazione $\bm{q}_2
 \end{minipage}
 \hfill
 \begin{minipage}[c]{0.65\textwidth}
-    Sostituendo questi valori nel Jacobiano, otteniamo una matrice dall'aspetto molto differente:
+    Sostituendo questi angoli nella matrice $\bm{J}_r(\bm{q})$, si ottiene una struttura molto diversa dal caso precedente:
     \[
         \bm{J}_r(\bm{q}_2) =
         \begin{bmatrix}
@@ -4639,23 +4637,23 @@ Consideriamo ora uno scenario completamente diverso: la configurazione $\bm{q}_2
     \]
 \end{minipage}
 
-L'analisi di questa matrice rivela immediatamente una drastica perdita di mobilità.
+L'analisi algebrica di questa matrice rivela immediatamente una drastica perdita di mobilità.
 
 \subparagraph{Rango e Spazio Immagine}
-A colpo d'occhio, notiamo che la prima riga della matrice è nulla. Questo implica che la componente $\dot{x}$ della velocità dell'end-effector sarà sempre zero, indipendentemente dalle velocità dei giunti. Inoltre, tutte le colonne sono chiaramente multipli del vettore $\begin{bmatrix}0 \\ 1\end{bmatrix}$, e quindi sono linearmente dipendenti. Il rango della matrice è quindi $\rho(\bm{J}_r(\bm{q}_2)) = 1$.
+Si nota subito che la prima riga della matrice è identicamente nulla, il che implica che la componente $\dot{x}$ della velocità dell'end-effector sarà sempre uguale a zero, indipendentemente dalle velocità impresse ai giunti. Inoltre, tutte le colonne sono multipli del vettore $\begin{bmatrix}0 \\ 1\end{bmatrix}$ e risultano quindi linearmente dipendenti, per cui il rango scende a $\rho(\bm{J}_r(\bm{q}_2)) = 1$.
 
-Poiché il rango è strettamente minore della dimensione dello spazio del compito ($\rho < m$), la configurazione \textbf{è singolare}. Lo spazio delle velocità possibili non è più un piano, ma degenera in una linea:
+Poiché il rango è strettamente minore della dimensione dello spazio dei compiti ($\rho < m$), la matrice è \textit{rango-carente} e la configurazione $\bm{q}_2$ \textbf{è singolare}. Lo spazio delle velocità possibili non copre più l'intero piano, ma degenera in una retta:
 \[
     R(\bm{J}_r(\bm{q}_2)) = \mathrm{span}\left\{ \begin{bmatrix} 0 \\ 1 \end{bmatrix} \right\}
 \]
-Il robot ha perso un grado di libertà operativo. In questa configurazione, l'end-effector può muoversi istantaneamente solo lungo l'asse $y$ (direzione verticale). È diventato \textbf{impossibile} generare una velocità lungo la direzione radiale (l'asse $x$), che è proprio la direzione di allineamento dei bracci. Questo tipo di singolarità, che si verifica ai confini dello spazio di lavoro, è comunemente detta \textbf{singolarità di bordo}.
+Il robot ha dunque perso un grado di libertà operativo: in questa configurazione l'end-effector può muoversi istantaneamente soltanto lungo l'asse $y$ (direzione verticale), mentre diventa \textbf{impossibile} generare una velocità lungo la direzione radiale (l'asse $x$), che coincide proprio con la direzione di allineamento dei bracci. Poiché questo tipo di singolarità si verifica ai confini dello spazio di lavoro, è comunemente detto \textbf{singolarità di bordo}.
 
 \subparagraph{Nucleo}
-Con la perdita di mobilità esterna, il robot guadagna mobilità interna. La dimensione dello spazio nullo aumenta: $\dim(N(\bm{J}_r(\bm{q}_2))) = n - \rho = 3 - 1 = 2$. Questo significa che ora esistono due direzioni di automovimento linearmente indipendenti; ci sono più modi per muovere i giunti mantenendo l'end-effector fermo.
+In accordo con il teorema rango-nullità, a fronte della perdita di mobilità esterna aumenta la mobilità interna del robot, in quanto la dimensione dello spazio nullo cresce fino a $\dim(N(\bm{J}_r(\bm{q}_2))) = n - \rho = 3 - 1 = 2$. Esistono quindi ora due direzioni di automovimento linearmente indipendenti, cioè più modi per muovere i giunti mantenendo istantaneamente fermo l'end-effector.
 
-\paragraph{Conclusioni Analisi}
+\paragraph{Conclusioni dell'Analisi}
 \mbox{}\\ % Forza l'inizio di una nuova linea
-Questa analisi su due semplici configurazioni dimostra il potente ruolo diagnostico del Jacobiano. L'algebra matriciale ci permette non solo di etichettare una posa come "singolare" o "non singolare", ma ci offre una profonda comprensione geometrica e quantitativa della mobilità del manipolatore in ogni istante. Lo \textbf{spazio immagine} definisce l'universo delle velocità raggiungibili dall'end-effector, mentre il \textbf{nucleo} caratterizza la ricchezza dei moti interni (automovimenti) che non influenzano il compito, una caratteristica intrinseca dei sistemi ridondanti.
+Il confronto tra queste due configurazioni evidenzia efficacemente il ruolo diagnostico dello Jacobiano. L'algebra matriciale consente infatti non solo di classificare una posa come ``singolare'' o ``non singolare'', ma anche di ottenere una comprensione geometrica e quantitativa della mobilità istantanea del manipolatore: lo \textbf{spazio immagine} definisce l'insieme delle velocità raggiungibili dall'end-effector nello spazio dei compiti, mentre il \textbf{nucleo} caratterizza la varietà dei moti interni (\textit{automovimenti}) che non influenzano il compito, mettendo in luce una proprietà intrinseca dei sistemi ridondanti.
 
 \newpage
 \subsection{Cinematica Differenziale Inversa}
