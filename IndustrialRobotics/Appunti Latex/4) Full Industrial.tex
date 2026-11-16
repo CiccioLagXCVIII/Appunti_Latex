@@ -4726,7 +4726,7 @@ Per completezza, si richiamano le quattro proprietà fondamentali della \textbf{
 Queste proprietà garantiscono che \(\bm{J}^\dagger\) agisca come la migliore approssimazione possibile di un'inversa nel senso dei minimi quadrati.
 
 \newpage
-\subsection{Esempio: Comportamento Singolarità Robot RR Planare}
+\subsection{Esempio: Comportamento In Singolarità Per Il Robot RR Planare}
 \noindent
 \begin{minipage}[c]{0.48\textwidth}
     \begin{tikzpicture}[scale=2]
@@ -4772,52 +4772,47 @@ Queste proprietà garantiscono che \(\bm{J}^\dagger\) agisca come la migliore ap
 
         % Etichette
         \node[text=red] at (3.25,1.5) {$N(\bm{J}^T)$};
-        \node[text=blue] at (1.5,2) {$R(J)$};
+        \node[text=blue] at (1.5,2) {$R(\bm{J})$};
         \node at (1.25,1) {$l_{2}$};
         \node at (0.25,0.5) {$l_{1}$};
     \end{tikzpicture}
 \end{minipage}
 \hfill
 \begin{minipage}[c]{0.48\textwidth}
-Per comprendere a fondo le implicazioni di una configurazione singolare, consideriamo un semplice robot planare a due bracci (RR), ciascuno di lunghezza unitaria ($l_1 = l_2 = 1$). Analizziamo il caso di una \textbf{singolarità di bordo}, una delle configurazioni singolari più intuitive, che si verifica quando il secondo giunto ha un angolo nullo ($q_2 = 0$). In questa situazione, i due bracci sono completamente estesi e allineati, formando un'unica linea retta.
+Per comprendere a fondo le implicazioni fisiche e matematiche di una configurazione singolare, si considera un manipolatore planare a due bracci (RR) con lunghezze unitarie ($l_1 = l_2 = 1$). Si analizza in particolare il caso di una \textbf{singolarità di bordo}, una delle configurazioni singolari più intuitive, che si verifica quando il secondo giunto assume valore nullo ($q_2 = 0$). In tale condizione, i due bracci risultano completamente estesi e reciprocamente allineati lungo una medesima retta.
 
-Il legame tra le velocità dei giunti ($\dot{\bm{q}}$) e la velocità dell'End Effector ($\bm{v}_e$) è descritto dalla matrice Jacobiana. Quando $q_2 = 0$, e utilizzando le notazioni $s_1 = \sin(q_1)$ e $c_1 = \cos(q_1)$, lo Jacobiano assume la seguente forma:
+La relazione tra il vettore delle velocità dei giunti $\dot{\bm{q}} = [\dot{q}_1, \dot{q}_2]^T$ e la velocità dell'end-effector $\bm{v}_e$ è governata dalla matrice Jacobiana. Ponendo $q_2 = 0$ e adottando le consuete notazioni compatte $s_1 = \sin(q_1)$ e $c_1 = \cos(q_1)$, lo Jacobiano assume la forma:
 \end{minipage}
 \[
     \bm{J}(q_1, 0) = \begin{bmatrix} -l_1s_1 - l_2s_1 & -l_2s_1 \\ l_1c_1 + l_2c_1 & l_2c_1 \end{bmatrix} = \begin{bmatrix} -2s_1 & -s_1 \\ 2c_1 & c_1 \end{bmatrix}
 \]
-Un'analisi di questa matrice rivela immediatamente la natura della singolarità:
+L'analisi algebrica e geometrica di questa matrice chiarisce immediatamente la natura della perdita di mobilità:
 \begin{itemize}
-    \item \textbf{Dal Punto Di Vista Algebrico} le due colonne della matrice sono linearmente dipendenti; la prima colonna è semplicemente il doppio della seconda. Questo significa che il rango della matrice è 1 ($\rho(\bm{J})=1$), un valore inferiore alla dimensione dello spazio di lavoro ($m=2$). Matematicamente, questo è il segnale inequivocabile di una singolarità.
+    \item \textbf{Analisi Algebrica:} le due colonne della matrice risultano linearmente dipendenti, essendo la prima colonna esattamente il doppio della seconda. Il rango dello Jacobiano scende pertanto a $1$ ($\rho(\bm{J}) = 1$), valore strettamente inferiore alla dimensione dello spazio dei compiti ($m = 2$). Dal punto di vista algebrico, la perdita di rango rispetto alla dimensione dello spazio operativo costituisce la condizione che dimostra che è una configurazione singolare.
 
-    \item \textbf{Dal Punto Di Vista Fisico} il vettore $\begin{bmatrix}-s_1 \\ c_1\end{bmatrix}$ rappresenta una direzione di velocità perpendicolare all'asse del braccio esteso. Poiché entrambe le colonne della Jacobiana sono multiple di questo vettore, entrambi i giunti possono generare velocità dell'end-effector solo lungo questa direzione. Di conseguenza, il robot ha perso una delle sue capacità di movimento: può muoversi solo in direzione \textbf{tangenziale} (lungo la circonferenza di raggio massimo), ma non può più muoversi in direzione \textbf{radiale} (cioè allungarsi o accorciarsi).
+    \item \textbf{Interpretazione Fisica e Geometrica:} il vettore $\begin{bmatrix}-s_1 \\ c_1\end{bmatrix}$ individua la direzione perpendicolare all'asse dei bracci allineati. Poiché entrambe le colonne della Jacobiana sono multiple di questo vettore, qualsiasi combinazione di velocità dei giunti può generare una velocità dell'end-effector diretta unicamente lungo tale asse. Di conseguenza, il manipolatore perde un grado di libertà operativo: l'end-effector può muoversi istantaneamente solo in direzione \textbf{tangenziale} (lungo la circonferenza di raggio massimo $l_1 + l_2 = 2$), mentre risulta precluso qualsiasi moto in direzione \textbf{radiale} (ossia verso l'interno o verso l'esterno dello spazio di lavoro).
 \end{itemize}
 
-Per capire cosa succede se si tenta di imporre una velocità che il robot non può fisicamente eseguire in questa configurazione, si utilizza la soluzione standard della cinematica inversa differenziale, basata sulla pseudo-inversa di Moore-Penrose ($\bm{J}^\dagger$).
+Per esaminare cosa accade quando il sistema di controllo richiede una velocità cartesiana non compatibile con la cinematica del robot in tale configurazione, si applica la soluzione standard della cinematica differenziale inversa basata sulla pseudo-inversa di Moore-Penrose $\bm{J}^\dagger$.
 
-Consideriamo la configurazione specifica in cui il braccio è orientato a 30 gradi, ovvero $q_1 = \pi/6$. Lo Jacobiano numerico diventa:
+A titolo esemplificativo, si consideri la posa specifica in cui il primo giunto è orientato a $30^\circ$, ossia $q_1 = \pi/6$ (come illustrato nello schema precedente). Sostituendo tale valore, la matrice Jacobiana assume i seguenti valori numerici:
 \[
     \bm{J} = \begin{bmatrix} -2\sin(\pi/6) & -\sin(\pi/6) \\ 2\cos(\pi/6) & \cos(\pi/6) \end{bmatrix} = \begin{bmatrix} -1 & -1/2 \\ \sqrt{3} & \sqrt{3}/2 \end{bmatrix}
 \]
-Imponendo una velocità desiderata puramente orizzontale, $\bm{v}_e = [-1/2, 0]^T$, poiché il braccio del robot è inclinato, per muoversi orizzontalmente l'end-effector dovrebbe necessariamente anche ritrarsi, ovvero avere una componente di velocità radiale. Ma abbiamo appena stabilito che questo è impossibile. La velocità $\bm{v}_e$ non appartiene allo spazio delle velocità raggiungibili, noto come immagine dello Jacobiano ($R(\bm{J})$).
-
-La velocità che l'end-effector effettivamente produce è data da $\bm{v}_{actual} = \bm{J}\dot{\bm{q}} = \bm{J}\bm{J}^\dagger \bm{v}_e$. L'operatore $\bm{J}\bm{J}^\dagger$ agisce come un \textbf{proiettore ortogonale}. In termini semplici, "prende" il vettore della velocità desiderata $\bm{v}_e$ e lo proietta sullo spazio delle velocità che il robot può effettivamente generare ($R(\bm{J})$). Il risultato è il vettore $\bm{v}_{actual}$, che è il vettore raggiungibile più vicino a quello desiderato. È come se trovasse "l'ombra" della velocità richiesta sul piano dei movimenti possibili.
+Si supponga ora di assegnare all'end-effector una velocità desiderata puramente orizzontale, pari a $\bm{v}_e = [-1/2, 0]^T$. Dal momento che in questa configurazione il braccio è inclinato, un movimento puramente orizzontale non è attuabile. Infatti, le direzioni di moto consentite sono date dalla combinazione lineare dei vettori della base di $R(\bm{J})$ che in questo caso è solo uno e non esiste un valore $k$ che moltiplicato per il vettore della base permette di ottenere $\bm{v}_e$
 \newpage
-Svolgendo i calcoli si ottiene:
+Per calcolare la velocità effettivamente prodotta dall'end-effector quando il moto desiderato non è attuabile, si ricorre alla soluzione ai minimi quadrati che si ottiene con la pseudo-inversa, ovvero $\dot{\bm{q}} = \bm{J}^\dagger \bm{v}_e$. Sostituendo tale espressione nell'equazione cinematica differenziale diretta, si ottiene la velocità reale $\bm{v}_{\text{actual}} = \bm{J}\dot{\bm{q}} \longrightarrow \bm{v}_{\text{actual}} = \bm{J}\bm{J}^\dagger \bm{v}_e$. Dal punto di vista geometrico, la matrice $\bm{J}\bm{J}^\dagger$ opera come un \textbf{proiettore ortogonale} sullo spazio immagine $R(\bm{J})$: essa proietta il vettore desiderato $\bm{v}_e$ sul sottospazio dei movimenti fisicamente ammissibili. Il risultato è il vettore $\bm{v}_{\text{actual}} \in R(\bm{J})$ che presenta la minima distanza euclidea da $\bm{v}_e$\\
+Svolgendo esplicitamente il prodotto matriciale, si ottiene:
 \[
-    \bm{v}_{actual} = \bm{J}\bm{J}^\dagger\bm{v}_e =
+    \bm{v}_{\text{actual}} = \bm{J}\bm{J}^\dagger\bm{v}_e =
     \begin{bmatrix}
         -1/8 \\
         \sqrt{3}/8
     \end{bmatrix}
 \]
-Questo risultato è molto diverso dalla velocità desiderata $\bm{v}_e$ ed è fondamentale per capire il comportamento del controllo in singolarità:
-\begin{itemize}
-    \item L'approccio basato su pseudo-inversa \textbf{non riesce a realizzare una velocità desiderata} se questa ha una componente impossibile.
-    \item Tuttavia, non fallisce completamente. Fornisce la \textbf{migliore approssimazione possibile} secondo la norma Euclidea, proiettando il comando sullo spazio dei movimenti realizzabili. L'errore di inseguimento ($\bm{v}_e - \bm{v}_{actual}$) risulta essere ortogonale a tale spazio.
-\end{itemize}
+Questo risultato differisce dalla velocità desiderata $\bm{v}_e$ quindi a prescindere dall'approccio \textbf{non è possibile ottenere delle velocità precluse} dell'end effector ovvero che appartengono a $N(\bm{J}^T)$ cioè il sottospazio delle direzioni di moto precluse. Inoltre, questo risultato è la \textbf{migliore approssimazione possibile}, poiché si sta proiettando il vettore delle velocità nel sottospazio immagine e quindi l'errore di inseguimento, dato da $\bm{e}_v = \bm{v}_e - \bm{v}_{\text{actual}}$, appartiene a $N(\bm{J}^T)$ ed è ortogonale a $R(\bm{J})$
 
-Se la velocità desiderata $\bm{v}_e$ fosse stata già realizzabile (ad esempio, una velocità puramente tangenziale), la soluzione sarebbe stata esatta, con $\bm{v}_{actual} = \bm{v}_e$.
+Nel caso in cui la velocità assegnata $\bm{v}_e$ fosse stata già pienamente ammissibile (ad esempio diretta lungo la retta tangenziale), la proiezione ortogonale avrebbe preservato integralmente il vettore di comando, garantendo la soluzione esatta $\bm{v}_{\text{actual}} = \bm{v}_e$.
 
 \newpage
 \section{Ellissoidi di Manipolabilità}
@@ -4831,8 +4826,8 @@ L'utilità di questi indici si manifesta principalmente in due ambiti:
 
 \subsection{Ellissoide Di Manipolabilità In Velocità}
 L'ellissoide di manipolabilità in velocità permette di capire \emph{quale insieme di velocità cartesiane è in grado di generare l'end-effector date le velocità disponibili per i giunti}. \\
-Poiché lo Jacobiano è una funzione di $\bm{q}$, la capacità di movimento varia al variare della posa del robot, quindi vogliamo capire se il manipolatore è ugualmente veloce in tutte le direzioni (isotropo) o se privilegia certi assi di movimento a discapito di altri.\\
-L'insieme di tutti i vettori di velocità di giunto $\dot{\bm{q}}$ che hanno norma unitaria, rappresenta una condizione in cui la somma dei quadrati delle velocità dei giunti è limitata a un valore costante normalizzato a 1.\\
+Poiché lo Jacobiano è una funzione di $\bm{q}$, la capacità di movimento varia al variare della configurazione dei giunti del robot, quindi vogliamo capire se il manipolatore è ugualmente veloce in tutte le direzioni (isotropo) o se privilegia certi assi di movimento a discapito di altri.\\
+L'insieme di tutti i vettori di velocità di giunto $\dot{\bm{q}}$ che hanno norma unitaria, è un insieme in cui la somma dei quadrati delle velocità dei giunti è limitata a un valore costante normalizzato a 1.\\
 Nello spazio dei giunti (di dimensione \(n\)), questa condizione descrive una \textbf{ipersfera} unitaria definita dall'equazione:
 \[
     \|\dot{\bm{q}}\|^2 = \dot{\bm{q}}^T\dot{\bm{q}} = 1

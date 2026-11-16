@@ -398,7 +398,7 @@ if [ "$DO_COMPILE" = true ]; then
                     log_file="${f_name%.tex}.log"
                     if [ -f "$log_file" ]; then
                         echo -e "${C_YELLOW}Dettaglio errori rilevati nel log:${C_RESET}"
-                        grep -E -A 1 '^!' "$log_file" | head -n 10
+                        grep -E -A 2 '^(!|[^:]+:[0-9]+:|Error [0-9]+)' "$log_file" | head -n 15
                     fi
 
                     kill_latex_processes

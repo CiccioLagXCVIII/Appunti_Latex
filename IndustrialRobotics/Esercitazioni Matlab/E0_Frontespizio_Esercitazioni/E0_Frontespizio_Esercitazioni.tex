@@ -9,7 +9,11 @@
 \usepackage[italian]{babel}
 \setmainfont{Latin Modern Roman}
 \setsansfont{Latin Modern Sans}
-\setmonofont{Consolas}[Scale=0.92]
+\IfFontExistsTF{DejaVu Sans Mono}{%
+  \setmonofont{DejaVu Sans Mono}[Scale=MatchLowercase]%
+}{%
+  \setmonofont{Latin Modern Mono}%
+}
 
 % BB Geometria e Margini della Copertina
 \usepackage{geometry}

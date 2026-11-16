@@ -16,7 +16,11 @@
 % Consolas scalato al 92% per pareggiare l'altezza ottica con Latin Modern Roman.
 % I caratteri, i trattini e i segni meno nei numeri negativi e nelle matrici sono
 % perfettamente centrati, dritti e simmetrici.
-\setmonofont{Consolas}[Scale=0.92]
+\IfFontExistsTF{DejaVu Sans Mono}{%
+  \setmonofont{DejaVu Sans Mono}[Scale=MatchLowercase]%
+}{%
+  \setmonofont{Latin Modern Mono}%
+}
 
 % ==============================================================================
 % DEFINIZIONE SPAZIO COLORI MONOCROMATICO (DeviceGray nativo per stampa B/N)
