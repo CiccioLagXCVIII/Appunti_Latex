@@ -93,7 +93,7 @@ for i = 1:n
     R_all(:, :, i+1)  = T_cumulative(1:3, 1:3);
 end
 
-% 2. Disegno dello Scheletro Meccanico (Bracci)
+% 2. Disegno Bracci
 h_link = plot3(positions(:,1), positions(:,2), positions(:,3), '-', ...
     'Color', [0.25 0.25 0.25], 'LineWidth', 2.5);
 
@@ -114,14 +114,14 @@ h_axes = gobjects(1, 3);
 for i = 1:(n+1)
     p = positions(i, :);
     R = R_all(:, :, i);
-    
+
     qx = quiver3(p(1), p(2), p(3), R(1,1)*arrow_scale, R(2,1)*arrow_scale, R(3,1)*arrow_scale, 0, ...
         'Color', col_X, 'LineWidth', 1.8, 'MaxHeadSize', 0.35);
     qy = quiver3(p(1), p(2), p(3), R(1,2)*arrow_scale, R(2,2)*arrow_scale, R(3,2)*arrow_scale, 0, ...
         'Color', col_Y, 'LineWidth', 1.8, 'MaxHeadSize', 0.35);
     qz = quiver3(p(1), p(2), p(3), R(1,3)*arrow_scale, R(2,3)*arrow_scale, R(3,3)*arrow_scale, 0, ...
         'Color', col_Z, 'LineWidth', 1.8, 'MaxHeadSize', 0.35);
-    
+
     if i == 1
         h_axes(1) = qx;
         h_axes(2) = qy;
@@ -129,7 +129,7 @@ for i = 1:(n+1)
     end
 end
 
-% 5. Etichette Intelligenti con Raggruppamento Origini Coincidenti
+% 5. Etichette Origini
 visited = false(n+1, 1);
 for i = 1:(n+1)
     if visited(i)

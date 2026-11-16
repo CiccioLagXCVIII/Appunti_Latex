@@ -501,7 +501,7 @@ for i = 1:n
     R_all(:, :, i+1)  = T_cumulative(1:3, 1:3);
 end
 
-% 2. Disegno dello Scheletro Meccanico (Bracci)
+% 2. Disegno Bracci
 h_link = plot3(positions(:,1), positions(:,2), positions(:,3), '-', ...
     'Color', [0.25 0.25 0.25], 'LineWidth', 2.5);
 
@@ -539,7 +539,7 @@ for i = 1:(n+1)
     end
 end
 
-% 5. Etichette Intelligenti con Raggruppamento Origini Coincidenti
+% 5. Etichette Origini
 visited = false(n+1, 1);
 for i = 1:(n+1)
     if visited(i)

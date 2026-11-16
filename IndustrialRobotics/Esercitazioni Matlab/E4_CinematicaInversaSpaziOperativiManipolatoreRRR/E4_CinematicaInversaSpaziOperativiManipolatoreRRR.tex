@@ -23,7 +23,7 @@
 % AA LAYOUT DI PAGINA E SPAZIATURA PARAGRAFI
 % ==============================================================================
 % BB GEOMETRIA DEI MARGINI
-\usepackage[left=2.4cm, right=1.6cm, top=2cm, bottom=2cm]{geometry}
+\usepackage[left=2.4cm, right=1.35cm, top=2cm, bottom=2cm]{geometry}
 
 % BB CONTROLLO SPAZIATURA TRA PARAGRAFI
 \usepackage[skip=3pt plus 1pt minus 1pt]{parskip}
@@ -936,8 +936,8 @@ xlabel('Asse X [m]', 'FontWeight', 'bold');
 ylabel('Asse Y [m]', 'FontWeight', 'bold');
 
 % Corona circolare WS1 e bordi limite
-h_ws1 = fill([x_ext, fliplr(x_in)], [y_ext, fliplr(y_in)], [0.92, 0.92, 0.92], ...
-    'EdgeColor', 'none', 'DisplayName', 'Spazio Raggiungibile ($WS_1$)');
+h_ws1 = fill([x_ext, fliplr(x_in)], [y_ext, fliplr(y_in)], [0.92, 0.92, 0.92], 'EdgeColor', 'none',
+    'DisplayName', 'Spazio Raggiungibile ($WS_1$)');
 h_lim = plot(x_ext, y_ext, '--', 'Color', col_link, 'LineWidth', 1.5, 'DisplayName', 'Limiti $WS_1$');
 plot(x_in, y_in, '--', 'Color', col_link, 'LineWidth', 1.5, 'HandleVisibility', 'off');
 
@@ -952,37 +952,32 @@ p2 = p1 + [l2*cos(q_ex1(1)+q_ex1(2)), l2*sin(q_ex1(1)+q_ex1(2))];
 p3 = p2 + [l3*cos(sum(q_ex1)), l3*sin(sum(q_ex1))];
 pts_arm1 = [p0; p1; p2; p3];
 
-h_arm = plot(pts_arm1(:,1), pts_arm1(:,2), '-', 'Color', col_link, 'LineWidth', 2.5, ...
+h_arm = plot(pts_arm1(:,1), pts_arm1(:,2), '-', 'Color', col_link, 'LineWidth', 2.5,
     'DisplayName', 'Manipolatore RRR');
-plot(pts_arm1(2:3,1), pts_arm1(2:3,2), 'o', 'MarkerSize', 6, ...
-    'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'k', 'HandleVisibility', 'off');
-plot(p0(1), p0(2), 's', 'MarkerSize', 8, ...
-    'MarkerFaceColor', [0.4, 0.4, 0.4], 'MarkerEdgeColor', 'k', 'HandleVisibility', 'off');
-h_ee = plot(p3(1), p3(2), 'p', 'MarkerSize', 10, ...
-    'MarkerFaceColor', [0.95, 0.75, 0.10], 'MarkerEdgeColor', 'k', 'DisplayName', 'End-Effector');
-quiver(p3(1), p3(2), 1.8*cos(sum(q_ex1)), 1.8*sin(sum(q_ex1)), 0, ...
-    'Color', col_red, 'LineWidth', 1.8, 'MaxHeadSize', 0.6, 'HandleVisibility', 'off');
+plot(pts_arm1(2:3,1), pts_arm1(2:3,2), 'o', 'MarkerSize', 6, 'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'k', 'HandleVisibility', 'off');
+plot(p0(1), p0(2), 's', 'MarkerSize', 8, 'MarkerFaceColor', [0.4, 0.4, 0.4],
+    'MarkerEdgeColor', 'k', 'HandleVisibility', 'off');
+h_ee = plot(p3(1), p3(2), 'p', 'MarkerSize', 10, 'MarkerFaceColor', [0.95, 0.75, 0.10],
+    'MarkerEdgeColor', 'k', 'DisplayName', 'End-Effector');
+quiver(p3(1), p3(2), 1.8*cos(sum(q_ex1)), 1.8*sin(sum(q_ex1)), 0, 'Color', col_red, 'LineWidth', 1.8, 'MaxHeadSize', 0.6, 'HandleVisibility', 'off');
 
 % Annotazioni Raggi Limite (posizionate nel II/III quadrante, lontano dal braccio)
 ang_in = -3*pi/4;  ang_out = 3*pi/4;
-text(R_min*cos(ang_in), R_min*sin(ang_in), sprintf('$R_{min} = %.0f$ m', R_min), ...
-    'Interpreter', 'latex', 'FontSize', 9, 'FontWeight', 'bold', ...
-    'BackgroundColor', [1 1 1], 'EdgeColor', [0.8 0.8 0.8], 'Margin', 1);
-text(R_max*cos(ang_out), R_max*sin(ang_out), sprintf('$R_{max} = %.0f$ m', R_max), ...
-    'Interpreter', 'latex', 'FontSize', 9, 'FontWeight', 'bold', ...
-    'BackgroundColor', [1 1 1], 'EdgeColor', [0.8 0.8 0.8], 'Margin', 1);
+text(R_min*cos(ang_in), R_min*sin(ang_in), sprintf('$R_{min} = %.0f$ m', R_min), 'Interpreter', 'latex',
+    'FontSize', 9, 'FontWeight', 'bold', 'BackgroundColor', [1 1 1], 'EdgeColor', [0.8 0.8 0.8], 'Margin', 1);
+text(R_max*cos(ang_out), R_max*sin(ang_out), sprintf('$R_{max} = %.0f$ m', R_max), 'Interpreter', 'latex',
+    'FontSize', 9, 'FontWeight', 'bold', 'BackgroundColor', [1 1 1],  'EdgeColor', [0.8 0.8 0.8], 'Margin', 1);
 
-title('Spazio Operativo Primario ($WS_1$) del Manipolatore RRR', ...
-    'Interpreter', 'latex', 'FontSize', 11, 'FontWeight', 'bold');
+title('Spazio Operativo Primario ($WS_1$) del Manipolatore RRR', 'Interpreter', 'latex', 'FontSize', 11, 'FontWeight', 'bold');
 legend([h_ws1, h_lim, h_arm, h_ee], 'Interpreter', 'latex', 'Location', 'bestoutside');
 lim = R_max * 1.15;
 xlim([-lim, lim]); ylim([-lim, lim]);
 hold off;
 \end{matlabcode}
 \begin{center}
-\includegraphics[width=0.85\linewidth]{E4_CinematicaInversaSpaziOperativiManipolatoreRRR_fig1.png}
+\includegraphics[width=0.75\linewidth]{E4_CinematicaInversaSpaziOperativiManipolatoreRRR_fig1.png}
 \end{center}
-\newpage
+
 \begin{par}
 \begin{flushleft}
 Lo \textit{\textbf{Spazio Operativo Secondario}}, è quel sottoinsieme dello spazio primario dove l'end-effector può non solo raggiungere un punto, ma può farlo assumendo qualsiasi orientamento. La capacità di orientarsi liberamente è cruciale in molte applicazioni robotiche.
@@ -1036,12 +1031,11 @@ fprintf('Spazio Secondario - Raggio Esterno (R_max_ws2): %.2f\n', R_max_ws2);
 \end{matlabcode}
 \begin{matlaboutput}
 Spazio Secondario - Raggio Interno (R_min_ws2): 8.00
-\end{matlaboutput}
-\begin{matlaboutput}
 Spazio Secondario - Raggio Esterno (R_max_ws2): 12.00
 \end{matlaboutput}
+\newpage
 \begin{matlabcode}
-% --- Figura 2: Spazio Operativo Primario (WS1) e Secondario (WS2) ---
+% Figura 2: Spazio Operativo Primario (WS1) e Secondario (WS2)
 figure('Name', 'Spazio Operativo Primario e Secondario', 'Color', 'w');
 hold on; grid on; box on; axis equal;
 xlabel('Asse X [m]', 'FontWeight', 'bold');
@@ -1055,9 +1049,9 @@ x_ext_ws2 = R_max_ws2 * cos(theta);  y_ext_ws2 = R_max_ws2 * sin(theta);
 x_int_ws2 = R_min_ws2 * cos(theta);  y_int_ws2 = R_min_ws2 * sin(theta);
 
 % Corona WS1 (Raggiungibile) e Corona WS2 (Destrezza)
-h_ws1 = fill([x_ext_ws1, fliplr(x_int_ws1)], [y_ext_ws1, fliplr(y_int_ws1)], [0.92, 0.92, 0.92], ...
+h_ws1 = fill([x_ext_ws1, fliplr(x_int_ws1)], [y_ext_ws1, fliplr(y_int_ws1)], [0.92, 0.92, 0.92],
     'EdgeColor', 'none', 'DisplayName', 'Spazio Raggiungibile ($WS_1$)');
-h_ws2 = fill([x_ext_ws2, fliplr(x_int_ws2)], [y_ext_ws2, fliplr(y_int_ws2)], [0.80, 0.90, 0.98], ...
+h_ws2 = fill([x_ext_ws2, fliplr(x_int_ws2)], [y_ext_ws2, fliplr(y_int_ws2)], [0.80, 0.90, 0.98],
     'EdgeColor', 'none', 'DisplayName', 'Spazio di Destrezza ($WS_2$)');
 
 % Bordi Limite Tratteggiati
@@ -1068,9 +1062,7 @@ plot(x_int_ws2, y_int_ws2, '--', 'Color', col_blue, 'LineWidth', 1.6, 'HandleVis
 
 % Origine Assi
 plot(0, 0, 'k+', 'MarkerSize', 8, 'LineWidth', 1.5, 'HandleVisibility', 'off');
-\end{matlabcode}
-\newpage
-\begin{matlabcode}
+
 % Configurazione d'esempio del Manipolatore RRR dentro WS2 (Destrezza)
 q_ex2 = [pi/4, 2*pi/3, -pi/2];
 p0 = [0, 0];
@@ -1079,28 +1071,27 @@ p2 = p1 + [l2*cos(q_ex2(1)+q_ex2(2)), l2*sin(q_ex2(1)+q_ex2(2))];
 p3 = p2 + [l3*cos(sum(q_ex2)), l3*sin(sum(q_ex2))];
 pts_arm2 = [p0; p1; p2; p3];
 
-h_arm = plot(pts_arm2(:,1), pts_arm2(:,2), '-', 'Color', col_link, 'LineWidth', 2.5, ...
+h_arm = plot(pts_arm2(:,1), pts_arm2(:,2), '-', 'Color', col_link, 'LineWidth', 2.5,
     'DisplayName', 'Manipolatore RRR (in $WS_2$)');
-plot(pts_arm2(2:3,1), pts_arm2(2:3,2), 'o', 'MarkerSize', 6, ...
-    'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'k', 'HandleVisibility', 'off');
-plot(p0(1), p0(2), 's', 'MarkerSize', 8, ...
-    'MarkerFaceColor', [0.4, 0.4, 0.4], 'MarkerEdgeColor', 'k', 'HandleVisibility', 'off');
-h_ee = plot(p3(1), p3(2), 'p', 'MarkerSize', 10, ...
-    'MarkerFaceColor', [0.95, 0.75, 0.10], 'MarkerEdgeColor', 'k', 'DisplayName', 'End-Effector');
-quiver(p3(1), p3(2), 1.8*cos(sum(q_ex2)), 1.8*sin(sum(q_ex2)), 0, ...
-    'Color', col_red, 'LineWidth', 1.8, 'MaxHeadSize', 0.6, 'HandleVisibility', 'off');
+plot(pts_arm2(2:3,1), pts_arm2(2:3,2), 'o', 'MarkerSize', 6 'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'k',
+    'HandleVisibility', 'off');
+plot(p0(1), p0(2), 's', 'MarkerSize', 8, 'MarkerFaceColor', [0.4, 0.4, 0.4], 'MarkerEdgeColor', 'k',
+    'HandleVisibility', 'off');
+h_ee = plot(p3(1), p3(2), 'p', 'MarkerSize', 10, 'MarkerFaceColor', [0.95, 0.75, 0.10],
+    'MarkerEdgeColor', 'k', 'DisplayName', 'End-Effector');
+quiver(p3(1), p3(2), 1.8*cos(sum(q_ex2)), 1.8*sin(sum(q_ex2)), 0, 'Color', col_red, 'LineWidth', 1.8, 'MaxHeadSize', 0.6, 'HandleVisibility', 'off');
 
 % Annotazioni Raggi WS2 (posizionate nel II/III quadrante, lontano dal braccio)
 ang_ws2_in = -3*pi/4;  ang_ws2_out = 3*pi/4;
-text(R_min_ws2*cos(ang_ws2_in), R_min_ws2*sin(ang_ws2_in), sprintf('$R_{min,WS2} = %.0f$ m', R_min_ws2), ...
-    'Interpreter', 'latex', 'FontSize', 9, 'FontWeight', 'bold', ...
-    'BackgroundColor', [1 1 1], 'EdgeColor', [0.8 0.8 0.8], 'Margin', 1);
-text(R_max_ws2*cos(ang_ws2_out), R_max_ws2*sin(ang_ws2_out), sprintf('$R_{max,WS2} = %.0f$ m', R_max_ws2), ...
-    'Interpreter', 'latex', 'FontSize', 9, 'FontWeight', 'bold', ...
-    'BackgroundColor', [1 1 1], 'EdgeColor', [0.8 0.8 0.8], 'Margin', 1);
+text(R_min_ws2*cos(ang_ws2_in), R_min_ws2*sin(ang_ws2_in), sprintf('$R_{min,WS2} = %.0f$ m', R_min_ws2),
+    'Interpreter', 'latex', 'FontSize', 9, 'FontWeight', 'bold', 'BackgroundColor', [1 1 1],
+    'EdgeColor', [0.8 0.8 0.8], 'Margin', 1);
+text(R_max_ws2*cos(ang_ws2_out), R_max_ws2*sin(ang_ws2_out), sprintf('$R_{max,WS2} = %.0f$ m', R_max_ws2),
+    'Interpreter', 'latex', 'FontSize', 9, 'FontWeight', 'bold','BackgroundColor', [1 1 1],
+    'EdgeColor', [0.8 0.8 0.8], 'Margin', 1);
 
-title('Spazio Operativo Primario ($WS_1$) e Secondario ($WS_2$)', ...
-    'Interpreter', 'latex', 'FontSize', 11, 'FontWeight', 'bold');
+title('Spazio Operativo Primario ($WS_1$) e Secondario ($WS_2$)', 'Interpreter', 'latex', 'FontSize', 11,
+    'FontWeight', 'bold');
 legend([h_ws1, h_ws2, h_lim_ws1, h_lim_ws2, h_arm, h_ee], 'Interpreter', 'latex', 'Location', 'bestoutside');
 lim = R_max * 1.15;
 xlim([-lim, lim]); ylim([-lim, lim]);

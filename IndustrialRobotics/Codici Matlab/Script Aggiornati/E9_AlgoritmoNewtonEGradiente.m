@@ -575,8 +575,8 @@ V_iter_fun = matlabFunction(V_iter_sym, 'Vars', {q1, q2});
 V_grid_it  = double(V_iter_fun(Q1_it, Q2_it));
 
 figure('Name', 'Confronto Ottimizzazione: Newton vs Gradiente', 'Color', 'w', ...
-    'Units', 'normalized', 'Position', [0.05, 0.15, 0.90, 0.62]);
-tiledlayout(1, 2, 'TileSpacing', 'compact', 'Padding', 'compact');
+    'Units', 'normalized', 'Position', [0.30, 0.04, 0.33, 0.89]);
+tiledlayout(2, 1, 'TileSpacing', 'compact', 'Padding', 'tight');
 
 % --- Subplot 1: Traiettorie su V(q) coerente con l=[1,1], r=[1,1] ---
 nexttile;
@@ -588,7 +588,24 @@ cb.Label.String = 'Costo V(q) [m^2]';
 cb.Label.FontWeight = 'bold';
 xlabel('q_1 [rad]', 'FontWeight', 'bold');
 ylabel('q_2 [rad]', 'FontWeight', 'bold');
-title('Traiettorie su Funzione di Costo V(q)', 'FontSize', 11, 'FontWeight', 'bold');
+title('Traiettorie nello Spazio dei Giunti su V(q)', 'FontSize', 10.5, 'FontWeight', 'bold');
+
+% Disegno Traiettorie con alone bianco di contrasto su mappa parula
+h_newt_tr = gobjects(1);
+h_grad_tr = gobjects(1);
+for i = 1:nrSol
+    qN = all_q_newton{i};
+    qG = all_q_grad{i};
+    plot(qN(1,:), qN(2,:), '-', 'Color', [1, 1, 1], 'LineWidth', 3.4, 'HandleVisibility', 'off');
+    plot(qG(1,:), qG(2,:), '-', 'Color', [1, 1, 1], 'LineWidth', 3.4, 'HandleVisibility', 'off');
+    hn = plot(qN(1,:), qN(2,:), '-o', 'Color', col_red, 'LineWidth', 1.9, ...
+        'MarkerSize', 4, 'MarkerFaceColor', col_red);
+    hg = plot(qG(1,:), qG(2,:), '--', 'Color', col_green, 'LineWidth', 2.2);
+    if i == 1
+        h_newt_tr = hn;
+        h_grad_tr = hg;
+    end
+end
 
 % Minimi globali esatti (inclusi replicati periodici 2*pi nel dominio visibile)
 base_minima = [0, pi/2; pi/2, -pi/2];
@@ -610,26 +627,24 @@ for bm = 1:size(base_minima, 1)
     end
 end
 
+% Punti iniziali q_0 ed etichette identificative dei 3 Test
 h_start = gobjects(1);
-h_newt_tr = gobjects(1);
-h_grad_tr = gobjects(1);
+offsets_lbl = [0.22, -0.32; 0.25, 0.35; 0.22, -0.32];
 for i = 1:nrSol
-    qN = all_q_newton{i};
-    qG = all_q_grad{i};
-    hn = plot(qN(1,:), qN(2,:), '-o', 'Color', col_red, 'LineWidth', 2.0, ...
-        'MarkerSize', 4, 'MarkerFaceColor', col_red);
-    hg = plot(qG(1,:), qG(2,:), '--', 'Color', col_green, 'LineWidth', 2.2);
-    hs = plot(q_initial_conditions(i,1), q_initial_conditions(i,2), 's', ...
-        'MarkerSize', 8, 'MarkerFaceColor', 'w', 'MarkerEdgeColor', 'k', 'LineWidth', 1.5);
+    q0_i = q_initial_conditions(i, :);
+    hs = plot(q0_i(1), q0_i(2), 's', 'MarkerSize', 8, ...
+        'MarkerFaceColor', 'w', 'MarkerEdgeColor', 'k', 'LineWidth', 1.5);
+    text(q0_i(1) + offsets_lbl(i,1), q0_i(2) + offsets_lbl(i,2), sprintf('T.%d', i), ...
+        'FontSize', 8, 'FontWeight', 'bold', 'BackgroundColor', [1, 1, 1], ...
+        'EdgeColor', [0.6, 0.6, 0.6], 'Margin', 1);
     if i == 1
-        h_newt_tr = hn;
-        h_grad_tr = hg;
-        h_start   = hs;
+        h_start = hs;
     end
 end
+
 legend([h_min_it, h_start, h_newt_tr, h_grad_tr], ...
     {'Minimo Globale (e = 0)', 'Punto Iniziale q_0', 'Traiettoria Newton', 'Traiettoria Gradiente'}, ...
-    'Location', 'southoutside', 'NumColumns', 2);
+    'Location', 'southoutside', 'NumColumns', 2, 'FontSize', 8.5);
 hold off;
 
 % --- Subplot 2: Decadimento Errore in vera scala Semilogaritmica ---
@@ -638,28 +653,33 @@ hold on; grid on; box on;
 set(gca, 'YScale', 'log');
 colors_test = [col_red; col_green; col_blue];
 
+yline(1e-6, ':k', 'Tolleranza 10^{-6}', 'LineWidth', 1.2, ...
+    'LabelHorizontalAlignment', 'right', 'FontSize', 8.5, 'HandleVisibility', 'off');
+
 for i = 1:nrSol
-    errN = max(all_err_newton{i}, 1e-16);
-    errG = max(all_err_grad{i},   1e-16);
+    errN = max(all_err_newton{i}, 1e-8);
+    errG = max(all_err_grad{i},   1e-8);
     semilogy(1:length(errN), errN, '-o', 'Color', colors_test(i,:), ...
-        'LineWidth', 2.0, 'MarkerSize', 4, 'MarkerFaceColor', colors_test(i,:));
-    semilogy(1:length(errG), errG, '--', 'Color', colors_test(i,:), 'LineWidth', 1.8);
+        'LineWidth', 1.9, 'MarkerSize', 4, 'MarkerFaceColor', colors_test(i,:));
+    semilogy(1:length(errG), errG, '--', 'Color', colors_test(i,:), 'LineWidth', 2.0);
 end
 
-h_l_newt = plot(NaN, NaN, 'k-o', 'LineWidth', 2.0, 'MarkerFaceColor', 'k', 'MarkerSize', 4);
-h_l_grad = plot(NaN, NaN, 'k--', 'LineWidth', 1.8);
+h_l_newt = plot(NaN, NaN, 'k-o', 'LineWidth', 1.9, 'MarkerFaceColor', 'k', 'MarkerSize', 4);
+h_l_grad = plot(NaN, NaN, 'k--', 'LineWidth', 2.0);
 h_l_t1   = plot(NaN, NaN, '-', 'Color', colors_test(1,:), 'LineWidth', 2.5);
 h_l_t2   = plot(NaN, NaN, '-', 'Color', colors_test(2,:), 'LineWidth', 2.5);
 h_l_t3   = plot(NaN, NaN, '-', 'Color', colors_test(3,:), 'LineWidth', 2.5);
 
 xlabel('Iterazione k', 'FontWeight', 'bold');
 ylabel('Norma Errore ||e(k)|| [m] (scala log)', 'FontWeight', 'bold');
-title('Confronto Decadimento Errore di Posizione', 'FontSize', 11, 'FontWeight', 'bold');
+title('Confronto Decadimento Errore di Posizione', 'FontSize', 10.5, 'FontWeight', 'bold');
 legend([h_l_newt, h_l_grad, h_l_t1, h_l_t2, h_l_t3], ...
     {'Newton', 'Gradiente', 'Test 1: q_0 = [\pi/4, \pi/4]', ...
      'Test 2: q_0 = [0, \pi/2]', 'Test 3: q_0 = [-\pi/3, \pi/6]'}, ...
-    'Location', 'southoutside', 'NumColumns', 2);
+    'Location', 'southoutside', 'NumColumns', 2, 'FontSize', 8.5);
+xlim([0, 500]);
 ylim([1e-8, 10]);
+yticks(10.^(-8:2:0));
 hold off;
 %[appendix]{"version":"1.0"}
 %---

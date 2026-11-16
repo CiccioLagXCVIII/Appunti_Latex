@@ -985,6 +985,7 @@ Sistema Da Risolvere Per Trovare q6:
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle \sin \left(q_5 \right)\,\sin \left(q_6 \right)=A_{3,2} $
 \end{matlabsymbolicoutput}
+\newpage
 \begin{matlabcode}
 fprintf('Soluzioni:');
 cosq6_eq = isolate(eq_cosq6, cos(q6));
@@ -1001,7 +1002,6 @@ Soluzioni:
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle \sin \left(q_6 \right)=\frac{A_{3,2} }{\sin \left(q_5 \right)}$
 \end{matlabsymbolicoutput}
-\newpage
 \begin{matlabcode}
 cosq6 = rhs(cosq6_eq);
 sinq6 = rhs(sinq6_eq);
@@ -1016,8 +1016,6 @@ Valore q6:
 \hskip1em $\displaystyle \textrm{atan2}\left(\frac{A_{3,2} }{\sin \left(q_5 \right)},-\frac{A_{3,1} }{\sin \left(q_5 \right)}\right)$
 \end{matlabsymbolicoutput}
 
-
-\newpage
 \matlabheading{Configurazioni Singolari}
 
 \begin{par}
@@ -1110,7 +1108,6 @@ Cioè due soluzioni convergono in un'unica soluzione cioè $q_3 =0$. Si perde un
 \end{flushleft}
 \end{par}
 
-\newpage
 \matlabheadingthree{\textbf{Singolarità Di Allineamento}}
 
 \begin{par}
@@ -1194,7 +1191,11 @@ Nel caso di questa singolarità gli assi di rotazione del giunto $q_4$ e del giu
 
 \begin{par}
 \begin{flushleft}
-Se si verifica questa singolarità è impossibile determinare in modo univoco i valori di $q_4$ e $q_6$ poichè equazioni per trovarli diventano dipendenti. Si può risolvere solo per la loro somma o differenza. Questo significa che esiste un numero infinito di coppie ($q_4$,$q_6$) che soddisfano l'orientamento target, e qualsiasi coppia è una soluzione valida.
+Se si verifica questa singolarità è impossibile determinare in modo univoco i valori di $q_4$ e $q_6$ poichè equazioni per trovarli diventano dipendenti. Si può risolvere solo per la loro somma o differenza.
+\end{flushleft}
+\newpage
+\begin{flushleft}
+Questo significa che esiste un numero infinito di coppie ($q_4$,$q_6$) che soddisfano l'orientamento target, e qualsiasi coppia è una soluzione valida.
 \end{flushleft}
 \end{par}
 
@@ -1213,7 +1214,6 @@ Matrice Rotazione R36 (Singolarita ):
 0 & 0 & 1
 \end{array}\right)$
 \end{matlabsymbolicoutput}
-\newpage
 \begin{par}
 \begin{flushleft}
 \underline{Le variabili }$q_4$\underline{ e }$q_6$\underline{ non compaiono più singolarmente, ma solo all'interno della somma }$q_4 +q_6$\underline{. Questo dimostra che non si può separarle e calcolarle in modo univoco.}
@@ -1465,7 +1465,7 @@ q6 = -2.644 rad = -151.48deg
 \end{matlaboutput}
 
 \newpage
-\matlabheadingtwo{Visualizzazione Grafica 3D della Configurazione Calcolata}
+% \matlabheadingtwo{Visualizzazione Grafica 3D della Configurazione Calcolata}
 
 \begin{matlabcode}
 % Costruzione Tabella DH Numerica Completa nella Soluzione IK Calcolata
@@ -1509,23 +1509,23 @@ for i = 1:n
     R_all(:, :, i+1)  = T_cumulative(1:3, 1:3);
 end
 
-% 2. Disegno dello Scheletro Meccanico (Bracci)
-h_link = plot3(positions(:,1), positions(:,2), positions(:,3), '-', ...
-    'Color', [0.25 0.25 0.25], 'LineWidth', 2.5);
+% 2. Disegno Bracci
+h_link = plot3(positions(:,1), positions(:,2), positions(:,3), '-', 'Color', [0.25 0.25 0.25],
+    'LineWidth', 2.5);
 
 % 3. Evidenziazione Giunti Meccanici, End-Effector e Target Desiderato d06_des
 col_X = [0.85, 0.15, 0.15];
 col_Y = [0.15, 0.65, 0.20];
 col_Z = [0.15, 0.35, 0.85];
 
-h_base = plot3(positions(1,1), positions(1,2), positions(1,3), 's', ...
-    'MarkerSize', 8, 'MarkerFaceColor', [0.4 0.4 0.4], 'MarkerEdgeColor', 'k');
-h_joints = plot3(positions(2:end-1,1), positions(2:end-1,2), positions(2:end-1,3), 'o', ...
-    'MarkerSize', 6, 'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'k');
-h_ee = plot3(positions(end,1), positions(end,2), positions(end,3), 'p', ...
-    'MarkerSize', 10, 'MarkerFaceColor', [0.95 0.75 0.1], 'MarkerEdgeColor', 'k');
-h_target = plot3(d06_des(1), d06_des(2), d06_des(3), 'o', ...
-    'MarkerSize', 13, 'MarkerEdgeColor', col_X, 'LineWidth', 2.0);
+h_base = plot3(positions(1,1), positions(1,2), positions(1,3), 's', 'MarkerSize', 8,
+    'MarkerFaceColor', [0.4 0.4 0.4], 'MarkerEdgeColor', 'k');
+h_joints = plot3(positions(2:end-1,1), positions(2:end-1,2), positions(2:end-1,3), 'o', 'MarkerSize', 6,
+    'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'k');
+h_ee = plot3(positions(end,1), positions(end,2), positions(end,3), 'p', 'MarkerSize', 10,
+    'MarkerFaceColor', [0.95 0.75 0.1], 'MarkerEdgeColor', 'k');
+h_target = plot3(d06_des(1), d06_des(2), d06_des(3), 'o', 'MarkerSize', 13, 'MarkerEdgeColor', col_X,
+    'LineWidth', 2.0);
 \end{matlabcode}
 \newpage
 \begin{matlabcode}
@@ -1535,11 +1535,11 @@ for i = 1:(n+1)
     p = positions(i, :);
     R = R_all(:, :, i);
 
-    qx = quiver3(p(1), p(2), p(3), R(1,1)*arrow_scale, R(2,1)*arrow_scale, R(3,1)*arrow_scale, 0, ...
+    qx = quiver3(p(1), p(2), p(3), R(1,1)*arrow_scale, R(2,1)*arrow_scale, R(3,1)*arrow_scale, 0,
         'Color', col_X, 'LineWidth', 1.8, 'MaxHeadSize', 0.35);
-    qy = quiver3(p(1), p(2), p(3), R(1,2)*arrow_scale, R(2,2)*arrow_scale, R(3,2)*arrow_scale, 0, ...
+    qy = quiver3(p(1), p(2), p(3), R(1,2)*arrow_scale, R(2,2)*arrow_scale, R(3,2)*arrow_scale, 0,
         'Color', col_Y, 'LineWidth', 1.8, 'MaxHeadSize', 0.35);
-    qz = quiver3(p(1), p(2), p(3), R(1,3)*arrow_scale, R(2,3)*arrow_scale, R(3,3)*arrow_scale, 0, ...
+    qz = quiver3(p(1), p(2), p(3), R(1,3)*arrow_scale, R(2,3)*arrow_scale, R(3,3)*arrow_scale, 0,
         'Color', col_Z, 'LineWidth', 1.8, 'MaxHeadSize', 0.35);
 
     if i == 1
@@ -1549,7 +1549,7 @@ for i = 1:(n+1)
     end
 end
 
-% 5. Etichette Intelligenti con Raggruppamento Origini Coincidenti
+% 5. Etichette Origini
 visited = false(n+1, 1);
 for i = 1:(n+1)
     if visited(i)
@@ -1560,9 +1560,8 @@ for i = 1:(n+1)
     visited(coincident_idx) = true;
     combined_label = strjoin(labels(coincident_idx), ' / ');
     p = positions(i, :);
-    text(p(1), p(2), p(3) + 0.18*arrow_scale, sprintf(' %s', combined_label), ...
-        'FontSize', 9, 'FontWeight', 'bold', ...
-        'BackgroundColor', [1 1 1], 'EdgeColor', [0.8 0.8 0.8], 'Margin', 1);
+    text(p(1), p(2), p(3) + 0.18*arrow_scale, sprintf(' %s', combined_label), 'FontSize', 9,
+        'FontWeight', 'bold', 'BackgroundColor', [1 1 1], 'EdgeColor', [0.8 0.8 0.8], 'Margin', 1);
 end
 
 % 6. Margine di Visualizzazione Attorno al Robot
@@ -1577,9 +1576,8 @@ ylim([min_xyz(2) - margin, max_xyz(2) + margin]);
 zlim([min_xyz(3) - margin, max_xyz(3) + margin]);
 
 % 7. Legenda e Titolo
-legend([h_axes(1), h_axes(2), h_axes(3), h_link, h_ee, h_target], ...
-    {'Asse X', 'Asse Y', 'Asse Z', 'Bracci (Link)', 'End-Effector', 'Target d_{06,des}'}, ...
-    'Location', 'bestoutside');
+legend([h_axes(1), h_axes(2), h_axes(3), h_link, h_ee, h_target], {'Asse X', 'Asse Y', 'Asse Z',
+    'Bracci (Link)', 'End-Effector', 'Target d_{06,des}'}, 'Location', 'bestoutside');
 title(fig_name, 'FontSize', 12, 'FontWeight', 'bold');
 hold off;
 \end{matlabcode}
