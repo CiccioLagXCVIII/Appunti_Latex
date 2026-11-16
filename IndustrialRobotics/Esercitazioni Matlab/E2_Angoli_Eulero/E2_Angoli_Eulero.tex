@@ -541,12 +541,10 @@ text(X_Ruotato(1)*1.1, X_Ruotato(2)*1.1, X_Ruotato(3)*1.1, 'X''', 'FontSize', 11
 text(Y_Ruotato(1)*1.1, Y_Ruotato(2)*1.1, Y_Ruotato(3)*1.1, 'Y''', 'FontSize', 11, 'Color', col_rot_Y, 'FontWeight', 'bold');
 text(Z_Ruotato(1)*1.1, Z_Ruotato(2)*1.1, Z_Ruotato(3)*1.1, 'Z''', 'FontSize', 11, 'Color', col_rot_Z, 'FontWeight', 'bold');
 
-title({'Rotazione ZXZ (Eulero Classica)', ...
-    sprintf('\\phi = %.1f°, \\theta = %.1f°, \\psi = %.1f°', rad2deg(phiNum), rad2deg(thetaNum), rad2deg(psiNum))}, ...
-    'FontSize', 11, 'FontWeight', 'bold');
-legend([hX_0, hY_0, hZ_0, hX_r, hY_r, hZ_r], ...
-    {'X_0 (Fisso)', 'Y_0 (Fisso)', 'Z_0 (Fisso)', 'X'' (Ruotato)', 'Y'' (Ruotato)', 'Z'' (Ruotato)'}, ...
-    'Location', 'bestoutside');
+title({'Rotazione ZXZ (Eulero Classica)', sprintf('\\phi = %.1f°, \\theta = %.1f°, \\psi = %.1f°',
+    rad2deg(phiNum), rad2deg(thetaNum), rad2deg(psiNum))}, 'FontSize', 11, 'FontWeight', 'bold');
+legend([hX_0, hY_0, hZ_0, hX_r, hY_r, hZ_r], {'X_0 (Fisso)', 'Y_0 (Fisso)', 'Z_0 (Fisso)', 'X'' (Ruotato)',
+    'Y'' (Ruotato)', 'Z'' (Ruotato)'}, 'Location', 'bestoutside');
 hold off;
 \end{matlabcode}
 \begin{figure}[H]
@@ -587,16 +585,15 @@ Z_Ruotato = R_ZXY_Num(:, 3);
 hX_r = quiver3(0, 0, 0, X_Ruotato(1), X_Ruotato(2), X_Ruotato(3), 0, 'Color', col_rot_X, 'LineWidth', 2.2);
 hY_r = quiver3(0, 0, 0, Y_Ruotato(1), Y_Ruotato(2), Y_Ruotato(3), 0, 'Color', col_rot_Y, 'LineWidth', 2.2);
 hZ_r = quiver3(0, 0, 0, Z_Ruotato(1), Z_Ruotato(2), Z_Ruotato(3), 0, 'Color', col_rot_Z, 'LineWidth', 2.2);
+\end{matlabcode}
+\newpage
+\begin{matlabcode}
 text(X_Ruotato(1)*1.1, X_Ruotato(2)*1.1, X_Ruotato(3)*1.1, 'X''', 'FontSize', 11, 'Color', col_rot_X, 'FontWeight', 'bold');
 text(Y_Ruotato(1)*1.1, Y_Ruotato(2)*1.1, Y_Ruotato(3)*1.1, 'Y''', 'FontSize', 11, 'Color', col_rot_Y, 'FontWeight', 'bold');
 text(Z_Ruotato(1)*1.1, Z_Ruotato(2)*1.1, Z_Ruotato(3)*1.1, 'Z''', 'FontSize', 11, 'Color', col_rot_Z, 'FontWeight', 'bold');
 
-title({'Rotazione ZXY', ...
-    sprintf('\\phi = %.1f°, \\theta = %.1f°, \\psi = %.1f°', rad2deg(phiNum), rad2deg(thetaNum), rad2deg(psiNum))}, ...
-    'FontSize', 11, 'FontWeight', 'bold');
-legend([hX_0, hY_0, hZ_0, hX_r, hY_r, hZ_r], ...
-    {'X_0 (Fisso)', 'Y_0 (Fisso)', 'Z_0 (Fisso)', 'X'' (Ruotato)', 'Y'' (Ruotato)', 'Z'' (Ruotato)'}, ...
-    'Location', 'bestoutside');
+title({'Rotazione ZXY', sprintf('\\phi = %.1f°, \\theta = %.1f°, \\psi = %.1f°', rad2deg(phiNum), rad2deg(thetaNum), rad2deg(psiNum))}, 'FontSize', 11, 'FontWeight', 'bold');
+legend([hX_0, hY_0, hZ_0, hX_r, hY_r, hZ_r], {'X_0 (Fisso)', 'Y_0 (Fisso)', 'Z_0 (Fisso)', 'X'' (Ruotato)', 'Y'' (Ruotato)', 'Z'' (Ruotato)'}, 'Location', 'bestoutside');
 hold off;
 \end{matlabcode}
 \begin{center}
@@ -624,7 +621,9 @@ hZ_0 = quiver3(0, 0, 0, 0, 0, 1, 0, 'Color', col_fixed_Z, 'LineStyle', '--', 'Li
 text(1.08, 0, 0, 'X_0', 'FontSize', 10, 'Color', col_fixed_X, 'FontWeight', 'bold');
 text(0, 1.08, 0, 'Y_0', 'FontSize', 10, 'Color', col_fixed_Y, 'FontWeight', 'bold');
 text(0, 0, 1.08, 'Z_0', 'FontSize', 10, 'Color', col_fixed_Z, 'FontWeight', 'bold');
-
+\end{matlabcode}
+\newpage
+\begin{matlabcode}
 % Ripristino Angoli RPY per il Titolo
 phiNum = pi/2;
 thetaNum = pi/4;
@@ -642,11 +641,11 @@ text(X_Ruotato(1)*1.1, X_Ruotato(2)*1.1, X_Ruotato(3)*1.1, 'X''', 'FontSize', 11
 text(Y_Ruotato(1)*1.1, Y_Ruotato(2)*1.1, Y_Ruotato(3)*1.1, 'Y''', 'FontSize', 11, 'Color', col_rot_Y, 'FontWeight', 'bold');
 text(Z_Ruotato(1)*1.1, Z_Ruotato(2)*1.1, Z_Ruotato(3)*1.1, 'Z''', 'FontSize', 11, 'Color', col_rot_Z, 'FontWeight', 'bold');
 
-title({'Rotazione RPY (ZY''X'' - Yaw, Pitch, Roll)', ...
-    sprintf('\\phi = %.1f°, \\theta = %.1f°, \\psi = %.1f°', rad2deg(phiNum), rad2deg(thetaNum), rad2deg(psiNum))}, ...
+title({'Rotazione RPY (ZY''X'' - Yaw, Pitch, Roll)',
+    sprintf('\\phi = %.1f°, \\theta = %.1f°, \\psi = %.1f°', rad2deg(phiNum), rad2deg(thetaNum), rad2deg(psiNum))},
     'FontSize', 11, 'FontWeight', 'bold');
-legend([hX_0, hY_0, hZ_0, hX_r, hY_r, hZ_r], ...
-    {'X_0 (Fisso)', 'Y_0 (Fisso)', 'Z_0 (Fisso)', 'X'' (Ruotato)', 'Y'' (Ruotato)', 'Z'' (Ruotato)'}, ...
+legend([hX_0, hY_0, hZ_0, hX_r, hY_r, hZ_r],
+    {'X_0 (Fisso)', 'Y_0 (Fisso)', 'Z_0 (Fisso)', 'X'' (Ruotato)', 'Y'' (Ruotato)', 'Z'' (Ruotato)'},
     'Location', 'bestoutside');
 hold off;
 \end{matlabcode}
