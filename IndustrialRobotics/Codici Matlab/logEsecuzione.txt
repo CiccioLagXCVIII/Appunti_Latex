@@ -1,5 +1,5 @@
 ====================================================================
- LOG ESECUZIONE updateStructure - 2026-11-06 10:33:37
+ LOG ESECUZIONE updateStructure - 2026-11-16 16:42:03
  Modalita: Completa (Tutti gli script E*.m)
 ====================================================================
 

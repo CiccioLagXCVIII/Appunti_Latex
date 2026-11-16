@@ -7,22 +7,6 @@
 %[text] - **Angoli ZXY:** Prevedono delle rotazioni successive intorno agli assi: $Z$, $X^{\\prime }$ (asse $X$ ruotato) e $Y^{\\prime \\prime }$ (asse $Y$ nuovamente ruotato)
 %[text] - **Angoli RPY:** Prevedono delle rotazioni intorno agli assi $Z$, $Y^{\\prime }$ e $X^{\\prime \\prime }$ \
 %[text] Per essere valida, una sequenza di rotazioni non deve avere due rotazioni consecutive attorno ad assi paralleli. Due delle convenzioni valide sono **ZXZ** e **ZXY**.
-% Risoluzione percorso cartella funzioni ausiliarie Codici Matlab
-if ~exist('Compute_DH_Transformations', 'file') || ~exist('Compute_Rotation_Matrix', 'file')
-    candDirs = {pwd, fileparts(pwd)};
-    try
-        edFile = matlab.desktop.editor.getActiveFilename;
-        candDirs = [candDirs, {fileparts(edFile), fileparts(fileparts(edFile))}];
-    catch
-    end
-    for iCand = 1:numel(candDirs)
-        cDir = candDirs{iCand};
-        if isfolder(cDir) && (isfile(fullfile(cDir, 'Compute_DH_Transformations.m')) || isfile(fullfile(cDir, 'Compute_Rotation_Matrix.m')))
-            addpath(cDir);
-            break;
-        end
-    end
-end
 clc; clear; close all;
 
 % Definizione Angoli Simbolici

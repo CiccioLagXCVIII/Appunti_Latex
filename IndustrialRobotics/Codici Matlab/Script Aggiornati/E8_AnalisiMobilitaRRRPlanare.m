@@ -4,22 +4,6 @@
 %[text] - Lo **Spazio** delle **Velocità Raggiungibili** ($R(J)$): L'insieme di tutte le velocità che l'end-effector può assumere.
 %[text] - Le **Direzioni** di **Moto Precluse** ($N(J^T )$): Le direzioni in cui l'end-effector non può muoversi istantaneamente.
 %[text] - Gli **Automovimenti** ($N(J)$): Le combinazioni di velocità dei giunti che non producono movimento dell'end-effector, ma solo un riarrangiamento interno del robot. \
-% Risoluzione percorso cartella funzioni ausiliarie Codici Matlab
-if ~exist('Compute_DH_Transformations', 'file') || ~exist('Compute_Rotation_Matrix', 'file')
-    candDirs = {pwd, fileparts(pwd)};
-    try
-        edFile = matlab.desktop.editor.getActiveFilename;
-        candDirs = [candDirs, {fileparts(edFile), fileparts(fileparts(edFile))}];
-    catch
-    end
-    for iCand = 1:numel(candDirs)
-        cDir = candDirs{iCand};
-        if isfolder(cDir) && (isfile(fullfile(cDir, 'Compute_DH_Transformations.m')) || isfile(fullfile(cDir, 'Compute_Rotation_Matrix.m')))
-            addpath(cDir);
-            break;
-        end
-    end
-end
 clc; clear; close all;
 % Parametri Manipolatore
 syms q1 q2 q3 l1 l2 l3 real;

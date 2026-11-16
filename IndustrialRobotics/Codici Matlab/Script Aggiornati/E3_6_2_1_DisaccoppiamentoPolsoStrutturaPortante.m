@@ -2,22 +2,6 @@
 %%
 %[text] ## CINEMATICA DIRETTA MANIPOLATORE SFERICO
 %[text]{"align":"center"} ![Disaccoppiamento Cinematica Diretta 1](../../Esercitazioni Matlab/E3_6_2_DisaccoppiamentoPolsoStrutturaPortante/E3_6_2_Images/image_0.jpeg)
-% Risoluzione percorso cartella funzioni ausiliarie Codici Matlab
-if ~exist('Compute_DH_Transformations', 'file') || ~exist('Compute_Rotation_Matrix', 'file')
-    candDirs = {pwd, fileparts(pwd)};
-    try
-        edFile = matlab.desktop.editor.getActiveFilename;
-        candDirs = [candDirs, {fileparts(edFile), fileparts(fileparts(edFile))}];
-    catch
-    end
-    for iCand = 1:numel(candDirs)
-        cDir = candDirs{iCand};
-        if isfolder(cDir) && (isfile(fullfile(cDir, 'Compute_DH_Transformations.m')) || isfile(fullfile(cDir, 'Compute_Rotation_Matrix.m')))
-            addpath(cDir);
-            break;
-        end
-    end
-end
 clc; clear; close all;
 % Definizione Variabili Simboliche
 syms q1 q2 q3 d1 d2 d3 alpha1 alpha2 alpha3 a1 a2 a3 real;

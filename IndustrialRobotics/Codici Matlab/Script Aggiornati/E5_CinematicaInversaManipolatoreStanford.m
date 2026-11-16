@@ -3,22 +3,6 @@
 %[text] - **Cinematica Posizione: **Trovare i valori dei primi tre giunti $(q_1 ,q_2 ,q_3 )$ che posizionano il centro del polso nel punto desiderato
 %[text] - **Cinematica Orientamento: **Trovare i valori degli ultimi tre giunti $(q_4 ,q_5 ,q_6 )$ per ottenere l'orientamento desiderato dell'end effector avendo già posizionato il polso \
 %[text] Si definiscono tutte le variabili simboliche che includono le variabili di giunto $(q_1 ,\\ldots,q_6 )$ e i parametri geometrici costanti del manipolatore, come le lunghezze dei link $d_2$ e $d_6$
-% Risoluzione percorso cartella funzioni ausiliarie Codici Matlab
-if ~exist('Compute_DH_Transformations', 'file') || ~exist('Compute_Rotation_Matrix', 'file')
-    candDirs = {pwd, fileparts(pwd)};
-    try
-        edFile = matlab.desktop.editor.getActiveFilename;
-        candDirs = [candDirs, {fileparts(edFile), fileparts(fileparts(edFile))}];
-    catch
-    end
-    for iCand = 1:numel(candDirs)
-        cDir = candDirs{iCand};
-        if isfolder(cDir) && (isfile(fullfile(cDir, 'Compute_DH_Transformations.m')) || isfile(fullfile(cDir, 'Compute_Rotation_Matrix.m')))
-            addpath(cDir);
-            break;
-        end
-    end
-end
 clc; clear; close all;
 % Variabili Simboliche Struttura
 syms q1 q2 q3 d2 real;

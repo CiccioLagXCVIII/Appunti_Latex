@@ -11,22 +11,6 @@
 %[text] $rr^T$ è il prodotto esterno del versore $\\mathbf{r}$.
 %[text] $S(r)$ è la Skew-Symmetric Matrix associata a $\\mathbf{r}$, che rappresenta l'operatore prodotto vettoriale:
 %[text]{"align":"center"} $S(r)=\\left(\\begin{array}{ccc} 0 & -r\_z & r\_y \\\\ r\_z & 0 & -r\_x \\\\ -r\_y & r\_x & 0 \\end{array}\\right)$
-% Risoluzione percorso cartella funzioni ausiliarie Codici Matlab
-if ~exist('Compute_DH_Transformations', 'file') || ~exist('Compute_Rotation_Matrix', 'file')
-    candDirs = {pwd, fileparts(pwd)};
-    try
-        edFile = matlab.desktop.editor.getActiveFilename;
-        candDirs = [candDirs, {fileparts(edFile), fileparts(fileparts(edFile))}];
-    catch
-    end
-    for iCand = 1:numel(candDirs)
-        cDir = candDirs{iCand};
-        if isfolder(cDir) && (isfile(fullfile(cDir, 'Compute_DH_Transformations.m')) || isfile(fullfile(cDir, 'Compute_Rotation_Matrix.m')))
-            addpath(cDir);
-            break;
-        end
-    end
-end
 clc; clear; close all;
 % Definizione variabili simboliche
 syms rx ry rz theta real

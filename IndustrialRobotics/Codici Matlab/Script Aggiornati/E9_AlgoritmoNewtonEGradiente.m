@@ -1,21 +1,5 @@
 %[text] # Implementazione Algoritmo Di Newton E Del Gradiente
 %[text] La prima fase consiste nella definizione del modello cinematico del manipolatore. Si utilizzano variabili simboliche per rappresentare le lunghezze dei bracci e le variabili di giunto, al fine di ottenere espressioni generali e analitiche.
-% Risoluzione percorso cartella funzioni ausiliarie Codici Matlab
-if ~exist('Compute_DH_Transformations', 'file') || ~exist('Compute_Rotation_Matrix', 'file')
-    candDirs = {pwd, fileparts(pwd)};
-    try
-        edFile = matlab.desktop.editor.getActiveFilename;
-        candDirs = [candDirs, {fileparts(edFile), fileparts(fileparts(edFile))}];
-    catch
-    end
-    for iCand = 1:numel(candDirs)
-        cDir = candDirs{iCand};
-        if isfolder(cDir) && (isfile(fullfile(cDir, 'Compute_DH_Transformations.m')) || isfile(fullfile(cDir, 'Compute_Rotation_Matrix.m')))
-            addpath(cDir);
-            break;
-        end
-    end
-end
 clc; clear; close all;
 % Variabili Di Giunto
 syms q1 q2 real;
@@ -270,8 +254,8 @@ R_ws_min = abs(l_val(1) - l_val(2));
 e_q_sub  = subs(e_q, [l1, l2, rx, ry], [l_val(1), l_val(2), r_val(1), r_val(2)]);
 
 figure('Name', 'Configurazioni Critiche del Manipolatore RR', 'Color', 'w', ...
-    'Units', 'normalized', 'Position', [0.08, 0.06, 0.78, 0.86]);
-t = tiledlayout(3, 2, 'TileSpacing', 'compact', 'Padding', 'compact');
+    'Units', 'normalized', 'Position', [0.22, 0.14, 0.50, 0.65]);
+t = tiledlayout(2, 3, 'TileSpacing', 'tight', 'Padding', 'tight');
 
 for k = 1:size(puntiCritici, 1)
     nexttile;
@@ -319,11 +303,10 @@ for k = 1:size(puntiCritici, 1)
     h_tgt = plot(r_val(1), r_val(2), 'x', 'MarkerSize', 10, ...
         'Color', col_red, 'LineWidth', 2.2);
 
-    xlabel('X [m]', 'FontSize', 9, 'FontWeight', 'bold');
-    ylabel('Y [m]', 'FontSize', 9, 'FontWeight', 'bold');
     title(sprintf('P.%d (%s): q = [%.2f, %.2f] rad', k, tipo_str, q1_c, q2_c), ...
         'FontSize', 9.5, 'FontWeight', 'bold');
     xlim([-2.1, 2.1]); ylim([-2.1, 2.1]);
+    xticks(-2:1:2); yticks(-2:1:2);
 
     if k == 1
         lgd1 = legend([h_arm, h_ee, h_tgt], ...
@@ -333,6 +316,8 @@ for k = 1:size(puntiCritici, 1)
     end
     hold off;
 end
+xlabel(t, 'X [m]', 'FontSize', 10, 'FontWeight', 'bold');
+ylabel(t, 'Y [m]', 'FontSize', 10, 'FontWeight', 'bold');
 %[text] Per comprendere visivamente il comportamento degli algoritmi di ottimizzazione, è essenziale visualizzare la funzione di costo $V(q)$. Questo viene fatto generando una superficie 3D della funzione nello spazio dei giunti $(q_1 ,q_2 )$. Su questo grafico, verranno sovrapposti i punti critici calcolati e classificati. Questo permette di vedere dove si trovano i minimi, i massimi e i punti di sella, che possono deviare o intrappolare gli algoritmi.
 l_val = [1, 0.8];
 for i = 1:size(puntiCritici, 1)

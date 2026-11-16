@@ -6,22 +6,6 @@
 %[text] - Il **tipo di giunto** (rotoidale o prismatico).
 %[text] - Il **numero di giunti **del manipolatore \
 %[text] Si definiscono i parametri del manipolatore RR planare. Le lunghezze dei bracci ($l_1 ,l_2$) e le variabili di giunto ($q_1 ,q_2$) sono dichiarate come variabili simboliche per consentire un calcolo analitico.
-% Risoluzione percorso cartella funzioni ausiliarie Codici Matlab
-if ~exist('Compute_DH_Transformations', 'file') || ~exist('Compute_Rotation_Matrix', 'file')
-    candDirs = {pwd, fileparts(pwd)};
-    try
-        edFile = matlab.desktop.editor.getActiveFilename;
-        candDirs = [candDirs, {fileparts(edFile), fileparts(fileparts(edFile))}];
-    catch
-    end
-    for iCand = 1:numel(candDirs)
-        cDir = candDirs{iCand};
-        if isfolder(cDir) && (isfile(fullfile(cDir, 'Compute_DH_Transformations.m')) || isfile(fullfile(cDir, 'Compute_Rotation_Matrix.m')))
-            addpath(cDir);
-            break;
-        end
-    end
-end
 clc; clear; close all;
 % Variabili Di Giunto
 syms q1 q2 real;

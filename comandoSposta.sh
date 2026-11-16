@@ -1,0 +1,1 @@
+mkdir -p "$HOME/Scrivania/Esercitazioni_Semifinali" && find "$HOME/Scrivania/Universita/02_Appunti_Latex/IndustrialRobotics/Esercitazioni Matlab" -type f -name '*.pdf' -exec mv -vt "$HOME/Scrivania/Esercitazioni_Semifinali" {} +
