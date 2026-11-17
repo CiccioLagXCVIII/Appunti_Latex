@@ -55,7 +55,7 @@ fprintf('Phi = %s\n', phi_calc);
 %[text]{"align":"center"} $\\begin{pmatrix} P_{wx} \\\\ P_{wy} \\end{pmatrix} = \\begin{pmatrix} P_x \\\\ P_y \\end{pmatrix} - \\mathbf{R}(\\phi ) \\begin{pmatrix} l_{3}\\\\ 0 \\end{pmatrix} \\qquad\\longrightarrow\\qquad \\begin{pmatrix} P_{wx} \\\\ P_{wy} \\end{pmatrix} = \\begin{pmatrix} P_x \\\\ P_y \\end{pmatrix} - \\begin{pmatrix} \\cos(\\phi) & -\\sin(\\phi) \\\\ \\sin(\\phi) & \\cos(\\phi) \\end{pmatrix} \\begin{pmatrix} l_{3}\\\\ 0 \\end{pmatrix}$
 %[text]{"align":"center"} $\\begin{pmatrix} P_{wx} \\\\ P_{wy} \\end{pmatrix} = \\begin{pmatrix} P_x \\\\ P_y \\end{pmatrix} - \\begin{pmatrix} l_{3}\\cos(\\phi)\\\\ l_{3}\\sin(\\phi) \\end{pmatrix}$
 % Matrice R(phi)
-R = [cos(q1 + q2 + q3_calc) -sin(q1 + q2 + q3_calc); sin(q1 + q2 + q3_calc) cos(q1 + q2 + q3_calc)];
+R = [cos(phi) -sin(phi); sin(phi) cos(phi)];
 
 fprintf('Matrice R:\n');
 disp(R);
@@ -81,7 +81,7 @@ disp(Pw_des);
 %[text] Le equazioni di cinematica diretta per il polso sono:
 %[text]{"align":"center"} $\\begin{array}{l} P_{wx} =l_1 \\cos (q_1 )+l_2 \\cos (q_1 +q_2 )\\\\ P_{wy} =l_1 \\sin (q_1 )+l_2 \\sin (q_1 +q_2 ) \\end{array}$
 %[text] Per trovare $q_2$, si elevano al quadrato e si sommano le due equazioni.
-Pw = Pe_calc - (R * l3_vec);
+Pw = simplify(subs(Pe_calc, q3_calc, phi - q1 - q2) - (R * l3_vec));
 fprintf('P_{wx}^2 + P_{wy}^2 = \n');
 quadSum = Pw(1)^2 + Pw(2)^2;
 quadSum = simplify(quadSum);
@@ -98,8 +98,8 @@ disp(cos_q2);
 %[text] Poiché $\\sin^2 (q_2 )+\\cos^2 (q_2 )=1$, si hanno due possibili soluzioni per $\\sin (q_2 )$:
 %[text] ### $\\sin (q_2 )=\\pm \\sqrt{1-\\cos (q_2 )^2 \\;\\;}$
 %[text] Queste due soluzioni corrispondono a due diverse configurazioni del braccio:
-%[text] - **Gomito Alto** (Soluzione Positiva): Il gomito è sopra la linea che collega la base all'end-effector
-%[text] - **Gomito Basso** (Soluzione Negativa): Il gomito è sotto la linea che collega la base all'end-effector \
+%[text] - **Gomito Basso** (Soluzione Positiva): Il gomito è sotto la linea che collega la base all'end-effector
+%[text] - **Gomito Alto** (Soluzione Negativa): Il gomito è sopra la linea che collega la base all'end-effector \
 %[text] L'angolo $q_2$ si trova quindi con:
 %[text] ### $q_2 =\\textrm{atan2}(\\sin (q_2 ),\\cos (q_2 ))$
 cos_q2_val = rhs(cos_q2);
@@ -165,8 +165,8 @@ det_A = simplify(det(A));
 disp(det_A);
 %[text] Si nota che il determinante è esattamente uguale a $P_{wx}^2 +P_{wy}^2 =l_1^2 +l_2^2 +2l_1 l_2 \\cos (q_2 )$ ovvero il quadrato della distanza del polso dall'origine. Nel caso in cui $P_{wx}^2 +P_{wy}^2 =0$, il che implica che il polso si trovi esattamente nell'origine $(0,0)$, si ha una singolarità cinematica e non è possibile determinare univocamente $q_1$ in quanto la matrice $A$ non è invertibile.
 %[text] Una configurazione singolare rappresenta una condizione in cui il manipolatore perde uno o più gradi di libertà nel suo spazio operativo. Anche se possiede 3 giunti, in una singolarità non può muovere istantaneamente il suo end-effector in 3 direzioni indipendenti. Il manipolatore RRR planare, ha due tipi di singolarità:
-%[text] - **Singolarità Di Confine:** Si verifica quando i primi due bracci sono completamente estesi ($q_2 =0$) o completamente ripiegati ($q_2 =\\pi$). In questa configurazione i due link sono allineati. Qualsiasi movimento dei giunti $q_1$ e $q_2$ può produrre uno spostamento del polso solo in direzione tangenziale, ma non in quella radiale. Il manipolatore perde la capacità di "allungarsi" o "accorciarsi".
-%[text] - **Singolarità Interne:** Si verificano quando la base, il secondo e il terzo giunto sono allineati. Questo accade proprio quando $q_2 =0$ o $q_2 =\\pi$. In queste configurazioni, i movimenti di $q_1$ e $q_2$ generano spostamenti dell'end-effector che non sono più linearmente indipendenti, portando a una perdita di manovrabilità. \
+%[text] - **Singolarità Di Confine ($\sin(q_2) = 0$):** Si verifica quando i primi due bracci sono completamente estesi ($q_2 =0$) o completamente ripiegati ($q_2 =\\pi$). In questa configurazione i due link sono allineati e le due configurazioni gomito alto/basso coincidono. Qualsiasi movimento dei giunti $q_1$ e $q_2$ può produrre uno spostamento del polso solo in direzione tangenziale, ma non in quella radiale. Il manipolatore perde la capacità di "allungarsi" o "accorciarsi".
+%[text] - **Singolarità Interna ($l_1 = l_2$ e $q_2 = \\pi$):** Si verifica quando $\\det\\bigl\\lbrack A(q_2)\\bigr\\rbrack = P_{wx}^2 +P_{wy}^2 = l_1^2 +l_2^2 +2 l_1 l_2 \\cos(q_2) = 0$, il che accade unicamente quando $l_1 = l_2$ e $q_2 = \\pi$. In questa configurazione il polso coincide con l'origine $(0,0)$ e $q_1$ risulta indeterminato. \
 %[text] Operare in prossimità di una singolarità è problematico, infatti richiede velocità di giunto molto elevate per produrre un movimento dell'end-effector, con rischi per la struttura e gli attuatori. Pertanto, la pianificazione delle traiettorie deve sempre tenere conto di queste configurazioni e, se possibile, evitarle.
 %[text] Nel caso in cui $\\det \\bigl\\lbrack A(q_2 )\\bigr\\rbrack =0$ si ha una singolarità cinematica e non è possibile determinare $q_1$ in quanto $A(q_2 )$ non è invertibile. Nel caso in cui $\\det\\bigl\\lbrack A(q_2 )\\bigr\\rbrack \\not= 0$ si ha che
 %[text]{"align":"center"} ${\\left(\\begin{array}{cc} l_1 +l_2 \\cos(q_2 ) & -l_2 \\sin (q_2 )\\\\ l_2 \\sin (q_2 ) & l_1 +l_2 \\cos(q_2 ) \\end{array}\\right)}^{-1} ~~\\left(\\begin{array}{c} P_{wx} \\\\ P_{wy} \\end{array}\\right)=\\left(\\begin{array}{c} \\cos q_1 \\\\ \\sin q_1 \\end{array}\\right)$
@@ -181,7 +181,6 @@ disp(sol_cosq1);
 fprintf('Soluzione Di sin(q1):\n');
 disp(sol_sinq1);
 %[text] Ricordando che $P_{wx}^2 +P_{wy}^2 =l_1^2 +l_2^2 +2l_1 l_2 \\cos (q_2 )$, andando a sostituire si avrà che
-% GOMITO ALTO
 cosq1_final = subs(sol_cosq1, l1^2 + 2*cos(q2)*l1*l2 + l2^2, P_wx^2 + P_wy^2);
 fprintf('Valore Finale Di cos(q1):\n');
 disp(cosq1_final);
@@ -190,46 +189,55 @@ fprintf('Valore Finale Di sin(q1):\n');
 disp(sinq1_final);
 %[text] L'angolo $q_1$ si trova quindi con:
 %[text] ### $q_1 =\\textrm{atan2}(\\sin (q_1 ),\\cos (q_1 ))$
-q1_neg = atan2(sinq1_final, cosq1_final);
+% GOMITO BASSO (+)
+sinq1_pos = subs(sinq1_final, [cos(q2), sin(q2)], [cos_q2_val, sin_q2_pos]);
+cosq1_pos = subs(cosq1_final, [cos(q2), sin(q2)], [cos_q2_val, sin_q2_pos]);
+q1_pos = atan2(sinq1_pos, cosq1_pos);
 
-fprintf('Valore q1 Calcolato:\n');
+% GOMITO ALTO (-)
+sinq1_neg = subs(sinq1_final, [cos(q2), sin(q2)], [cos_q2_val, sin_q2_neg]);
+cosq1_neg = subs(cosq1_final, [cos(q2), sin(q2)], [cos_q2_val, sin_q2_neg]);
+q1_neg = atan2(sinq1_neg, cosq1_neg);
+
+fprintf('Valore q1 Gomito Basso (+):\n');
+disp(q1_pos);
+fprintf('Valore q1 Gomito Alto (-):\n');
 disp(q1_neg);
 %%
 %[text] ## Calcolo Variabile Di Giunto $q_3$
 %[text] A questo punto, avendo ricavato $q_1$ e $q_2$ l'angolo $q_3$ è ricavabile da
 %[text] ### $\\phi =q_1 +q_2 +q_3 \\longrightarrow q_3 =\\phi -q_1 -q_2$
-% Si calcola q3 con valore di q2 calcolato con valore positivo di sin(q2)
-q3_calc_1 = phi - atan2(sinq1_final, cosq1_final) - atan2(sin_q2_pos, cos_q2_val);
+% Si calcola q3 per Gomito Basso (+) con valore positivo di sin(q2)
+q3_calc_1 = phi - q1_pos - q2_pos;
 
-
-% Si calcola q3 con valore di q2 calcolato con valore negativo di sin(q2)
-q3_calc_2 = phi - atan2(sinq1_final, cosq1_final) - atan2(sin_q2_neg, cos_q2_val);
-%[text] Se la posa desiderata $(P_x ,P_y ,\\phi )$ è all'interno dello spazio di lavoro del manipolatore, il problema di cinematica inversa per un robot RRR planare **ammette** generalmente **due soluzioni distinte**. Queste due soluzioni corrispondono alle configurazioni di "*Gomito Alto*" e "*Gomito Basso*" e possono essere calcolate analiticamente seguendo la procedura di disaccoppiamento. La scelta tra le due soluzioni dipende da criteri aggiuntivi, come evitare ostacoli, minimizzare il movimento dei giunti o rimanere lontani dalle singolarità.
-%[text] ### 1. Soluzione Cinematica Gomito Alto
+% Si calcola q3 per Gomito Alto (-) con valore negativo di sin(q2)
+q3_calc_2 = phi - q1_neg - q2_neg;
+%[text] Se la posa desiderata $(P_x ,P_y ,\\phi )$ è all'interno dello spazio di lavoro del manipolatore, il problema di cinematica inversa per un robot RRR planare **ammette** generalmente **due soluzioni distinte**. Queste due soluzioni corrispondono alle configurazioni di "*Gomito Basso*" e "*Gomito Alto*" e possono essere calcolate analiticamente seguendo la procedura di disaccoppiamento. La scelta tra le due soluzioni dipende da criteri aggiuntivi, come evitare ostacoli, minimizzare il movimento dei giunti o rimanere lontani dalle singolarità.
+%[text] ### 1. Soluzione Cinematica Gomito Basso (+)
 %[text] - Si sceglie il valore positivo per il seno di $q_2$.
-%[text] - Si calcola $q_{2,\\text{Alto}}$ tramite l'arcotangente a quattro quadranti.
-%[text] - Si utilizzano $\\cos(q_{2,\\text{Alto}})$ e $\\sin(q_{2,\\text{Alto}})$ per calcolare i valori $\\cos(q_1)$ e $\\sin(q_1)$.
-%[text] - Si calcola $q_{1,\\text{Alto}}$ tramite l'arcotangente a quattro quadranti.
-%[text] - Infine, si calcola $q_{3,\\text{Alto}}$ come $\\phi - q_{1,\\text{Alto}} - q_{2,\\text{Alto}}$.
-%[text] - **La prima terna di soluzioni è**: \[ \mathbf{q}_{\text{Alto}} = \begin{pmatrix} q_{1,\text{Alto}} & q_{2,\text{Alto}} & q_{3,\text{Alto}} \end{pmatrix}^T \] \
-%[text] ### 2. Soluzione Cinematica Gomito Basso
-%[text] - Si sceglie il valore negativo per il seno di $q_2$.
 %[text] - Si calcola $q_{2,\\text{Basso}}$ tramite l'arcotangente a quattro quadranti.
 %[text] - Si utilizzano $\\cos(q_{2,\\text{Basso}})$ e $\\sin(q_{2,\\text{Basso}})$ per calcolare i valori $\\cos(q_1)$ e $\\sin(q_1)$.
 %[text] - Si calcola $q_{1,\\text{Basso}}$ tramite l'arcotangente a quattro quadranti.
 %[text] - Infine, si calcola $q_{3,\\text{Basso}}$ come $\\phi - q_{1,\\text{Basso}} - q_{2,\\text{Basso}}$.
-%[text] - **La seconda terna di soluzioni è**: \[ \mathbf{q}_{\text{Basso}} = \begin{pmatrix} q_{1,\text{Basso}} & q_{2,\text{Basso}} & q_{3,\text{Basso}} \end{pmatrix}^T \] \
+%[text] - **La prima terna di soluzioni è**: \[ \mathbf{q}_{\text{Basso}} = \begin{pmatrix} q_{1,\text{Basso}} & q_{2,\text{Basso}} & q_{3,\text{Basso}} \end{pmatrix}^T \] \
+%[text] ### 2. Soluzione Cinematica Gomito Alto (-)
+%[text] - Si sceglie il valore negativo per il seno di $q_2$.
+%[text] - Si calcola $q_{2,\\text{Alto}}$ tramite l'arcotangente a quattro quadranti.
+%[text] - Si utilizzano $\\cos(q_{2,\\text{Alto}})$ e $\\sin(q_{2,\\text{Alto}})$ per calcolare i valori $\\cos(q_1)$ e $\\sin(q_1)$.
+%[text] - Si calcola $q_{1,\\text{Alto}}$ tramite l'arcotangente a quattro quadranti.
+%[text] - Infine, si calcola $q_{3,\\text{Alto}}$ come $\\phi - q_{1,\\text{Alto}} - q_{2,\\text{Alto}}$.
+%[text] - **La seconda terna di soluzioni è**: \[ \mathbf{q}_{\text{Alto}} = \begin{pmatrix} q_{1,\text{Alto}} & q_{2,\text{Alto}} & q_{3,\text{Alto}} \end{pmatrix}^T \] \
 %%
 %[text] ## Analisi Dello Spazio Operativo Primario E Secondario
 %[text] Lo studio dello spazio operativo di un manipolatore è fondamentale per comprenderne le capacità e i limiti. Questo spazio viene suddiviso in due categorie principali: il Workspace Primario, che definisce l'area raggiungibile, e il Workspace Secondario, che caratterizza la destrezza del manipolatore.
 %[text] Il **Workspace Primario** (o ***Spazio Operativo Primario***) $WS_1$ (Spazio Raggiungibile) è l'insieme di tutti i punti che l'organo terminale (end-effector) del manipolatore può raggiungere con almeno un orientamento possibile. In altre parole, se un punto target si trova all'interno di questo spazio, $P\\in WS_1$, esiste almeno una configurazione di giunti che permette al manipolatore di raggiungerlo. Al contrario, se un punto si trova al di fuori di $WS_1$, il suo raggiungimento è impossibile e il problema cinematico non ammette soluzioni.
-%[text] Il **Workspace Secondario** (o ***Spazio Operativo Secondario***) $WS_2$ (Spazio di Destrezza) è un sottoinsieme del workspace primario. Esso rappresenta l'insieme dei punti che l'end-effector può raggiungere con un numero molteplice di orientamenti, idealmente con qualsiasi orientamento possibile. Se un punto appartiene allo spazio secondario, $P\\in WS_2$, significa che per quel punto esistono molteplici soluzioni cinematiche, garantendo una maggiore flessibilità nel completamento del task.
+%[text] Il **Workspace Secondario** (o ***Spazio Operativo Secondario***) $WS_2$ (Spazio di Destrezza) è un sottoinsieme del workspace primario. Esso rappresenta l'insieme dei punti che l'end-effector può raggiungere con qualsiasi orientamento fisicamente realizzabile. Se un punto appartiene allo spazio secondario, $P\\in WS_2$, significa che per quel punto esistono molteplici soluzioni cinematiche, garantendo una maggiore flessibilità nel completamento del task.
 %%
 %[text] ## Spazio Operativo Con Regione Centrale Non Raggiungibile
 %[text] Si analizza il caso in cui la geometria del manipolatore non consente di raggiungere l'origine degli assi. Questa situazione si verifica quando il terzo braccio ($l_3$) è troppo corto per raggiungere l'origine dal punto più vicino a cui il polso (il giunto tra il secondo e il terzo braccio) può posizionarsi. Di conseguenza, lo spazio di lavoro presenterà un'area vuota al suo centro.
 %[text] Lo ***Spazio Operativo Primario*** è definito dalla regione compresa tra due circonferenze concentriche. Il raggio massimo di questa regione, $R_{max}$, corrisponde alla massima estensione del manipolatore, ottenuta quando tutti e tre i bracci sono allineati e puntano verso l'esterno. La distanza minima, $R_{min}$, si ha invece quando il polso si trova alla sua minima distanza dall'origine ($|l_1 -l_2 |$) e il terzo braccio è orientato in direzione opposta, verso l'origine.
-%[text] Analiticamente, un punto $P$ appartiene allo spazio primario se la sua distanza dall'origine $d=\\sqrt{x^2 +y^2 }$, soddisfa la seguente relazione:
-%[text] ### $||l_1 -l_2 |-l_3 |\\le d\\le l_1 +l_2 +l_3$
+%[text] Analiticamente, un punto $P$ appartiene allo spazio primario se la sua distanza dall'origine $\\|p\\|=\\sqrt{x^2 +y^2 }$, soddisfa la seguente relazione:
+%[text] ### $||l_1 -l_2 |-l_3 |\\le \\|p\\|\\le l_1 +l_2 +l_3$
 % Lunghezze dei bracci del manipolatore RRR.
 l1 = 10;
 l2 = 4;
@@ -239,7 +247,7 @@ l3 = 2;
 R_max = l1 + l2 + l3;
 
 % Calcolo Raggio Interno: Minima Distanza Raggiungibile
-R_min = abs(l1 - l2) - l3;
+R_min = abs(abs(l1 - l2) - l3);
 
 fprintf('Spazio Primario - Raggio Interno (R_min): %.2f\n', R_min);
 fprintf('Spazio Primario - Raggio Esterno (R_max): %.2f\n', R_max);

@@ -4,25 +4,25 @@
 clc; clear; close all;
 
 % Definizione Variabili Simboliche
-syms q1 q2 q3 q4 d1 d2 d3 d4 a1 a2 a3 a4 real;
+syms q1 q2 q3 q4 d1 d4 a1 a2 real;
 
 % Tabella Parametri Denavit-Hartenberg (DH)
 % Le colonne sono: [theta, d, alpha, a]
 DH_table = [q1, d1, 0,  a1;
-            q2, 0,  0,  a2;
+            q2, 0,  pi, a2;
             0,  q3, 0,  0;
-            q4, d4, pi, 0];
+            q4, d4, 0,  0];
 
 % Numero Giunti Manipolatore
 n = size(DH_table, 1);
-%[text] A partire dalla tabella DH, si può calcolare la matrice di trasformazione omogenea $A_i$ per ciascun giunto $i$. Questa matrice, di dimensioni $4\\times 4$, rappresenta la trasformazione (rotazione e traslazione) dal sistema di riferimento del giunto $i$ a quello del giunto $i-1$. Si utilizza la funzione `Compute_DH_Transformations` per generare le matrici simboliche per ogni riga della tabella DH.
-[T_matrices, R_matrices] = Compute_DH_Transformations(DH_table);
+%[text] A partire dalla tabella DH, si può calcolare la matrice di trasformazione omogenea $^{i-1}A_i$ per ciascun link $i$. Questa matrice, di dimensioni $4\\times 4$, rappresenta la trasformazione (rotazione e traslazione) dal sistema di riferimento del link $i$ a quello del link $i-1$. Si utilizza la funzione `Compute_DH_Transformations` per generare le matrici simboliche per ogni riga della tabella DH.
+[A_matrices, R_matrices] = Compute_DH_Transformations(DH_table);
 
 for i = 1:n
-    fprintf('Matrice Di Trasformazione Omogenea ^(%d)T_(%d):\n', i-1, i);
-    disp(T_matrices(:,:,i));
+    fprintf('Matrice Di Trasformazione Omogenea ^(%d)A_(%d):\n', i-1, i);
+    disp(A_matrices(:,:,i));
 end
-T04 = T_matrices(:,:,1) * T_matrices(:,:,2) * T_matrices(:,:,3) * T_matrices(:,:,4);
+T04 = A_matrices(:,:,1) * A_matrices(:,:,2) * A_matrices(:,:,3) * A_matrices(:,:,4);
 T04 = simplify(T04);
 
 fprintf('Matrice Di Trasformazione Omogenea Totale ^(0)T_(4):\n');
@@ -48,9 +48,9 @@ disp(symsList);
 value = [pi/4, pi/3, 0.5, pi/6, 1, 0.2, 0.8, 0.6];
 
 % Sostituzione matrice per matrice
-T_Num = zeros(4,4,n);
+A_Num = zeros(4,4,n);
 for i = 1:n
-    T_Num(:,:,i) = double(subs(T_matrices(:,:,i), symsList, value));
+    A_Num(:,:,i) = double(subs(A_matrices(:,:,i), symsList, value));
 end
 
 T04_Num = double(subs(T04, symsList, value));
@@ -59,8 +59,8 @@ disp(T04_Num);
 
 % Stampa Matrici Numeriche
 for i = 1:n
-    fprintf('Matrice ^(%d)T_(%d) numerica:\n', i-1, i);
-    disp(T_Num(:,:,i));
+    fprintf('Matrice ^(%d)A_(%d) numerica:\n', i-1, i);
+    disp(A_Num(:,:,i));
 end
 %%
 %[text] ## Visualizzazione Grafica Manipolatore SCARA
@@ -88,7 +88,7 @@ positions(1, :) = T_cumulative(1:3, 4).';
 R_all(:, :, 1)  = T_cumulative(1:3, 1:3);
 
 for i = 1:n
-    T_cumulative = T_cumulative * double(T_Num(:, :, i));
+    T_cumulative = T_cumulative * double(A_Num(:, :, i));
     positions(i+1, :) = T_cumulative(1:3, 4).';
     R_all(:, :, i+1)  = T_cumulative(1:3, 1:3);
 end

@@ -15,16 +15,16 @@ DH_table_Strut = [q1, 0, -pi/2, 0;
 n = size(DH_table_Strut, 1);
 
 % Calcolo Matrici Trasformazione Struttura
-[T_matrices_Strut, R_matrices_Polso] = Compute_DH_Transformations(DH_table_Strut);
+[A_matrices_Strut, R_matrices_Strut] = Compute_DH_Transformations(DH_table_Strut);
 % Visualizzazione Matrici Trasformazione Struttura
 j = 0;
 for i = 1:n
-    fprintf('Matrice Di Trasformazione Omogenea ^{%d}T_(%d):\n', j, j+1);
-    disp(T_matrices_Strut(:,:,i));
+    fprintf('Matrice Di Trasformazione Omogenea ^{%d}A_(%d):\n', j, j+1);
+    disp(A_matrices_Strut(:,:,i));
     j = j+1;
 end
 % Calcolo Matrice Di Trasformazione Totale Dalla Base All'End Effector
-T03 = T_matrices_Strut(:,:,1) * T_matrices_Strut(:,:,2) * T_matrices_Strut(:,:,3);
+T03 = A_matrices_Strut(:,:,1) * A_matrices_Strut(:,:,2) * A_matrices_Strut(:,:,3);
 T03 = simplify(T03);
 
 fprintf('Matrice Di Trasformazione Omogenea ^(0)T_(3):\n');
@@ -48,17 +48,17 @@ DH_table_Polso = [q4, 0, -pi/2, 0;
 n = size(DH_table_Polso, 1);
 
 % Calcolo Matrici Trasformazione Polso
-[T_matrices_Polso, R_matrices_Polso] = Compute_DH_Transformations(DH_table_Polso);
+[A_matrices_Polso, R_matrices_Polso] = Compute_DH_Transformations(DH_table_Polso);
 
 % Visualizzazione Matrici Trasformazione Polso
 j = 3;
 for i = 1:n
     fprintf('Matrice Di Trasformazione Omogenea ^(%d)A_(%d):\n', j, j+1);
-    disp(T_matrices_Polso(:,:,i));
+    disp(A_matrices_Polso(:,:,i));
 
     j = j+1;
 end
-T36 = T_matrices_Polso(:,:,1) * T_matrices_Polso(:,:,2) * T_matrices_Polso(:,:,3);
+T36 = A_matrices_Polso(:,:,1) * A_matrices_Polso(:,:,2) * A_matrices_Polso(:,:,3);
 T36 = simplify(T36);
 
 fprintf('Matrice Di Trasformazione Omogenea ^{3}T_(6):\n');
@@ -77,18 +77,45 @@ disp(T06);
 % Estrazione Vettore Posizione
 d36 = T36(1:3, 4);
 d36 = simplify(d36);
-fprintf('Vettore Posizione d_{36}:\n');
+fprintf('Vettore Posizione ^{3}d_{6}:\n');
 
 disp(d36);
+
+% Verifica vettori costanti d_0 e d_1 (Condizione di Pieper)
+d0 = [0; 0; 0];
+R36_polso = simplify(T36(1:3, 1:3));
+d1 = simplify(transpose(R36_polso) * d36);
+fprintf('Vettore d_{0}:\n');
+disp(d0);
+fprintf('Vettore d_{1} = (^{3}R_{6})^{T} ^{3}d_{6}:\n');
+disp(d1);
 %%
 %[text] ## Cinematica Inversa Di Posizione Della Struttura Portante
-%[text]{"align":"center"} $^0 {\\mathbf{d}}_6 =^0 {\\mathbf{R}}_3 \\,^3 {\\mathbf{d}}_6 +^0 {\\mathbf{d}}_3$
+%[text]{"align":"center"} $^0 {\\mathbf{d}}_6 =^0 {\\mathbf{d}}_3 +^0 {\\mathbf{R}}_3 \\,^3 {\\mathbf{d}}_6$
 % Estrazione Vettore Posizione
 d03 = T03(1:3, 4);
 d03 = simplify(d03);
-fprintf('Vettore Posizione d_{03}:\n');
+fprintf('Vettore Posizione ^{0}d_{3}:\n');
 
 disp(d03);
+
+% Isolamento posizione desiderata del centro polso e risoluzione (q3, q2, q1)
+syms dx dy dz d03HatNormSq real;
+d06_des = [dx; dy; dz];
+R06_des = sym('r06_', [3, 3], 'real');
+d03_hat = simplify(d06_des - R06_des * d1);
+fprintf('Vettore Desiderato Centro Del Polso \\hat{^{0}d_{3}} = ^{0}d_{6} - ^{0}R_{6} d_{1}:\n');
+disp(d03_hat);
+
+q3_sol_pos = sqrt(d03HatNormSq - d2^2);
+q3_sol_neg = -sqrt(d03HatNormSq - d2^2);
+cos_q2 = d03_hat(3) / q3;
+q2_sol_pos = atan2(sqrt(1 - cos_q2^2), cos_q2);
+q2_sol_neg = atan2(-sqrt(1 - cos_q2^2), cos_q2);
+
+A_q1 = [q3*sin(q2), -d2; d2, q3*sin(q2)];
+cs_q1 = simplify(inv(A_q1) * [d03_hat(1); d03_hat(2)]);
+q1_sol = atan2(cs_q1(2), cs_q1(1));
 %%
 %[text] ## Cinematica Inversa Di Orientamento Del Polso Sferico
 %[text]{"align":"center"} ${}^{0}\\mathbf{R}_6 = {}^{0}\\mathbf{R}_3 \\cdot {}^{3}\\mathbf{R}_{6}$
@@ -108,6 +135,16 @@ R36 = simplify(R36);
 fprintf('Matrice Di Rotazione R36 = (R03)^{T} R06 =:\n');
 disp(R36);
 %[text]{"align":"center"} $\\begin{pmatrix} \\cos \\left(q_4 \\right)\\,\\cos \\left(q_5 \\right)\\,\\cos \\left(q_6 \\right)-\\sin \\left(q_4 \\right)\\,\\sin \\left(q_6 \\right) & -\\cos \\left(q_6 \\right)\\,\\sin \\left(q_4 \\right)-\\cos \\left(q_4 \\right)\\,\\cos \\left(q_5 \\right)\\,\\sin \\left(q_6 \\right) & \\cos \\left(q_4 \\right)\\,\\sin \\left(q_5 \\right)\\\\ \\cos \\left(q_4 \\right)\\,\\sin \\left(q_6 \\right)+\\cos \\left(q_5 \\right)\\,\\cos \\left(q_6 \\right)\\,\\sin \\left(q_4 \\right) & \\cos \\left(q_4 \\right)\\,\\cos \\left(q_6 \\right)-\\cos \\left(q_5 \\right)\\,\\sin \\left(q_4 \\right)\\,\\sin \\left(q_6 \\right) & \\sin \\left(q_4 \\right)\\,\\sin \\left(q_5 \\right)\\\\ -\\cos \\left(q_6 \\right)\\,\\sin \\left(q_5 \\right) & \\sin \\left(q_5 \\right)\\,\\sin \\left(q_6 \\right) & \\cos \\left(q_5 \\right) \\end{pmatrix}$
+
+% Matrice nota \bar{R} = (^{0}R_{3})^T \hat{^{0}R_{6}} e soluzioni (q5, q4, q6)
+R03_K = sym('r03_', [3, 3], 'real');
+R_bar_calc = transpose(R03_K) * R06_des;
+R_bar = sym('r_bar', [3, 3], 'real');
+cos_q5 = R_bar(3,3);
+q5_sol_pos = atan2(sqrt(1 - cos_q5^2), cos_q5);
+q5_sol_neg = atan2(-sqrt(1 - cos_q5^2), cos_q5);
+q4_sol = atan2(R_bar(2,3) / sin(q5), R_bar(1,3) / sin(q5));
+q6_sol = atan2(R_bar(3,2) / sin(q5), -R_bar(3,1) / sin(q5));
 %%
 %[text] ## Analisi Del Caso Singolare Del Polso $\\sin (q_5 )=0$
 %[text] ### Configurazione Singolare Con $q_5 =0$
@@ -118,6 +155,9 @@ R36_Zero = simplify(R36_Zero);
 fprintf('Matrice Di Rotazione R36 Calcolata Con q5 = 0:\n');
 
 disp(R36_Zero);
+q4_plus_q6 = atan2(R_bar(2,1), R_bar(1,1));
+fprintf('In singolarita q5 = 0, q4 + q6 =\n');
+disp(q4_plus_q6);
 %[text] ### Configurazione Singolare Con $q_5 =\\pi$
 % Sostituzione q5 = Pi
 R36_Pi = subs(R36, q5, pi);
@@ -126,6 +166,9 @@ R36_Pi = simplify(R36_Pi);
 fprintf('Matrice Di Rotazione R36 Calcolata Con q5 = Pi:\n');
 
 disp(R36_Pi);
+q4_minus_q6 = atan2(-R_bar(2,1), R_bar(2,2));
+fprintf('In singolarita q5 = Pi, q4 - q6 =\n');
+disp(q4_minus_q6);
 %[appendix]{"version":"1.0"}
 %---
 %[metadata:view]

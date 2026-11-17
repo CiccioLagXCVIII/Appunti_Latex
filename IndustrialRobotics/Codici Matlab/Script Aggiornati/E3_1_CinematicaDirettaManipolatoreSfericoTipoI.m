@@ -1,60 +1,60 @@
 %[text] # Cinematica Diretta Manipolatore Sferico Tipo I
 %[text] L'obiettivo della cinematica diretta è determinare la posizione e l'orientamento dell'organo terminale (end-effector) a partire dai valori delle variabili di giunto. Si utilizza la convenzione di Denavit-Hartenberg (DH) per modellare la geometria del robot. La convenzione di Denavit-Hartenberg è un metodo standard per assegnare sistemi di riferimento ai bracci di un robot. Per ogni braccio, si definiscono quattro parametri che descrivono la trasformazione geometrica rispetto al braccio precedente.
-%[text] Si inizia definendo le variabili simboliche necessarie per i parametri DH. Questo permette di eseguire i calcoli in forma generale, senza dover specificare subito valori numerici. Successivamente, si assemblano questi parametri in una tabella dove ogni riga corrisponde a un giunto del robot e le colonne rappresentano i parametri $\\left(\\begin{array}{c} \\theta ,d,\\alpha ,a \\end{array}\\right)$.
+%[text] Si inizia definendo le variabili simboliche necessarie per i parametri DH. Questo permette di eseguire i calcoli in forma generale, senza dover specificare subito valori numerici. Successivamente, si assemblano questi parametri in una tabella dove ogni riga corrisponde a un link del robot e le colonne rappresentano i parametri $\\left(\\begin{array}{c} \\theta ,d,\\alpha ,a \\end{array}\\right)$.
 clc; clear; close all;
 
 % Definizione Variabili Simboliche
 syms q1 q2 q3 real;
-syms d0 d1 a3 real;
+syms d1 real;
 
-DH_table = [q1, d0, -pi/2, d1;
+DH_table = [q1, d1, pi/2,  0;
             q2, 0,  -pi/2, 0;
-            q3, 0,  0,     a3];
+            0,  q3, 0,     0];
 
 % Numero Giunti Manipolatore
 n = size(DH_table, 1);
-%[text] A partire dalla tabella DH, si può calcolare la matrice di trasformazione omogenea $A_i$ per ciascun giunto $i$. Questa matrice, di dimensioni $4\\times 4$, rappresenta la trasformazione (rotazione e traslazione) dal sistema di riferimento del giunto $i$ a quello del giunto $i-1$. Si utilizza la funzione `Compute_DH_Transformations`per generare le matrici simboliche per ogni riga della tabella DH.
+%[text] A partire dalla tabella DH, si può calcolare la matrice di trasformazione omogenea $^{i-1}A_i$ per ciascun link $i$. Questa matrice, di dimensioni $4\\times 4$, rappresenta la trasformazione (rotazione e traslazione) dal sistema di riferimento del link $i$ a quello del link $i-1$. Si utilizza la funzione `Compute_DH_Transformations`per generare le matrici simboliche per ogni riga della tabella DH.
 % Calcolo Matrici Trasformazione
-[T_matrices, R_matrices] = Compute_DH_Transformations(DH_table);
+[A_matrices, R_matrices] = Compute_DH_Transformations(DH_table);
 
 % Visualizzazione Matrici Trasformazione
 for i = 1:n
-    fprintf('Matrice Di Trasformazione Omogenea A%d:\n', i);
-    disp(T_matrices(:,:,i));
+    fprintf('Matrice Di Trasformazione Omogenea ^(%d)A_(%d):\n', i-1, i);
+    disp(A_matrices(:,:,i));
 end
-%[text] Per ottenere la posa dell'organo terminale rispetto alla base del robot, si moltiplicano in sequenza le matrici di trasformazione individuali. Il risultato è la matrice di trasformazione omogenea totale $^0 T_n$, che contiene sia la matrice di rotazione $^0 R_n$ (orientamento) sia il vettore di posizione $^0 p_n$ dell'end-effector.
-%[text]{"align":"center"} $^0 T_n =A_1 \\cdot A_2 \\cdot \\ldots\\cdot A_n$
+%[text] Per ottenere la posa dell'organo terminale rispetto alla base del robot, si moltiplicano in sequenza le matrici di trasformazione individuali. Il risultato è la matrice di trasformazione omogenea totale $^0 T_n$, che contiene sia la matrice di rotazione $^0 R_n$ (orientamento) sia il vettore di posizione $^0 P_{EE}$ dell'end-effector.
+%[text]{"align":"center"} $^0 T_n = {}^{0}A_1 \\cdot {}^{1}A_2 \\cdot \\ldots \\cdot {}^{n-1}A_n$
 % Calcolo Matrice Di Trasformazione Totale Dalla Base All'End Effector
-T0n = T_matrices(:,:,1) * T_matrices(:,:,2) * T_matrices(:,:,3);
+T0n = A_matrices(:,:,1) * A_matrices(:,:,2) * A_matrices(:,:,3);
 T0n = simplify(T0n);
 
 fprintf('Matrice Di Trasformazione Omogenea Totale T03:\n');
 disp(T0n);
-%[text]{"align":"center"} $\\begin{pmatrix} s\\left(q_1 \\right)\\,s\\left(q_3 \\right)+c\\left(q_1 \\right)\\,c\\left(q_2 \\right)\\,c\\left(q_3 \\right) & c\\left(q_3 \\right)\\,s\\left(q_1 \\right)-c\\left(q_1 \\right)\\,c\\left(q_2 \\right)\\,s\\left(q_3 \\right) & -c\\left(q_1 \\right)\\,s\\left(q_2 \\right) & d_1 \\,c\\left(q_1 \\right)+a_3 \\,s\\left(q_1 \\right)\\,s\\left(q_3 \\right)+a_3 \\,c\\left(q_1 \\right)\\,c\\left(q_2 \\right)\\,c\\left(q_3 \\right)\\\\ c\\left(q_2 \\right)\\,c\\left(q_3 \\right)\\,s\\left(q_1 \\right)-c\\left(q_1 \\right)\\,s\\left(q_3 \\right) & -c\\left(q_1 \\right)\\,c\\left(q_3 \\right)-c\\left(q_2 \\right)\\,s\\left(q_1 \\right)\\,s\\left(q_3 \\right) & -s\\left(q_1 \\right)\\,s\\left(q_2 \\right) & d_1 \\,s\\left(q_1 \\right)-a_3 \\,c\\left(q_1 \\right)\\,s\\left(q_3 \\right)+a_3 \\,c\\left(q_2 \\right)\\,c\\left(q_3 \\right)\\,s\\left(q_1 \\right)\\\\ -c\\left(q_3 \\right)\\,s\\left(q_2 \\right) & s\\left(q_2 \\right)\\,s\\left(q_3 \\right) & -c\\left(q_2 \\right) & d_0 -a_3 \\,c\\left(q_3 \\right)\\,s\\left(q_2 \\right)\\\\ 0 & 0 & 0 & 1 \\end{pmatrix}$
+%[text]{"align":"center"} $\\begin{pmatrix} c\\left(q_1 \\right)\\,c\\left(q_2 \\right) & -s\\left(q_1 \\right) & -c\\left(q_1 \\right)\\,s\\left(q_2 \\right) & -q_3 \\,c\\left(q_1 \\right)\\,s\\left(q_2 \\right)\\\\ c\\left(q_2 \\right)\\,s\\left(q_1 \\right) & c\\left(q_1 \\right) & -s\\left(q_1 \\right)\\,s\\left(q_2 \\right) & -q_3 \\,s\\left(q_1 \\right)\\,s\\left(q_2 \\right)\\\\ s\\left(q_2 \\right) & 0 & c\\left(q_2 \\right) & d_1 +q_3 \\,c\\left(q_2 \\right)\\\\ 0 & 0 & 0 & 1 \\end{pmatrix}$
 %[text] Dalla matrice totale $^0 T_n$ si può estrarre la sottomatrice di rotazione $3\\times 3$ e il vettore di posizione $3\\times 1$
 % Matrice Di Rotazione R03
 R0n = T0n(1:3, 1:3);
 R0n = simplify(R0n);
 fprintf('Matrice Di Rotazione R03:\n');
 disp(R0n);
-%[text]{"align":"center"} $\\begin{pmatrix} s \\left(q_1 \\right)\\,s \\left(q_3 \\right)+c\\left(q_1 \\right)\\,c\\left(q_2 \\right)\\,c\\left(q_3 \\right) & c\\left(q_3 \\right)\\,s \\left(q_1 \\right)-c\\left(q_1 \\right)\\,c\\left(q_2 \\right)\\,s \\left(q_3 \\right) & -c\\left(q_1 \\right)\\,s \\left(q_2 \\right)\\\\ c\\left(q_2 \\right)\\,c\\left(q_3 \\right)\\,s \\left(q_1 \\right)-c\\left(q_1 \\right)\\,s \\left(q_3 \\right) & -c\\left(q_1 \\right)\\,c\\left(q_3 \\right)-c\\left(q_2 \\right)\\,s \\left(q_1 \\right)\\,s \\left(q_3 \\right) & -s \\left(q_1 \\right)\\,s \\left(q_2 \\right)\\\\ -c\\left(q_3 \\right)\\,s \\left(q_2 \\right) & s \\left(q_2 \\right)\\,s \\left(q_3 \\right) & -c\\left(q_2 \\right) \\end{pmatrix}$
-% Vettore Posizione p03
-p0n = T0n(1:3, 4);
-p0n = simplify(p0n);
-fprintf('Vettore Posizione p03:\n');
-disp(p0n);
+%[text]{"align":"center"} $\\begin{pmatrix} c\\left(q_1 \\right)\\,c\\left(q_2 \\right) & -s\\left(q_1 \\right) & -c\\left(q_1 \\right)\\,s\\left(q_2 \\right)\\\\ c\\left(q_2 \\right)\\,s\\left(q_1 \\right) & c\\left(q_1 \\right) & -s\\left(q_1 \\right)\\,s\\left(q_2 \\right)\\\\ s\\left(q_2 \\right) & 0 & c\\left(q_2 \\right) \\end{pmatrix}$
+% Vettore Posizione P_EE
+P_EE = T0n(1:3, 4);
+P_EE = simplify(P_EE);
+fprintf('Vettore Posizione ^{0}P_{EE}:\n');
+disp(P_EE);
 %[text] Per visualizzare una configurazione specifica del robot sono necessari dei valori numerici. Si sostituiscono ora le variabili simboliche (angoli di giunto e parametri geometrici) con valori numerici.
 % Lista Variabili Simboliche Da Sostituire
-varsToSub = [q1, q2, q3, d0, d1, a3];
+varsToSub = [q1, q2, q3, d1];
 
 % Lista Valori Numerici Corrispondenti
-% Esempio: q1=30°, q2=45°, q3=0°, d0=1, d1=0.5, a3=0.5
-numValues = [pi/6, pi/4, 0, 1, 0.5, 0.5];
+% Esempio: q1=30°, q2=45°, q3=0.5 m, d1=1 m
+numValues = [pi/6, pi/4, 0.5, 1];
 
 % Sostituzione Valori
-T_Num = sym(zeros(4, 4, n));
+A_Num = sym(zeros(4, 4, n));
 for i = 1:n
-    T_Num(:,:,i) = subs(T_matrices(:,:,i), varsToSub, numValues);
+    A_Num(:,:,i) = subs(A_matrices(:,:,i), varsToSub, numValues);
 end
 
 % Calcolo Matrice Numerica
@@ -87,7 +87,7 @@ positions(1, :) = T_cumulative(1:3, 4).';
 R_all(:, :, 1)  = T_cumulative(1:3, 1:3);
 
 for i = 1:n
-    T_cumulative = T_cumulative * double(T_Num(:, :, i));
+    T_cumulative = T_cumulative * double(A_Num(:, :, i));
     positions(i+1, :) = T_cumulative(1:3, 4).';
     R_all(:, :, i+1)  = T_cumulative(1:3, 1:3);
 end

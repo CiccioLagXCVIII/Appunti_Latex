@@ -111,13 +111,13 @@
 % AA Parte 1 - Sistemi Di Misura E Sensori Per La Robotica
 \section{Introduzione Alla Percezione Nei Sistemi Robotici}
 Negli organismi viventi, la percezione dipende da organi sensoriali come occhi o orecchie, mentre gli stimoli fisici vengono convertiti in impulsi elettrici tramite il sistema nervoso.\\
-In robotica, questa struttura viene replicata tramite i \textbf{sensori}, che permettono al robot di interagire con l'ambiente e correggere eventuali errori di posizione o orientamento e i \textbf{traduttori} che convertono grandezze fisiche in segnali elettrici. I sensori e i trasduttori sono fondamentali per il controllo in anello chiuso, poiché forniscono informazioni sullo stato del sistema e sull'ambiente circostante.
+In robotica, questa struttura viene replicata tramite i \textbf{sensori}, che permettono al robot di interagire con l'ambiente e correggere eventuali errori di posizione o orientamento e i \textbf{trasduttori} che convertono grandezze fisiche in segnali elettrici. I sensori e i trasduttori sono fondamentali per il controllo in anello chiuso, poiché forniscono informazioni sullo stato del sistema e sull'ambiente circostante.
 
 I dispositivi di misura impiegati nei sistemi robotici quantificano grandezze fisiche analoghe a quelle biologiche:
 \begin{itemize}
     \item \textbf{Visione}: telecamere ottiche, stereoscopiche e sensori di profondità (LIDAR, camere RGB-D);
     \item \textbf{Tatto}: encoder ottici d'asse e sensori di coppia ai giunti;
-    \item \textbf{Percezione Acustica} : trasduttori piezoelettrici (sonar) e microfoni per il monitoraggio predittivo;
+    \item \textbf{Percezione Acustica}: trasduttori piezoelettrici (sonar) e microfoni per il monitoraggio predittivo;
     \item \textbf{Parametri Ambientali} (temperatura degli avvolgimenti, gradienti termici): dispositivi a variazione di resistenza o a potenziale termoelettrico.
 \end{itemize}
 
@@ -249,7 +249,7 @@ L'architettura funzionale è costituita da tre stadi sequenziali:
 
 \begin{enumerate}
     \item \textbf{Sensore/Trasduttore (\textit{Sensing Element}):}
-    È l'elemento che interagisce con la grandezza fisica da misurare e, in risposta alle sue variazioni, genera un segnale in uscita correlato al misurando che può essere di meccanico, elettrico oppure otticao, a seconda della tipologia di sensore utilizzato.
+    È l'elemento che interagisce con la grandezza fisica da misurare e, in risposta alle sue variazioni, genera un segnale in uscita correlato al misurando. Tale segnale può essere di tipo meccanico, elettrico oppure ottico, a seconda della tipologia di sensore utilizzata.
 
     \item \textbf{Condizionamento Del Segnale (\textit{Signal Conditioner}):}
     Si occupa di adattare il segnale proveniente dal sensore alle caratteristiche richieste dagli stadi successivi. In particolare, può amplificare segnali di basso livello, come quelli dell'ordine dei microvolt ($\si{\micro\volt}$) o dei millivolt ($\si{\milli\volt}$), portarli in intervalli standard, come $0$--$\SI{10}{\volt}$ o $\SI{4}{\milli\ampere}$--$\SI{20}{\milli\ampere}$, filtrare il rumore e correggere eventuali non linearità del sensore.

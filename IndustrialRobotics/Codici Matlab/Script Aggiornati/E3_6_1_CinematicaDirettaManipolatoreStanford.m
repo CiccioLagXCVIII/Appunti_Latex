@@ -4,26 +4,28 @@
 clc; clear; close all;
 
 % Definizione Variabili Simboliche
-syms q1 q2 q3 q4 q5 q6 d1 d2 d3 d4 d5 d6 alpha1 alpha2 alpha3 alpha4 alpha5 alpha6 a1 a2 a3 a4 a5 a6 real;
+syms q1 q2 q3 q4 q5 q6 d2 d6 real;
 
 % Tabella Parametri Denavit-Hartenberg (DH)
 DH_table = [q1, 0, -pi/2, 0;    % Frame 0
             q2, d2, pi/2, 0;    % Frame 1
-            0, d3, 0, 0;        % Frame 2
+            0, q3, 0, 0;        % Frame 2
             q4, 0, -pi/2, 0;    % Frame 3
             q5, 0, pi/2, 0;     % Frame 4
             q6, d6, 0, 0];      % Frame 5
 
 % Numero Giunti Manipolatore
 n = size(DH_table, 1);
-%[text] A partire dalla tabella DH, si può calcolare la matrice di trasformazione omogenea $A_i$ per ciascun giunto $i$. Questa matrice, di dimensioni $4\\times 4$, rappresenta la trasformazione (rotazione e traslazione) dal sistema di riferimento del giunto $i$ a quello del giunto $i-1$. Si utilizza la funzione `Compute_DH_Transformations`per generare le matrici simboliche per ogni riga della tabella DH.
-[T_matrices, R_matrices] = Compute_DH_Transformations(DH_table);
+%[text] A partire dalla tabella DH, si può calcolare la matrice di trasformazione omogenea $^{i-1}A_i$ per ciascun giunto $i$. Questa matrice, di dimensioni $4\\times 4$, rappresenta la trasformazione (rotazione e traslazione) dal sistema di riferimento del giunto $i$ a quello del giunto $i-1$. Si utilizza la funzione `Compute_DH_Transformations`per generare le matrici simboliche per ogni riga della tabella DH.
+[A_matrices, R_matrices] = Compute_DH_Transformations(DH_table);
 
 for i = 1:n
-    fprintf('Matrice Di Trasformazione Omogenea ^{%d}T_(%d):\n', i-1, i);
-    disp(T_matrices(:,:,i));
+    fprintf('Matrice Di Trasformazione Omogenea ^{%d}A_(%d):\n', i-1, i);
+    disp(A_matrices(:,:,i));
 end
-T06 = T_matrices(:,:,1) * T_matrices(:,:,2) * T_matrices(:,:,3) * T_matrices(:,:,4) * T_matrices(:,:,5) * T_matrices(:,:,6);
+T03 = simplify(A_matrices(:,:,1) * A_matrices(:,:,2) * A_matrices(:,:,3));
+T36 = simplify(A_matrices(:,:,4) * A_matrices(:,:,5) * A_matrices(:,:,6));
+T06 = T03 * T36;
 T06 = simplify(T06);
 
 fprintf('Matrice Di Trasformazione Omogenea ^{0}T_(6):\n');
@@ -43,24 +45,24 @@ fprintf('Matrice Rotazione R06:\n');
 disp(R06);
 %[text] Per visualizzare una configurazione specifica del robot sono necessari dei valori numerici. Si sostituiscono ora le variabili simboliche (angoli di giunto e parametri geometrici) con valori numerici.
 % Lista Variabili Simboliche
-symsList = symvar(T_matrices);
+symsList = [d2, d6, q1, q2, q3, q4, q5, q6];
 disp('Variabili Simboliche:');
-% [d2, d3, d6, q1, q2, q4, q5, q6]
+% [d2, d6, q1, q2, q3, q4, q5, q6]
 disp(symsList);
 % Valori Numerici Da Sostituire
-value = [0.5, 0.7, 0.4, pi/4, pi/3, pi/6, pi/4, pi/2];
+value = [0.5, 0.4, pi/4, pi/3, 0.7, pi/6, pi/4, pi/2];
 
 % La sostituzione su un array 3D simbolico può essere problematica.
 % È più sicuro sostituire i valori matrice per matrice.
-T_Num = zeros(4,4,n);
+A_Num = zeros(4,4,n);
 for i = 1:n
-    T_Num(:,:,i) = subs(T_matrices(:,:,i), symsList, value);
+    A_Num(:,:,i) = subs(A_matrices(:,:,i), symsList, value);
 end
 
 % Stampa Matrici Numeriche
 for i = 1:n
-    fprintf('Matrice ^(%d)T_(%d) numerica:\n', i-1, i);
-    disp(T_Num(:,:,i));
+    fprintf('Matrice ^(%d)A_(%d) numerica:\n', i-1, i);
+    disp(A_Num(:,:,i));
 end
 %%
 %[text] ## Visualizzazione Grafica Manipolatore Di Stanford
@@ -88,7 +90,7 @@ positions(1, :) = T_cumulative(1:3, 4).';
 R_all(:, :, 1)  = T_cumulative(1:3, 1:3);
 
 for i = 1:n
-    T_cumulative = T_cumulative * double(T_Num(:, :, i));
+    T_cumulative = T_cumulative * double(A_Num(:, :, i));
     positions(i+1, :) = T_cumulative(1:3, 4).';
     R_all(:, :, i+1)  = T_cumulative(1:3, 1:3);
 end

@@ -4,7 +4,7 @@
 clc; clear; close all;
 
 % Definizione Variabili Simboliche
-syms q1 q2 q3 d1 d2 d3 alpha1 alpha2 alpha3 a1 a2 a3 real;
+syms q1 q2 q3 d2 real;
 
 DH_table = [q1, 0, -pi/2, 0;
             q2, d2, pi/2, 0;
@@ -13,19 +13,19 @@ DH_table = [q1, 0, -pi/2, 0;
 
 % Numero Giunti Manipolatore
 n = size(DH_table, 1);
-%[text] A partire dalla tabella DH, si può calcolare la matrice di trasformazione omogenea $A_i$ per ciascun giunto $i$. Questa matrice, di dimensioni $4\\times 4$, rappresenta la trasformazione (rotazione e traslazione) dal sistema di riferimento del giunto $i$ a quello del giunto $i-1$. Si utilizza la funzione `Compute_DH_Transformations`per generare le matrici simboliche per ogni riga della tabella DH.
+%[text] A partire dalla tabella DH, si può calcolare la matrice di trasformazione omogenea $^{i-1}A_i$ per ciascun giunto $i$. Questa matrice, di dimensioni $4\\times 4$, rappresenta la trasformazione (rotazione e traslazione) dal sistema di riferimento del giunto $i$ a quello del giunto $i-1$. Si utilizza la funzione `Compute_DH_Transformations`per generare le matrici simboliche per ogni riga della tabella DH.
 % Calcolo Matrici Trasformazione
-[T_matrices, R_matrices] = Compute_DH_Transformations(DH_table);
+[A_matrices, R_matrices] = Compute_DH_Transformations(DH_table);
 
 % Visualizzazione Matrici Trasformazione
 for i = 1:n
-    fprintf('Matrice di trasformazione omogenea ^{%d}T_(%d):\n', i-1, i);
-    disp(T_matrices(:,:,i));
+    fprintf('Matrice di trasformazione omogenea ^{%d}A_(%d):\n', i-1, i);
+    disp(A_matrices(:,:,i));
 end
 %[text] Per ottenere la posa dell'organo terminale rispetto alla base del robot, si moltiplicano in sequenza le matrici di trasformazione individuali. Il risultato è la matrice di trasformazione omogenea totale $^0 T_n$, che contiene sia la matrice di rotazione $^0 R_n$ (orientamento) sia il vettore di posizione $^0 p_n$ dell'end-effector.
-%[text]{"align":"center"} $^0 T_n =A_1 \\cdot A_2 \\cdot \\ldots\\cdot A_n$
+%[text]{"align":"center"} $^0 T_n = {}^{0}A_1 \\cdot {}^{1}A_2 \\cdot \\ldots \\cdot {}^{n-1}A_n$
 % Calcolo Matrice Di Trasformazione Totale Dalla Base All'End Effector
-T03 = T_matrices(:,:,1) * T_matrices(:,:,2) * T_matrices(:,:,3);
+T03 = A_matrices(:,:,1) * A_matrices(:,:,2) * A_matrices(:,:,3);
 T03 = simplify(T03);
 
 fprintf('Matrice Di Trasformazione Omogenea ^(0)T_(3):\n');
@@ -43,16 +43,16 @@ fprintf('Vettore Posizione p03:\n');
 disp(p03);
 %[text] Per visualizzare una configurazione specifica del robot sono necessari dei valori numerici. Si sostituiscono ora le variabili simboliche (angoli di giunto e parametri geometrici) con valori numerici.
 % Lista Variabili Simboliche Da Sostituire
-symsList = symvar(T_matrices);
+symsList = symvar(A_matrices);
 disp('Variabili Simboliche:');
 disp(symsList);
 % Lista Valori Numerici Corrispondenti
 value = [0.8, (3*pi)/4, pi/4, 0.5];
 
 % Sostituzione Valori
-T_Num = zeros(4, 4, n);
+A_Num = zeros(4, 4, n);
 for i = 1:n
-    T_Num(:,:,i) = subs(T_matrices(:,:,i), symsList, value);
+    A_Num(:,:,i) = subs(A_matrices(:,:,i), symsList, value);
 end
 
 % Calcolo Matrice Numerica
@@ -85,7 +85,7 @@ positions(1, :) = T_cumulative(1:3, 4).';
 R_all(:, :, 1)  = T_cumulative(1:3, 1:3);
 
 for i = 1:n
-    T_cumulative = T_cumulative * double(T_Num(:, :, i));
+    T_cumulative = T_cumulative * double(A_Num(:, :, i));
     positions(i+1, :) = T_cumulative(1:3, 4).';
     R_all(:, :, i+1)  = T_cumulative(1:3, 1:3);
 end

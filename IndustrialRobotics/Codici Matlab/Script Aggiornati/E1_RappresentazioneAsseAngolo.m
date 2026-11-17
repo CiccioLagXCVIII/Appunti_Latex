@@ -93,9 +93,10 @@ fprintf('Valore Atteso (1 + 2*cos(theta)): %f\n', traceSim); %[output:761a9453]
 %[text] Da questa relazione, si possono estrarre le componenti di **r**:
 %[text]{"align":"center"} $\\mathbf{r}=\\frac{1}{2\\sin (\\theta )}\\;\\left(\\begin{array}{c} r\_{32} -r\_{23} \\\\ r\_{13} -r\_{31} \\\\ r\_{21} -r\_{12} \\end{array}\\right)$
 %[text] Questo metodo è valido solo se $\\sin (\\theta )\\not= 0$, ovvero per angoli di rotazione diversi da 0 e $k\\pi$
-% Calcolo dell'angolo theta dalla traccia
-cosTheta = (trace(R) - 1) / 2;
-thetaCalc = acos(cosTheta);
+% Calcolo dell'angolo theta tramite atan2(y, x)
+xTheta = R(1,1) + R(2,2) + R(3,3) - 1;
+yTheta = sqrt((R(1,2) - R(2,1))^2 + (R(1,3) - R(3,1))^2 + (R(2,3) - R(3,2))^2);
+thetaCalc = atan2(yTheta, xTheta);
 
 % Calcolo dell'asse r
 rCalc = [NaN; NaN; NaN];

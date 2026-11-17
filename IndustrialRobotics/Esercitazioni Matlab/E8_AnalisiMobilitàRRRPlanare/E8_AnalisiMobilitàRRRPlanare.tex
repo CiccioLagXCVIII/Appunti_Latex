@@ -129,7 +129,8 @@ Si devono determinare:
 \begin{matlabcode}
 clc; clear; close all;
 % Parametri Manipolatore
-syms q1 q2 q3 l1 l2 l3 real;
+syms q1 q2 q3 real;
+l1 = 1; l2 = 1; l3 = 1;
 \end{matlabcode}
 
 \begin{par}
@@ -148,70 +149,70 @@ DH_Table = [q1, 0, 0, l1;
 % q3 = pi/4;
 
 % Calcolo Matrici Trasformazione E Rotazione Struttura
-[T, R] = Compute_DH_Transformations(DH_Table);
+[A, R] = Compute_DH_Transformations(DH_Table);
 
-T00 = eye(4);
-T01 = simplify(T(:,:,1));       % Trasformazione da 0 a 1
-T02 = simplify(T01 * T(:,:,2)); % Trasformazione da 0 a 2
-T03 = simplify(T02 * T(:,:,3)); % Trasformazione da 0 a 3
+A00 = eye(4);
+A01 = simplify(A(:,:,1));       % Trasformazione da 0 a 1
+A02 = simplify(A01 * A(:,:,2)); % Trasformazione da 0 a 2
+A03 = simplify(A02 * A(:,:,3)); % Trasformazione da 0 a 3
 \end{matlabcode}
 
 \begin{par}
 \begin{flushleft}
-Il vettore di posizione $p$ dell'end-effector può essere estratto dalla matrice $^0 T_3$ in quanto è la quarta colonna. Poiché l'analisi di mobilità si concentra sul piano $XY$ si prendono le prime due componenti del vettore posizione.
+Il vettore di posizione $r(q)$ dell'end-effector nel piano $XY$ può essere estratto dalle prime due componenti della quarta colonna di $^0 A_3$.
 \end{flushleft}
 \end{par}
 
 \begin{matlabcode}
-% Posizione dell'End-Effector
-p_E = T03(1:3, 4);
-fprintf('Vettore Posizione p RRR Planare:');
-disp(p_E);
+% Posizione dell'End-Effector (3D per cross product e 2D r(q) nel piano XY)
+p_E = A03(1:3, 4);
+r = simplify(A03(1:2, 4));
+fprintf('Vettore Posizione r(q) RRR Planare:');
+disp(r);
 \end{matlabcode}
 \begin{matlaboutput}
-Vettore Posizione p RRR Planare:
+Vettore Posizione r(q) RRR Planare:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle \left(\begin{array}{c}
-l_2 \,\cos \left(q_1 +q_2 \right)+l_1 \,\cos \left(q_1 \right)+l_3 \,\cos \left(q_1 +q_2 +q_3 \right)\\
-l_2 \,\sin \left(q_1 +q_2 \right)+l_1 \,\sin \left(q_1 \right)+l_3 \,\sin \left(q_1 +q_2 +q_3 \right)\\
-0
+\cos \left(q_1 +q_2 +q_3 \right)+\cos \left(q_1 +q_2 \right)+\cos \left(q_1 \right)\\
+\sin \left(q_1 +q_2 +q_3 \right)+\sin \left(q_1 +q_2 \right)+\sin \left(q_1 \right)
 \end{array}\right)$
 \end{matlabsymbolicoutput}
 
 
 \begin{par}
 \begin{flushleft}
-Lo \textbf{Jacobiano analitico}, indicato come $J_r (q)$, è la matrice che lega la velocità dei giunti $\dot{q}$ alla velocità lineare dell'end-effector $v$ secondo la relazione:
+Lo \textbf{Jacobiano di posizione} (analitico nel piano $XY$), indicato come $J_r (q)$, è la matrice che lega la velocità dei giunti $\dot{q}$ alla velocità lineare dell'end-effector $\dot{r}$ secondo la relazione:
 \end{flushleft}
 \end{par}
 
 \[
-    v=J_r (q)\dot{q}
+    \dot{r}=J_r (q)\dot{q}
 \]
 
 \begin{par}
 \newpage
 \begin{flushleft}
-Dato che si conosce l'espressione simbolica del vettore posizione dell'end-effector $p$ in funzione del vettore delle coordinate dei giunti $q$, lo Jacobiano si calcola come la matrice delle derivate parziali di ogni componente della posizione rispetto a ogni coordinata di giunto.
+Dato che si conosce l'espressione simbolica del vettore posizione dell'end-effector $r(q)$ in funzione del vettore delle coordinate dei giunti $q$, lo Jacobiano di posizione estratto dallo Jacobiano geometrico coincide con la matrice delle derivate parziali rispetto a $q$:
 \end{flushleft}
 \end{par}
 
 \[
-    J_r (q) = \frac{\partial p}{\partial q}
+    J_r (q) = \frac{\partial r(q)}{\partial q}
 \]
 
 \vspace{1em}
 \begin{matlabcode}
 % Vettori z (Assi Di Rotazione)
-z0 = T00(1:3, 3); % Asse di rotazione del giunto 1
-z1 = T01(1:3, 3); % Asse di rotazione del giunto 2
-z2 = T02(1:3, 3); % Asse di rotazione del giunto 3
+z0 = A00(1:3, 3); % Asse di rotazione del giunto 1
+z1 = A01(1:3, 3); % Asse di rotazione del giunto 2
+z2 = A02(1:3, 3); % Asse di rotazione del giunto 3
 
 % Vettori p (Posizioni Origini Dei Riferimenti)
-p0 = T00(1:3, 4); % Origine del frame 0
-p1 = T01(1:3, 4); % Origine del frame 1
-p2 = T02(1:3, 4); % Origine del frame 2
+p0 = A00(1:3, 4); % Origine del frame 0
+p1 = A01(1:3, 4); % Origine del frame 1
+p2 = A02(1:3, 4); % Origine del frame 2
 
 % Valori Per J1
 J_L1 = cross(z0, p_E - p0);
@@ -240,8 +241,8 @@ Jacobiano Geometrico Manipolatore RRR Planare Simbolico
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle \begin{array}{l}
 \left(\begin{array}{ccc}
--l_2 \,\sin \left(q_1 +q_2 \right)-l_1 \,\sin \left(q_1 \right)-\sigma_1  & -l_2 \,\sin \left(q_1 +q_2 \right)-\sigma_1  & -\sigma_1 \\
-l_2 \,\cos \left(q_1 +q_2 \right)+l_1 \,\cos \left(q_1 \right)+\sigma_2  & l_2 \,\cos \left(q_1 +q_2 \right)+\sigma_2  & \sigma_2 \\
+-\sigma_1 -\sin \left(q_1 +q_2 \right)-\sin \left(q_1 \right) & -\sigma_1 -\sin \left(q_1 +q_2 \right) & -\sigma_1 \\
+\sigma_2 +\cos \left(q_1 +q_2 \right)+\cos \left(q_1 \right) & \sigma_2 +\cos \left(q_1 +q_2 \right) & \sigma_2 \\
 0 & 0 & 0\\
 0 & 0 & 0\\
 0 & 0 & 0\\
@@ -250,35 +251,36 @@ l_2 \,\cos \left(q_1 +q_2 \right)+l_1 \,\cos \left(q_1 \right)+\sigma_2  & l_2 \
 \mathrm{}\\
 \textrm{where}\\
 \mathrm{}\\
-\;\;\sigma_1 =l_3 \,\sin \left(q_1 +q_2 +q_3 \right)\\
+\;\;\sigma_1 =\sin \left(q_1 +q_2 +q_3 \right)\\
 \mathrm{}\\
-\;\;\sigma_2 =l_3 \,\cos \left(q_1 +q_2 +q_3 \right)
+\;\;\sigma_2 =\cos \left(q_1 +q_2 +q_3 \right)
 \end{array}$
 \end{matlabsymbolicoutput}
 \newpage
 \begin{matlabcode}
-% Estrazione Jacobiano Lineare (Prime Due Righe)
-J_L = J_q(1:2,1:3);
-fprintf('Jacobiano Lineare Manipolatore RRR Planare Simbolico:');
-disp(J_L);
+% Estrazione Jacobiano Di Posizione (Prime Due Righe) e verifica analitica
+J_r = J_q(1:2,1:3);
+J_r_analitico = simplify(jacobian(r, [q1; q2; q3]));
+fprintf('Jacobiano Di Posizione Manipolatore RRR Planare Simbolico J_r:');
+disp(J_r);
 \end{matlabcode}
 \begin{matlaboutput}
-Jacobiano Lineare Manipolatore RRR Planare Simbolico:
+Jacobiano Di Posizione Manipolatore RRR Planare Simbolico J_r:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \begin{array}{l}
-\left(\begin{array}{ccc}
--l_2 \,\sin \left(q_1 +q_2 \right)-l_1 \,\sin \left(q_1 \right)-\sigma_1  & -l_2 \,\sin \left(q_1 +q_2 \right)-\sigma_1  & -\sigma_1 \\
-l_2 \,\cos \left(q_1 +q_2 \right)+l_1 \,\cos \left(q_1 \right)+\sigma_2  & l_2 \,\cos \left(q_1 +q_2 \right)+\sigma_2  & \sigma_2
-\end{array}\right)\\
-\mathrm{}\\
-\textrm{where}\\
-\mathrm{}\\
-\;\;\sigma_1 =l_3 \,\sin \left(q_1 +q_2 +q_3 \right)\\
-\mathrm{}\\
-\;\;\sigma_2 =l_3 \,\cos \left(q_1 +q_2 +q_3 \right)
-\end{array}$
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{%
+$\displaystyle \left(\begin{array}{ccc}
+-\sin \left(q_1 +q_2 +q_3 \right)-\sin \left(q_1 +q_2 \right)-\sin \left(q_1 \right) & -\sin \left(q_1 +q_2 +q_3 \right)-\sin \left(q_1 +q_2 \right) & -\sin \left(q_1 +q_2 +q_3 \right)\\
+\cos \left(q_1 +q_2 +q_3 \right)+\cos \left(q_1 +q_2 \right)+\cos \left(q_1 \right) & \cos \left(q_1 +q_2 +q_3 \right)+\cos \left(q_1 +q_2 \right) & \cos \left(q_1 +q_2 +q_3 \right)
+\end{array}\right)$%
+}
 \end{matlabsymbolicoutput}
+\begin{matlabcode}
+fprintf('Verifica coincidenza J_r == d r / d q: %d\n', isequal(simplify(J_r - J_r_analitico), sym(zeros(2, 3))));
+\end{matlabcode}
+\begin{matlaboutput}
+Verifica coincidenza J_r == d r / d q: 1
+\end{matlaboutput}
 
 \begin{par}
 \begin{flushleft}
@@ -288,13 +290,13 @@ Una configurazione $q$ è \textbf{singolare} quando lo Jacobiano $J_r (q)$ perde
 
 \begin{par}
 \begin{flushleft}
-Un metodo robusto per trovare queste condizioni è analizzare la matrice di Gram $J_r (q)\cdot {\bigl((J_r (q)\bigr)}^T$ che è sempre quadrata ($m\times m$) e perde di rango esattamente quando $J_r (q)$ perde di rango. La condizione di singolarità si traduce quindi nel trovare le configurazioni $q$ per cui il determinante di questa matrice è nullo.
+Un metodo robusto per trovare queste condizioni è analizzare la matrice di Gram $J_r (q)\cdot {\bigl(J_r (q)\bigr)}^T$ che è sempre quadrata ($m\times m$) e perde di rango esattamente quando $J_r (q)$ perde di rango. La condizione di singolarità si traduce quindi nel trovare le configurazioni $q$ per cui il determinante di questa matrice è nullo.
 \end{flushleft}
 \end{par}
 
 \begin{matlabcode}
-% Calcolo Condizione Singolarità: det(J(q) * J(q)^T) = 0
-G = J_L * J_L.';
+% Calcolo Condizione Singolarità: det(J_r(q) * J_r(q)^T) = 0
+G = J_r * J_r.';
 det_G = simplify(det(G));
 
 disp('Determinante Matrice Di Gram (det(J_r * J_r^T)):');
@@ -304,47 +306,20 @@ disp(det_G);
 Determinante Matrice Di Gram (det(J_r * J_r^T)):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \frac{{l_1 }^2 \,{l_2 }^2 }{2}+{l_1 }^2 \,{l_3 }^2 +{l_2 }^2 \,{l_3 }^2 -\frac{{l_1 }^2 \,{l_2 }^2 \,\cos \left(2\,q_2 \right)}{2}-{l_2 }^2 \,{l_3 }^2 \,\cos \left(2\,q_3 \right)-{l_1 }^2 \,{l_3 }^2 \,\cos \left(2\,q_2 +2\,q_3 \right)-l_1 \,l_2 \,{l_3 }^2 \,\cos \left(q_2 +2\,q_3 \right)-{l_1 }^2 \,l_2 \,l_3 \,\cos \left(2\,q_2 +q_3 \right)+l_1 \,l_2 \,{l_3 }^2 \,\cos \left(q_2 \right)+{l_1 }^2 \,l_2 \,l_3 \,\cos \left(q_3 \right)$
+\hskip1em $\displaystyle \cos \left(q_2 \right)-\cos \left(2\,q_2 +q_3 \right)-\frac{\cos \left(2\,q_2 \right)}{2}-\cos \left(2\,q_3 \right)-\cos \left(2\,q_2 +2\,q_3 \right)-\cos \left(q_2 +2\,q_3 \right)+\cos \left(q_3 \right)+\frac{5}{2}$
 \end{matlabsymbolicoutput}
+\newpage
 \begin{matlabcode}
-assume(l1 > 0 & l2 > 0 & l3 > 0);
 assume([q2, q3], 'real');
 
-disp('Condizione Di Singolarità:');
+disp('Condizione Di Singolarità (con l1=l2=l3=1):');
 disp(det_G == 0);
 \end{matlabcode}
 \begin{matlaboutput}
-Condizione Di Singolarità:
+Condizione Di Singolarità (con l1=l2=l3=1):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \frac{{l_1 }^2 \,{l_2 }^2 }{2}+{l_1 }^2 \,{l_3 }^2 +{l_2 }^2 \,{l_3 }^2 -\frac{{l_1 }^2 \,{l_2 }^2 \,\cos \left(2\,q_2 \right)}{2}-{l_2 }^2 \,{l_3 }^2 \,\cos \left(2\,q_3 \right)-{l_1 }^2 \,{l_3 }^2 \,\cos \left(2\,q_2 +2\,q_3 \right)-l_1 \,l_2 \,{l_3 }^2 \,\cos \left(q_2 +2\,q_3 \right)-{l_1 }^2 \,l_2 \,l_3 \,\cos \left(2\,q_2 +q_3 \right)+l_1 \,l_2 \,{l_3 }^2 \,\cos \left(q_2 \right)+{l_1 }^2 \,l_2 \,l_3 \,\cos \left(q_3 \right)=0$
-\end{matlabsymbolicoutput}
-
-\begin{par}
-\begin{flushleft}
-La \textit{condizione di singolarità} è complessa e difficile da interpretare direttamente. Spesso, le condizioni di singolarità dipendono dagli angoli relativi tra i bracci, non dalla loro orientazione globale. Per semplificare l'espressione, si considera il caso specifico in cui i bracci hanno lunghezza unitaria ($l_1 =l_2 =l_3 =1$) in modo da mantenere tutte le proprietà cinematiche rilevanti.
-\end{flushleft}
-\end{par}
-
-\newpage
-\begin{matlabcode}
-% Sostituzione Parametri Lunghezza
-det_G_Sub = subs(det_G, [l1, l2, l3], [1, 1, 1]);
-
-% Semplificazione
-det_G_Sub = simplify(det_G_Sub);
-
-disp('Condizione Di Singolarità Semplificata Con l1=l2=l3=1:');
-disp(det_G_Sub == 0);
-\end{matlabcode}
-\begin{matlaboutput}
-Condizione Di Singolarità Semplificata Con l1=l2=l3=1:
-\end{matlaboutput}
-\begin{matlabsymbolicoutput}
-\resizebox{\linewidth}{!}{%
-$
-\cos \left(q_2 \right)-\cos \left(2\,q_2 +q_3 \right)-\frac{\cos \left(2\,q_2 \right)}{2}-\cos \left(2\,q_3 \right)-\cos \left(2\,q_2 +2\,q_3 \right)-\cos \left(q_2 +2\,q_3 \right)+\cos \left(q_3 \right)+\frac{5}{2}=0
-$}
+\hskip1em $\displaystyle \cos \left(q_2 \right)-\cos \left(2\,q_2 +q_3 \right)-\frac{\cos \left(2\,q_2 \right)}{2}-\cos \left(2\,q_3 \right)-\cos \left(2\,q_2 +2\,q_3 \right)-\cos \left(q_2 +2\,q_3 \right)+\cos \left(q_3 \right)+\frac{5}{2}=0$
 \end{matlabsymbolicoutput}
 
 \begin{par}
@@ -365,7 +340,7 @@ Quindi, poichè la matrice Jacobiana $J$ non è costante, ma dipende dalla confi
 \end{flushleft}
 \end{par}
 \[
-    det(J)=det(J(q)) \qquad \rho (J)=\rho J(q) \qquad R(J)=R(J(q)) \qquad N(J)=N(J(q))
+    \det(J)=\det(J(q)) \qquad \rho (J)=\rho(J(q)) \qquad R(J)=R(J(q)) \qquad N(J)=N(J(q))
 \]
 
 \vspace{1em}
@@ -385,24 +360,23 @@ I parametri del robot sono
 \vspace{1em}
 \begin{matlabcode}
 % Valori numerici per la configurazione
-l_vals = [1, 1, 1];
 q1_val = 0;
 q2_val = pi/2;
 q3_val = -pi/2;
 q_vals = [q1_val, q2_val, q3_val];
 
 fprintf('------------ Configurazione q = [%.2f, %.2f, %.2f] ------------', q_vals(1), q_vals(2), q_vals(3));
-% Sostituzione dei valori numerici nello Jacobiano lineare simbolico
-vars_sym = [l1, l2, l3, q1, q2, q3];
-vals_num = [l_vals, q_vals];
-J1_num = double(subs(J_L, vars_sym, vals_num));
+% Sostituzione dei valori numerici nello Jacobiano di posizione simbolico
+vars_sym = [q1, q2, q3];
+vals_num = q_vals;
+Jr_1 = double(subs(J_r, vars_sym, vals_num));
 
-fprintf('Jacobiano Lineare Numerico:\n');
-disp(J1_num);
+fprintf('Jacobiano Di Posizione Numerico:\n');
+disp(Jr_1);
 \end{matlabcode}
 \begin{matlaboutput}
---------------- Configurazione q = [0.00, 1.57, -1.57] ---------------
-Jacobiano Lineare Numerico:
+------------ Configurazione q = [0.00, 1.57, -1.57] ------------
+Jacobiano Di Posizione Numerico:
 \end{matlaboutput}
 
 \begin{matlaboutput}
@@ -411,7 +385,7 @@ Jacobiano Lineare Numerico:
 \end{matlaboutput}
 \begin{matlabcode}
 % Verifica Singolarità
-rank_J1 = rank(J1_num);
+rank_J1 = rank(Jr_1);
 fprintf('Rango dello Jacobiano: %d\n', rank_J1);
 \end{matlabcode}
 \begin{matlaboutput}
@@ -419,62 +393,63 @@ Rango dello Jacobiano: 2
 \end{matlaboutput}
 \begin{matlabcode}
 % Dimensione Spazio Lavoro
-m = size(J_L, 1);
+m = size(J_r, 1);
 % Numero Di Giunti
 n = size(DH_Table, 1);
 
 if rank_J1 < m
     fprintf('Configurazione Singolare (Rango < m)');
 
-    % Spazio Velocità Raggiungibili (Immagine di J)
-    R_J1 = orth(J1_num);
-    fprintf('Base Spazio Velocità Raggiungibili R(J):\n');
+    % Spazio Velocità Raggiungibili (Immagine di J_r)
+    R_J1 = orth(Jr_1);
+    fprintf('Base Spazio Velocità Raggiungibili R(J_r):\n');
     disp(R_J1);
     % L'End-Effector Può Muoversi Solo Lungo La Direzione Di Questo Vettore
 
-    % Direzioni Di Moto Precluse (Nucleo di J^T)
-    N_J1_T = null(J1_num.');
-    fprintf('Base Direzioni Di Moto Precluse N(J^T):\n');
+    % Direzioni Di Moto Precluse (Nucleo di J_r^T)
+    N_J1_T = null(Jr_1.');
+    fprintf('Base Direzioni Di Moto Precluse N(J_r^T):\n');
     disp(N_J1_T);
     % L'End-Effector È Bloccato E Non Può Muoversi Lungo Direzione Di Questo Vettore
 else
     fprintf('Configurazione NON Singolare (Rango Pieno)');
 
-    % Spazio Velocità Raggiungibili (Immagine di J)
-    R_J1 = orth(J1_num);
-    fprintf('Base Spazio Velocità Raggiungibili R(J):\n');
+    % Spazio Velocità Raggiungibili (Immagine di J_r)
+    R_J1 = orth(Jr_1);
+    fprintf('Base Spazio Velocità Raggiungibili R(J_r):\n');
     disp(R_J1);
     % L'End-Effector Può Muoversi Solo Lungo La Direzione Di Questo Vettore
 
-    % Direzioni Di Moto Precluse (Nucleo di J^T)
-    fprintf('Non Ci Sono Direzioni Di Moto Precluse N(J^T)!');
+    % Direzioni Di Moto Precluse (Nucleo di J_r^T)
+    fprintf('Non Ci Sono Direzioni Di Moto Precluse N(J_r^T)!');
 end
 \end{matlabcode}
 \begin{matlaboutput}
 Configurazione NON Singolare (Rango Pieno)
-Base Spazio Velocità Raggiungibili R(J):
+Base Spazio Velocità Raggiungibili R(J_r):
     0.4719    0.8817
    -0.8817    0.4719
-Non Ci Sono Direzioni Di Moto Precluse N(J^T)!
-
+Non Ci Sono Direzioni Di Moto Precluse N(J_r^T)!
+\end{matlaboutput}
+\begin{matlabcode}
 % Per Robot Ridondanti
 if n > m
-    % Automovimenti (Nucleo di J)
-    A_J1 = null(J1_num);
-    fprintf('Base Automovimenti N(J):\n');
+    % Automovimenti (Nucleo di J_r)
+    A_J1 = -null(Jr_1, 'r');
+    fprintf('Base Automovimenti N(J_r):\n');
     disp(A_J1);
-    % Sono Possibili Due Moti Senza Spostare La Punta Del Robot
+    % Sono Possibili Moti Interni Senza Spostare La Punta Del Robot
     dim_A = size(A_J1, 2);
-    fprintf('Numero Automovimenti: %d', dim_A);
+    fprintf('Numero Automovimenti: %d\n', dim_A);
 else
-    fprintf('Robot Non Ridondante (n <= m), Non Esistono Automovimenti');
+    fprintf('Robot Non Ridondante (n <= m), Non Esistono Automovimenti\n');
 end
 \end{matlabcode}
 \begin{matlaboutput}
-Base Automovimenti N(J):
-   -0.5774
-    0.5774
-    0.5774
+Base Automovimenti N(J_r):
+     1
+    -1
+    -1
 Numero Automovimenti: 1
 \end{matlaboutput}
 \newpage
@@ -482,7 +457,7 @@ Numero Automovimenti: 1
 \includegraphics[width=0.75\linewidth]{image_0}
 \end{center}
 
-\matlabheadingthree{\textbf{Interpretazione Fisica E Meccanica Della Prima Configurazione}}
+\matlabheadingthree{Interpretazione Fisica E Meccanica Della Prima Configurazione}
 
 \begin{par}
 \begin{flushleft}
@@ -491,7 +466,7 @@ In questa configurazione:
    \item \begin{flushleft} Il primo braccio $l_1$ giace lungo l'asse X, poiché $q_1=0$. \end{flushleft}
    \item \begin{flushleft} Il secondo braccio $l_2$ è ruotato di $q_2 = \frac{\pi}{2}$ rispetto al primo, puntando quindi lungo l'asse Y. \end{flushleft}
    \item \begin{flushleft} Il terzo braccio $l_3$ è ruotato di $q_3 = -\frac{\pi}{2}$ rispetto al secondo, risultando quindi parallelo all'asse X e orientato nella stessa direzione del primo braccio. \end{flushleft}
-   \item \begin{flushleft} La posizione dell'end-effector è la somma vettoriale dei bracci: $p_E = (l_1 + l_3, l_2) = (1+1, 1) = (2,1)$. \end{flushleft}
+   \item \begin{flushleft} La posizione dell'end-effector è la somma vettoriale dei bracci: $r = (l_1 + l_3, l_2) = (1+1, 1) = (2,1)$. \end{flushleft}
 \end{enumerate}
 
 \end{flushleft}
@@ -507,9 +482,9 @@ In questa configurazione:
 \begin{flushleft}
 Il calcolo mostra che il \textbf{rango} dello \textbf{Jacobiano} è \textbf{2}, ovvero il massimo possibile (rango pieno), dato che lo spazio di lavoro è bidimensionale ($m=2$).
 
-Poiché $\rho(J_L)=m$, lo Spazio delle Velocità Raggiungibili $R(J_L)$ coincide con l'intero piano $\mathbb{R}^2$. Di conseguenza, il suo complemento ortogonale, lo spazio delle Direzioni di Moto Precluse $N(J_L^T)$, è banale (contiene solo il vettore nullo).
+Poiché $\rho(J_r)=m$, lo Spazio delle Velocità Raggiungibili $R(J_r)$ coincide con l'intero piano $\mathbb{R}^2$. Di conseguenza, il suo complemento ortogonale, lo spazio delle Direzioni di Moto Precluse $N(J_r^T)$, è banale (contiene solo il vettore nullo).
 
-La configurazione non è singolare perché i movimenti generati dai singoli giunti sono linearmente indipendenti. Una rotazione del giunto 1 ($\dot{q}_1$) farebbe ruotare l'intera struttura attorno all'origine, producendo una velocità dell'end-effector istantaneamente tangente a un cerchio (in questo caso, lungo la direzione $[-1,1]$). Le rotazioni dei giunti 2 e 3 ($\dot{q}_2, \dot{q}_3$) producono movimenti che non sono paralleli a quello generato dal giunto 1. Poiché è possibile generare velocità in direzioni non collineari, la loro combinazione lineare può produrre un vettore di velocità arbitrario nel piano $(v_x, v_y)$. L'end-effector può quindi muoversi istantaneamente in qualsiasi direzione.
+La configurazione non è singolare perché i movimenti generati dai singoli giunti sono linearmente indipendenti. Una rotazione del giunto 1 ($\dot{q}_1$) farebbe ruotare l'intera struttura attorno all'origine, producendo una velocità dell'end-effector istantaneamente tangente a un cerchio (lungo la direzione $[-1,2]$). Le rotazioni dei giunti 2 e 3 ($\dot{q}_2, \dot{q}_3$) producono movimenti che non sono paralleli a quello generato dal giunto 1. Poiché è possibile generare velocità in direzioni non collineari, la loro combinazione lineare può produrre un vettore di velocità arbitrario nel piano $(v_x, v_y)$. L'end-effector può quindi muoversi istantaneamente in qualsiasi direzione.
 \end{flushleft}
 \end{par}
 
@@ -522,9 +497,9 @@ La configurazione non è singolare perché i movimenti generati dai singoli giun
 \begin{par}
 \begin{flushleft}
 Il manipolatore è ridondante per il posizionamento 2D ($n=3>m=2$). La dimensione dello spazio nullo (automovimenti) è data da
-$n - \rho(J_L) = 3 - 2 = 1$.
+$n - \rho(J_r) = 3 - 2 = 1$.
 
-Esiste una base per $N(J_L)$ con un solo vettore, come calcolato. Questo vettore definisce una combinazione specifica di velocità dei giunti $\dot{q} \in N(J_L)$ che risulta in una velocità nulla dell'end-effector $v = J_L \dot{q} = 0$.
+Esiste una base per $N(J_r)$ con un solo vettore, come calcolato. Questo vettore definisce una combinazione specifica di velocità dei giunti $\dot{q} \in N(J_r)$ che risulta in una velocità nulla dell'end-effector $\dot{r} = J_r \dot{q} = 0$.
 
 La presenza di un automovimento significa che il robot può \textbf{riconfigurare la sua postura interna mantenendo l'end-effector fermo}. Si può immaginare un movimento coordinato del giunto 2 e del giunto 3, compensato dal giunto di base (giunto 1), che permette alla struttura di muoversi pur mantenendo la punta fissa in $(2,1)$. Questa capacità aggiuntiva è un vantaggio della ridondanza, utilizzata ad esempio per evitare ostacoli con il corpo del robot senza spostare l'end-effector.
 \end{flushleft}
@@ -543,9 +518,9 @@ ylabel('Y [m]', 'FontWeight', 'bold');
 
 % Calcolo Posizioni Snodi
 p0 = [0, 0];
-p1 = p0 + [l_vals(1)*cos(q_vals(1)), l_vals(1)*sin(q_vals(1))];
-p2 = p1 + [l_vals(2)*cos(q_vals(1)+q_vals(2)), l_vals(2)*sin(q_vals(1)+q_vals(2))];
-p3 = p2 + [l_vals(3)*cos(sum(q_vals)), l_vals(3)*sin(sum(q_vals))];
+p1 = p0 + [l1*cos(q_vals(1)), l1*sin(q_vals(1))];
+p2 = p1 + [l2*cos(q_vals(1)+q_vals(2)), l2*sin(q_vals(1)+q_vals(2))];
+p3 = p2 + [l3*cos(sum(q_vals)), l3*sin(sum(q_vals))];
 pts_arm = [p0; p1; p2; p3];
 
 % Bracci e Marker Gerarchici
@@ -558,17 +533,17 @@ plot(p0(1), p0(2), 's', 'MarkerSize', 8, ...
 h_ee = plot(p3(1), p3(2), 'p', 'MarkerSize', 10, ...
     'MarkerFaceColor', [0.95, 0.75, 0.10], 'MarkerEdgeColor', 'k', 'DisplayName', 'End-Effector');
 
-% Direzioni di Mobilita R(J) (Verdi)
+% Direzioni di Mobilita R(J_r) (Verdi)
 scale_v = 0.55;
 h_rj = quiver(p3(1), p3(2), R_J1(1,1)*scale_v, R_J1(2,1)*scale_v, 0, ...
-    'Color', col_green, 'LineWidth', 2.2, 'MaxHeadSize', 0.5, 'DisplayName', 'Base R(J) (Ammessa)');
+    'Color', col_green, 'LineWidth', 2.2, 'MaxHeadSize', 0.5, 'DisplayName', 'Base R(J_r) (Ammessa)');
 if size(R_J1, 2) > 1
     quiver(p3(1), p3(2), R_J1(1,2)*scale_v, R_J1(2,2)*scale_v, 0, ...
         'Color', col_green, 'LineWidth', 2.2, 'MaxHeadSize', 0.5, 'HandleVisibility', 'off');
 end
 
 % Etichette Giunti con Raggruppamento Automatico Coincidenze
-lbls = {'J_0', 'J_1', 'J_2', 'EE'};
+lbls = {'J_1 (Base)', 'J_2', 'J_3', 'EE'};
 visited = false(4, 1);
 for idx = 1:4
     if visited(idx), continue; end
@@ -581,7 +556,7 @@ for idx = 1:4
         'BackgroundColor', [1 1 1], 'EdgeColor', [0.8 0.8 0.8], 'Margin', 1);
 end
 
-text(-0.38, 1.52, 'Rango(J) = 2: R(J) = R^2', ...
+text(-0.38, 1.52, 'Rango(J_r) = 2: R(J_r) = R^2', ...
     'FontSize', 9, 'FontWeight', 'bold', ...
     'BackgroundColor', [1 1 1], 'EdgeColor', [0.8 0.8 0.8], 'Margin', 1);
 
@@ -597,7 +572,7 @@ hold off;
 
 \vspace{1em}
 
-\matlabheadingtwo{Configurazione 2: Analisi In Condizione Singolare A Bracci Allineati}
+\matlabheadingtwo{Configurazione 2: Analisi In Condizione Singolare A Bracci Estesi (Singolarità Di Bordo)}
 
 \begin{par}
 \begin{flushleft}
@@ -610,36 +585,36 @@ $$l_1 =l_2 =l_3 =1$$
 \end{par}
 
 \begin{par}
-$$q_1 =0~~~~q_2 =\pi ~~~~q_3 =0$$
+$$q_1 =0~~~~q_2 =0~~~~q_3 =0$$
 \end{par}
 
 \begin{matlabcode}
 % Valori numerici per la configurazione
 q1_val_2 = 0;
-q2_val_2 = pi;
+q2_val_2 = 0;
 q3_val_2 = 0;
 q_vals_2 = [q1_val_2, q2_val_2, q3_val_2];
 
 fprintf('------------ Configurazione q = [%.2f, %.2f, %.2f] ------------', q_vals_2(1), q_vals_2(2), q_vals_2(3));
 
-% Sostituzione dei valori numerici nello Jacobiano lineare simbolico
-vars_sym = [l1, l2, l3, q1, q2, q3];
-vals_num = [l_vals, q_vals_2];
-J1_num = double(subs(J_L, vars_sym, vals_num));
+% Sostituzione dei valori numerici nello Jacobiano di posizione simbolico
+vars_sym = [q1, q2, q3];
+vals_num = q_vals_2;
+Jr_2 = double(subs(J_r, vars_sym, vals_num));
 
-fprintf('Jacobiano Lineare Numerico:\n');
-disp(J1_num);
+fprintf('Jacobiano Di Posizione Numerico:\n');
+disp(Jr_2);
 \end{matlabcode}
 \begin{matlaboutput}
------------- Configurazione q = [0.00, 3.14, 0.00] ------------
-Jacobiano Lineare Numerico:
+------------ Configurazione q = [0.00, 0.00, 0.00] ------------
+Jacobiano Di Posizione Numerico:
      0     0     0
-    -1    -2    -1
+     3     2     1
 \end{matlaboutput}
 \begin{matlabcode}
 % Verifica Singolarità
-rank_J1 = rank(J1_num);
-fprintf('Rango dello Jacobiano: %d\n', rank_J1);
+rank_J2 = rank(Jr_2);
+fprintf('Rango dello Jacobiano: %d\n', rank_J2);
 \end{matlabcode}
 \begin{matlaboutput}
 Rango dello Jacobiano: 1
@@ -647,63 +622,65 @@ Rango dello Jacobiano: 1
 \newpage
 \begin{matlabcode}
 % Dimensione Spazio Lavoro
-m = size(J_L, 1);
+m = size(J_r, 1);
 % Numero Di Giunti
 n = size(DH_Table, 1);
 
-if rank_J1 < m
+if rank_J2 < m
     fprintf('Configurazione Singolare (Rango < m)');
 
-    % Spazio Velocità Raggiungibili (Immagine di J)
-    R_J1 = orth(J1_num);
-    fprintf('Base Spazio Velocità Raggiungibili R(J):\n');
-    disp(R_J1);
+    % Spazio Velocità Raggiungibili (Immagine di J_r)
+    R_J2 = orth(Jr_2);
+    fprintf('Base Spazio Velocità Raggiungibili R(J_r):\n');
+    disp(R_J2);
     % L'End-Effector Può Muoversi Solo Lungo La Direzione Di Questo Vettore
 
-    % Direzioni Di Moto Precluse (Nucleo di J^T)
-    N_J1_T = null(J1_num.');
-    fprintf('Base Direzioni Di Moto Precluse N(J^T):\n');
-    disp(N_J1_T);
+    % Direzioni Di Moto Precluse (Nucleo di J_r^T)
+    N_J2_T = null(Jr_2.');
+    fprintf('Base Direzioni Di Moto Precluse N(J_r^T):\n');
+    disp(N_J2_T);
     % L'End-Effector È Bloccato E Non Può Muoversi Lungo Direzione Di Questo Vettore
 else
     fprintf('Configurazione NON Singolare (Rango Pieno)');
 
-    % Spazio Velocità Raggiungibili (Immagine di J)
-    R_J1 = orth(J1_num);
-    fprintf('Base Spazio Velocità Raggiungibili R(J):\n');
-    disp(R_J1);
+    % Spazio Velocità Raggiungibili (Immagine di J_r)
+    R_J2 = orth(Jr_2);
+    fprintf('Base Spazio Velocità Raggiungibili R(J_r):\n');
+    disp(R_J2);
     % L'End-Effector Può Muoversi Solo Lungo La Direzione Di Questo Vettore
 
-    % Direzioni Di Moto Precluse (Nucleo di J^T)
-    fprintf('Non Ci Sono Direzioni Di Moto Precluse N(J^T)!');
+    % Direzioni Di Moto Precluse (Nucleo di J_r^T)
+    fprintf('Non Ci Sono Direzioni Di Moto Precluse N(J_r^T)!');
 end
 \end{matlabcode}
 \begin{matlaboutput}
 Configurazione Singolare (Rango < m)
-Base Spazio Velocità Raggiungibili R(J):
+Base Spazio Velocità Raggiungibili R(J_r):
      0
-     1
-Base Direzioni Di Moto Precluse N(J^T):
+    -1
+Base Direzioni Di Moto Precluse N(J_r^T):
     -1
      0
+\end{matlaboutput}
+\begin{matlabcode}
 % Per Robot Ridondanti
 if n > m
-    % Automovimenti (Nucleo di J)
-    A_J1 = null(J1_num);
-    fprintf('Base Automovimenti N(J):\n');
-    disp(A_J1);
+    % Automovimenti (Nucleo di J_r)
+    A_J2 = null(Jr_2, 'r');
+    fprintf('Base Automovimenti N(J_r):\n');
+    disp(A_J2);
     % Sono Possibili Due Moti Senza Spostare La Punta Del Robot
-    dim_A = size(A_J1, 2);
-    fprintf('Numero Automovimenti: %d', dim_A);
+    dim_A = size(A_J2, 2);
+    fprintf('Numero Automovimenti: %d\n', dim_A);
 else
-    fprintf('Robot Non Ridondante (n <= m), Non Esistono Automovimenti');
+    fprintf('Robot Non Ridondante (n <= m), Non Esistono Automovimenti\n');
 end
 \end{matlabcode}
 \begin{matlaboutput}
-Base Automovimenti N(J):
-   -0.9129         0
-    0.3651   -0.4472
-    0.1826    0.8944
+Base Automovimenti N(J_r):
+   -0.6667   -0.3333
+    1.0000         0
+         0    1.0000
 Numero Automovimenti: 2
 \end{matlaboutput}
 
@@ -711,15 +688,15 @@ Numero Automovimenti: 2
 \includegraphics[width=0.85\linewidth]{image_1}
 \end{center}
 
-\matlabheadingthree{\textbf{Interpretazione Fisica E Meccanica Della Configurazione Singolare}}
+\matlabheadingthree{Interpretazione Fisica E Meccanica Della Configurazione Singolare}
 \begin{par}
 \begin{flushleft}
-In questa configurazione, il robot è ripiegato su se stesso:
+In questa configurazione, il robot è completamente esteso lungo l'asse X:
 \begin{enumerate}
    \item \begin{flushleft} Il primo braccio $l_1$ è orientato lungo l'asse X ($q_1 = 0$). \end{flushleft}
-    \item \begin{flushleft} Il secondo braccio $l_2$ è ruotato di $q_2 = \pi$, ripiegandosi completamente all'indietro e allineandosi con l'asse X in direzione negativa. \end{flushleft}
-    \item \begin{flushleft} Il terzo braccio $l_3$ è ruotato di $q_3 = 0$ rispetto al secondo, quindi prosegue nella stessa direzione del secondo braccio. \end{flushleft}
-    \item \begin{flushleft} La posizione dell'end-effector è $p_E = (-1,0)$. \end{flushleft}
+    \item \begin{flushleft} Il secondo braccio $l_2$ è allineato col primo ($q_2 = 0$), proseguendo lungo l'asse X positivo. \end{flushleft}
+    \item \begin{flushleft} Il terzo braccio $l_3$ è anch'esso allineato ($q_3 = 0$), proseguendo lungo l'asse X positivo. \end{flushleft}
+    \item \begin{flushleft} La posizione dell'end-effector è $r = (3,0)$. \end{flushleft}
 \end{enumerate}
 \end{flushleft}
 \end{par}
@@ -732,11 +709,11 @@ In questa configurazione, il robot è ripiegato su se stesso:
 
 \begin{par}
 \begin{flushleft}
-Il calcolo mostra che il \textbf{rango} dello \textbf{Jacobiano} è \textbf{1}. Poiché $\rho(J_L)<m$, la configurazione è \textbf{singolare}.
+Il calcolo mostra che il \textbf{rango} dello \textbf{Jacobiano} è \textbf{1}. Poiché $\rho(J_r)<m$, la configurazione è \textbf{singolare} (singolarità di bordo).
 
-Lo Spazio delle Velocità Raggiungibili $R(J_L)$ ha dimensione 1. La sua base, data dal vettore $[0,1]^T$, indica che l'unica direzione di moto possibile è lungo l'asse Y. Le Direzioni di Moto Precluse $N(J_L^T)$ hanno dimensione $m - \rho(J_L) = 2-1 = 1$. La sua base, data dal vettore $[-1,0]^T$, indica che il moto lungo l'asse X è impossibile.
+Lo Spazio delle Velocità Raggiungibili $R(J_r)$ ha dimensione 1. La sua base, data dal vettore $[0,1]^T$, indica che l'unica direzione di moto possibile è lungo l'asse Y. Le Direzioni di Moto Precluse $N(J_r^T)$ hanno dimensione $m - \rho(J_r) = 2-1 = 1$. La direzione preclusa è lungo l'asse X (radiale).
 
-La singolarità emerge perché tutti i bracci sono allineati. Qualsiasi piccola rotazione di uno qualsiasi dei tre giunti provoca un movimento della punta del robot, che in questa postura è sempre perpendicolare alla linea dei bracci (cioè, lungo l'asse Y). È fisicamente impossibile generare una velocità istantanea dell'end-effector lungo la direzione dei bracci stessi (l'asse X). Un tentativo di spingere o tirare l'end-effector lungo l'asse X si tradurrebbe solo in forze di compressione/trazione interne alla struttura, senza produrre alcun movimento.
+La singolarità emerge perché tutti i bracci sono allineati lungo l'asse X al limite dello spazio di lavoro. Qualsiasi piccola rotazione di uno qualsiasi dei tre giunti provoca un movimento della punta del robot, che in questa postura è sempre perpendicolare alla linea dei bracci (cioè, lungo l'asse Y). È fisicamente impossibile generare una velocità istantanea dell'end-effector lungo la direzione dei bracci stessi (l'asse X). Un tentativo di spingere o tirare l'end-effector lungo l'asse X si tradurrebbe solo in forze di compressione/trazione interne alla struttura, senza produrre alcun movimento.
 \end{flushleft}
 \end{par}
 
@@ -748,9 +725,7 @@ La singolarità emerge perché tutti i bracci sono allineati. Qualsiasi piccola 
 
 \begin{par}
 \begin{flushleft}
-In una configurazione singolare, la dimensione dello spazio degli automovimenti aumenta, cioè $n - \rho(J_L) = 3-1 = 2$.
-
-Esistono due combinazioni linearmente indipendenti di velocità dei giunti che mantengono l'end-effector fermo. La base di $N(J_L)$ calcolata contiene i due vettori che definiscono questi movimenti. La perdita di un grado di libertà nel movimento dell'end-effector (non può muoversi lungo l'asse X) si traduce in un \textbf{guadagno di un grado di libertà nel movimento} del robot. Oltre all'automovimento già presente dovuto alla ridondanza, la singolarità ne introduce un secondo. Intuitivamente, i giunti possono muoversi in modi più complessi e coordinati (descritti dai due vettori) per riarrangiare la postura del robot lungo l'asse X senza che la punta, bloccata a $x=-1$, si sposti.
+In una configurazione singolare, la dimensione dello spazio degli automovimenti aumenta, cioè $n - \rho(J_r) = 3-1 = 2$.
 \end{flushleft}
 \end{par}
 
@@ -763,14 +738,14 @@ ylabel('Y [m]', 'FontWeight', 'bold');
 
 % Calcolo Posizioni Snodi
 p0 = [0, 0];
-p1 = p0 + [l_vals(1)*cos(q_vals_2(1)), l_vals(1)*sin(q_vals_2(1))];
-p2 = p1 + [l_vals(2)*cos(q_vals_2(1)+q_vals_2(2)), l_vals(2)*sin(q_vals_2(1)+q_vals_2(2))];
-p3 = p2 + [l_vals(3)*cos(sum(q_vals_2)), l_vals(3)*sin(sum(q_vals_2))];
+p1 = p0 + [l1*cos(q_vals_2(1)), l1*sin(q_vals_2(1))];
+p2 = p1 + [l2*cos(q_vals_2(1)+q_vals_2(2)), l2*sin(q_vals_2(1)+q_vals_2(2))];
+p3 = p2 + [l3*cos(sum(q_vals_2)), l3*sin(sum(q_vals_2))];
 pts_arm = [p0; p1; p2; p3];
 
 % Bracci e Marker Gerarchici
 h_arm = plot(pts_arm(:,1), pts_arm(:,2), '-', 'Color', col_link, 'LineWidth', 2.5, ...
-    'DisplayName', 'Manipolatore RRR (Ripiegato)');
+    'DisplayName', 'Manipolatore RRR (Esteso)');
 plot(pts_arm(2:3,1), pts_arm(2:3,2), 'o', 'MarkerSize', 6, ...
     'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'k', 'HandleVisibility', 'off');
 plot(p0(1), p0(2), 's', 'MarkerSize', 8, ...
@@ -780,15 +755,15 @@ h_ee = plot(p3(1), p3(2), 'p', 'MarkerSize', 10, ...
 \end{matlabcode}
 \newpage
 \begin{matlabcode}
-% Direzione Ammessa R(J) (Verde) e Preclusa N(J^T) (Rossa Tratteggiata)
+% Direzione Ammessa R(J_r) (Verde) e Preclusa N(J_r^T) (Rossa Tratteggiata)
 scale_v = 0.55;
-h_rj = quiver(p3(1), p3(2), R_J1(1)*scale_v, R_J1(2)*scale_v, 0, ...
-    'Color', col_green, 'LineWidth', 2.2, 'MaxHeadSize', 0.5, 'DisplayName', 'Direzione Ammessa R(J)');
-h_njt = quiver(p3(1), p3(2), N_J1_T(1)*scale_v, N_J1_T(2)*scale_v, 0, ...
-    'Color', col_red, 'LineStyle', '--', 'LineWidth', 2.2, 'MaxHeadSize', 0.5, 'DisplayName', 'Direzione Preclusa N(J^T)');
+h_rj = quiver(p3(1), p3(2), R_J2(1)*scale_v, R_J2(2)*scale_v, 0, ...
+    'Color', col_green, 'LineWidth', 2.2, 'MaxHeadSize', 0.5, 'DisplayName', 'Direzione Ammessa R(J_r)');
+h_njt = quiver(p3(1), p3(2), N_J2_T(1)*scale_v, N_J2_T(2)*scale_v, 0, ...
+    'Color', col_red, 'LineStyle', '--', 'LineWidth', 2.2, 'MaxHeadSize', 0.5, 'DisplayName', 'Direzione Preclusa N(J_r^T)');
 
-% Etichette Giunti con Raggruppamento Automatico Coincidenze (J_0, J_2 in origine)
-lbls = {'J_0', 'J_1', 'J_2', 'EE'};
+% Etichette Giunti con Raggruppamento Automatico Coincidenze
+lbls = {'J_1 (Base)', 'J_2', 'J_3', 'EE'};
 visited = false(4, 1);
 for idx = 1:4
     if visited(idx), continue; end
@@ -801,14 +776,14 @@ for idx = 1:4
         'BackgroundColor', [1 1 1], 'EdgeColor', [0.8 0.8 0.8], 'Margin', 1);
 end
 
-text(-0.75, 0.72, 'Rango(J) = 1 (Singolare)', ...
+text(0.15, 0.72, 'Rango(J_r) = 1 (Singolare)', ...
     'FontSize', 9, 'FontWeight', 'bold', ...
     'BackgroundColor', [1 1 1], 'EdgeColor', [0.8 0.8 0.8], 'Margin', 1);
 
 title(sprintf('Configurazione 2: q = [%.2f, %.2f, %.2f] rad (SINGOLARE)', q_vals_2), ...
     'FontSize', 11, 'FontWeight', 'bold');
 legend([h_arm, h_ee, h_rj, h_njt], 'Location', 'bestoutside');
-xlim([-1.8, 1.5]); ylim([-1.0, 1.0]);
+xlim([-0.5, 3.8]); ylim([-1.0, 1.0]);
 hold off;
 \end{matlabcode}
 \begin{center}

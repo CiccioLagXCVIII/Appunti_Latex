@@ -5,7 +5,7 @@
 %[text] Tra queste, tre tipi di terne sono particolarmente rilevanti:
 %[text] - **Angoli ZXZ:** Prevedono delle rotazioni successive intorno agli assi: $Z$, $X^{\\prime }$ (asse $X$ ruotato) e $Z^{\\prime \\prime }$ (asse $Z$ nuovamente ruotato)
 %[text] - **Angoli ZXY:** Prevedono delle rotazioni successive intorno agli assi: $Z$, $X^{\\prime }$ (asse $X$ ruotato) e $Y^{\\prime \\prime }$ (asse $Y$ nuovamente ruotato)
-%[text] - **Angoli RPY:** Prevedono delle rotazioni intorno agli assi $Z$, $Y^{\\prime }$ e $X^{\\prime \\prime }$ \
+%[text] - **Angoli RPY:** Prevedono delle rotazioni attorno agli assi fissi $X$, $Y$ e $Z$ \
 %[text] Per essere valida, una sequenza di rotazioni non deve avere due rotazioni consecutive attorno ad assi paralleli. Due delle convenzioni valide sono **ZXZ** e **ZXY**.
 clc; clear; close all;
 
@@ -99,11 +99,11 @@ disp("Matrice Rotazione R_ZXY (Con Theta = Pi/2):");
 disp(RZXY_Pi);
 %[text] Anche in questo caso, la matrice semplificata mostra che gli angoli $\\phi$ e $\\psi$ sono combinati, rendendo impossibile la loro determinazione univoca.
 %%
-%[text] ## Matrice Di Rotazione Con Convenzione Roll-Pitch-Yaw (ZYX)
-%[text] Gli angoli di Roll-Pitch-Yaw sono comunemente usati in aeronautica e robotica. Una delle convenzioni più diffuse è la ZYX'', che consiste in:
-%[text] - **Yaw** (Imbardata): Rotazione di un angolo $\\phi$ attorno all'asse $Z$.
-%[text] - **Pitch** (Beccheggio): Rotazione di un angolo $\\theta$ attorno al nuovo asse $Y^{\\prime }$
-%[text] - **Roll** (Rollio): Rotazione di un angolo $\\psi$ attorno al nuovo asse $X^{\\prime \\prime }$ \
+%[text] ## Matrice Di Rotazione Con Convenzione Roll-Pitch-Yaw (Assi Fissi XYZ)
+%[text] Gli angoli di Roll-Pitch-Yaw sono comunemente usati in aeronautica e robotica. Nella convenzione rispetto a una terna fissa ($X, Y, Z$), la sequenza consiste in:
+%[text] - **Roll** (Rollio): Rotazione di un angolo $\\psi$ attorno all'asse fisso $X$.
+%[text] - **Pitch** (Beccheggio): Rotazione di un angolo $\\theta$ attorno all'asse fisso $Y$.
+%[text] - **Yaw** (Imbardata): Rotazione di un angolo $\\phi$ attorno all'asse fisso $Z$ (che corrisponde al prodotto in ordine inverso $\\mathbf{R}_Z(\\phi)\\mathbf{R}_Y(\\theta)\\mathbf{R}_X(\\psi)$). \
 %[text] La matrice di rotazione risultante è:
 [RY_Theta] = Compute_Rotation_Matrix(y, theta);
 [RX_Psi] = Compute_Rotation_Matrix(x, psi);
@@ -123,7 +123,7 @@ R_RPY_Num = subs(R_RPY, {phi, theta, psi}, {phiNum, thetaNum, psiNum});
 disp("Matrice Di Rotazione Numerica R_RPY:");
 disp(double(R_RPY_Num));
 %[text] **Singolarità della Rotazione RPY**
-%[text] La singolarità per questa convenzione RPY si verifica quando l'angolo di Pitch $\\theta =\\pm \\frac{\\pi }{2}$. In questa configurazione, l'asse della prima rotazione (Yaw, asse Z) si allinea con l'asse della terza rotazione (Roll, asse X''), causando il "gimbal lock".
+%[text] La singolarità per questa convenzione RPY si verifica quando l'angolo di Pitch $\\theta =\\pm \\frac{\\pi }{2}$. In questa configurazione, l'asse della prima rotazione (Roll, asse X) si allinea con l'asse della terza rotazione (Yaw, asse Z), causando il "gimbal lock".
 %[text] Si analizza il caso con $\\theta =\\frac{\\pi }{2}$
 % SINGOLARITÀ CON THETA = pi/2
 [RY_Theta_Pi] = Compute_Rotation_Matrix(y, pi/2);
@@ -269,7 +269,7 @@ text(X_Ruotato(1)*1.1, X_Ruotato(2)*1.1, X_Ruotato(3)*1.1, 'X''', 'FontSize', 11
 text(Y_Ruotato(1)*1.1, Y_Ruotato(2)*1.1, Y_Ruotato(3)*1.1, 'Y''', 'FontSize', 11, 'Color', col_rot_Y, 'FontWeight', 'bold');
 text(Z_Ruotato(1)*1.1, Z_Ruotato(2)*1.1, Z_Ruotato(3)*1.1, 'Z''', 'FontSize', 11, 'Color', col_rot_Z, 'FontWeight', 'bold');
 
-title({'Rotazione RPY (ZY''X'' - Yaw, Pitch, Roll)', ...
+title({'Rotazione RPY (Assi Fissi XYZ - Roll, Pitch, Yaw)', ...
     sprintf('\\phi = %.1f°, \\theta = %.1f°, \\psi = %.1f°', rad2deg(phiNum), rad2deg(thetaNum), rad2deg(psiNum))}, ...
     'FontSize', 11, 'FontWeight', 'bold');
 legend([hX_0, hY_0, hZ_0, hX_r, hY_r, hZ_r], ...

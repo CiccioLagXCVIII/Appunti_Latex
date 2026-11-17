@@ -4,67 +4,70 @@
 clc; clear; close all;
 
 % Definizione Variabili Simboliche
-syms q1 q2 q3 q4 d1 d2 d3 d4 alpha1 alpha2 alpha3 alpha4 a1 a2 a3 a4 real;
+syms q1 q2 q3 q4 q5 q6 d4 d6 a2 a3 real;
 
 % Tabella Parametri Denavit-Hartenberg (DH)
-DH_table = [q1, 0, pi/2, 0;
-            q2, 0, 0, d2;
-            q3, 0, 0, d3];
+DH_table = [q1, 0,  -pi/2, 0;
+            q2, 0,   0,    a2;
+            q3, 0,  -pi/2, a3;
+            q4, d4,  pi/2, 0;
+            q5, 0,  -pi/2, 0;
+            q6, d6,  0,    0];
 
 
 % Numero Giunti Manipolatore
 n = size(DH_table, 1);
-%[text] A partire dalla tabella DH, si può calcolare la matrice di trasformazione omogenea $A_i$ per ciascun giunto $i$. Questa matrice, di dimensioni $4\\times 4$, rappresenta la trasformazione (rotazione e traslazione) dal sistema di riferimento del giunto $i$ a quello del giunto $i-1$. Si utilizza la funzione `Compute_DH_Transformations`per generare le matrici simboliche per ogni riga della tabella DH.
-[T_matrices, R_matrices] = Compute_DH_Transformations(DH_table);
+%[text] A partire dalla tabella DH, si può calcolare la matrice di trasformazione omogenea $^{i-1}A_i$ per ciascun giunto $i$. Questa matrice, di dimensioni $4\\times 4$, rappresenta la trasformazione (rotazione e traslazione) dal sistema di riferimento del giunto $i$ a quello del giunto $i-1$. Si utilizza la funzione `Compute_DH_Transformations`per generare le matrici simboliche per ogni riga della tabella DH.
+[A_matrices, R_matrices] = Compute_DH_Transformations(DH_table);
 
 for i = 1:n
-    fprintf('Matrice Di Trasformazione Omogenea ^(%d)T_(%d):\n', i-1, i);
-    disp(T_matrices(:,:,i));
+    fprintf('Matrice Di Trasformazione Omogenea ^(%d)A_(%d):\n', i-1, i);
+    disp(A_matrices(:,:,i));
 end
-T03 = T_matrices(:,:,1) * T_matrices(:,:,2) * T_matrices(:,:,3);
-T03 = simplify(T03);
+T06 = A_matrices(:,:,1) * A_matrices(:,:,2) * A_matrices(:,:,3) * A_matrices(:,:,4) * A_matrices(:,:,5) * A_matrices(:,:,6);
+T06 = simplify(T06);
 
-fprintf('Matrice Di Trasformazione Omogenea Totale ^(0)T_(3):\n');
-disp(T03);
-%[text] La matrice di trasformazione omogenea totale $^0 T_3$ contiene tutte le informazioni sulla posa dell'organo terminale. Da essa possiamo estrarre due elementi chiave:
+fprintf('Matrice Di Trasformazione Omogenea Totale ^(0)T_(6):\n');
+disp(T06);
+%[text] La matrice di trasformazione omogenea totale $^0 T_6$ contiene tutte le informazioni sulla posa dell'organo terminale. Da essa possiamo estrarre due elementi chiave:
 %[text] - La **matrice di rotazione R**, che definisce l'orientamento dell'organo terminale rispetto alla base. Corrisponde alla sottomatrice 3x3 in alto a sinistra.
 %[text] - Il **vettore di posizione p**, che indica la posizione dell'origine del sistema di riferimento dell'organo terminale. Corrisponde alle prime tre righe della quarta colonna. \
 % Estrazione Vettore Posizione
-p03 = T03(1:3, 4);
-p03 = simplify(p03);
-fprintf('Vettore Posizione p03:\n');
-disp(p03);
+p06 = T06(1:3, 4);
+p06 = simplify(p06);
+fprintf('Vettore Posizione p06:\n');
+disp(p06);
 % Estrazione Matrice Rotazione
-R03 = T03(1:3, 1:3);
-R03 = simplify(R03);
-fprintf('Matrice Rotazione R03:\n');
-disp(R03);
+R06 = T06(1:3, 1:3);
+R06 = simplify(R06);
+fprintf('Matrice Rotazione R06:\n');
+disp(R06);
 %[text] Per visualizzare una configurazione specifica del robot sono necessari dei valori numerici. Si sostituiscono ora le variabili simboliche (angoli di giunto e parametri geometrici) con valori numerici.
 % Lista Variabili Simboliche
-symsList = symvar(T_matrices);
+symsList = [a2, a3, d4, d6, q1, q2, q3, q4, q5, q6];
 disp('Variabili Simboliche:');
 disp(symsList);
 % Valori Numerici Da Sostituire
-value = [0.4, 0.3, pi/6, pi/4, -pi/3];
+value = [0.4, 0.3, 0.25, 0.15, pi/6, pi/4, -pi/3, pi/6, pi/4, pi/3];
 
 % La sostituzione su un array 3D simbolico può essere problematica.
 % È più sicuro sostituire i valori matrice per matrice.
-T_Num = zeros(4,4,n);
+A_Num = zeros(4,4,n);
 for i = 1:n
-    T_Num(:,:,i) = subs(T_matrices(:,:,i), symsList, value);
+    A_Num(:,:,i) = subs(A_matrices(:,:,i), symsList, value);
 end
 
 % Stampa Matrici Numeriche
 for i = 1:n
-    fprintf('Matrice ^(%d)T_(%d) numerica:\n', i-1, i);
-    disp(T_Num(:,:,i));
+    fprintf('Matrice ^(%d)A_(%d) numerica:\n', i-1, i);
+    disp(A_Num(:,:,i));
 end
 %%
 %[text] ## Visualizzazione Grafica Manipolatore Antropomorfo
 fig_name    = 'Configurazione Manipolatore Antropomorfo';
 arrow_scale = 0.14;
 view_angles = [150, 20];
-labels      = {'Terna 0 (Base)', 'Terna 1', 'Terna 2', 'Terna 3 (EE)'};
+labels      = {'Terna 0 (Base)', 'Terna 1', 'Terna 2', 'Terna 3', 'Terna 4', 'Terna 5', 'Terna 6 (EE)'};
 
 figure('Name', fig_name, 'Color', 'w');
 hold on;
@@ -85,7 +88,7 @@ positions(1, :) = T_cumulative(1:3, 4).';
 R_all(:, :, 1)  = T_cumulative(1:3, 1:3);
 
 for i = 1:n
-    T_cumulative = T_cumulative * double(T_Num(:, :, i));
+    T_cumulative = T_cumulative * double(A_Num(:, :, i));
     positions(i+1, :) = T_cumulative(1:3, 4).';
     R_all(:, :, i+1)  = T_cumulative(1:3, 1:3);
 end

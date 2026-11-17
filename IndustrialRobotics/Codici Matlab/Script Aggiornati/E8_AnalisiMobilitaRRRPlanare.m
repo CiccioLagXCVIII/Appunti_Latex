@@ -6,7 +6,8 @@
 %[text] - Gli **Automovimenti** ($N(J)$): Le combinazioni di velocità dei giunti che non producono movimento dell'end-effector, ma solo un riarrangiamento interno del robot. \
 clc; clear; close all;
 % Parametri Manipolatore
-syms q1 q2 q3 l1 l2 l3 real;
+syms q1 q2 q3 real;
+l1 = 1; l2 = 1; l3 = 1;
 %[text] Il primo passo consiste nel definire matematicamente il robot e calcolare la posizione del suo end-effector utilizzando la convenzione di Denavit-Hartenberg (DH)
 % Definizione Tabelle DH Struttura
 DH_Table = [q1, 0, 0, l1;
@@ -17,30 +18,31 @@ DH_Table = [q1, 0, 0, l1;
 % q3 = pi/4;
 
 % Calcolo Matrici Trasformazione E Rotazione Struttura
-[T, R] = Compute_DH_Transformations(DH_Table);
+[A, R] = Compute_DH_Transformations(DH_Table);
 
-T00 = eye(4);
-T01 = simplify(T(:,:,1));       % Trasformazione da 0 a 1
-T02 = simplify(T01 * T(:,:,2)); % Trasformazione da 0 a 2
-T03 = simplify(T02 * T(:,:,3)); % Trasformazione da 0 a 3
-%[text] Il vettore di posizione $p$ dell'end-effector può essere estratto dalla matrice $^0 T_3$ in quanto è la quarta colonna. Poiché l'analisi di mobilità si concentra sul piano $XY$ si prendono le prime due componenti del vettore posizione.
-% Posizione dell'End-Effector
-p_E = T03(1:3, 4);
-fprintf('Vettore Posizione p RRR Planare:');
-disp(p_E);
-%[text] Lo **Jacobiano analitico**, indicato come $J_r (q)$, è la matrice che lega la velocità dei giunti $\\dot{q}$ alla velocità lineare dell'end-effector $v$ secondo la relazione:
-%[text]{"align":"center"} $v=J_r (q)\\dot{q}$
-%[text] Dato che si conosce l'espressione simbolica del vettore posizione dell'end-effector $p$ in funzione del vettore delle coordinate dei giunti $q$, lo Jacobiano si calcola come la matrice delle derivate parziali di ogni componente della posizione rispetto a ogni coordinata di giunto.
-%[text]{"align":"center"} $J_r (q) = \\frac{\\partial p}{\\partial q}$
+A00 = eye(4);
+A01 = simplify(A(:,:,1));       % Trasformazione da 0 a 1
+A02 = simplify(A01 * A(:,:,2)); % Trasformazione da 0 a 2
+A03 = simplify(A02 * A(:,:,3)); % Trasformazione da 0 a 3
+%[text] Il vettore di posizione $r(q)$ dell'end-effector nel piano $XY$ può essere estratto dalle prime due componenti della quarta colonna di $^0 A_3$.
+% Posizione dell'End-Effector (3D per cross product e 2D r(q) nel piano XY)
+p_E = A03(1:3, 4);
+r = simplify(A03(1:2, 4));
+fprintf('Vettore Posizione r(q) RRR Planare:');
+disp(r);
+%[text] Lo **Jacobiano di posizione** (analitico nel piano $XY$), indicato come $J_r (q)$, è la matrice che lega la velocità dei giunti $\\dot{q}$ alla velocità lineare dell'end-effector $\\dot{r}$ secondo la relazione:
+%[text]{"align":"center"} $\\dot{r}=J_r (q)\\dot{q}$
+%[text] Dato che si conosce l'espressione simbolica del vettore posizione dell'end-effector $r(q)$ in funzione del vettore delle coordinate dei giunti $q$, lo Jacobiano di posizione estratto dallo Jacobiano geometrico coincide con la matrice delle derivate parziali rispetto a $q$:
+%[text]{"align":"center"} $J_r (q) = \\frac{\\partial r(q)}{\\partial q}$
 % Vettori z (Assi Di Rotazione)
-z0 = T00(1:3, 3); % Asse di rotazione del giunto 1
-z1 = T01(1:3, 3); % Asse di rotazione del giunto 2
-z2 = T02(1:3, 3); % Asse di rotazione del giunto 3
+z0 = A00(1:3, 3); % Asse di rotazione del giunto 1
+z1 = A01(1:3, 3); % Asse di rotazione del giunto 2
+z2 = A02(1:3, 3); % Asse di rotazione del giunto 3
 
 % Vettori p (Posizioni Origini Dei Riferimenti)
-p0 = T00(1:3, 4); % Origine del frame 0
-p1 = T01(1:3, 4); % Origine del frame 1
-p2 = T02(1:3, 4); % Origine del frame 2
+p0 = A00(1:3, 4); % Origine del frame 0
+p1 = A01(1:3, 4); % Origine del frame 1
+p2 = A02(1:3, 4); % Origine del frame 2
 
 % Valori Per J1
 J_L1 = cross(z0, p_E - p0);
@@ -62,32 +64,24 @@ J_q = simplify([J1, J2, J3]);
 
 fprintf('Jacobiano Geometrico Manipolatore RRR Planare Simbolico');
 disp(J_q);
-% Estrazione Jacobiano Lineare (Prime Due Righe)
-J_L = J_q(1:2,1:3);
-fprintf('Jacobiano Lineare Manipolatore RRR Planare Simbolico:');
-disp(J_L);
+% Estrazione Jacobiano Di Posizione (Prime Due Righe) e verifica analitica
+J_r = J_q(1:2,1:3);
+J_r_analitico = simplify(jacobian(r, [q1; q2; q3]));
+fprintf('Jacobiano Di Posizione Manipolatore RRR Planare Simbolico J_r:');
+disp(J_r);
+fprintf('Verifica coincidenza J_r == d r / d q: %d\n', isequal(simplify(J_r - J_r_analitico), sym(zeros(2, 3))));
 %[text] Una configurazione $q$ è **singolare** quando lo Jacobiano $J_r (q)$ perde di rango, ovvero $\\rho \\bigl(J_r (q)\\bigr)<m$. Per una matrice non quadrata come in questo caso ($m\\times n=2\\times 3$).
-%[text] Un metodo robusto per trovare queste condizioni è analizzare la matrice di Gram $J_r (q)\\cdot {\\bigl((J_r (q)\\bigr)}^T$ che è sempre quadrata ($m\\times m$) e perde di rango esattamente quando $J_r (q)$ perde di rango. La condizione di singolarità si traduce quindi nel trovare le configurazioni $q$ per cui il determinante di questa matrice è nullo.
-% Calcolo Condizione Singolarità: det(J(q) * J(q)^T) = 0
-G = J_L * J_L.';
+%[text] Un metodo robusto per trovare queste condizioni è analizzare la matrice di Gram $J_r (q)\\cdot {\\bigl(J_r (q)\\bigr)}^T$ che è sempre quadrata ($m\\times m$) e perde di rango esattamente quando $J_r (q)$ perde di rango. La condizione di singolarità si traduce quindi nel trovare le configurazioni $q$ per cui il determinante di questa matrice è nullo.
+% Calcolo Condizione Singolarità: det(J_r(q) * J_r(q)^T) = 0
+G = J_r * J_r.';
 det_G = simplify(det(G));
 
 disp('Determinante Matrice Di Gram (det(J_r * J_r^T)):');
 disp(det_G);
-assume(l1 > 0 & l2 > 0 & l3 > 0);
 assume([q2, q3], 'real');
 
-disp('Condizione Di Singolarità:');
+disp('Condizione Di Singolarità (con l1=l2=l3=1):');
 disp(det_G == 0);
-%[text] La *condizione di singolarità* è complessa e difficile da interpretare direttamente. Spesso, le condizioni di singolarità dipendono dagli angoli relativi tra i bracci, non dalla loro orientazione globale. Per semplificare l'espressione, si considera il caso specifico in cui i bracci hanno lunghezza unitaria ($l_1 =l_2 =l_3 =1$) in modo da mantenere tutte le proprietà cinematiche rilevanti.
-% Sostituzione Parametri Lunghezza
-det_G_Sub = subs(det_G, [l1, l2, l3], [1, 1, 1]);
-
-% Semplificazione
-det_G_Sub = simplify(det_G_Sub);
-
-disp('Condizione Di Singolarità Semplificata Con l1=l2=l3=1:');
-disp(det_G_Sub == 0);
 %[text] La condizione di singolarità semplificata ottenuta per lunghezze unitarie rivela che le singolarità dipendono solo dagli angoli $q_2$ e $q_3$. Questo è coerente con la natura planare del manipolatore, dove la posa della base non altera la raggiungibilità dello spazio di lavoro ma solo la sua orientazione. Le condizioni esatte in cui il determinante si annulla corrispondono a configurazioni geometricamente significative:
 %[text] - Quando i bracci sono completamente estesi o ripiegati, l'end-effector si trova sul confine dello spazio di lavoro e perde un grado di libertà (*Singolarità Di Bordo*). Questo accade quando $q_2$ o $q_3$ sono $0$ oppure $\\pi$.
 %[text] - Quando l'end-effector si ripiega su un giunto precedente, cioè la punta del robot si trova alla base del giunto $q_1$. Questa singolarità dipende dalle lunghezze dei bracci e dagli angoli $q_2$ e $q_3$. \
@@ -99,61 +93,60 @@ disp(det_G_Sub == 0);
 %[text]{"align":"center"} $l_1 =l_2 =l_3 =1$
 %[text]{"align":"center"} $q_1 =0~~~~q_2 =\\frac{\\pi }{2}~~~~q_3 =-\\frac{\\pi }{2}$
 % Valori numerici per la configurazione
-l_vals = [1, 1, 1];
 q1_val = 0;
 q2_val = pi/2;
 q3_val = -pi/2;
 q_vals = [q1_val, q2_val, q3_val];
 
 fprintf('------------ Configurazione q = [%.2f, %.2f, %.2f] ------------', q_vals(1), q_vals(2), q_vals(3));
-% Sostituzione dei valori numerici nello Jacobiano lineare simbolico
-vars_sym = [l1, l2, l3, q1, q2, q3];
-vals_num = [l_vals, q_vals];
-J1_num = double(subs(J_L, vars_sym, vals_num));
+% Sostituzione dei valori numerici nello Jacobiano di posizione simbolico
+vars_sym = [q1, q2, q3];
+vals_num = q_vals;
+Jr_1 = double(subs(J_r, vars_sym, vals_num));
 
-fprintf('Jacobiano Lineare Numerico:\n');
-disp(J1_num);
+fprintf('Jacobiano Di Posizione Numerico:\n');
+disp(Jr_1);
 % Verifica Singolarità
-rank_J1 = rank(J1_num);
+rank_J1 = rank(Jr_1);
 fprintf('Rango dello Jacobiano: %d\n', rank_J1);
 % Dimensione Spazio Lavoro
-m = size(J_L, 1);
+m = size(J_r, 1);
 % Numero Di Giunti
 n = size(DH_Table, 1);
 
 if rank_J1 < m
     fprintf('Configurazione Singolare (Rango < m)');
 
-    % Spazio Velocità Raggiungibili (Immagine di J)
-    R_J1 = orth(J1_num);
-    fprintf('Base Spazio Velocità Raggiungibili R(J):\n');
+    % Spazio Velocità Raggiungibili (Immagine di J_r)
+    R_J1 = orth(Jr_1);
+    fprintf('Base Spazio Velocità Raggiungibili R(J_r):\n');
     disp(R_J1);
     % L'End-Effector Può Muoversi Solo Lungo La Direzione Di Questo Vettore
 
-    % Direzioni Di Moto Precluse (Nucleo di J^T)
-    N_J1_T = null(J1_num.');
-    fprintf('Base Direzioni Di Moto Precluse N(J^T):\n');
+    % Direzioni Di Moto Precluse (Nucleo di J_r^T)
+    N_J1_T = null(Jr_1.');
+    fprintf('Base Direzioni Di Moto Precluse N(J_r^T):\n');
     disp(N_J1_T);
     % L'End-Effector È Bloccato E Non Può Muoversi Lungo Direzione Di Questo Vettore
 else
     fprintf('Configurazione NON Singolare (Rango Pieno)');
 
-    % Spazio Velocità Raggiungibili (Immagine di J)
-    R_J1 = orth(J1_num);
-    fprintf('Base Spazio Velocità Raggiungibili R(J):\n');
+    % Spazio Velocità Raggiungibili (Immagine di J_r)
+    R_J1 = orth(Jr_1);
+    fprintf('Base Spazio Velocità Raggiungibili R(J_r):\n');
     disp(R_J1);
     % L'End-Effector Può Muoversi Solo Lungo La Direzione Di Questo Vettore
 
-    % Direzioni Di Moto Precluse (Nucleo di J^T)
-    fprintf('Non Ci Sono Direzioni Di Moto Precluse N(J^T)!');
+    % Direzioni Di Moto Precluse (Nucleo di J_r^T)
+    fprintf('Non Ci Sono Direzioni Di Moto Precluse N(J_r^T)!');
 end
 % Per Robot Ridondanti
 if n > m
-    % Automovimenti (Nucleo di J)
-    A_J1 = null(J1_num);
-    fprintf('Base Automovimenti N(J):\n');
+    % Automovimenti (Nucleo di J_r)
+    A_J1 = -null(Jr_1, 'r');
+    fprintf('Base Automovimenti N(J_r):\n');
     disp(A_J1);
-    % Sono Possibili Due Moti Senza Spostare La Punta Del Robot
+    % Sono Possibili Moti Interni Senza Spostare La Punta Del Robot
     dim_A = size(A_J1, 2);
     fprintf('Numero Automovimenti: %d\n', dim_A);
 else
@@ -172,9 +165,9 @@ ylabel('Y [m]', 'FontWeight', 'bold');
 
 % Calcolo Posizioni Snodi
 p0 = [0, 0];
-p1 = p0 + [l_vals(1)*cos(q_vals(1)), l_vals(1)*sin(q_vals(1))];
-p2 = p1 + [l_vals(2)*cos(q_vals(1)+q_vals(2)), l_vals(2)*sin(q_vals(1)+q_vals(2))];
-p3 = p2 + [l_vals(3)*cos(sum(q_vals)), l_vals(3)*sin(sum(q_vals))];
+p1 = p0 + [l1*cos(q_vals(1)), l1*sin(q_vals(1))];
+p2 = p1 + [l2*cos(q_vals(1)+q_vals(2)), l2*sin(q_vals(1)+q_vals(2))];
+p3 = p2 + [l3*cos(sum(q_vals)), l3*sin(sum(q_vals))];
 pts_arm = [p0; p1; p2; p3];
 
 % Bracci e Marker Gerarchici
@@ -187,17 +180,17 @@ plot(p0(1), p0(2), 's', 'MarkerSize', 8, ...
 h_ee = plot(p3(1), p3(2), 'p', 'MarkerSize', 10, ...
     'MarkerFaceColor', [0.95, 0.75, 0.10], 'MarkerEdgeColor', 'k', 'DisplayName', 'End-Effector');
 
-% Direzioni di Mobilita R(J) (Verdi)
+% Direzioni di Mobilita R(J_r) (Verdi)
 scale_v = 0.55;
 h_rj = quiver(p3(1), p3(2), R_J1(1,1)*scale_v, R_J1(2,1)*scale_v, 0, ...
-    'Color', col_green, 'LineWidth', 2.2, 'MaxHeadSize', 0.5, 'DisplayName', 'Base R(J) (Ammessa)');
+    'Color', col_green, 'LineWidth', 2.2, 'MaxHeadSize', 0.5, 'DisplayName', 'Base R(J_r) (Ammessa)');
 if size(R_J1, 2) > 1
     quiver(p3(1), p3(2), R_J1(1,2)*scale_v, R_J1(2,2)*scale_v, 0, ...
         'Color', col_green, 'LineWidth', 2.2, 'MaxHeadSize', 0.5, 'HandleVisibility', 'off');
 end
 
 % Etichette Giunti con Raggruppamento Automatico Coincidenze
-lbls = {'J_0', 'J_1', 'J_2', 'EE'};
+lbls = {'J_1 (Base)', 'J_2', 'J_3', 'EE'};
 visited = false(4, 1);
 for idx = 1:4
     if visited(idx), continue; end
@@ -210,7 +203,7 @@ for idx = 1:4
         'BackgroundColor', [1 1 1], 'EdgeColor', [0.8 0.8 0.8], 'Margin', 1);
 end
 
-text(-0.38, 1.52, 'Rango(J) = 2: R(J) = R^2', ...
+text(-0.38, 1.52, 'Rango(J_r) = 2: R(J_r) = R^2', ...
     'FontSize', 9, 'FontWeight', 'bold', ...
     'BackgroundColor', [1 1 1], 'EdgeColor', [0.8 0.8 0.8], 'Margin', 1);
 
@@ -225,77 +218,77 @@ hold off;
 %[text] 1. Il primo braccio $l_1$ giace lungo l'asse X, poiché $q_1=0$.
 %[text] 2. Il secondo braccio $l_2$ è ruotato di $q_2 = \\frac{\\pi}{2}$ rispetto al primo, puntando quindi lungo l'asse Y.
 %[text] 3. Il terzo braccio $l_3$ è ruotato di $q_3 = -\\frac{\\pi}{2}$ rispetto al secondo, risultando quindi parallelo all'asse X e orientato nella stessa direzione del primo braccio.
-%[text] 4. La posizione dell'end-effector è la somma vettoriale dei bracci: $p_E = (l_1 + l_3, l_2) = (1+1, 1) = (2,1)$. \
+%[text] 4. La posizione dell'end-effector è la somma vettoriale dei bracci: $r = (l_1 + l_3, l_2) = (1+1, 1) = (2,1)$. \
 %[text] **Analisi di Mobilità *(Configurazione NON Singolare)***
 %[text] Il calcolo mostra che il **rango** dello **Jacobiano** è **2**, ovvero il massimo possibile (rango pieno), dato che lo spazio di lavoro è bidimensionale ($m=2$).
-%[text] Poiché $\\rho(J_L)=m$, lo Spazio delle Velocità Raggiungibili $R(J_L)$ coincide con l'intero piano $\\mathbb{R}^2$. Di conseguenza, il suo complemento ortogonale, lo spazio delle Direzioni di Moto Precluse $N(J_L^T)$, è banale (contiene solo il vettore nullo).
-%[text] La configurazione non è singolare perché i movimenti generati dai singoli giunti sono linearmente indipendenti. Una rotazione del giunto 1 ($\\dot{q}_1$) farebbe ruotare l'intera struttura attorno all'origine, producendo una velocità dell'end-effector istantaneamente tangente a un cerchio (in questo caso, lungo la direzione $[-1,1]$). Le rotazioni dei giunti 2 e 3 ($\\dot{q}_2, \\dot{q}_3$) producono movimenti che non sono paralleli a quello generato dal giunto 1. Poiché è possibile generare velocità in direzioni non collineari, la loro combinazione lineare può produrre un vettore di velocità arbitrario nel piano $(v_x, v_y)$. L'end-effector può quindi muoversi istantaneamente in qualsiasi direzione.
+%[text] Poiché $\\rho(J_r)=m$, lo Spazio delle Velocità Raggiungibili $R(J_r)$ coincide con l'intero piano $\\mathbb{R}^2$. Di conseguenza, il suo complemento ortogonale, lo spazio delle Direzioni di Moto Precluse $N(J_r^T)$, è banale (contiene solo il vettore nullo).
+%[text] La configurazione non è singolare perché i movimenti generati dai singoli giunti sono linearmente indipendenti. Una rotazione del giunto 1 ($\\dot{q}_1$) farebbe ruotare l'intera struttura attorno all'origine, producendo una velocità dell'end-effector istantaneamente tangente a un cerchio (lungo la direzione $[-1,2]$). Le rotazioni dei giunti 2 e 3 ($\\dot{q}_2, \\dot{q}_3$) producono movimenti che non sono paralleli a quello generato dal giunto 1. Poiché è possibile generare velocità in direzioni non collineari, la loro combinazione lineare può produrre un vettore di velocità arbitrario nel piano $(v_x, v_y)$. L'end-effector può quindi muoversi istantaneamente in qualsiasi direzione.
 %[text] **Analisi degli Automovimenti *(Ridondanza)***
-%[text] Il manipolatore è ridondante per il posizionamento 2D ($n=3>m=2$). La dimensione dello spazio nullo (automovimenti) è data da $n - \\rho(J_L) = 3 - 2 = 1$.
-%[text] Esiste una base per $N(J_L)$ con un solo vettore, come calcolato. Questo vettore definisce una combinazione specifica di velocità dei giunti $\\dot{q} \\in N(J_L)$ che risulta in una velocità nulla dell'end-effector $v = J_L \\dot{q} = 0$.
+%[text] Il manipolatore è ridondante per il posizionamento 2D ($n=3>m=2$). La dimensione dello spazio nullo (automovimenti) è data da $n - \\rho(J_r) = 3 - 2 = 1$.
+%[text] Esiste una base per $N(J_r)$ con un solo vettore, come calcolato. Questo vettore definisce una combinazione specifica di velocità dei giunti $\\dot{q} \\in N(J_r)$ che risulta in una velocità nulla dell'end-effector $\\dot{r} = J_r \\dot{q} = 0$.
 %[text] La presenza di un automovimento significa che il robot può **riconfigurare la sua postura interna mantenendo l'end-effector fermo**. Si può immaginare un movimento coordinato del giunto 2 e del giunto 3, compensato dal giunto di base (giunto 1), che permette alla struttura di muoversi pur mantenendo la punta fissa in $(2,1)$. Questa capacità aggiuntiva è un vantaggio della ridondanza, utilizzata ad esempio per evitare ostacoli con il corpo del robot senza spostare l'end-effector.
 %%
-%[text] ## Configurazione 2: Analisi In Condizione Singolare A Bracci Allineati
+%[text] ## Configurazione 2: Analisi In Condizione Singolare A Bracci Estesi (Singolarità Di Bordo)
 %[text] I parametri del robot sono
 %[text]{"align":"center"} $l_1 =l_2 =l_3 =1$
-%[text]{"align":"center"} $q_1 =0~~~~q_2 =\\pi ~~~~q_3 =0$
+%[text]{"align":"center"} $q_1 =0~~~~q_2 =0~~~~q_3 =0$
 % Valori numerici per la configurazione
 q1_val_2 = 0;
-q2_val_2 = pi;
+q2_val_2 = 0;
 q3_val_2 = 0;
 q_vals_2 = [q1_val_2, q2_val_2, q3_val_2];
 
 fprintf('------------ Configurazione q = [%.2f, %.2f, %.2f] ------------', q_vals_2(1), q_vals_2(2), q_vals_2(3));
 
-% Sostituzione dei valori numerici nello Jacobiano lineare simbolico
-vars_sym = [l1, l2, l3, q1, q2, q3];
-vals_num = [l_vals, q_vals_2];
-J1_num = double(subs(J_L, vars_sym, vals_num));
+% Sostituzione dei valori numerici nello Jacobiano di posizione simbolico
+vars_sym = [q1, q2, q3];
+vals_num = q_vals_2;
+Jr_2 = double(subs(J_r, vars_sym, vals_num));
 
-fprintf('Jacobiano Lineare Numerico:\n');
-disp(J1_num);
+fprintf('Jacobiano Di Posizione Numerico:\n');
+disp(Jr_2);
 % Verifica Singolarità
-rank_J1 = rank(J1_num);
-fprintf('Rango dello Jacobiano: %d\n', rank_J1);
+rank_J2 = rank(Jr_2);
+fprintf('Rango dello Jacobiano: %d\n', rank_J2);
 % Dimensione Spazio Lavoro
-m = size(J_L, 1);
+m = size(J_r, 1);
 % Numero Di Giunti
 n = size(DH_Table, 1);
 
-if rank_J1 < m
+if rank_J2 < m
     fprintf('Configurazione Singolare (Rango < m)');
 
-    % Spazio Velocità Raggiungibili (Immagine di J)
-    R_J1 = orth(J1_num);
-    fprintf('Base Spazio Velocità Raggiungibili R(J):\n');
-    disp(R_J1);
+    % Spazio Velocità Raggiungibili (Immagine di J_r)
+    R_J2 = orth(Jr_2);
+    fprintf('Base Spazio Velocità Raggiungibili R(J_r):\n');
+    disp(R_J2);
     % L'End-Effector Può Muoversi Solo Lungo La Direzione Di Questo Vettore
 
-    % Direzioni Di Moto Precluse (Nucleo di J^T)
-    N_J1_T = null(J1_num.');
-    fprintf('Base Direzioni Di Moto Precluse N(J^T):\n');
-    disp(N_J1_T);
+    % Direzioni Di Moto Precluse (Nucleo di J_r^T)
+    N_J2_T = null(Jr_2.');
+    fprintf('Base Direzioni Di Moto Precluse N(J_r^T):\n');
+    disp(N_J2_T);
     % L'End-Effector È Bloccato E Non Può Muoversi Lungo Direzione Di Questo Vettore
 else
     fprintf('Configurazione NON Singolare (Rango Pieno)');
 
-    % Spazio Velocità Raggiungibili (Immagine di J)
-    R_J1 = orth(J1_num);
-    fprintf('Base Spazio Velocità Raggiungibili R(J):\n');
-    disp(R_J1);
+    % Spazio Velocità Raggiungibili (Immagine di J_r)
+    R_J2 = orth(Jr_2);
+    fprintf('Base Spazio Velocità Raggiungibili R(J_r):\n');
+    disp(R_J2);
     % L'End-Effector Può Muoversi Solo Lungo La Direzione Di Questo Vettore
 
-    % Direzioni Di Moto Precluse (Nucleo di J^T)
-    fprintf('Non Ci Sono Direzioni Di Moto Precluse N(J^T)!');
+    % Direzioni Di Moto Precluse (Nucleo di J_r^T)
+    fprintf('Non Ci Sono Direzioni Di Moto Precluse N(J_r^T)!');
 end
 % Per Robot Ridondanti
 if n > m
-    % Automovimenti (Nucleo di J)
-    A_J1 = null(J1_num);
-    fprintf('Base Automovimenti N(J):\n');
-    disp(A_J1);
+    % Automovimenti (Nucleo di J_r)
+    A_J2 = null(Jr_2, 'r');
+    fprintf('Base Automovimenti N(J_r):\n');
+    disp(A_J2);
     % Sono Possibili Due Moti Senza Spostare La Punta Del Robot
-    dim_A = size(A_J1, 2);
+    dim_A = size(A_J2, 2);
     fprintf('Numero Automovimenti: %d\n', dim_A);
 else
     fprintf('Robot Non Ridondante (n <= m), Non Esistono Automovimenti\n');
@@ -309,14 +302,14 @@ ylabel('Y [m]', 'FontWeight', 'bold');
 
 % Calcolo Posizioni Snodi
 p0 = [0, 0];
-p1 = p0 + [l_vals(1)*cos(q_vals_2(1)), l_vals(1)*sin(q_vals_2(1))];
-p2 = p1 + [l_vals(2)*cos(q_vals_2(1)+q_vals_2(2)), l_vals(2)*sin(q_vals_2(1)+q_vals_2(2))];
-p3 = p2 + [l_vals(3)*cos(sum(q_vals_2)), l_vals(3)*sin(sum(q_vals_2))];
+p1 = p0 + [l1*cos(q_vals_2(1)), l1*sin(q_vals_2(1))];
+p2 = p1 + [l2*cos(q_vals_2(1)+q_vals_2(2)), l2*sin(q_vals_2(1)+q_vals_2(2))];
+p3 = p2 + [l3*cos(sum(q_vals_2)), l3*sin(sum(q_vals_2))];
 pts_arm = [p0; p1; p2; p3];
 
 % Bracci e Marker Gerarchici
 h_arm = plot(pts_arm(:,1), pts_arm(:,2), '-', 'Color', col_link, 'LineWidth', 2.5, ...
-    'DisplayName', 'Manipolatore RRR (Ripiegato)');
+    'DisplayName', 'Manipolatore RRR (Esteso)');
 plot(pts_arm(2:3,1), pts_arm(2:3,2), 'o', 'MarkerSize', 6, ...
     'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'k', 'HandleVisibility', 'off');
 plot(p0(1), p0(2), 's', 'MarkerSize', 8, ...
@@ -324,15 +317,15 @@ plot(p0(1), p0(2), 's', 'MarkerSize', 8, ...
 h_ee = plot(p3(1), p3(2), 'p', 'MarkerSize', 10, ...
     'MarkerFaceColor', [0.95, 0.75, 0.10], 'MarkerEdgeColor', 'k', 'DisplayName', 'End-Effector');
 
-% Direzione Ammessa R(J) (Verde) e Preclusa N(J^T) (Rossa Tratteggiata)
+% Direzione Ammessa R(J_r) (Verde) e Preclusa N(J_r^T) (Rossa Tratteggiata)
 scale_v = 0.55;
-h_rj = quiver(p3(1), p3(2), R_J1(1)*scale_v, R_J1(2)*scale_v, 0, ...
-    'Color', col_green, 'LineWidth', 2.2, 'MaxHeadSize', 0.5, 'DisplayName', 'Direzione Ammessa R(J)');
-h_njt = quiver(p3(1), p3(2), N_J1_T(1)*scale_v, N_J1_T(2)*scale_v, 0, ...
-    'Color', col_red, 'LineStyle', '--', 'LineWidth', 2.2, 'MaxHeadSize', 0.5, 'DisplayName', 'Direzione Preclusa N(J^T)');
+h_rj = quiver(p3(1), p3(2), R_J2(1)*scale_v, R_J2(2)*scale_v, 0, ...
+    'Color', col_green, 'LineWidth', 2.2, 'MaxHeadSize', 0.5, 'DisplayName', 'Direzione Ammessa R(J_r)');
+h_njt = quiver(p3(1), p3(2), N_J2_T(1)*scale_v, N_J2_T(2)*scale_v, 0, ...
+    'Color', col_red, 'LineStyle', '--', 'LineWidth', 2.2, 'MaxHeadSize', 0.5, 'DisplayName', 'Direzione Preclusa N(J_r^T)');
 
-% Etichette Giunti con Raggruppamento Automatico Coincidenze (J_0, J_2 in origine)
-lbls = {'J_0', 'J_1', 'J_2', 'EE'};
+% Etichette Giunti con Raggruppamento Automatico Coincidenze
+lbls = {'J_1 (Base)', 'J_2', 'J_3', 'EE'};
 visited = false(4, 1);
 for idx = 1:4
     if visited(idx), continue; end
@@ -345,29 +338,29 @@ for idx = 1:4
         'BackgroundColor', [1 1 1], 'EdgeColor', [0.8 0.8 0.8], 'Margin', 1);
 end
 
-text(-0.75, 0.72, 'Rango(J) = 1 (Singolare)', ...
+text(0.15, 0.72, 'Rango(J_r) = 1 (Singolare)', ...
     'FontSize', 9, 'FontWeight', 'bold', ...
     'BackgroundColor', [1 1 1], 'EdgeColor', [0.8 0.8 0.8], 'Margin', 1);
 
 title(sprintf('Configurazione 2: q = [%.2f, %.2f, %.2f] rad (SINGOLARE)', q_vals_2), ...
     'FontSize', 11, 'FontWeight', 'bold');
 legend([h_arm, h_ee, h_rj, h_njt], 'Location', 'bestoutside');
-xlim([-1.8, 1.5]); ylim([-1.0, 1.0]);
+xlim([-0.5, 3.8]); ylim([-1.0, 1.0]);
 hold off;
 
 %[text] ### Interpretazione Fisica E Meccanica Della Configurazione Singolare
-%[text] In questa configurazione, il robot è ripiegato su se stesso:
+%[text] In questa configurazione, il robot è completamente esteso lungo l'asse X:
 %[text] 1. Il primo braccio $l_1$ è orientato lungo l'asse X ($q_1 = 0$).
-%[text] 2. Il secondo braccio $l_2$ è ruotato di $q_2 = \\pi$, ripiegandosi completamente all'indietro e allineandosi con l'asse X in direzione negativa.
-%[text] 3. Il terzo braccio $l_3$ è ruotato di $q_3 = 0$ rispetto al secondo, quindi prosegue nella stessa direzione del secondo braccio.
-%[text] 4. La posizione dell'end-effector è $p_E = (-1,0)$. \
+%[text] 2. Il secondo braccio $l_2$ è allineato col primo ($q_2 = 0$), proseguendo lungo l'asse X positivo.
+%[text] 3. Il terzo braccio $l_3$ è anch'esso allineato ($q_3 = 0$), proseguendo lungo l'asse X positivo.
+%[text] 4. La posizione dell'end-effector è $r = (3,0)$. \
 %[text] **Analisi di Mobilità *(Configurazione Singolare)***
-%[text] Il calcolo mostra che il **rango** dello **Jacobiano** è **1**. Poiché $\\rho(J_L)<m$, la configurazione è **singolare**.
-%[text] Lo Spazio delle Velocità Raggiungibili $R(J_L)$ ha dimensione 1. La sua base, data dal vettore $[0,1]^T$, indica che l'unica direzione di moto possibile è lungo l'asse Y. Le Direzioni di Moto Precluse $N(J_L^T)$ hanno dimensione $m - \\rho(J_L) = 2-1 = 1$. La sua base, data dal vettore $[-1,0]^T$, indica che il moto lungo l'asse X è impossibile.
-%[text] La singolarità emerge perché tutti i bracci sono allineati. Qualsiasi piccola rotazione di uno qualsiasi dei tre giunti provoca un movimento della punta del robot, che in questa postura è sempre perpendicolare alla linea dei bracci (cioè, lungo l'asse Y). È fisicamente impossibile generare una velocità istantanea dell'end-effector lungo la direzione dei bracci stessi (l'asse X). Un tentativo di spingere o tirare l'end-effector lungo l'asse X si tradurrebbe solo in forze di compressione/trazione interne alla struttura, senza produrre alcun movimento.
+%[text] Il calcolo mostra che il **rango** dello **Jacobiano** è **1**. Poiché $\\rho(J_r)<m$, la configurazione è **singolare** (singolarità di bordo).
+%[text] Lo Spazio delle Velocità Raggiungibili $R(J_r)$ ha dimensione 1. La sua base, data dal vettore $[0,1]^T$, indica che l'unica direzione di moto possibile è lungo l'asse Y. Le Direzioni di Moto Precluse $N(J_r^T)$ hanno dimensione $m - \\rho(J_r) = 2-1 = 1$. La direzione preclusa è lungo l'asse X (radiale).
+%[text] La singolarità emerge perché tutti i bracci sono allineati lungo l'asse X al limite dello spazio di lavoro. Qualsiasi piccola rotazione di uno qualsiasi dei tre giunti provoca un movimento della punta del robot, che in questa postura è sempre perpendicolare alla linea dei bracci (cioè, lungo l'asse Y). È fisicamente impossibile generare una velocità istantanea dell'end-effector lungo la direzione dei bracci stessi (l'asse X). Un tentativo di spingere o tirare l'end-effector lungo l'asse X si tradurrebbe solo in forze di compressione/trazione interne alla struttura, senza produrre alcun movimento.
 %[text] **Analisi degli Automovimenti *(Effetto Singolarità)***
-%[text] In una configurazione singolare, la dimensione dello spazio degli automovimenti aumenta, cioè $n - \\rho(J_L) = 3-1 = 2$.
-%[text] Esistono due combinazioni linearmente indipendenti di velocità dei giunti che mantengono l'end-effector fermo. La base di $N(J_L)$ calcolata contiene i due vettori che definiscono questi movimenti. La perdita di un grado di libertà nel movimento dell'end-effector (non può muoversi lungo l'asse X) si traduce in un **guadagno di un grado di libertà nel movimento** del robot. Oltre all'automovimento già presente dovuto alla ridondanza, la singolarità ne introduce un secondo. Intuitivamente, i giunti possono muoversi in modi più complessi e coordinati (descritti dai due vettori) per riarrangiare la postura del robot lungo l'asse X senza che la punta, bloccata a $x=-1$, si sposti.
+%[text] In una configurazione singolare, la dimensione dello spazio degli automovimenti aumenta, cioè $n - \\rho(J_r) = 3-1 = 2$.
+%[text] Esistono due combinazioni linearmente indipendenti di velocità dei giunti che mantengono l'end-effector fermo. La base di $N(J_r)$ calcolata contiene i due vettori che definiscono questi movimenti. La perdita di un grado di libertà nel movimento dell'end-effector (non può muoversi lungo l'asse X) si traduce in un **guadagno di un grado di libertà nel movimento** del robot. Oltre all'automovimento già presente dovuto alla ridondanza, la singolarità ne introduce un secondo. Intuitivamente, i giunti possono muoversi in modi coordinati (descritti dai due vettori della base) mantenendo istantaneamente ferma la punta in $(3,0)$.
 %[appendix]{"version":"1.0"}
 %---
 %[metadata:view]

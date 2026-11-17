@@ -71,41 +71,34 @@ disp(H_V);
 %[text] - **Punto Sella: **Hessiana indefinita (autovalori di segno discordi) \
 %%
 %[text] ## Formulazione Teorica Dell'Algoritmo Di Newton
-%[text] L'idea alla base del metodo di Newton, in questo contesto, è di trattare il problema come un sistema di controllo in cui si progetta una velocità dei giunti $\\dot{q}$ per annullare l'errore.
-%[text] L'algoritmo iterativo deve fornire un evoluzione per $\\underline{q}$ tale che $q\\to \\underline{q}$ in modo che
-%[text] ### $\\dot{e} \\bigl(\\underline{q} \\bigr)=\\dot{r} -\\dot{f}_r \\bigl(\\underline{q} \\bigr)=\\dot{r} -J_r \\bigl(\\underline{q} \\bigr)\\;\\dot{q}$
-%[text] Si consideri la matrice $J$ quadrata e non singolare e imponendo
-%[text] ### $\\dot{e} =K\\cdot e$
-%[text] Quando gli autovalori di $K$ sono tutti a parte reale negativa si fa tendere l'errore a ***zero****. *Quindi
-%[text] ### $\\dot{r} -J_r \\bigl(\\underline{q} \\bigr)\\;\\dot{q} =K\\cdot e$
+%[text] L'idea alla base del metodo di Newton, in questo contesto, è di trattare il problema come un sistema di controllo in cui si progetta una velocità dei giunti $\\dot{q}$ per annullare l'errore. Assumendo la posa desiderata costante ($\\dot{r}=0$), l'algoritmo iterativo deve fornire un'evoluzione per $\\mathbf{q}$ tale che $f_r(\\mathbf{q})\\to r$ in modo che:
+%[text] ### $\\dot{e} (\\mathbf{q})=-\\dot{f}_r (\\mathbf{q})=-J(\\mathbf{q})\\;\\dot{q}$
+%[text] Si consideri la matrice $J$ quadrata e non singolare e si imponga una dinamica dell'errore convergente a zero:
+%[text] ### $\\dot{e} =-K\\cdot e$
+%[text] Quando $K$ è una matrice definita positiva ($k>0$), gli autovalori di $-K$ sono tutti a parte reale negativa e si fa tendere l'errore a ***zero***. Quindi:
+%[text] ### $-J(\\mathbf{q})\\;\\dot{q} =-K\\cdot e$
 %[text] Da cui si può ottenere $\\dot{q}$ come:
-%[text] ### $\\dot{q} =J_r^{-1} \\bigl(\\underline{q} \\bigr)\\;\\bigl\\lbrack \\dot{r} -K\\cdot e\\bigr\\rbrack$
-%[text] La legge di controllo per l'algoritmo di Newton viene derivata imponendo una convergenza esponenziale all'errore, $\\dot{e} =K\\cdot e$ dove $K$ è una matrice i cui autovalori hanno parte reale negativa per garantire la stabilità. Partendo dalla relazione cinematica $\\dot{e} =\\dot{r} -J(q)\\cdot \\dot{q}$ si ottiene:
-%[text] ### $\\dot{r} -J(q)\\cdot \\dot{q} =K\\cdot e$
-%[text] Da cui:
-%[text] ### $J(q)\\cdot \\dot{q} =\\dot{r} -K\\cdot e$
-%[text] La risoluzione di questa equazione per $\\dot{q}$ dipende dalla natura della matrice Jacobiana $J(q)$.
-%[text] **Caso Non Quadrato:** Se il numero di giunti $n$ è maggiore dei gradi di libertà del task $m$, la Jacobiana non è quadrata e non è invertibile. Si ricorre alla pseudoinversa $J\\#$ per trovare una soluzione. La formula generale è:
-%[text] ### $\\dot{q} =J\\# (q)\\cdot \\bigl\\lbrack \\dot{r} -K\\cdot e\\bigr\\rbrack +\\bigl(I-J\\# (q)J(q)\\bigr)\\cdot {\\dot{q} }_0$
-%[text] 1. Il primo termine della somma calcola la soluzione per $\\dot{q}$ a norma minima che esegue il compito di raggiungere $r$.
-%[text] 2. Il secondo termine della somma proietta una velocità di giunto arbitraria ${\\dot{q} }_0$ nello spazio nullo della Jacobiana (**movimenti interni**). \
-%[text] Questo permette di gestire compiti secondari senza influenzare il movimento dell'end-effector. Per il manipolatore RR planare, questo caso non si applica poiché $n=m=2$.
-%[text] **Caso Quadrato E Non Singolare:** La Jacobiana è una matrice 2x2. Se non è singolare, la pseudoinversa coincide con l'inversa classica ($J\\# =J^{-1}$) e il termine dello spazio nullo si annulla ($I-J^{-1} (q)J(q)=0$). La formula si semplifica notevolmente in:
-%[text] ### $\\dot{q} =J^{-1} (q)\\cdot \\bigl\\lbrack \\dot{r} -K\\cdot e\\bigr\\rbrack$
-%[text] L' obiettivo è raggiungere una ***posa fissa***, quindi la velocità desiderata dell'end-effector è nulla per tutto il tempo.
+%[text] ### $\\dot{q} =J^{-1} (\\mathbf{q})\\;K\\cdot e$
+%[text] La risoluzione dell'equazione $J(q)\\cdot \\dot{q} =K\\cdot e$ per $\\dot{q}$ dipende dalla natura della matrice Jacobiana $J(q)$.
+%[text] **Caso Non Quadrato:** Se il numero di giunti $n$ è maggiore dei gradi di libertà del task $m$, la Jacobiana non è quadrata e non è invertibile nel senso classico. Si ricorre alla pseudoinversa destra $J^{\\#}$ per selezionare la soluzione a norma minima:
+%[text] ### $\\dot{q} =J^{\\#} (q)\\cdot K\\cdot e$
+%[text] Per il manipolatore RR planare, questo caso non si applica poiché $n=m=2$.
+%[text] **Caso Quadrato E Non Singolare:** La Jacobiana è una matrice 2x2. Se non è singolare, la pseudoinversa coincide con l'inversa classica ($J^{\\#} =J^{-1}$) e la formula è:
+%[text] ### $\\dot{q} =J^{-1} (q)\\cdot K\\cdot e$
+%[text] Poiché l'obiettivo è raggiungere una ***posa fissa***, la velocità desiderata dell'end-effector è nulla ($\\dot{r}=0$) per tutto il tempo.
 syms q1_dot q2_dot real;
 q_dot = [q1_dot; q2_dot];
 
-% Assumendo \dot{r} Costante
+% Assumendo r Costante (r_dot = 0)
 
 % Calcolo Derivata Errore
-% e = \dot{r} - J_{r}\bigl(\underline{q} \bigr) \; \dot{q}
+% e_dot = -J(q) * q_dot
 e_dot = -J_q * q_dot;
 
 fprintf('Relazione Tra Derivata Errore E Velocità Giunti:');
 disp(e_dot);
-% Definizione Matrice Guadagno Esponenziale
-% Scelta Comune: Matrice Diagonale I
+% Definizione Matrice Guadagno Esponenziale (Definita Positiva)
+% Scelta Comune: Matrice Diagonale k*I con k > 0
 syms k real;
 K = k * eye(2);
 
@@ -119,19 +112,20 @@ q_dot_eq = inv(J_q) * (K * e_q);
 q_dot_eq = simplify(q_dot_eq);
 fprintf("Equazione Di q_dot (Velocità Giunti)");
 disp(q_dot_eq);
-%[text] Per implementare questo metodo si deve discretizzare la legge di controllo. Utilizzando il metodo di Eulero con un passo di campionamento $T$, assumento $\\dot{r} =0$ e includendo il meno nella matrice $K$ l'aggiornamento della posizione dei giunti diventa:
-%[text] ### $q_{k+1} =q_k +T\\cdot J^{-1} (q_k )\\cdot \\bigl\\lbrack K\\cdot e(k)\\bigr\\rbrack$
+%[text] Per implementare questo metodo si deve discretizzare la legge di controllo. Utilizzando il metodo di Eulero esplicito con un passo di integrazione $T$, l'aggiornamento della configurazione dei giunti diventa:
+%[text] ### $q_{k+1} =q_k +T\\cdot J^{-1} (q_k )\\cdot K\\bigl\\lbrack r-f_r(q_k)\\bigr\\rbrack$
+%[text] Il metodo classico di **Newton-Raphson** si ottiene come caso particolare ponendo $T=1$ e $K=I$: $q_{k+1} = q_k + J^{-1}(q_k)\\bigl\\lbrack r-f_r(q_k)\\bigr\\rbrack$.
 %%
 %[text] ## Formulazione Teorica Dell'Algoritmo Del Gradiente
 %[text] Un approccio alternativo al metodo di Newton consiste nel riformulare il problema come uno di **ottimizzazione**. L'obiettivo non è più risolvere un sistema di equazioni (trovare gli zeri di $e(q)$), ma minimizzare una funzione di costo, che in questo caso è la norma quadratica dell'errore $V(q)$.
-%[text] Per garantire che $V(q)$ diminuisca, la sua derivata temporale, $\\dot{V}$, deve essere negativa. Applicando la regola della catena e la relazione cinematica $\\dot{e} =-J(q)\\dot{q}$ (assumendo $\\dot{r} =0$), si ottiene:
-%[text] ### $\\dot{V} =e^T \\dot{e} =-e^T J(q)\\;\\dot{q}$
+%[text] Per garantire che $V(q)$ diminuisca, la sua derivata temporale, $\\dot{V}$, deve essere negativa. Applicando la regola della catena rispetto a $q$ con $\\nabla V(q)^T = -e^T J(q)$, si ottiene:
+%[text] ### $\\dot{V}(q) =\\nabla V(q)^T \\dot{q} =-e^T J(q)\\;\\dot{q}$
 %[text] Una scelta intuitiva per $\\dot{q}$ che garantisce $\\dot{V} \\le 0$ è la ***legge del gradiente***, che muove i giunti nella direzione opposta a quella del gradiente della funzione di costo ($\\nabla_q V=-J(q)^T e$):
 %[text] ### $\\dot{q} =\\alpha \\cdot J(q)^T e(q)$
-%[text] dove $\\alpha >0$ è un guadagno scalare positivo (**learning rate**). Sostituendo questa legge in $\\dot{V}$, si verifica la stabilità:
+%[text] dove $\\alpha >0$ è un guadagno scalare positivo. Sostituendo questa legge in $\\dot{V}$, si verifica la stabilità:
 %[text] ### $\\dot{V} =-e^T J(q)\\;(\\alpha J(q)^T e)=-\\alpha (J(q)^T e)^T (J(q)^T e)=-\\alpha \\|J(q)^T e{\\|}^2 \\le 0$
-%[text] L'algoritmo si arresta quando $\\dot{V} =0$, il che accade quando si raggiunge un punto critico $\\nabla_q V=0$.
-% Definizione Learning Rate
+%[text] Discretizzando con passo $T$ e ponendo il *learning rate* $\\alpha' = T\\cdot \\alpha$, l'aggiornamento diventa $q_{k+1} = q_k + \\alpha' J^T(q_k)\\bigl\\lbrack r - f_r(q_k)\\bigr\\rbrack$. L'algoritmo si arresta quando $\\dot{V} =0$, il che accade quando si raggiunge un punto critico $\\nabla_q V=0$.
+% Definizione Guadagno Scalare Positivo
 syms alpha
 
 % Velocità Dei Giunti
@@ -428,11 +422,11 @@ K_num = k_gain * eye(2);
 fr_fun = matlabFunction(fr_q, 'Vars', {l1, l2, q1, q2});
 J_fun = matlabFunction(J_q, 'Vars', {l1, l2, q1, q2});
 
-% Configurazioni Iniziali (q1, q2, q3)
+% Configurazioni Iniziali (q_0^(1), q_0^(2), q_0^(3))
 q_initial_conditions = [
-    pi/4, pi/4;      % Configurazione q1
-    0, pi/2;         % Configurazione q2
-    -pi/3, pi/6      % Configurazione q3
+    pi/4, pi/4;      % Configurazione iniziale q_{0,1}
+    0, pi/2;         % Configurazione iniziale q_{0,2}
+    -pi/3, pi/6      % Configurazione iniziale q_{0,3}
 ];
 
 nrSol = size(q_initial_conditions, 1);
@@ -442,7 +436,7 @@ all_err_newton = cell(nrSol, 1);
 for i = 1:nrSol
     q_k = q_initial_conditions(i, :).'; % Vettore Colonna
 
-    fprintf('Configurazione q_%d = [%.4f, %.4f]\n', i, q_k(1), q_k(2));
+    fprintf('Configurazione iniziale q_{0,%d} = [%.4f, %.4f]\n', i, q_k(1), q_k(2));
 
     % Inizializzazione Array Cronologia
     q_history = zeros(2, 100 + 1);
@@ -469,7 +463,7 @@ for i = 1:nrSol
         end
 
         % f. Aggiornamento Configurazione Giunti (Formula di Newton)
-        % q_{k+1} = q_k + T * J^{-1}(q_k) * K * e(k)
+        % q_{k+1} = q_k + T * J^{-1}(q_k) * K * [r - f_r(q_k)]
         q_k = q_k + T * inv(J_k) * K_num * e_k;
 
         % Salvataggio Nuova Configurazione
@@ -496,15 +490,16 @@ end
 %%
 %[text] ## Simulazione Numerica Iterativa Dell'Algoritmo Del Gradiente
 fprintf('----- Algoritmo Gradiente Iterativo -----');
-% Learning Rate
+% Guadagno scalare continuo e learning rate discreto alpha' = T * alpha
 alpha_val = 0.8;
+alpha_prime = T * alpha_val;
 all_q_grad = cell(nrSol, 1);
 all_err_grad = cell(nrSol, 1);
 
 for i = 1:nrSol
     q_k = q_initial_conditions(i, :).'; % Vettore Colonna
 
-    fprintf('\nConfigurazione q_%d = [%.4f, %.4f]\n', i, q_k(1), q_k(2));
+    fprintf('\nConfigurazione iniziale q_{0,%d} = [%.4f, %.4f]\n', i, q_k(1), q_k(2));
 
     % Inizializzazione Array Cronologia
     q_history_grad = zeros(2, 500 + 1);
@@ -536,9 +531,9 @@ for i = 1:nrSol
         % La trasposta J_k.' esiste sempre, quindi l'algoritmo non fallisce numericamente ma
         % rallenta la convergenza fino a fermarsi se si trova esattamente su un minimo locale.
 
-        % Aggiornamento Configurazione Giunti (Formula del Gradiente)
-        % q_{k+1} = q_k + T * alpha * J(q_k)^T * e(k)
-        q_k = q_k + T * alpha_val * J_k.' * e_k;
+        % Aggiornamento Configurazione Giunti (Formula del Gradiente con alpha' = T * alpha)
+        % q_{k+1} = q_k + alpha' * J(q_k)^T * [r - f_r(q_k)]
+        q_k = q_k + alpha_prime * J_k.' * e_k;
 
         % Salvataggio Nuova Configurazione
         q_history_grad(:, k+1) = q_k;
@@ -621,7 +616,7 @@ for i = 1:nrSol
     q0_i = q_initial_conditions(i, :);
     plot(q0_i(1), q0_i(2), 's', 'MarkerSize', 8, ...
         'MarkerFaceColor', colors_q(i,:), 'MarkerEdgeColor', 'k', 'LineWidth', 1.3);
-    text(q0_i(1) + off_n(i,1), q0_i(2) + off_n(i,2), sprintf('$\\mathbf{q}_%d$', i), ...
+    text(q0_i(1) + off_n(i,1), q0_i(2) + off_n(i,2), sprintf('$\\mathbf{q}_{0,%d}$', i), ...
         'Interpreter', 'latex', 'FontSize', 9, 'FontWeight', 'bold', ...
         'HorizontalAlignment', align_n{i}, 'BackgroundColor', [1, 1, 1], ...
         'EdgeColor', colors_q(i,:), 'Margin', 1.2);
@@ -650,7 +645,7 @@ for i = 1:nrSol
     if i == 2
         plot(1, 1e-8, 's', 'MarkerSize', 7.5, ...
             'MarkerFaceColor', colors_q(i,:), 'MarkerEdgeColor', 'k', 'LineWidth', 1.2);
-        text(1.35, 1.3e-8, '$\mathbf{q}_2$ ($k=1,\;\|e\|=0$)', ...
+        text(1.35, 1.3e-8, '$\mathbf{q}_{0,2}$ ($k=1,\;\|e\|=0$)', ...
             'Interpreter', 'latex', 'FontSize', 8.5, 'Color', colors_q(i,:) * 0.75);
     else
         e_vec = max(all_err_newton{i}, 1e-8);
@@ -680,9 +675,9 @@ h_leg_n(4) = plot(ax_n1, NaN, NaN, 'p', 'MarkerSize', 11, ...
 hold(ax_n1, 'off');
 
 lgd_n = legend(ax_n1, h_leg_n, ...
-    {'$\mathbf{q}_1 = [\pi/4,\, \pi/4]^T$', ...
-     '$\mathbf{q}_2 = [0,\, \pi/2]^T$ (al minimo)', ...
-     '$\mathbf{q}_3 = [-\pi/3,\, \pi/6]^T$', ...
+    {'$\mathbf{q}_{0,1} = [\pi/4,\, \pi/4]^T$', ...
+     '$\mathbf{q}_{0,2} = [0,\, \pi/2]^T$ (al minimo)', ...
+     '$\mathbf{q}_{0,3} = [-\pi/3,\, \pi/6]^T$', ...
      'Minimo Globale ($e = 0$)'}, ...
     'Interpreter', 'latex', 'Orientation', 'horizontal', 'NumColumns', 2, 'FontSize', 8.8);
 lgd_n.Layout.Tile = 'north';
@@ -728,7 +723,7 @@ for i = 1:nrSol
     q0_i = q_initial_conditions(i, :);
     plot(q0_i(1), q0_i(2), 's', 'MarkerSize', 8, ...
         'MarkerFaceColor', colors_q(i,:), 'MarkerEdgeColor', 'k', 'LineWidth', 1.3);
-    text(q0_i(1) + off_g(i,1), q0_i(2) + off_g(i,2), sprintf('$\\mathbf{q}_%d$', i), ...
+    text(q0_i(1) + off_g(i,1), q0_i(2) + off_g(i,2), sprintf('$\\mathbf{q}_{0,%d}$', i), ...
         'Interpreter', 'latex', 'FontSize', 9, 'FontWeight', 'bold', ...
         'HorizontalAlignment', align_g{i}, 'BackgroundColor', [1, 1, 1], ...
         'EdgeColor', colors_q(i,:), 'Margin', 1.2);
@@ -754,7 +749,7 @@ for i = 1:nrSol
     if i == 2
         plot(1, 1e-8, 's', 'MarkerSize', 7.5, ...
             'MarkerFaceColor', colors_q(i,:), 'MarkerEdgeColor', 'k', 'LineWidth', 1.2);
-        text(1.35, 1.3e-8, '$\mathbf{q}_2$ ($k=1,\;\|e\|=0$)', ...
+        text(1.35, 1.3e-8, '$\mathbf{q}_{0,2}$ ($k=1,\;\|e\|=0$)', ...
             'Interpreter', 'latex', 'FontSize', 8.5, 'Color', colors_q(i,:) * 0.75);
     else
         e_vec = max(all_err_grad{i}, 1e-8);
@@ -782,9 +777,9 @@ h_leg_g(4) = plot(ax_g1, NaN, NaN, 'p', 'MarkerSize', 11, ...
 hold(ax_g1, 'off');
 
 lgd_g = legend(ax_g1, h_leg_g, ...
-    {'$\mathbf{q}_1 = [\pi/4,\, \pi/4]^T$', ...
-     '$\mathbf{q}_2 = [0,\, \pi/2]^T$ (al minimo)', ...
-     '$\mathbf{q}_3 = [-\pi/3,\, \pi/6]^T$', ...
+    {'$\mathbf{q}_{0,1} = [\pi/4,\, \pi/4]^T$', ...
+     '$\mathbf{q}_{0,2} = [0,\, \pi/2]^T$ (al minimo)', ...
+     '$\mathbf{q}_{0,3} = [-\pi/3,\, \pi/6]^T$', ...
      'Minimo Globale ($e = 0$)'}, ...
     'Interpreter', 'latex', 'Orientation', 'horizontal', 'NumColumns', 2, 'FontSize', 8.8);
 lgd_g.Layout.Tile = 'north';

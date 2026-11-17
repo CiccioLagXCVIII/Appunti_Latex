@@ -106,7 +106,7 @@
 
 \begin{document}
 
-\matlabtitle{\textbf{Angoli Di Eulero}}
+\matlabtitle{Angoli Di Eulero}
 
 \begin{par}
 \begin{flushleft}
@@ -115,7 +115,7 @@ Una rappresentazione minima dell'orientamento di un corpo rigido nello spazio tr
 \end{par}
 
 \begin{par}
-$$\mathbf{\alpha }={\left(\begin{array}{ccc}
+$$\boldsymbol{\alpha}={\left(\begin{array}{ccc}
 \phi  & \theta  & \psi
 \end{array}\right)}^T$$
 \end{par}
@@ -136,7 +136,7 @@ Tra queste, tre tipi di terne sono particolarmente rilevanti:
 \setlength{\itemsep}{-1ex}
    \item{\begin{flushleft} \textbf{Angoli ZXZ:} Prevedono delle rotazioni successive intorno agli assi: $Z$, $X^{\prime }$ (asse $X$ ruotato) e $Z^{\prime \prime }$ (asse $Z$ nuovamente ruotato) \end{flushleft}}
    \item{\begin{flushleft} \textbf{Angoli ZXY:} Prevedono delle rotazioni successive intorno agli assi: $Z$, $X^{\prime }$ (asse $X$ ruotato) e $Y^{\prime \prime }$ (asse $Y$ nuovamente ruotato) \end{flushleft}}
-   \item{\begin{flushleft} \textbf{Angoli RPY:} Prevedono delle rotazioni intorno agli assi $Z$, $Y^{\prime }$ e $X^{\prime \prime }$ \end{flushleft}}
+   \item{\begin{flushleft} \textbf{Angoli RPY:} Prevedono delle rotazioni attorno agli assi fissi $X$, $Y$ e $Z$ \end{flushleft}}
 \end{itemize}
 
 \begin{par}
@@ -157,7 +157,7 @@ y = [0; 1; 0];
 z = [0; 0; 1];
 \end{matlabcode}
 
-\matlabheading{\textbf{Matrice Di Rotazione ZXZ}}
+\matlabheading{Matrice Di Rotazione ZXZ}
 
 \begin{par}
 \begin{flushleft}
@@ -231,7 +231,7 @@ Matrice Di Rotazione Numerica R_ZXZ:
     0.4330    0.7500    0.5000
 \end{matlaboutput}
 
-\matlabheadingtwo{\textbf{Analisi Singolarità Della Rotazione ZXZ}}
+\matlabheadingtwo{Analisi Singolarità Della Rotazione ZXZ}
 
 \begin{par}
 \begin{flushleft}
@@ -274,7 +274,7 @@ Come si può vedere dalla matrice, $\phi$ e $\psi$ compaiono sempre come $\phi +
 \end{par}
 
 \newpage
-\matlabheading{\textbf{Matrice Di Rotazione ZXY}}
+\matlabheading{Matrice Di Rotazione ZXY}
 
 \begin{par}
 \begin{flushleft}
@@ -344,7 +344,7 @@ Matrice Di Rotazione Numerica R_ZXY:
    -0.6124    0.7071    0.3536
 \end{matlaboutput}
 
-\matlabheadingtwo{\textbf{Analisi Singolarità Della Rotazione ZXY}}
+\matlabheadingtwo{Analisi Singolarità Della Rotazione ZXY}
 
 \begin{par}
 \begin{flushleft}
@@ -384,19 +384,19 @@ Anche in questo caso, la matrice semplificata mostra che gli angoli $\phi$ e $\p
 \end{flushleft}
 \end{par}
 
-\matlabheading{\textbf{Matrice Di Rotazione Roll-Pitch-Yaw (ZYX)}}
+\matlabheading{Matrice Di Rotazione Roll-Pitch-Yaw (Assi Fissi XYZ)}
 
 \begin{par}
 \begin{flushleft}
-Gli angoli di Roll-Pitch-Yaw sono comunemente usati in aeronautica e robotica. Una delle convenzioni più diffuse è la ZYX'', che consiste in:
+Gli angoli di Roll-Pitch-Yaw sono comunemente usati in aeronautica e robotica. Nella convenzione rispetto a una terna fissa ($X, Y, Z$), la sequenza consiste in:
 \end{flushleft}
 \end{par}
 
 \begin{itemize}
 \setlength{\itemsep}{-1ex}
-   \item{\begin{flushleft} \textbf{Yaw} (Imbardata): Rotazione di un angolo $\phi$ attorno all'asse $Z$. \end{flushleft}}
-   \item{\begin{flushleft} \textbf{Pitch} (Beccheggio): Rotazione di un angolo $\theta$ attorno al nuovo asse $Y^{\prime }$ \end{flushleft}}
-   \item{\begin{flushleft} \textbf{Roll} (Rollio): Rotazione di un angolo $\psi$ attorno al nuovo asse $X^{\prime \prime }$ \end{flushleft}}
+   \item{\begin{flushleft} \textbf{Roll} (Rollio): Rotazione di un angolo $\psi$ attorno all'asse fisso $X$. \end{flushleft}}
+   \item{\begin{flushleft} \textbf{Pitch} (Beccheggio): Rotazione di un angolo $\theta$ attorno all'asse fisso $Y$. \end{flushleft}}
+   \item{\begin{flushleft} \textbf{Yaw} (Imbardata): Rotazione di un angolo $\phi$ attorno all'asse fisso $Z$ (che corrisponde al prodotto in ordine inverso $\mathbf{R}_Z(\phi)\mathbf{R}_Y(\theta)\mathbf{R}_X(\psi)$). \end{flushleft}}
 \end{itemize}
 
 \begin{par}
@@ -457,7 +457,7 @@ Matrice Di Rotazione Numerica R_RPY:
 
 \begin{par}
 \begin{flushleft}
-La singolarità per questa convenzione RPY si verifica quando l'angolo di Pitch $\theta =\pm \frac{\pi }{2}$. In questa configurazione, l'asse della prima rotazione (Yaw, asse Z) si allinea con l'asse della terza rotazione (Roll, asse X''), causando il "gimbal lock".
+La singolarità per questa convenzione RPY si verifica quando l'angolo di Pitch $\theta =\pm \frac{\pi }{2}$. In questa configurazione, l'asse della prima rotazione (Roll, asse X) si allinea con l'asse della terza rotazione (Yaw, asse Z), causando il "gimbal lock".
 \end{flushleft}
 \end{par}
 
@@ -494,7 +494,7 @@ La matrice risultante mostra che gli angoli $\phi$ (Yaw) e  $\psi$ (Roll) appaio
 \end{flushleft}
 \end{par}
 
-\matlabheadingtwo{\textbf{Visualizzazione Rotazione ZXZ}}
+\matlabheadingtwo{Visualizzazione Rotazione ZXZ}
 
 \begin{matlabcode}
 phiNum = pi/4;
@@ -551,7 +551,7 @@ hold off;
     \centering
     \includegraphics[width=1\linewidth]{E2_Angoli_Eulero_fig1.png}
 \end{figure}
-\matlabheadingtwo{\textbf{Visualizzazione Rotazione ZXY}}
+\matlabheadingtwo{Visualizzazione Rotazione ZXY}
 
 \begin{matlabcode}
 phiNum = pi/6;
@@ -600,7 +600,7 @@ hold off;
 \includegraphics[width=1\linewidth]{E2_Angoli_Eulero_fig2.png}
 \end{center}
 
-\matlabheadingtwo{\textbf{Visualizzazione Rotazione RPY}}
+\matlabheadingtwo{Visualizzazione Rotazione RPY}
 
 \begin{matlabcode}
 % Creazione Figura
@@ -641,7 +641,7 @@ text(X_Ruotato(1)*1.1, X_Ruotato(2)*1.1, X_Ruotato(3)*1.1, 'X''', 'FontSize', 11
 text(Y_Ruotato(1)*1.1, Y_Ruotato(2)*1.1, Y_Ruotato(3)*1.1, 'Y''', 'FontSize', 11, 'Color', col_rot_Y, 'FontWeight', 'bold');
 text(Z_Ruotato(1)*1.1, Z_Ruotato(2)*1.1, Z_Ruotato(3)*1.1, 'Z''', 'FontSize', 11, 'Color', col_rot_Z, 'FontWeight', 'bold');
 
-title({'Rotazione RPY (ZY''X'' - Yaw, Pitch, Roll)',
+title({'Rotazione RPY (Assi Fissi XYZ - Roll, Pitch, Yaw)',
     sprintf('\\phi = %.1f°, \\theta = %.1f°, \\psi = %.1f°', rad2deg(phiNum), rad2deg(thetaNum), rad2deg(psiNum))},
     'FontSize', 11, 'FontWeight', 'bold');
 legend([hX_0, hY_0, hZ_0, hX_r, hY_r, hZ_r],
