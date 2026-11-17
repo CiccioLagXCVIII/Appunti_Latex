@@ -105,11 +105,11 @@
 \setlist{itemsep=3.5pt plus 1pt minus 1pt, topsep=4pt plus 1pt minus 1pt, partopsep=0pt, parsep=1pt}
 
 \begin{document}
-\matlabtitle{Cinematica Inversa Manipolatore RRR}
+\matlabtitle{Cinematica Inversa E Spazi Operativi Manipolatore Planare RRR}
 
 \begin{par}
 \begin{center}
-\includegraphics[width=0.85\linewidth]{image_0}
+\includegraphics[width=0.45\linewidth]{image_0}
 \end{center}
 \end{par}
 
@@ -138,10 +138,9 @@ Poiché il numero di gradi di libertà ($n=3$) è uguale alla dimensione dello s
 \end{flushleft}
 \end{par}
 
-\newpage
 \begin{par}
 \begin{flushleft}
-\matlabheading{\textbf{Cinematica Diretta}}
+\matlabheading{\textbf{Cinematica Diretta Manipolatore Planare RRR}}
 \end{flushleft}
 \end{par}
 
@@ -170,7 +169,7 @@ syms P_wx P_wy real;
 La cinematica diretta calcola la posizione $(x,y)$ e l'orientamento $\phi$ dell'end-effector a partire dagli angoli di giunto $(q_1 ,q_2 ,q_3 )$ noti.
 \end{flushleft}
 \end{par}
-
+\newpage
 \begin{matlabcode}
 % Posizione Primo Giunto (Origine)
 x0 = 0;
@@ -213,8 +212,8 @@ fprintf('Phi = %s\n', phi_calc);
 \begin{matlaboutput}
 Phi = q1 + q2 + q3_calc
 \end{matlaboutput}
-\newpage
-\matlabheading{Cinematica Inversa}
+
+\matlabheading{Cinematica Inversa Manipolatore Planare RRR}
 
 \begin{par}
 \begin{flushleft}
@@ -287,7 +286,7 @@ l_3 \\
 \end{array}\right)$ rappresenta il vettore del link $3$ descritto nel suo sistema di riferimento locale, in cui l'asse $x$ è allineato con la direzione del link stesso
 \end{flushleft}
 \end{par}
-
+\newpage
 \begin{par}
 \begin{flushleft}
 La matrice $\mathbf{R}(\phi )$ è le matrice di rotazione associata all'orientamento finale $\phi$. Isolando la posizione del polso $P_w$, si ottiene:
@@ -361,7 +360,7 @@ Matrice R:
 \sin \left(q_1 +q_2 +q_{3,\textrm{calc}} \right) & \cos \left(q_1 +q_2 +q_{3,\textrm{calc}} \right)
 \end{array}\right)$
 \end{matlabsymbolicoutput}
-\newpage
+
 \begin{matlabcode}
 % Vettore Link 3
 l3_vec = [l3; 0];
@@ -423,8 +422,8 @@ Se questa \textbf{condizione non} è \textbf{soddisfatta}, la posa desiderata è
 Si devono, quindi trovare $q_1$ e $q_2$ tali che il manipolatore RR posizioni il suo estremo in $P_w$
 \end{flushleft}
 \end{par}
-
-\matlabheadingtwo{Calcolo Valore \texorpdfstring{$q_2$}{q2}}
+\newpage
+\matlabheadingtwo{Calcolo Variabile Di Giunto \texorpdfstring{$q_2$}{q2}}
 
 \begin{par}
 \begin{flushleft}
@@ -456,7 +455,7 @@ P_{wx}^2 + P_{wy}^2 =
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle {l_1 }^2 +2\,\cos \left(q_2 \right)\,l_1 \,l_2 +{l_2 }^2 $
 \end{matlabsymbolicoutput}
-\newpage
+
 \begin{matlabcode}
 
 eq = P_wx^2 + P_wy^2 == quadSum;
@@ -534,8 +533,7 @@ Valore q2 Per Valore Seno Positivo:
 \hskip1em $\displaystyle \textrm{atan2}\left(\sqrt{1-\frac{{{\left({P_{\textrm{wx}} }^2 +{P_{\textrm{wy}} }^2 -{l_1 }^2 -{l_2 }^2 \right)}}^2 }{4\,{l_1 }^2 \,{l_2 }^2 }},\frac{{P_{\textrm{wx}} }^2 +{P_{\textrm{wy}} }^2 -{l_1 }^2 -{l_2 }^2 }{2\,l_1 \,l_2 }\right)$
 \end{matlabsymbolicoutput}
 
-\newpage
-\matlabheadingtwo{Calcolo Valore \texorpdfstring{$q_1$}{q1}}
+\matlabheadingtwo{Calcolo Variabile Di Giunto \texorpdfstring{$q_1$}{q1}}
 
 \begin{par}
 \begin{flushleft}
@@ -804,7 +802,7 @@ Valore q1 Calcolato:
 \hskip1em $\displaystyle \textrm{atan2}\left(\frac{P_{\textrm{wy}} \,l_1 -P_{\textrm{wx}} \,l_2 \,\sin \left(q_2 \right)+P_{\textrm{wy}} \,l_2 \,\cos \left(q_2 \right)}{{P_{\textrm{wx}} }^2 +{P_{\textrm{wy}} }^2 },\frac{P_{\textrm{wx}} \,l_1 +P_{\textrm{wy}} \,l_2 \,\sin \left(q_2 \right)+P_{\textrm{wx}} \,l_2 \,\cos \left(q_2 \right)}{{P_{\textrm{wx}} }^2 +{P_{\textrm{wy}} }^2 }\right)$
 \end{matlabsymbolicoutput}
 
-\matlabheadingtwo{Calcolo Valore \texorpdfstring{$q_3$}{q3}}
+\matlabheadingtwo{Calcolo Variabile Di Giunto \texorpdfstring{$q_3$}{q3}}
 
 \begin{par}
 \begin{flushleft}
@@ -857,7 +855,7 @@ Se la posa desiderata $(P_x ,P_y ,\phi )$ è all'interno dello spazio di lavoro 
 \end{itemize}
 
 \newpage
-\matlabheading{Spazio Operativo}
+\matlabheading{Analisi Dello Spazio Operativo Primario E Secondario}
 
 \begin{par}
 \begin{flushleft}
@@ -877,7 +875,7 @@ Il \textbf{Workspace Secondario} (o \textit{\textbf{Spazio Operativo Secondario}
 \end{flushleft}
 \end{par}
 
-\matlabheadingtwo{Caso 1: Manipolatore con "Buco" Centrale}
+\matlabheadingtwo{Spazio Operativo Con Regione Centrale Non Raggiungibile}
 
 \begin{par}
 \begin{flushleft}

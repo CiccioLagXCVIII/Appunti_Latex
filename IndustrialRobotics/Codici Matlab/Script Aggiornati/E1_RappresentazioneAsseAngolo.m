@@ -1,9 +1,9 @@
-%[text] # Rappresentazione Asse-Angolo
+%[text] # Rappresentazione Asse-Angolo Dell'Orientamento
 %[text] La rappresentazione Asse-Angolo è un metodo per descrivere l'orientamento di un corpo rigido nello spazio. Utilizza quattro parametri:
 %[text] - Un **versore** $\\mathbf{r}=\[r\_X ,r\_Y ,r\_Z \]$ che definisce l'asse attorno al quale avviene la rotazione.
 %[text] - Un **angolo** $\\theta$, che indica l'ampiezza della rotazione attorno a tale asse. \
 %%
-%[text] ## Problema Diretto
+%[text] ## Problema Diretto: Da Asse-Angolo A Matrice Di Rotazione
 %[text] Il problema diretto consiste nel determinare la matrice di rotazione $R\\bigl(\\theta ,\\mathbf{r}\\bigr)$ partendo da un asse $\\mathbf{r}$ e un angolo $\\theta$. La matrice di rotazione si ottiene tramite la *formula di Rodrigues*, derivata dalla composizione di rotazioni elementari:
 %[text]{"align":"center"} $R(\\theta ,r)=rr^T +(I-rr^T )\\cos (\\theta )+S(r)\\sin (\\theta )$
 %[text] Dove:
@@ -21,7 +21,7 @@ r = [rx; ry; rz];
 
 disp("Matrice Di Rotazione R(theta, r):"); %[output:011634d1]
 disp(R); %[output:9d0e0575]
-%[text] ### Calcoli Numerici Problema Diretto
+%[text] ### Calcolo Numerico Del Problema Diretto
 %[text] Si calcola la matrice di rotazione numerica e successivamente si verificano le proprietà fondamentali.
 % Definizione del vettore r e dell'angolo theta numerici
 rNum = [1; 2; 3];
@@ -83,7 +83,7 @@ traceSim = 1 + 2*cos(thetaNum);
 fprintf('Traccia Calcolata Di R: %f\n', traceR); %[output:6ab6139f]
 fprintf('Valore Atteso (1 + 2*cos(theta)): %f\n', traceSim); %[output:761a9453]
 %%
-%[text] ## Problema Inverso
+%[text] ## Problema Inverso: Da Matrice Di Rotazione Ad Asse-Angolo
 %[text] Il problema inverso consiste nel determinare l'asse \*\*r \*\*e l'angolo $\\theta$ a partire da una matrice di rotazione \*\*R \*\*nota.
 %[text] Dalla relazione della traccia, si può isolare l'angolo $\\theta$:
 %[text]{"align":"center"} $\\textrm{trace}(R)=1+2\\cos (\\theta )\~\~\\longrightarrow \~\~\\theta =\\arccos \\left(\\frac{\\textrm{trace}(R)-1}{2}\\right)$
@@ -121,7 +121,7 @@ disp(rCalc); %[output:0f209d1f]
 fprintf('Errore Su Theta: %e\n', abs(thetaNum - thetaCalc)); %[output:2066c78b]
 fprintf('Errore Su r: %e\n', norm(rNum - rCalc)); %[output:28dca900]
 %%
-%[text] ## Visualizzazione Grafica
+%[text] ## Visualizzazione Grafica Della Rotazione Asse-Angolo
 % Assi Sistema Riferimento
 AsseX = [1, 0, 0];
 AsseY = [0, 1, 0];

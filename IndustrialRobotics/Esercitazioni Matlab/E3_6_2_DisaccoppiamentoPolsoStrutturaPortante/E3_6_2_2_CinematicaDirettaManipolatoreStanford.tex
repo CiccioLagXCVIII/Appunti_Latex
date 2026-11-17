@@ -3,7 +3,7 @@
 % AA CONFIGURAZIONE DI BASE ED ENGINE
 % ==============================================================================
 % BB CLASSE DEL DOCUMENTO
-\documentclass[11pt, a4paper, landscape]{article}
+\documentclass[11pt, a4paper]{article}
 
 % ==============================================================================
 % AA LINGUA, FONT E TIPOGRAFIA
@@ -22,8 +22,8 @@
 % ==============================================================================
 % AA LAYOUT DI PAGINA E SPAZIATURA PARAGRAFI
 % ==============================================================================
-% BB GEOMETRIA DEI MARGINI
-\usepackage[left=1.4cm, right=1.4cm, top=2.2cm, bottom=1.4cm]{geometry}
+% BB GEOMETRIA DEI MARGINI (A4 verticale con margine sinistro 2.4cm per rilegatura)
+\usepackage[left=2.4cm, right=1.6cm, top=2cm, bottom=2cm]{geometry}
 
 % BB CONTROLLO SPAZIATURA TRA PARAGRAFI
 \usepackage[skip=3pt plus 1pt minus 1pt]{parskip}
@@ -34,13 +34,13 @@
 % BB CARICAMENTO CORE XCOLOR IN SPAZIO GRAY PURO
 \usepackage[gray]{xcolor}
 % BB MACRO PER I SIGMA MONOCROMATICI ED ESTENSIONE RIGHE
-\newcommand{\sigone}{\boldsymbol{\sigma_1}}
-\newcommand{\sigtwo}{\boldsymbol{\sigma_2}}
-\newcommand{\sigthree}{\boldsymbol{\sigma_3}}
-\newcommand{\sigfour}{\boldsymbol{\sigma_4}}
-\newcommand{\sigfive}{\boldsymbol{\sigma_5}}
-\newcommand{\sigsix}{\boldsymbol{\sigma_6}}
-\newcommand{\sigseven}{\boldsymbol{\sigma_7}}
+\newcommand{\sigone}{\symbf{\sigma}_1}
+\newcommand{\sigtwo}{\symbf{\sigma}_2}
+\newcommand{\sigthree}{\symbf{\sigma}_3}
+\newcommand{\sigfour}{\symbf{\sigma}_4}
+\newcommand{\sigfive}{\symbf{\sigma}_5}
+\newcommand{\sigsix}{\symbf{\sigma}_6}
+\newcommand{\sigseven}{\symbf{\sigma}_7}
 \renewcommand{\arraystretch}{1.3}
 
 % ==============================================================================
@@ -129,52 +129,63 @@
 \usepackage{enumitem}
 \setlist{itemsep=3.5pt plus 1pt minus 1pt, topsep=4pt plus 1pt minus 1pt, partopsep=0pt, parsep=1pt}
 
+\newsavebox{\rotpagebox}
+
 \begin{document}
-\subsection*{CINEMATICA DIRETTA MANIPOLATORE STANFORD}
+\thispagestyle{empty}
+\begin{lrbox}{\rotpagebox}
+\begin{minipage}[t][\textwidth][t]{\textheight}
+\vspace{0pt}
+\subsection*{Cinematica Diretta Completa Del Manipolatore Di Stanford}
 
 \begin{matlabcode}
 T06 = simplify(T03 * T36);
 
 fprintf('Matrice Di Trasformazione Omogenea ^{0}T_{6}:\n');
-
 disp(T06);
 \end{matlabcode}
 \begin{matlaboutput}
 Matrice Di Trasformazione Omogenea ^{0}T_{6}:
 \end{matlaboutput}
 
+\vspace{10pt}
 \begin{matlabsymbolicoutput}
+\renewcommand{\arraystretch}{1.85}
+\setlength{\arraycolsep}{7pt}
 \[
+{}^{0}\mathbf{T}_{6}(\mathbf{q}) =
 \begin{pmatrix}
-    -s(q_1)\,\sigfour - c(q_1)c(q_2)\,\sigone - c(q_1)c(q_6)s(q_2)s(q_5) &
-    c(q_1)s(q_2)s(q_5)s(q_6) - c(q_1)c(q_2)\,\sigtwo - s(q_1)\,\sigthree &
+    -s(q_1)\,\sigfour - c(q_1)\,c(q_2)\,\sigone - c(q_1)\,s(q_2)\,s(q_5)\,c(q_6) &
+    c(q_1)\,s(q_2)\,s(q_5)\,s(q_6) - c(q_1)\,c(q_2)\,\sigtwo - s(q_1)\,\sigthree &
     \sigfive &
-    q_3\,c(q_1)s(q_2) - d_2\,s(q_1) + d_6\,\sigfive \\[8pt]
+    q_3\,c(q_1)\,s(q_2) - d_2\,s(q_1) + d_6\,\sigfive \\[6pt]
 
-    c(q_1)\,\sigfour - c(q_2)s(q_1)\,\sigone - c(q_6)s(q_1)s(q_2)s(q_5) &
-    c(q_1)\,\sigthree - c(q_2)s(q_1)\,\sigtwo + s(q_1)s(q_2)s(q_5)s(q_6) &
+    c(q_1)\,\sigfour - s(q_1)\,c(q_2)\,\sigone - s(q_1)\,s(q_2)\,s(q_5)\,c(q_6) &
+    c(q_1)\,\sigthree - s(q_1)\,c(q_2)\,\sigtwo + s(q_1)\,s(q_2)\,s(q_5)\,s(q_6) &
     \sigsix &
-    d_2\,c(q_1) + q_3\,s(q_1)s(q_2) + d_6\,\sigsix \\[8pt]
+    d_2\,c(q_1) + q_3\,s(q_1)\,s(q_2) + d_6\,\sigsix \\[6pt]
 
-    s(q_2)\,\sigone - c(q_2)c(q_6)s(q_5) &
-    s(q_2)\,\sigtwo + c(q_2)s(q_5)s(q_6) &
+    s(q_2)\,\sigone - c(q_2)\,s(q_5)\,c(q_6) &
+    s(q_2)\,\sigtwo + c(q_2)\,s(q_5)\,s(q_6) &
     \sigseven &
-    q_3\,c(q_2) + d_6\,\sigseven \\[8pt]
+    q_3\,c(q_2) + d_6\,\sigseven \\[6pt]
 
     0 & 0 & 0 & 1
 \end{pmatrix}
 \]
 \end{matlabsymbolicoutput}
 
-\vspace{2pt}
-\textbf{Dove:}
+\vspace{12pt}
+\noindent\textbf{Dove le espressioni ausiliarie $\symbf{\sigma}_i$ e le abbreviazioni trigonometriche sono definite come:}
 \[
 \begin{aligned}
-\sigone   &= s(q_4)s(q_6) - c(q_4)c(q_5)c(q_6) &\hspace{3cm} \sigfive   &= c(q_1)c(q_5)s(q_2) - s(q_1)s(q_4)s(q_5) + c(q_1)c(q_2)c(q_4)s(q_5) \\[4pt]
-\sigtwo   &= c(q_6)s(q_4) + c(q_4)c(q_5)s(q_6) &\hspace{3cm} \sigsix    &= c(q_5)s(q_1)s(q_2) + c(q_1)s(q_4)s(q_5) + c(q_2)c(q_4)s(q_1)s(q_5) \\[4pt]
-\sigthree &= c(q_4)c(q_6) - c(q_5)s(q_4)s(q_6) &\hspace{3cm} \sigseven  &= c(q_2)c(q_5) - c(q_4)s(q_2)s(q_5) \\[4pt]
-\sigfour  &= c(q_4)s(q_6) + c(q_5)c(q_6)s(q_4)
+\sigone   &= s(q_4)\,s(q_6) - c(q_4)\,c(q_5)\,c(q_6) &\hspace{2.2cm} \sigfive  &= c(q_1)\,s(q_2)\,c(q_5) - s(q_1)\,s(q_4)\,s(q_5) + c(q_1)\,c(q_2)\,c(q_4)\,s(q_5) \\[6pt]
+\sigtwo   &= s(q_4)\,c(q_6) + c(q_4)\,c(q_5)\,s(q_6) &\hspace{2.2cm} \sigsix   &= s(q_1)\,s(q_2)\,c(q_5) + c(q_1)\,s(q_4)\,s(q_5) + s(q_1)\,c(q_2)\,c(q_4)\,s(q_5) \\[6pt]
+\sigthree &= c(q_4)\,c(q_6) - s(q_4)\,c(q_5)\,s(q_6) &\hspace{2.2cm} \sigseven &= c(q_2)\,c(q_5) - s(q_2)\,c(q_4)\,s(q_5) \\[6pt]
+\sigfour  &= c(q_4)\,s(q_6) + s(q_4)\,c(q_5)\,c(q_6) &\hspace{2.2cm} \mathrlap{c(q_i) \triangleq \cos(q_i), \quad s(q_i) \triangleq \sin(q_i)}\phantom{\sigseven} &
 \end{aligned}
 \]
-
+\end{minipage}
+\end{lrbox}
+\noindent\rotatebox{90}{\usebox{\rotpagebox}}
 \end{document}

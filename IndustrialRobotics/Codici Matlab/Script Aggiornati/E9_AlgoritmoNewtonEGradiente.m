@@ -1,4 +1,4 @@
-%[text] # Implementazione Algoritmo Di Newton E Del Gradiente
+%[text] # Inversione Cinematica Con Algoritmo Di Newton E Del Gradiente
 %[text] La prima fase consiste nella definizione del modello cinematico del manipolatore. Si utilizzano variabili simboliche per rappresentare le lunghezze dei bracci e le variabili di giunto, al fine di ottenere espressioni generali e analitiche.
 clc; clear; close all;
 % Variabili Di Giunto
@@ -70,7 +70,7 @@ disp(H_V);
 %[text] - **Massimo Locale: **Hessiana definita negativa (autovalori tutti negativi)
 %[text] - **Punto Sella: **Hessiana indefinita (autovalori di segno discordi) \
 %%
-%[text] ## Algoritmo Di Newton
+%[text] ## Formulazione Teorica Dell'Algoritmo Di Newton
 %[text] L'idea alla base del metodo di Newton, in questo contesto, è di trattare il problema come un sistema di controllo in cui si progetta una velocità dei giunti $\\dot{q}$ per annullare l'errore.
 %[text] L'algoritmo iterativo deve fornire un evoluzione per $\\underline{q}$ tale che $q\\to \\underline{q}$ in modo che
 %[text] ### $\\dot{e} \\bigl(\\underline{q} \\bigr)=\\dot{r} -\\dot{f}_r \\bigl(\\underline{q} \\bigr)=\\dot{r} -J_r \\bigl(\\underline{q} \\bigr)\\;\\dot{q}$
@@ -121,7 +121,8 @@ fprintf("Equazione Di q_dot (Velocità Giunti)");
 disp(q_dot_eq);
 %[text] Per implementare questo metodo si deve discretizzare la legge di controllo. Utilizzando il metodo di Eulero con un passo di campionamento $T$, assumento $\\dot{r} =0$ e includendo il meno nella matrice $K$ l'aggiornamento della posizione dei giunti diventa:
 %[text] ### $q_{k+1} =q_k +T\\cdot J^{-1} (q_k )\\cdot \\bigl\\lbrack K\\cdot e(k)\\bigr\\rbrack$
-%[text] ### Algoritmo Del Gradiente
+%%
+%[text] ## Formulazione Teorica Dell'Algoritmo Del Gradiente
 %[text] Un approccio alternativo al metodo di Newton consiste nel riformulare il problema come uno di **ottimizzazione**. L'obiettivo non è più risolvere un sistema di equazioni (trovare gli zeri di $e(q)$), ma minimizzare una funzione di costo, che in questo caso è la norma quadratica dell'errore $V(q)$.
 %[text] Per garantire che $V(q)$ diminuisca, la sua derivata temporale, $\\dot{V}$, deve essere negativa. Applicando la regola della catena e la relazione cinematica $\\dot{e} =-J(q)\\dot{q}$ (assumendo $\\dot{r} =0$), si ottiene:
 %[text] ### $\\dot{V} =e^T \\dot{e} =-e^T J(q)\\;\\dot{q}$
@@ -145,7 +146,7 @@ disp(q_dot_grad);
 %[text] - **Massimo Locale: **Hessiana definita negativa (autovalori tutti negativi)
 %[text] - **Punto Sella: **Hessiana indefinita (autovalori di segno discordi) \
 %%
-%[text] ## Analisi Massimi E Punti Sella Funzione “Norma Errore Al Quadrato"
+%[text] ## Analisi Dei Punti Stazionari Della Funzione Di Costo Quadratica
 %[text] Le espressioni simboliche derivate in precedenza vengono rese numeriche assegnando valori numerici alle lunghezze dei bracci (`l1`, `l2`) e alla posa desiderata dell'end-effector (`r`). Questo permette di calcolare le posizioni numeriche dei punti critici, e classificare esplicitamente i punti critici calcolando gli autovalori della matrice Hessiana.
 % Definizione Parametri Numerici Manipolatore
 l_val = [1, 0.8];
@@ -344,7 +345,8 @@ for i = 1:size(puntiCritici, 1)
     fprintf('\t Posizione Giunto 2 (EE)   (x2, y2) = (%.4f, %.4f)\n', x2Crit, y2Crit);
 
 end
-%% Visualizzazione Funzione di Costo V(q) e Punti Critici
+%%
+%[text] ## Mappa Di Livello Della Funzione Di Costo E Punti Critici
 col_red   = [0.85, 0.15, 0.15];
 col_green = [0.15, 0.65, 0.20];
 col_blue  = [0.15, 0.35, 0.85];
@@ -408,7 +410,7 @@ legend([h_min_g, h_max_l, h_sella], ...
     'Location', 'northoutside', 'Orientation', 'horizontal');
 hold off;
 %%
-%[text] ## Algoritmo Newton Iterativo
+%[text] ## Simulazione Numerica Iterativa Dell'Algoritmo Di Newton
 fprintf('----- Algoritmo Di Newton Iterativo -----');
 % Valori N Bracci
 l1_val = 1.0;
@@ -492,7 +494,7 @@ for i = 1:nrSol
     fprintf('\t Errore finale (norma): %.2e\n', norm(r_val - pos_finale));
 end
 %%
-%[text] ## Algoritmo Gradiente Iterativo
+%[text] ## Simulazione Numerica Iterativa Dell'Algoritmo Del Gradiente
 fprintf('----- Algoritmo Gradiente Iterativo -----');
 % Learning Rate
 alpha_val = 0.8;
@@ -559,7 +561,7 @@ for i = 1:nrSol
     fprintf('\t Errore Finale (norma): %.2e\n', norm(r_val - pos_finale_grad));
 end
 %%
-%[text] ## Confronto Traiettorie e Convergenza (Newton vs Gradiente)
+%[text] ## Confronto Traiettorie E Velocità Di Convergenza: Newton Contro Gradiente
 col_red   = [0.85, 0.15, 0.15];
 col_green = [0.15, 0.65, 0.20];
 col_blue  = [0.15, 0.35, 0.85];

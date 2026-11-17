@@ -1,4 +1,4 @@
-%[text] # Angoli Di Eulero
+%[text] # Rappresentazione Dell'Orientamento Con Angoli Di Eulero
 %[text] Una rappresentazione minima dell'orientamento di un corpo rigido nello spazio tridimensionale richiede esattamente tre parametri indipendenti. Questo deriva dal fatto che il gruppo speciale ortogonale **SO(m)**, che descrive le rotazioni nello spazio tridimensionale, ha dimensione $\\frac{m(m-1)}{2}$. Per ottenere una rappresentazione minima, si possono utilizzare insiemi di tre angoli
 %[text]{"align":"center"} $\\mathbf{\\alpha }={\\left(\\begin{array}{ccc} \\phi & \\theta & \\psi \\end{array}\\right)}^T$
 %[text] Noti come *angoli di Eulero*, che descrivono sequenze di rotazioni elementari intorno agli assi di un sistema di coordinate. Componendo tre rotazioni elementari consecutive, è possibile costruire una matrice di rotazione che rappresenta l'orientamento del corpo rigido. Affinché questa rappresentazione sia valida, è necessario che due rotazioni consecutive non avvengano intorno ad assi paralleli, altrimenti si perderebbe un grado di libertà.
@@ -17,7 +17,7 @@ x = [1; 0; 0];
 y = [0; 1; 0];
 z = [0; 0; 1];
 %%
-%[text] ## Rotazione ZXZ
+%[text] ## Matrice Di Rotazione Con Convenzione Di Eulero ZXZ
 %[text] Questa convenzione utilizza la seguente sequenza di rotazioni:
 %[text] - Rotazione di un angolo $\\phi$ attorno all'asse $Z$.
 %[text] - Rotazione di un angolo $\\theta$ attorno al nuovo asse $X^{\\prime }$ (l'asse $X$ ruotato).
@@ -47,7 +47,7 @@ RZXZ_Num = subs(RZXZ, {phi, theta, psi}, {phiNum, thetaNum, psiNum});
 disp("Matrice Di Rotazione Numerica R_ZXZ:");
 disp(double(RZXZ_Num));
 %%
-%[text] ## Singolarità Della Rotazione ZXZ
+%[text] ## Analisi Delle Singolarità Della Convenzione ZXZ
 %[text] La rappresentazione $ZXZ$ presenta una singolarità quando $\\sin(\\theta )=0$, ovvero per $\\theta =0$ o $\\theta =\\pi$. In questi casi, la prima e la terza rotazione avvengono attorno ad assi paralleli, rendendo impossibile distinguere $\\phi$ e $\\psi$ in modo univoco. Si può determinare solo la loro somma o differenza.
 %[text] Si verifica il caso con $\\theta =0$.
 % SINGOLARITÀ CON THETA = 0
@@ -59,7 +59,7 @@ disp("Matrice R_ZXZ Con Theta = 0:");
 disp(RZXZ_Zero);
 %[text] Come si può vedere dalla matrice, $\\phi$ e $\\psi$ compaiono sempre come $\\phi + \\psi$, confermando la perdita di un grado di libertà.
 %%
-%[text] ## Rotazione ZXY
+%[text] ## Matrice Di Rotazione Con Convenzione Di Eulero ZXY
 %[text] Questa convenzione utilizza la seguente sequenza di rotazioni:
 %[text] - Rotazione di un angolo $\\phi$ attorno all'asse $Z$.
 %[text] - Rotazione di un angolo $\\theta$ attorno al nuovo asse $X^{\\prime }$.
@@ -87,7 +87,7 @@ R_ZXY_Num = subs(RZXY, {phi, theta, psi}, {phiNum, thetaNum, psiNum});
 disp("Matrice Di Rotazione Numerica R_ZXY:");
 disp(double(R_ZXY_Num));
 %%
-%[text] ## Singolarità della Rotazione ZXY
+%[text] ## Analisi Delle Singolarità Della Convenzione ZXY
 %[text] La singolarità per la convenzione $ZXY$ si verifica quando $\\cos(\\theta )=0$, ovvero per $\\theta =\\pm \\frac{\\pi }{2}$. Questa configurazione è nota come "gimbal lock". In questo stato, i contributi degli angoli $\\phi$ e $\\psi$ non possono essere separati.
 %[text] Si analizza il caso $\\theta =\\frac{\\pi }{2}$
 [RXThetaPi] = Compute_Rotation_Matrix(x, pi/2);
@@ -99,7 +99,7 @@ disp("Matrice Rotazione R_ZXY (Con Theta = Pi/2):");
 disp(RZXY_Pi);
 %[text] Anche in questo caso, la matrice semplificata mostra che gli angoli $\\phi$ e $\\psi$ sono combinati, rendendo impossibile la loro determinazione univoca.
 %%
-%[text] ## Rotazione Roll-Pitch-Yaw
+%[text] ## Matrice Di Rotazione Con Convenzione Roll-Pitch-Yaw (ZYX)
 %[text] Gli angoli di Roll-Pitch-Yaw sono comunemente usati in aeronautica e robotica. Una delle convenzioni più diffuse è la ZYX'', che consiste in:
 %[text] - **Yaw** (Imbardata): Rotazione di un angolo $\\phi$ attorno all'asse $Z$.
 %[text] - **Pitch** (Beccheggio): Rotazione di un angolo $\\theta$ attorno al nuovo asse $Y^{\\prime }$
@@ -135,7 +135,7 @@ disp("Matrice Di Rotazione R_RPY (Con Theta = Pi/2):");
 disp(R_RPY_Pi);
 %[text] La matrice risultante mostra che gli angoli $\\phi$ (Yaw) e $\\psi$ (Roll) appaiono sempre nella forma $\\phi -\\psi$, confermando che non è possibile distinguerli e che si è perso un grado di libertà.
 %%
-%[text] ## Visualizzazione Rotazione ZXZ
+%[text] ## Visualizzazione Grafica Della Rotazione Di Eulero ZXZ
 phiNum = pi/4;
 thetaNum = pi/3;
 psiNum = pi/6;
@@ -188,7 +188,7 @@ legend([hX_0, hY_0, hZ_0, hX_r, hY_r, hZ_r], ...
     'Location', 'bestoutside');
 hold off;
 %%
-%[text] ## Visualizzazione Rotazione ZXY
+%[text] ## Visualizzazione Grafica Della Rotazione Di Eulero ZXY
 phiNum = pi/6;
 thetaNum = pi/4;
 psiNum = pi/3;
@@ -232,7 +232,7 @@ legend([hX_0, hY_0, hZ_0, hX_r, hY_r, hZ_r], ...
     'Location', 'bestoutside');
 hold off;
 %%
-%[text] ## Visualizzazione Rotazione RPY
+%[text] ## Visualizzazione Grafica Della Rotazione Roll-Pitch-Yaw (RPY)
 % Creazione Figura
 figure('Name', 'Visualizzazione Rotazione RPY', 'Color', 'w');
 hold on;

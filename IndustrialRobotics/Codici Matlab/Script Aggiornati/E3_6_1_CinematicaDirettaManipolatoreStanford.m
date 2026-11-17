@@ -1,4 +1,4 @@
-%[text] # Calcolo Cinematica Diretta Con Parametri Di Denavit-Hartenberg
+%[text] # Cinematica Diretta Manipolatore Di Stanford
 %[text] L'obiettivo della cinematica diretta è determinare la posizione e l'orientamento dell'organo terminale (end-effector) a partire dai valori delle variabili di giunto. Si utilizza la convenzione di Denavit-Hartenberg (DH) per modellare la geometria del robot. La convenzione di Denavit-Hartenberg è un metodo standard per assegnare sistemi di riferimento ai bracci di un robot. Per ogni braccio, si definiscono quattro parametri che descrivono la trasformazione geometrica rispetto al braccio precedente.
 %[text] Si inizia definendo le variabili simboliche necessarie per i parametri DH. Questo permette di eseguire i calcoli in forma generale, senza dover specificare subito valori numerici. Successivamente, si assemblano questi parametri in una tabella dove ogni riga corrisponde a un giunto del robot e le colonne rappresentano i parametri $\\left(\\begin{array}{c} \\theta ,d,\\alpha ,a \\end{array}\\right)$.
 clc; clear; close all;
@@ -63,7 +63,7 @@ for i = 1:n
     disp(T_Num(:,:,i));
 end
 %%
-%[text] ## Visualizzazione Grafica
+%[text] ## Visualizzazione Grafica Manipolatore Di Stanford
 fig_name    = 'Configurazione Manipolatore di Stanford';
 arrow_scale = 0.15;
 view_angles = [110, 10];

@@ -106,8 +106,7 @@
 
 \begin{document}
 
-\label{T_9c72}
-\matlabtitle{Implementazione Algoritmo Di Newton E Del Gradiente}
+\matlabtitle{Inversione Cinematica Con Algoritmo Di Newton E Del Gradiente}
 
 \begin{par}
 \begin{flushleft}
@@ -283,7 +282,7 @@ I punti critici si trovano risolvendo l'equazione precedente $\nabla_q V=0$. La 
 \end{itemize}
 
 \newpage
-\matlabheadingtwo{Algoritmo Di Newton}
+\matlabheadingtwo{Formulazione Teorica Dell'Algoritmo Di Newton}
 
 \begin{par}
 \begin{flushleft}
@@ -467,7 +466,7 @@ Per implementare questo metodo si deve discretizzare la legge di controllo. Util
 \matlabheadingthree{$q_{k+1} =q_k +T\cdot J^{-1} (q_k )\cdot \bigl\lbrack K\cdot e(k)\bigr\rbrack$}
 
 \newpage
-\matlabheadingthree{\textbf{Algoritmo Del Gradiente}}
+\matlabheadingtwo{Formulazione Teorica Dell'Algoritmo Del Gradiente}
 
 \begin{par}
 \begin{flushleft}
@@ -552,7 +551,7 @@ Per classificare un punto critico $q_c$ (per cui $\nabla_q V(q_c )=0$), si anali
 
 
 \newpage
-\matlabheadingtwo{Analisi Massimi E Punti Sella Funzione “Norma Errore Al Quadrato"}
+\matlabheadingtwo{Analisi Dei Punti Stazionari Della Funzione Di Costo Quadratica}
 
 \begin{par}
 \begin{flushleft}
@@ -1049,7 +1048,7 @@ hold off;
 
 
 \newpage
-\matlabheadingtwo{Algoritmo Newton Iterativo}
+\matlabheadingtwo{Simulazione Numerica Iterativa Dell'Algoritmo Di Newton}
 
 \begin{matlabcode}
 fprintf('----- Algoritmo Di Newton Iterativo -----');
@@ -1156,8 +1155,7 @@ Test 3: Condizione Iniziale q0 = [-1.0472, 0.5236]
 \end{matlaboutput}
 
 \newpage
-\matlabheadingtwo{Algoritmo Gradiente Iterativo}
-
+\matlabheadingtwo{Simulazione Numerica Iterativa Dell'Algoritmo Del Gradiente}
 \begin{matlabcode}
 fprintf('----- Algoritmo Gradiente Iterativo -----');
 % Learning Rate
@@ -1248,8 +1246,7 @@ Test 3: Condizione Iniziale q0 = [-1.0472, 0.5236]
 \end{matlaboutput}
 
 \newpage
-\matlabheadingtwo{Confronto Traiettorie e Convergenza (Newton vs Gradiente)}
-
+\matlabheadingtwo{Confronto Traiettorie E Velocità Di Convergenza: Newton Contro Gradiente}
 \begin{matlabcode}
 col_red   = [0.85, 0.15, 0.15];
 col_green = [0.15, 0.65, 0.20];

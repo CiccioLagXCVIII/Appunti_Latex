@@ -1,4 +1,4 @@
-%[text] # Calcolo E Analisi Dello Jacobiano Geometrico
+%[text] # Calcolo E Analisi Dello Jacobiano Geometrico Manipolatore Planare RR
 %[text] Il calcolo dello Jacobiano geometrico $J(q)$, uno strumento fondamentale nell'analisi cinematica dei manipolatori seriali. Lo **Jacobiano** lega le velocità dei giunti $\\dot{q}$ alle velocità cartesiane dell'end-effector (lineare $v_E$ e angolare $\\omega_E$) attraverso la relazione:
 %[text]{"align":"center"} $\\left(\\begin{array}{c} v_E \\\\ \\omega_E \\end{array}\\right)=J(q)\\dot{q}$
 %[text] Il metodo sistematico si basa sulla scomposizione dello Jacobiano in colonne $J_i$, dove ciascuna colonna descrive l'influenza del giunto i-esimo sulla velocità dell'end-effector. Per calcolare lo Jacobiano geometrico, è necessario conoscere:
@@ -87,7 +87,7 @@ J_q = simplify(J_q);
 fprintf('Jacobiano Geometrico Manipolatore RR Planare Simbolico');
 disp(J_q);
 %%
-%[text] ## Analisi Singolarità
+%[text] ## Analisi Delle Configurazioni Singolari Dello Jacobiano
 %[text] Le singolarità cinematiche si verificano nelle configurazioni in cui il manipolatore perde la capacità di muoversi in una o più direzioni dello spazio operativo. Matematicamente, questo accade quando la matrice Jacobiana perde di rango. Per un manipolatore planare, si è interessati principalmente al movimento nel piano XY, quindi si analizza la sottomatrice dello Jacobiano che lega le velocità dei giunti alle velocità lineari dell'end-effector.
 % Estrazione Jacobiano Lineare (Prime Due Righe)
 J_L = J_q(1:2,1:2);
@@ -112,8 +112,7 @@ disp(solDetJL_1);
 disp(solDetJL_2);
 %[text] Il risultato dell'equazione $det(J_L )=0$ fornisce le configurazioni di singolarità del manipolatore. Per il manipolatore RR planare, queste condizioni corrispondono fisicamente alle configurazioni in cui i due bracci sono allineati, ovvero quando il secondo giunto ha un angolo di 0 o $\\pi$ radianti. In queste pose, l'end-effector non può muoversi istantaneamente in direzione radiale.
 %%
-%[text] ## Calcolo Numerico
-%% Calcolo Numerico Configurazione Specifica
+%[text] ## Valutazione Numerica Dello Jacobiano In Configurazione Specifica
 
 % Definizione Valori Numerici
 q1_val = pi/4;

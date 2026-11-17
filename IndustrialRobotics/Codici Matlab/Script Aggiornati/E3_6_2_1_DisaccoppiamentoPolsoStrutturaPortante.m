@@ -1,6 +1,6 @@
-%[text] # Disaccoppiamento Polso - Struttura Portante
+%[text] # Disaccoppiamento Polso-Struttura Portante Nel Manipolatore Di Stanford
 %%
-%[text] ## CINEMATICA DIRETTA MANIPOLATORE SFERICO
+%[text] ## Cinematica Diretta Della Struttura Portante Sferica
 %[text]{"align":"center"} ![Disaccoppiamento Cinematica Diretta 1](../../Esercitazioni Matlab/E3_6_2_DisaccoppiamentoPolsoStrutturaPortante/E3_6_2_Images/image_0.jpeg)
 clc; clear; close all;
 % Definizione Variabili Simboliche
@@ -33,7 +33,7 @@ disp(T03);
 %[text]{"align":"center"} $^{0}\\mathbf{T}_{3}(\\mathbf{q}) \\; = \\; ^{0}\\mathbf{A}_{1}(q_{1}) \\; \\cdot \\; ^{1}\\mathbf{A}_{2}(q_{2}) \\; \\cdot \\; ^{2}\\mathbf{A}_{3}(q_{3}) =$
 %[text]{"align":"center"} $= \\begin{pmatrix} c(q_{1})c(q_{2}) & -s(q_{1}) & c(q_{1})s(q_{2}) & c(q_{1})s(q_{2})q_{3} - s(q_{1})d_{2} \\\\ s(q_{1})c(q_{2}) & c(q_{1}) & s(q_{1})s(q_{2}) & s(q_{1})s(q_{2})q_{3} + c(q_{1})d_{2}\\\\ -s(q_{2}) & 0 & c(q_{2}) & c(q_{2})q_{3}\\\\ 0 & 0 & 0 & 1 \\end{pmatrix}$
 %%
-%[text] ## CINEMATICA DIRETTA POLSO SFERICO
+%[text] ## Cinematica Diretta Del Polso Sferico
 %[text]{"align":"center"} ![Disaccoppiamento Cinematica Diretta 2](../../Esercitazioni Matlab/E3_6_2_DisaccoppiamentoPolsoStrutturaPortante/E3_6_2_Images/image_1.jpeg)
 % Definizione Variabili Simboliche
 syms q4 q5 q6 d4 d5 d6 alpha4 alpha5 alpha6 a4 a5 a6 real;
@@ -67,12 +67,12 @@ disp(T36);
 %[text]{"align":"center"} $^{3}\\mathbf{T}_{6}(\\mathbf{q}) \\; = \\; ^{3}\\mathbf{A}_{4}(q_{4}) \\; \\cdot \\; ^{4}\\mathbf{A}_{5}(q_{5}) \\; \\cdot \\; ^{5}\\mathbf{A}_{6}(q_{6}) =$
 %[text]{"align":"center"} $= \\begin{pmatrix} c(q_{4})c(q_{5})c(q_{6}) - s(q_{4})s(q_{6}) & -c(q_{6})s(q_{4}) - c(q_{4})c(q_{5})s(q_{6}) & c(q_{4})s(q_{5}) & c(q_{4})s(q_{5})d_{6} \\\\ c(q_{4})s(q_{6}) + c(q_{5})c(q_{6})s(q_{4}) & c(q_{4})c(q_{6}) - c(q_{5})s(q_{4})s(q_{6}) & s(q_{4})s(q_{5}) & s(q_{4})s(q_{5})d_{6} \\\\ -c(q_{6})s(q_{5}) & s(q_{5})s(q_{6}) & c(q_{5}) & c(q_{5})d_{6} \\\\ 0 & 0 & 0 & 1 \\end{pmatrix}$
 %%
-%[text] ## Cinematica Diretta Manipolatore Stanford
+%[text] ## Cinematica Diretta Completa Del Manipolatore Di Stanford
 T06 = simplify(T03 * T36);
 fprintf('Matrice Di Trasformazione Omogenea ^{0}T_{6}:\n');
 disp(T06);
 %%
-%[text] ## VERIFICA CONDIZIONE DI DISACCOPPIAMENTO
+%[text] ## Verifica Della Condizione Di Disaccoppiamento Cinematico
 %[text]{"align":"center"} $\\exists \\;{\\mathbf{d}}_0 ,\\,{\\mathbf{d}}_1 \\in {\\mathbb{R}}^3 \\;\\;\\mid \\;\\;^3 {\\mathbf{d}}_6 =^3 {\\mathbf{R}}_6 {\\mathbf{d}}_1 +{\\mathbf{d}}_0$
 % Estrazione Vettore Posizione
 d36 = T36(1:3, 4);
@@ -81,7 +81,7 @@ fprintf('Vettore Posizione d_{36}:\n');
 
 disp(d36);
 %%
-%[text] ## CINEMATICA INVERSA POSIZIONE
+%[text] ## Cinematica Inversa Di Posizione Della Struttura Portante
 %[text]{"align":"center"} $^0 {\\mathbf{d}}_6 =^0 {\\mathbf{R}}_3 \\,^3 {\\mathbf{d}}_6 +^0 {\\mathbf{d}}_3$
 % Estrazione Vettore Posizione
 d03 = T03(1:3, 4);
@@ -90,7 +90,7 @@ fprintf('Vettore Posizione d_{03}:\n');
 
 disp(d03);
 %%
-%[text] ## CINEMATICA INVERSA ORIENTAMENTO
+%[text] ## Cinematica Inversa Di Orientamento Del Polso Sferico
 %[text]{"align":"center"} ${}^{0}\\mathbf{R}_6 = {}^{0}\\mathbf{R}_3 \\cdot {}^{3}\\mathbf{R}_{6}$
 % Matrice Di Rotazione R06
 % T06 calcolato precedentemente nella sezione Cinematica Diretta Manipolatore Stanford
@@ -109,9 +109,8 @@ fprintf('Matrice Di Rotazione R36 = (R03)^{T} R06 =:\n');
 disp(R36);
 %[text]{"align":"center"} $\\begin{pmatrix} \\cos \\left(q_4 \\right)\\,\\cos \\left(q_5 \\right)\\,\\cos \\left(q_6 \\right)-\\sin \\left(q_4 \\right)\\,\\sin \\left(q_6 \\right) & -\\cos \\left(q_6 \\right)\\,\\sin \\left(q_4 \\right)-\\cos \\left(q_4 \\right)\\,\\cos \\left(q_5 \\right)\\,\\sin \\left(q_6 \\right) & \\cos \\left(q_4 \\right)\\,\\sin \\left(q_5 \\right)\\\\ \\cos \\left(q_4 \\right)\\,\\sin \\left(q_6 \\right)+\\cos \\left(q_5 \\right)\\,\\cos \\left(q_6 \\right)\\,\\sin \\left(q_4 \\right) & \\cos \\left(q_4 \\right)\\,\\cos \\left(q_6 \\right)-\\cos \\left(q_5 \\right)\\,\\sin \\left(q_4 \\right)\\,\\sin \\left(q_6 \\right) & \\sin \\left(q_4 \\right)\\,\\sin \\left(q_5 \\right)\\\\ -\\cos \\left(q_6 \\right)\\,\\sin \\left(q_5 \\right) & \\sin \\left(q_5 \\right)\\,\\sin \\left(q_6 \\right) & \\cos \\left(q_5 \\right) \\end{pmatrix}$
 %%
-%[text] ## Caso Singolare $\\sin (q_5 )=0$
-%%
-%[text] ## Caso Singolare $q_5 =0$
+%[text] ## Analisi Del Caso Singolare Del Polso $\\sin (q_5 )=0$
+%[text] ### Configurazione Singolare Con $q_5 =0$
 % Sostituzione q5 = 0
 R36_Zero = subs(R36, q5, 0);
 R36_Zero = simplify(R36_Zero);
@@ -119,8 +118,7 @@ R36_Zero = simplify(R36_Zero);
 fprintf('Matrice Di Rotazione R36 Calcolata Con q5 = 0:\n');
 
 disp(R36_Zero);
-%%
-%[text] ## Caso Singolare $q_5 =\\pi$
+%[text] ### Configurazione Singolare Con $q_5 =\\pi$
 % Sostituzione q5 = Pi
 R36_Pi = subs(R36, q5, pi);
 R36_Pi = simplify(R36_Pi);

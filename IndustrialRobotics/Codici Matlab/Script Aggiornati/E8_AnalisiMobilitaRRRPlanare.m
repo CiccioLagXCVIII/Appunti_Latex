@@ -1,4 +1,4 @@
-%[text] # Analisi Mobilità Manipolatore Planare RRR
+%[text] # Analisi Di Mobilità E Spazi Fondamentali Manipolatore Planare RRR
 %[text] L'analisi della mobilità istantanea di un manipolatore planare con tre giunti rotoidali (RRR) si basa sullo studio delle proprietà della matrice Jacobiana, $J(q)$, che lega le velocità dei giunti $\\dot{q}$ alle velocità dell'end-effector $v$ tramite la relazione $v=J(q)\\;\\dot{q}$
 %[text] Si devono determinare:
 %[text] - Lo **Spazio** delle **Velocità Raggiungibili** ($R(J)$): L'insieme di tutte le velocità che l'end-effector può assumere.
@@ -94,7 +94,7 @@ disp(det_G_Sub == 0);
 %[text] Quindi, poichè la matrice Jacobiana $J$ non è costante, ma dipende dalla configurazione attuale del robot, descritta dal vettore delle variabili di giunto, il determinante e tutte le proprietà (rango, immagine e nucleo) sono **locali**, ovvero variano con $q$:
 %[text]{"align":"center"} $det(J)=det(J(q)) \\qquad \\rho (J)=\\rho J(q) \\qquad R(J)=R(J(q)) \\qquad N(J)=N(J(q))$
 %%
-%[text] ## Configurazione 1: Robot Ripiegato
+%[text] ## Configurazione 1: Analisi Di Mobilità Con Braccio Ripiegato
 %[text] I parametri del robot sono
 %[text]{"align":"center"} $l_1 =l_2 =l_3 =1$
 %[text]{"align":"center"} $q_1 =0~~~~q_2 =\\frac{\\pi }{2}~~~~q_3 =-\\frac{\\pi }{2}$
@@ -220,7 +220,7 @@ legend([h_arm, h_ee, h_rj], 'Location', 'bestoutside');
 xlim([-0.5, 2.8]); ylim([-0.5, 1.8]);
 hold off;
 
-%[text] ### Giustificazione Risultati Punto Di Vista Meccanico
+%[text] ### Interpretazione Fisica E Meccanica Della Prima Configurazione
 %[text] In questa configurazione:
 %[text] 1. Il primo braccio $l_1$ giace lungo l'asse X, poiché $q_1=0$.
 %[text] 2. Il secondo braccio $l_2$ è ruotato di $q_2 = \\frac{\\pi}{2}$ rispetto al primo, puntando quindi lungo l'asse Y.
@@ -235,7 +235,7 @@ hold off;
 %[text] Esiste una base per $N(J_L)$ con un solo vettore, come calcolato. Questo vettore definisce una combinazione specifica di velocità dei giunti $\\dot{q} \\in N(J_L)$ che risulta in una velocità nulla dell'end-effector $v = J_L \\dot{q} = 0$.
 %[text] La presenza di un automovimento significa che il robot può **riconfigurare la sua postura interna mantenendo l'end-effector fermo**. Si può immaginare un movimento coordinato del giunto 2 e del giunto 3, compensato dal giunto di base (giunto 1), che permette alla struttura di muoversi pur mantenendo la punta fissa in $(2,1)$. Questa capacità aggiuntiva è un vantaggio della ridondanza, utilizzata ad esempio per evitare ostacoli con il corpo del robot senza spostare l'end-effector.
 %%
-%[text] ## Configurazione 2: Robot Completamente Ripiegato su se stesso
+%[text] ## Configurazione 2: Analisi In Condizione Singolare A Bracci Allineati
 %[text] I parametri del robot sono
 %[text]{"align":"center"} $l_1 =l_2 =l_3 =1$
 %[text]{"align":"center"} $q_1 =0~~~~q_2 =\\pi ~~~~q_3 =0$
@@ -355,7 +355,7 @@ legend([h_arm, h_ee, h_rj, h_njt], 'Location', 'bestoutside');
 xlim([-1.8, 1.5]); ylim([-1.0, 1.0]);
 hold off;
 
-%[text] ### Giustificazione Risultati Punto Di Vista Meccanico
+%[text] ### Interpretazione Fisica E Meccanica Della Configurazione Singolare
 %[text] In questa configurazione, il robot è ripiegato su se stesso:
 %[text] 1. Il primo braccio $l_1$ è orientato lungo l'asse X ($q_1 = 0$).
 %[text] 2. Il secondo braccio $l_2$ è ruotato di $q_2 = \\pi$, ripiegandosi completamente all'indietro e allineandosi con l'asse X in direzione negativa.

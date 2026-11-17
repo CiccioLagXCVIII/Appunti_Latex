@@ -105,7 +105,7 @@
 
 \begin{document}
 
-\matlabtitle{Relazione Tra Velocità Angolare E Angoli di Eulero RPY}
+\matlabtitle{Relazione Tra Velocità Angolare E Angoli Di Eulero RPY}
 
 \begin{par}
 \begin{flushleft}
@@ -358,7 +358,7 @@ Ricordando la derivata del prodotto, la derivata di $R_{RPY}$ sarà:
 \end{flushleft}
 \end{par}
 
-\matlabheadingtwo{Derivazione della Matrice di Rotazione RPY}
+\matlabheadingtwo{Derivazione Della Matrice Di Trasformazione Cinematica RPY}
 \[
     \dot{R}_{RPY} = \dot{R}_z(\gamma) \cdot R_y(\beta) \cdot R_x(\alpha) + R_z(\gamma) \cdot \dot{R}_y(\beta) \cdot R_x(\alpha) + R_z(\gamma) \cdot R_y(\beta) \cdot \dot{R}_x(\alpha)
 \]
@@ -625,7 +625,7 @@ Come si nota dal vettore $\omega$ appena calcolato, ogni sua componente è una c
 
 \vspace{1em}
 \newpage
-\matlabheadingthree{Calcolo $\dot{\gamma}$}
+\matlabheadingthree{Calcolo Del Contributo Di Velocità Angolare Di $\dot{\gamma}$}
 
 \begin{par}
 \begin{flushleft}
@@ -667,7 +667,7 @@ Prima Colonna di M (Contributo Di gamma_dot):
 
 \vspace{1em}
 
-\matlabheadingthree{Calcolo $\dot{\beta}$}
+\matlabheadingthree{Calcolo Del Contributo Di Velocità Angolare Di $\dot{\beta}$}
 
 \begin{par}
 \begin{flushleft}
@@ -708,7 +708,7 @@ Seconda Colonna di M (Contributo Di beta_dot):
 
 \newpage
 
-\matlabheadingthree{Calcolo $\dot{\alpha}$}
+\matlabheadingthree{Calcolo Del Contributo Di Velocità Angolare Di $\dot{\alpha}$}
 
 \begin{par}
 \begin{flushleft}
@@ -747,7 +747,7 @@ Terza Colonna di M (Contributo Di alpha_dot):
 
 \vspace{1em}
 
-\matlabheadingthree{Calcolo Matrice M}
+\matlabheadingthree{Costruzione Della Matrice Jacobiana Analitica}
 
 \begin{matlabcode}
 syms wx wy wz real;
@@ -818,8 +818,7 @@ Questa matrice fornisce la relazione tra $\omega$ e gli angoli di Eulero. Se $de
 \end{par}
 
 \vspace{1em}
-\matlabheadingtwo{Interpretazione Delle Singolarità}
-
+\matlabheadingtwo{Analisi E Interpretazione Delle Singolarità Di Rappresentazione RPY}
 \begin{par}
 \begin{flushleft}
 Come calcolato, il determinante della matrice di trasformazione è $-\cos (\beta )$.

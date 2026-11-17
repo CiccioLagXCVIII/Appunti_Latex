@@ -1,4 +1,4 @@
-%[text] # Manipolatore Stanford: Disaccoppiamento Polso - Struttura Portante
+%[text] # Cinematica Inversa E Analisi Singolarità Manipolatore Di Stanford
 %[text] Il **disaccoppiamento **permette di separare il problema in parti piu semplici:
 %[text] - **Cinematica Posizione: **Trovare i valori dei primi tre giunti $(q_1 ,q_2 ,q_3 )$ che posizionano il centro del polso nel punto desiderato
 %[text] - **Cinematica Orientamento: **Trovare i valori degli ultimi tre giunti $(q_4 ,q_5 ,q_6 )$ per ottenere l'orientamento desiderato dell'end effector avendo già posizionato il polso \
@@ -43,7 +43,7 @@ d36 = T36(1:3, 4);
 fprintf('Vettore d_{36}');
 disp(d36);
 %%
-%[text] ## Cinematica Inversa Posizione
+%[text] ## Cinematica Inversa Di Posizione Della Struttura Portante
 %[text] Si deve verificare che il vettore che collega il centro del polso all'end-effector, quando espresso nelle coordinate dell'end-effector (terna 6), sia costante. Questo vettore `d1` si calcola come:
 %[text] $\\exists \\;d_0 ,\\,d_1 \\in {\\mathbb{R}}^3 \\;\\mid \\;d_{36} =^3 R_6 d_1 +d_0$
 %[text] Dato che $d_{36}$ non presenta termini indipendenti dalle variabili di giunto, questo ci dice che non c'è un offset fisso dal polso, e quindi non c'è uno spostamento strutturale fisso, visto dal polso e di conseguenza allora $d_0 =0$
@@ -74,7 +74,7 @@ d03 = T03(1:3, 4);
 fprintf('Posizione Calcolata Struttura Portante (d03):');
 disp(d03);
 %%
-%[text] ## Valore $q_3$
+%[text] ## Calcolo Variabile Di Giunto $q_3$
 %[text] Si indica con $d_{hat}$ il vettore che rappresenta la posizione desiderata del centro del polso rispetto al sistema di riferimento di base. Questo si può calcolare come:
 %[text] $\\hat{d} =d_{06} -^0 R_6 \\cdot d_1$
 %[text] Questo vettore d\_\{hat\} è considerato **noto**, in quanto $d_{06}$ (la posizione finale) e $^0 R_6$ (l'orientamento finale) sono **gli input problema** di cinematica inversa.
@@ -129,7 +129,7 @@ fprintf('Sistema da risolvere per trovare q1 e q2');
 eq_system = d03 == d_hat;
 disp(eq_system);
 %%
-%[text] ## Valore $q_2$
+%[text] ## Calcolo Variabile Di Giunto $q_2$
 %[text] Si nota che, dalla terza equazione si può trovare $\\cos (q_2 )$
 syms c2 real;
 eq_cosq2 = eq_system(3);
@@ -154,7 +154,7 @@ disp(q2_neg);
 fprintf('Valore q2 Per Valore Seno Positivo:');
 disp(q2_pos);
 %%
-%[text] ## Valore $q_1$
+%[text] ## Calcolo Variabile Di Giunto $q_1$
 %[text] Si nota che, la prima e la seconda equazione del precedente sistema formano un sistema utile per trovare$\\cos (q_1 )$
 syms c1 s1 real;
 eq_q1 = eq_system(1:2);
@@ -176,7 +176,7 @@ q1_val = atan2(sinq1, cosq1);
 fprintf('Valore q1:');
 disp(q1_val);
 %%
-%[text] ## Cinematica Inversa Orientamento
+%[text] ## Cinematica Inversa Di Orientamento Del Polso Sferico
 %[text] Una volta determinati $q_1 ,q_2 ,q_3$, la matrice di rotazione $^0 R_3$ è nota, quindi si può o calcolare la matrice di rotazione del polso $^3 R_6$richiesta per raggiungere l'orientamento finale $^0 R_6$ dato che:
 %[text] $^0 R_6 =^0 R_3 \\cdot ^3 R_6$
 %[text] Sapendo che le matrici di rotazioni sono invertibili e l'inversa di una matrice di rotazione è uguale alla trasposta si ha che la matrice "target" per ottenere l'orientamento desiderato è
@@ -266,12 +266,12 @@ q6_val = atan2(sinq6, cosq6);
 fprintf('Valore q6:');
 disp(q6_val);
 %%
-%[text] ## Configurazioni Singolari
+%[text] ## Analisi Delle Configurazioni Singolari Del Manipolatore Di Stanford
 %[text] Una configurazione singolare si verifica quando la struttura del manipolatore limita la capacità di muoversi in certe direzioni, portando a una perdita di uno o più gradi di libertà . Dal punto di vista della cinematica inversa, le singolarità emergono quando le equazioni che usiamo per risolvere le variabili di giunto diventano indeterminate o non ammettono una soluzione unica.
 %%
-%[text] ## Singolarità Della Struttura Portante
+%[text] ## Singolarità Cinematiche Della Struttura Portante
 %[text] Queste singolarità dipendono dai giunti $q_1 ,q_2 ,q_3$ e determinano la capacità del robot di posizionare il centro del polso. Si verifica quando:
-%[text] ### Singolarità Di Bordo
+%[text] ### Singolarità Di Bordo Della Struttura Portante
 %[text] Si verifica quando l'argomento della radice quadrata usata per calcolare $q_3$ diventa nullo. Cioè quando
 %[text] $\\|\\hat{d} {\\|}^2 -d_2^2 =0$
 %[text] Dove $\\|d{\\|}^2$ è noto, poichè $\\hat{d} =d_{06} -^0 R_6 \\cdot d_1$ e i valori $d_{06}$ e $^0 R_6$ sono gli input del problema e $d_1$, $d_2$e $d_6$ sono i parametri fisici del sistema.
@@ -290,7 +290,7 @@ sol_q3 = solve(eq_q3_Sing, q3, ReturnConditions=true);
 fprintf('Valore Di q3:');
 disp(sol_q3.q3);
 %[text] Cioè due soluzioni convergono in un'unica soluzione cioè $q_3 =0$. Si perde una delle due possibili configurazioni per raggiungere il punto target.
-%[text] ### Singolarità Di Allineamento
+%[text] ### Singolarità Di Allineamento Sull'Asse Base
 %[text] Si verifica quando il centro del polso si trova sull'asse di rotazione del primo giunto (asse $Z$ della base). Matematicamente, questo significa che le componenti $(x,y)$ del vettore $d_{hat}$ di posizione desiderata del polso sono nulle, cioè
 %[text] $d_{hat} =\\left(\\begin{array}{c} 0\\\\ 0\\\\ d_z \\end{array}\\right)$
 %[text] Poichè $d_{hat}$ è un vettore noto (è un input del problema) si può verificare direttamente se le sue prime due componenti sono nulle. Se il vettore è in questa configurazione, il braccio è orientato verticalmente puntando direttamente sopra o sotto la base del robot.
@@ -298,7 +298,7 @@ disp(sol_q3.q3);
 %[text] $q_1 =atan2\\bigl(\\sin (q_1 ),\\cos (q_1 )\\bigr)=atan2\\bigl(0,\\;0\\bigr)$
 %[text] Questo accade perché qualsiasi rotazione del giunto $q_1$ non altera la posizione del centro del polso, che rimane sull'asse $Z$. Esiste quindi un numero infinito di soluzioni per $q_1$, e il **manipolatore perde un grado di libertà ** posizionale.
 %%
-%[text] ## Singolarità Del Polso
+%[text] ## Singolarità Cinematiche Del Polso Sferico
 %[text] Questa singolarità dipende dai giunti $q_4 ,q_5 ,q_6$ e influenza la capacità del robot di orientare l'end-effector.
 %[text] La singolarità si verifica quando $\\sin (q_5 )=0$ che è equivalente a $\\cos (q_5 )=\\pm 1$. Poiché $\\cos (q_5 )$ è determinato dall'elemento $(3,3)$ della matrice $^3 R_6$, la condizione da verificare è: $^3 R_6 (3,3)=\\pm 1$.
 %[text] Questa matrice è calcolata come
@@ -326,7 +326,7 @@ fprintf('theta = 0 + q6 \n');
 fprintf('q6 = theta = \n');
 disp(theta_val);
 %%
-%[text] ## Calcoli Numerici
+%[text] ## Risoluzione Numerica Della Cinematica Inversa
 % Parametri Fisici Manipolatore
 d2_num = 1;      % Lunghezza del braccio orizzontale
 d6_num = 0.3;    % Lunghezza dell'utensile
@@ -345,7 +345,7 @@ fprintf('Posizione Desiderata (d06_des):\n');
 disp(d06_des');
 fprintf('Orientamento Desiderato (R06_des):\n');
 disp(R06_des);
-%% Calcolo Cinematica Inversa Posizione (q1, q2, q3)
+% Calcolo Cinematica Inversa Posizione (q1, q2, q3)
 
 % 1. Calcoliamo Posizione Desiderata del Centro Polso (d_hat)
 d1_num = [0; 0; d6_num];
@@ -459,7 +459,7 @@ fprintf('q4 = %.3f rad = %4.2fdeg\n', q4_sol, rad2deg(q4_sol));
 fprintf('q5 = %.3f rad = %4.2fdeg\n', q5_sol, rad2deg(q5_sol));
 fprintf('q6 = %.3f rad = %4.2fdeg\n', q6_sol, rad2deg(q6_sol));
 %%
-%[text] ## Visualizzazione Grafica 3D della Configurazione Calcolata
+%[text] ## Visualizzazione Grafica 3D Della Configurazione Calcolata
 % Costruzione Tabella DH Numerica Completa nella Soluzione IK Calcolata
 DH_Table_Num = [q1_sol, 0,      -pi/2, 0;
                 q2_sol, d2_num,  pi/2, 0;

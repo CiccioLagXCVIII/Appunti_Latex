@@ -1,14 +1,14 @@
 ====================================================================
- LOG ESECUZIONE updateStructure - 2026-11-16 18:02:48
- Filtro: E9
+ LOG ESECUZIONE updateStructure - 2026-11-17 07:59:49
+ Filtro: E3_5
 ====================================================================
 
-E9_AlgoritmoNewtonEGradiente
+E3_5_CinematicaDirettaPolsoSferico
 1. Apertura OK
 2. Cancellazione Output OK
 3. Esecuzione: OK
-4. Creazione Cartella E9_Images OK
-5. Esportazione Immagini In E9_Images OK
-6. Sostituzione Cartella E9_Images In "Esercitazioni Matlab\E9_AlgoritmoNewtonEGradiente" OK
+4. Creazione Cartella E3_5_Images OK
+5. Esportazione Immagini In E3_5_Images OK
+6. Sostituzione Cartella E3_5_Images In "Esercitazioni Matlab\E3_5_CinematicaDirettaPolsoSferico" OK
 7. Conversione In .mlx OK
 8. Spostamento In Notebook Aggiornati OK

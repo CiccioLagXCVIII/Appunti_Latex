@@ -1,4 +1,4 @@
-%[text] # Calcolo Cinematica Diretta Con Parametri Di Denavit-Hartenberg
+%[text] # Cinematica Diretta Polso Sferico
 %[text] L'obiettivo della cinematica diretta è determinare la posizione e l'orientamento dell'organo terminale (end-effector) a partire dai valori delle variabili di giunto. Si utilizza la convenzione di Denavit-Hartenberg (DH) per modellare la geometria del robot. La convenzione di Denavit-Hartenberg è un metodo standard per assegnare sistemi di riferimento ai bracci di un robot. Per ogni braccio, si definiscono quattro parametri che descrivono la trasformazione geometrica rispetto al braccio precedente.
 %[text] Si inizia definendo le variabili simboliche necessarie per i parametri DH. Questo permette di eseguire i calcoli in forma generale, senza dover specificare subito valori numerici. Successivamente, si assemblano questi parametri in una tabella dove ogni riga corrisponde a un giunto del robot e le colonne rappresentano i parametri $\\left(\\begin{array}{c} \\theta ,d,\\alpha ,a \\end{array}\\right)$.
 clc; clear; close all;
@@ -63,10 +63,10 @@ for i = 1:n
     disp(T_Num(:,:,i));
 end
 %%
-%[text] ## Visualizzazione Grafica
+%[text] ## Visualizzazione Grafica Polso Sferico
 fig_name    = 'Configurazione Polso Sferico';
-arrow_scale = 0.10;
-view_angles = [150, 20];
+arrow_scale = 0.12;
+view_angles = [145, 22];
 labels      = {'Terna 3 (Base Polso)', 'Terna 4', 'Terna 5', 'Terna 6 (EE)'};
 
 figure('Name', fig_name, 'Color', 'w');
@@ -140,21 +140,22 @@ for i = 1:(n+1)
     visited(coincident_idx) = true;
     combined_label = strjoin(labels(coincident_idx), ' / ');
     p = positions(i, :);
-    text(p(1), p(2), p(3) + 0.18*arrow_scale, sprintf(' %s', combined_label), ...
-        'FontSize', 9, 'FontWeight', 'bold', ...
+    text(p(1), p(2), p(3) + 0.22*arrow_scale, combined_label, ...
+        'FontSize', 9, 'FontWeight', 'bold', 'HorizontalAlignment', 'center', ...
         'BackgroundColor', [1 1 1], 'EdgeColor', [0.8 0.8 0.8], 'Margin', 1);
 end
 
-% 6. Margine di Visualizzazione Attorno al Robot
-all_pts = [positions; positions + arrow_scale; positions - arrow_scale];
+% 6. Margine di Visualizzazione Attorno al Robot (sulle punte effettive delle terne)
+all_pts = positions;
+for i = 1:(n+1)
+    all_pts = [all_pts; positions(i, :) + (R_all(:, :, i) * arrow_scale).'];
+end
 min_xyz = min(all_pts, [], 1);
 max_xyz = max(all_pts, [], 1);
-span = max(max_xyz - min_xyz);
-if span == 0, span = 1; end
-margin = 0.15 * span;
-xlim([min_xyz(1) - margin, max_xyz(1) + margin]);
-ylim([min_xyz(2) - margin, max_xyz(2) + margin]);
-zlim([min_xyz(3) - margin, max_xyz(3) + margin]);
+pad = max(0.08 * (max_xyz - min_xyz), 0.03);
+xlim([min_xyz(1) - pad(1), max_xyz(1) + pad(1)]);
+ylim([min_xyz(2) - pad(2), max_xyz(2) + pad(2)]);
+zlim([min_xyz(3) - pad(3), max_xyz(3) + pad(3)]);
 
 % 7. Legenda e Titolo
 legend([h_axes(1), h_axes(2), h_axes(3), h_link, h_ee], ...

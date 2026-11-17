@@ -106,7 +106,7 @@
 
 \begin{document}
 
-\matlabtitle{Manipolatore Stanford: Disaccoppiamento Polso - Struttura Portante}
+\matlabtitle{Cinematica Inversa E Analisi Singolarità Manipolatore Di Stanford}
 
 \begin{par}
 \begin{flushleft}
@@ -249,7 +249,7 @@ d_6 \,\cos \left(q_5 \right)
 
 \vspace{1em}
 
-\matlabheading{Cinematica Inversa Posizione}
+\matlabheading{Cinematica Inversa Di Posizione Della Struttura Portante}
 
 \begin{par}
 \begin{flushleft}
@@ -371,7 +371,7 @@ q_3 \,\cos \left(q_2 \right)
 \end{matlabsymbolicoutput}
 
 \newpage
-\matlabheadingtwo{Valore \texorpdfstring{$q_3$}{q3}}
+\matlabheadingtwo{Calcolo Variabile Di Giunto \texorpdfstring{$q_3$}{q3}}
 
 \begin{par}
 \begin{flushleft}
@@ -552,7 +552,7 @@ q_3 \,\cos \left(q_2 \right)=\textrm{dz}-R_{3,3} \,d_6
 \end{array}\right)$
 \end{matlabsymbolicoutput}
 \newpage
-\matlabheadingtwo{Valore \texorpdfstring{$q_2$}{q2}}
+\matlabheadingtwo{Calcolo Variabile Di Giunto \texorpdfstring{$q_2$}{q2}}
 
 \begin{par}
 \begin{flushleft}
@@ -628,7 +628,7 @@ Valore q2 Per Valore Seno Positivo:
 \end{matlabsymbolicoutput}
 
 \newpage
-\matlabheadingtwo{Valore \texorpdfstring{$q_1$}{q1}}
+\matlabheadingtwo{Calcolo Variabile Di Giunto \texorpdfstring{$q_1$}{q1}}
 
 \begin{par}
 \begin{flushleft}
@@ -696,7 +696,7 @@ $}
 
 \vspace{1em}
 
-\matlabheadingtwo{Cinematica Inversa Orientamento}
+\matlabheadingtwo{Cinematica Inversa Di Orientamento Del Polso Sferico}
 
 \begin{par}
 \begin{flushleft}
@@ -1016,7 +1016,7 @@ Valore q6:
 \hskip1em $\displaystyle \textrm{atan2}\left(\frac{A_{3,2} }{\sin \left(q_5 \right)},-\frac{A_{3,1} }{\sin \left(q_5 \right)}\right)$
 \end{matlabsymbolicoutput}
 
-\matlabheading{Configurazioni Singolari}
+\matlabheading{Analisi Delle Configurazioni Singolari Del Manipolatore Di Stanford}
 
 \begin{par}
 \begin{flushleft}
@@ -1026,7 +1026,7 @@ Una configurazione singolare si verifica quando la struttura del manipolatore li
 
 \vspace{1em}
 
-\matlabheadingtwo{\textbf{Singolarità Della Struttura Portante}}
+\matlabheadingtwo{\textbf{Singolarità Cinematiche Della Struttura Portante}}
 
 \begin{par}
 \begin{flushleft}
@@ -1034,7 +1034,7 @@ Queste singolarità dipendono dai giunti $q_1 ,q_2 ,q_3$ e determinano la capaci
 \end{flushleft}
 \end{par}
 
-\matlabheadingthree{\textbf{Singolarità Di Bordo}}
+\matlabheadingthree{\textbf{Singolarità Di Bordo Della Struttura Portante}}
 
 \begin{par}
 \begin{flushleft}
@@ -1108,7 +1108,7 @@ Cioè due soluzioni convergono in un'unica soluzione cioè $q_3 =0$. Si perde un
 \end{flushleft}
 \end{par}
 
-\matlabheadingthree{\textbf{Singolarità Di Allineamento}}
+\matlabheadingthree{\textbf{Singolarità Di Allineamento Sull'Asse Base}}
 
 \begin{par}
 \begin{flushleft}
@@ -1147,8 +1147,7 @@ Questo accade perché qualsiasi rotazione del giunto $q_1$ non altera la posizio
 \end{par}
 
 \vspace{1em}
-\matlabheadingtwo{\textbf{Singolarità Del Polso}}
-
+\matlabheadingtwo{\textbf{Singolarità Cinematiche Del Polso Sferico}}
 \begin{par}
 \begin{flushleft}
 Questa singolarità dipende dai giunti $q_4 ,q_5 ,q_6$ e influenza la capacità del robot di orientare l'end-effector.
@@ -1268,7 +1267,7 @@ q6 = theta =
 \end{matlabsymbolicoutput}
 
 \newpage
-\matlabheadingtwo{Calcoli Numerici}
+\matlabheadingtwo{Risoluzione Numerica Della Cinematica Inversa}
 
 \begin{matlabcode}
 % Parametri Fisici Manipolatore
@@ -1465,7 +1464,7 @@ q6 = -2.644 rad = -151.48deg
 \end{matlaboutput}
 
 \newpage
-% \matlabheadingtwo{Visualizzazione Grafica 3D della Configurazione Calcolata}
+\matlabheadingtwo{Visualizzazione Grafica Della Configurazione Calcolata}
 
 \begin{matlabcode}
 % Costruzione Tabella DH Numerica Completa nella Soluzione IK Calcolata

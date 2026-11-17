@@ -1,11 +1,11 @@
-%[text] # Cinematica Inversa Manipolatore RRR
+%[text] # Cinematica Inversa E Spazi Operativi Manipolatore Planare RRR
 %[text]{"align":"center"} ![Manipolatore RRR Planare](../Immagini/Manipolatore_RRR.png)
 %[text] Un **manipolatore RRR** planare è un braccio robotico composto da tre giunti rotoidali i cui assi di rotazione sono tutti paralleli. Questo tipo di robot opera su un piano e possiede *3 Gradi di Libertà* (**DoF**).
 %[text] Lo **spazio operativo** descrive la posa dell'organo terminale (*end-effector*). Per un manipolatore RRR planare, la posa è definita da due coordinate cartesiane $(P_x ,P_y )$ e un orientamento $\\phi$ rispetto a un asse fisso. Lo spazio operativo ha quindi dimensione $m=3$ ed è descritto dal vettore:
 %[text]{"align":"center"} $\\mathbf{r} = \\begin{pmatrix} P_x \\\\ P_y \\\\ \\phi \\end{pmatrix}$
 %[text] Poiché il numero di gradi di libertà ($n=3$) è uguale alla dimensione dello spazio operativo ($m=3$), il manipolatore è in grado di controllare in modo indipendente sia la posizione che l'orientamento del suo end-effector. Questo gli permette di raggiungere (quasi) ogni posa desiderata all'interno del suo spazio di lavoro.
 %%
-%[text] ## Cinematica Diretta
+%[text] ## Cinematica Diretta Manipolatore Planare RRR
 %[text] Per risolvere il problema analiticamente, utilizziamo il *Symbolic Math Toolbox*. Si definiscono prima di tutto le variabili simboliche che rappresentano le costanti del sistema (l**e lunghezze dei bracci**) e le variabili (**gli angoli dei giunti** e la **posa desiderata**).
 % l1, l2, l3 sono le lunghezze dei tre bracci del manipolatore.
 syms l1 l2 l3 real;
@@ -40,7 +40,7 @@ fprintf('Py = %s\n', py_calc);
 phi_calc = q1 + q2 + q3_calc;
 fprintf('Phi = %s\n', phi_calc);
 %%
-%[text] ## Cinematica Inversa
+%[text] ## Cinematica Inversa Manipolatore Planare RRR
 %[text] La **cinematica inversa **si occupa di determinare il vettore degli angoli dei giunti $\\mathbf{q}={\\bigl\\lbrack q_1 \\;\\;q_2 \\;\\;q_3 \\bigr\\rbrack }^T$ che permette all'end-effector di raggiungere una **posa desiderata**, data dal vettore $\\mathbf{r}={\\bigl\\lbrack P_x \\;\\;P_y \\;\\;\\phi \\bigr\\rbrack }^T$.
 %[text] In altre parole, data una specifica posizione ($P_x ,P_y$) e un orientamento $\\phi$ nello spazio operativo, l'obiettivo è trovare la configurazione dei giunti che realizzi quella posa.
 %[text] A differenza della cinematica diretta, che ammette sempre una soluzione unica, il problema inverso è più complesso e può avere:
@@ -77,7 +77,7 @@ disp(Pw_des);
 %[text] Se questa **condizione non** è **soddisfatta**, la posa desiderata è irraggiungibile. Cioè, non esiste alcuna configurazione reale degli angoli $q_1$ e $q_2$ che possa posizionare il polso in quel punto. Il valore di $\\cos (q_2 )$, avrebbe modulo maggiore di $1$, rendendo impossibile trovare un angolo reale $q_2$
 %[text] Si devono, quindi trovare $q_1$ e $q_2$ tali che il manipolatore RR posizioni il suo estremo in $P_w$
 %%
-%[text] ## Calcolo Valore $q_2$
+%[text] ## Calcolo Variabile Di Giunto $q_2$
 %[text] Le equazioni di cinematica diretta per il polso sono:
 %[text]{"align":"center"} $\\begin{array}{l} P_{wx} =l_1 \\cos (q_1 )+l_2 \\cos (q_1 +q_2 )\\\\ P_{wy} =l_1 \\sin (q_1 )+l_2 \\sin (q_1 +q_2 ) \\end{array}$
 %[text] Per trovare $q_2$, si elevano al quadrato e si sommano le due equazioni.
@@ -112,7 +112,7 @@ disp(q2_neg);
 fprintf('Valore q2 Per Valore Seno Positivo:\n');
 disp(q2_pos);
 %%
-%[text] ## Calcolo Valore $q_1$
+%[text] ## Calcolo Variabile Di Giunto $q_1$
 %[text] Una volta noto $q_2$, si può risolvere per $q_1$. Il sistema di equazioni per la posizione del polso può essere riscritto come un sistema lineare nelle incognite $\\cos (q_1 )$ e $\\sin (q_1 )$
 eq_Pwx = P_wx == Pw(1);
 eq_Pwy = P_wy == Pw(2);
@@ -195,7 +195,7 @@ q1_neg = atan2(sinq1_final, cosq1_final);
 fprintf('Valore q1 Calcolato:\n');
 disp(q1_neg);
 %%
-%[text] ## Calcolo Valore $q_3$
+%[text] ## Calcolo Variabile Di Giunto $q_3$
 %[text] A questo punto, avendo ricavato $q_1$ e $q_2$ l'angolo $q_3$ è ricavabile da
 %[text] ### $\\phi =q_1 +q_2 +q_3 \\longrightarrow q_3 =\\phi -q_1 -q_2$
 % Si calcola q3 con valore di q2 calcolato con valore positivo di sin(q2)
@@ -205,14 +205,14 @@ q3_calc_1 = phi - atan2(sinq1_final, cosq1_final) - atan2(sin_q2_pos, cos_q2_val
 % Si calcola q3 con valore di q2 calcolato con valore negativo di sin(q2)
 q3_calc_2 = phi - atan2(sinq1_final, cosq1_final) - atan2(sin_q2_neg, cos_q2_val);
 %[text] Se la posa desiderata $(P_x ,P_y ,\\phi )$ è all'interno dello spazio di lavoro del manipolatore, il problema di cinematica inversa per un robot RRR planare **ammette** generalmente **due soluzioni distinte**. Queste due soluzioni corrispondono alle configurazioni di "*Gomito Alto*" e "*Gomito Basso*" e possono essere calcolate analiticamente seguendo la procedura di disaccoppiamento. La scelta tra le due soluzioni dipende da criteri aggiuntivi, come evitare ostacoli, minimizzare il movimento dei giunti o rimanere lontani dalle singolarità.
-%[text] ### 1. Soluzione Gomito Alto
+%[text] ### 1. Soluzione Cinematica Gomito Alto
 %[text] - Si sceglie il valore positivo per il seno di $q_2$.
 %[text] - Si calcola $q_{2,\\text{Alto}}$ tramite l'arcotangente a quattro quadranti.
 %[text] - Si utilizzano $\\cos(q_{2,\\text{Alto}})$ e $\\sin(q_{2,\\text{Alto}})$ per calcolare i valori $\\cos(q_1)$ e $\\sin(q_1)$.
 %[text] - Si calcola $q_{1,\\text{Alto}}$ tramite l'arcotangente a quattro quadranti.
 %[text] - Infine, si calcola $q_{3,\\text{Alto}}$ come $\\phi - q_{1,\\text{Alto}} - q_{2,\\text{Alto}}$.
 %[text] - **La prima terna di soluzioni è**: \[ \mathbf{q}_{\text{Alto}} = \begin{pmatrix} q_{1,\text{Alto}} & q_{2,\text{Alto}} & q_{3,\text{Alto}} \end{pmatrix}^T \] \
-%[text] ### 2. Soluzione Gomito Basso
+%[text] ### 2. Soluzione Cinematica Gomito Basso
 %[text] - Si sceglie il valore negativo per il seno di $q_2$.
 %[text] - Si calcola $q_{2,\\text{Basso}}$ tramite l'arcotangente a quattro quadranti.
 %[text] - Si utilizzano $\\cos(q_{2,\\text{Basso}})$ e $\\sin(q_{2,\\text{Basso}})$ per calcolare i valori $\\cos(q_1)$ e $\\sin(q_1)$.
@@ -220,12 +220,12 @@ q3_calc_2 = phi - atan2(sinq1_final, cosq1_final) - atan2(sin_q2_neg, cos_q2_val
 %[text] - Infine, si calcola $q_{3,\\text{Basso}}$ come $\\phi - q_{1,\\text{Basso}} - q_{2,\\text{Basso}}$.
 %[text] - **La seconda terna di soluzioni è**: \[ \mathbf{q}_{\text{Basso}} = \begin{pmatrix} q_{1,\text{Basso}} & q_{2,\text{Basso}} & q_{3,\text{Basso}} \end{pmatrix}^T \] \
 %%
-%[text] ## Spazio Operativo
+%[text] ## Analisi Dello Spazio Operativo Primario E Secondario
 %[text] Lo studio dello spazio operativo di un manipolatore è fondamentale per comprenderne le capacità e i limiti. Questo spazio viene suddiviso in due categorie principali: il Workspace Primario, che definisce l'area raggiungibile, e il Workspace Secondario, che caratterizza la destrezza del manipolatore.
 %[text] Il **Workspace Primario** (o ***Spazio Operativo Primario***) $WS_1$ (Spazio Raggiungibile) è l'insieme di tutti i punti che l'organo terminale (end-effector) del manipolatore può raggiungere con almeno un orientamento possibile. In altre parole, se un punto target si trova all'interno di questo spazio, $P\\in WS_1$, esiste almeno una configurazione di giunti che permette al manipolatore di raggiungerlo. Al contrario, se un punto si trova al di fuori di $WS_1$, il suo raggiungimento è impossibile e il problema cinematico non ammette soluzioni.
 %[text] Il **Workspace Secondario** (o ***Spazio Operativo Secondario***) $WS_2$ (Spazio di Destrezza) è un sottoinsieme del workspace primario. Esso rappresenta l'insieme dei punti che l'end-effector può raggiungere con un numero molteplice di orientamenti, idealmente con qualsiasi orientamento possibile. Se un punto appartiene allo spazio secondario, $P\\in WS_2$, significa che per quel punto esistono molteplici soluzioni cinematiche, garantendo una maggiore flessibilità nel completamento del task.
 %%
-%[text] ## Caso 1: Manipolatore con "Buco" Centrale
+%[text] ## Spazio Operativo Con Regione Centrale Non Raggiungibile
 %[text] Si analizza il caso in cui la geometria del manipolatore non consente di raggiungere l'origine degli assi. Questa situazione si verifica quando il terzo braccio ($l_3$) è troppo corto per raggiungere l'origine dal punto più vicino a cui il polso (il giunto tra il secondo e il terzo braccio) può posizionarsi. Di conseguenza, lo spazio di lavoro presenterà un'area vuota al suo centro.
 %[text] Lo ***Spazio Operativo Primario*** è definito dalla regione compresa tra due circonferenze concentriche. Il raggio massimo di questa regione, $R_{max}$, corrisponde alla massima estensione del manipolatore, ottenuta quando tutti e tre i bracci sono allineati e puntano verso l'esterno. La distanza minima, $R_{min}$, si ha invece quando il polso si trova alla sua minima distanza dall'origine ($|l_1 -l_2 |$) e il terzo braccio è orientato in direzione opposta, verso l'origine.
 %[text] Analiticamente, un punto $P$ appartiene allo spazio primario se la sua distanza dall'origine $d=\\sqrt{x^2 +y^2 }$, soddisfa la seguente relazione:

@@ -1,4 +1,4 @@
-%[text] # Relazione Tra Velocità Angolare E Angoli di Eulero RPY
+%[text] # Relazione Tra Velocità Angolare E Angoli Di Eulero RPY
 %[text] L'orientamento di un corpo rigido, viene spesso descritto tramite una sequenza di tre rotazioni elementari note come **angoli di Eulero**. La convenzione **Roll-Pitch-Yaw (RPY)** corrisponde a una sequenza di rotazioni *ZYX*.
 %[text] La matrice di rotazione totale **R** che trasforma le coordinate da un sistema di riferimento solidale al corpo al sistema di riferimento fisso rappresenta una sequenza di rotazioni definite rispetto agli assi del sistema di riferimento fisso nell'ordine *Z,Y,X*, oppure per la cinematica del corpo, da una sequenza di rotazioni rispetto agli assi del sistema solidale (***intrinseche***) nell'ordine inverso:
 %[text] L'obiettivo è determinare la matrice di trasformazione, nota come **Jacobiano Analitico** o **Jacobiano Geometrico**, che lega le derivate temporali degli angoli di Eulero ${\\bigl\\lbrack \\dot{\\gamma} ,\\dot{\\beta} ,\\dot{\\alpha} \\bigr\\rbrack }^T$, al vettore velocità angolare istantanea del corpo $\\mathbf{\\omega }={\\bigl\\lbrack \\omega_x ,\\omega_y ,\\omega_z \\bigr\\rbrack }^T$, espresso nel sistema di riferimento fisso (della base). Dove:
@@ -76,7 +76,7 @@ disp(Rz_dot);
 %[text]{"align":"center"} $\\begin{array}{l} \\dot{R}_x (\\alpha ) =\\dot{\\alpha} \\;\\frac{dR_x}{d\\alpha} (\\alpha )\\\\ \\dot{R}_y (\\beta ) =\\dot{\\beta} \\;\\frac{dR_y}{d\\beta} (\\beta )\\\\ \\dot{R}_z (\\gamma ) =\\dot{\\gamma} \\;\\frac{dR_z}{d\\gamma} (\\gamma ) \\end{array}$
 %[text] Ricordando la derivata del prodotto, la derivata di $R_{RPY}$ sarà:
 %%
-%[text] ## Derivazione della Matrice di Rotazione RPY
+%[text] ## Derivazione Della Matrice Di Trasformazione Cinematica RPY
 %[text]{"align":"center"} $\\dot{R}_{RPY} = \\dot{R}_z(\\gamma) \\cdot R_y(\\beta) \\cdot R_x(\\alpha) + R_z(\\gamma) \\cdot \\dot{R}_y(\\beta) \\cdot R_x(\\alpha) + R_z(\\gamma) \\cdot R_y(\\beta) \\cdot \\dot{R}_x(\\alpha)$
 %[text] Sostituendo si ottiene
 %[text]{"align":"center"} $\\dot{R}_{RPY} =\\dot{\\gamma} \\;\\frac{dR_z}{d\\gamma} (\\gamma )\\cdot R_y (\\beta )\\cdot R_x (\\alpha )+R_z (\\gamma )\\cdot \\dot{\\beta} \\;\\frac{dR_y}{d\\beta} (\\beta )\\cdot R_x (\\alpha )+R_z (\\gamma )\\cdot R_y (\\beta )\\cdot \\dot{\\alpha} \\;\\frac{dR_x}{d\\alpha} (\\alpha )$
@@ -143,7 +143,7 @@ disp(Tx_bar);
 %[text]{"align":"center"} $\\begin{array}{l} \\omega_x =S(\\omega )_{3,2} \\\\ \\omega_y =S(\\omega )_{1,3} \\\\ \\omega_z =S(\\omega )_{2,1} \\end{array}$
 %[text] Come si nota dal vettore $\\omega$ appena calcolato, ogni sua componente è una combinazione lineare delle derivate degli angoli di Eulero $\\bigl\\lbrack \\dot{\\alpha} ,\\dot{\\beta} ,\\dot{\\gamma} \\bigr\\rbrack$. L' obiettivo è ricavare la matrice **M** che lega il *vettore* *velocità angolare *$\\omega$ alle *derivate degli angoli*, secondo la relazione:
 %[text]{"align":"center"} $\\omega =M(\\beta ,\\gamma )\\;\\;\\left(\\begin{array}{c} \\dot{\\gamma} \\\\ \\dot{\\beta} \\\\ \\dot{\\alpha} \\end{array}\\right)$
-%[text] ### Calcolo $\\dot{\\gamma}$
+%[text] ### Calcolo Del Contributo Di Velocità Angolare Di $\\dot{\\gamma}$
 %[text] Per trovare il contributo della velocità di Yaw $\\bigl(\\dot{\\gamma} \\bigr)$, si pongono le altre due velocità a zero: $\\dot{\\beta} =0$ e $\\dot{\\alpha} =0$.
 Sw_gamma = subs(Sw, [beta_dot, alpha_dot], [0, 0]);
 Sw_gamma = simplify(Sw_gamma);
@@ -163,7 +163,7 @@ vett_omega_gamma = simplify(vett_omega_gamma)/gamma_dot;
 fprintf('Prima Colonna di M (Contributo Di gamma_dot):\n');
 
 disp(vett_omega_gamma);
-%[text] ### Calcolo $\\dot{\\beta}$
+%[text] ### Calcolo Del Contributo Di Velocità Angolare Di $\\dot{\\beta}$
 %[text] Per trovare il contributo della velocità di Pitch $\\bigl(\\dot{\\beta} \\bigr)$, si pongono le altre due velocità a zero: $\\dot{\\gamma} =0$ e $\\dot{\\alpha} =0$.
 Sw_beta = subs(Sw, [gamma_dot, alpha_dot], [0, 0]);
 Sw_beta = simplify(Sw_beta);
@@ -183,7 +183,7 @@ vett_omega_beta = simplify(vett_omega_beta)/beta_dot;
 fprintf('Seconda Colonna di M (Contributo Di beta_dot):\n');
 
 disp(vett_omega_beta);
-%[text] ### Calcolo $\\dot{\\alpha}$
+%[text] ### Calcolo Del Contributo Di Velocità Angolare Di $\\dot{\\alpha}$
 %[text] Per trovare il contributo della velocità di Roll $\\bigl(\\dot{\\alpha} \\bigr)$, si pongono le altre due velocità a zero: $\\dot{\\gamma} =0$ e $\\dot{\\beta} =0$.
 Sw_alpha = subs(Sw, [gamma_dot, beta_dot], [0, 0]);
 Sw_alpha = simplify(Sw_alpha);
@@ -200,7 +200,7 @@ vett_omega_alpha = simplify(vett_omega_alpha)/alpha_dot;
 fprintf('Terza Colonna di M (Contributo Di alpha_dot):\n');
 
 disp(vett_omega_alpha);
-%[text] ### Calcolo Matrice M
+%[text] ### Costruzione Della Matrice Jacobiana Analitica M
 syms wx wy wz real;
 
 M = [vett_omega_gamma, vett_omega_beta, vett_omega_alpha];
@@ -225,7 +225,7 @@ else
 end
 %[text] Questa matrice fornisce la relazione tra $\\omega$ e gli angoli di Eulero. Se $det\\bigl(\\;M(\\beta ,\\gamma )\\;\\bigr)\\not= 0$ allora a partire da $\\omega$ è possibile conoscere la derivata degli angoli di Eulero $\\dot{\\alpha} ,\\;\\dot{\\beta} ,\\;\\dot{\\gamma}$ ed essendo essi integrabili si possono ricavare $\\alpha ,\\;\\beta ,\\;\\gamma$
 %%
-%[text] ## Interpretazione Delle Singolarità
+%[text] ## Analisi E Interpretazione Delle Singolarità Di Rappresentazione RPY
 %[text] Come calcolato, il determinante della matrice di trasformazione è $-\\cos (\\beta )$.
 %[text] La relazione $\\omega =M(\\beta ,\\gamma )\\;\\;\\left(\\begin{array}{c} \\dot{\\gamma} \\\\ \\dot{\\beta} \\\\ \\dot{\\alpha} \\end{array}\\right)$ non può essere invertita quando la matrice M è ***singolare***, ovvero quando il suo determinante è nullo.
 %[text] Questa condizione si verifica quando l'angolo di *Pitch*, $\\beta$ , è uguale a $\\pm \\frac{\\pi }{2}$ radianti (ovvero $\\pm 90^{\\circ }$) ed è nota come **singolarità di polso **e rappresenta un punto critico. Quando $\\beta =\\pm \\frac{\\pi }{2}$, l'asse di rotazione del *Roll* (asse x del riferimento solidale) si allinea con l'asse di rotazione dello *Yaw* (asse z del sistema di base). Quindi, una rotazione attorno all'asse di *Roll* o una rotazione attorno all'asse di *Yaw* producono lo stesso effetto sul corpo, rendendole indistinguibili. *Il sistema perde un ****grado di libertà (DoF)***.
