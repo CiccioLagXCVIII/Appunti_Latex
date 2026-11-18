@@ -308,7 +308,6 @@ Determinante Matrice Di Gram (det(J_r * J_r^T)):
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle \cos \left(q_2 \right)-\cos \left(2\,q_2 +q_3 \right)-\frac{\cos \left(2\,q_2 \right)}{2}-\cos \left(2\,q_3 \right)-\cos \left(2\,q_2 +2\,q_3 \right)-\cos \left(q_2 +2\,q_3 \right)+\cos \left(q_3 \right)+\frac{5}{2}$
 \end{matlabsymbolicoutput}
-\newpage
 \begin{matlabcode}
 assume([q2, q3], 'real');
 
@@ -396,7 +395,6 @@ Rango dello Jacobiano: 2
 m = size(J_r, 1);
 % Numero Di Giunti
 n = size(DH_Table, 1);
-
 if rank_J1 < m
     fprintf('Configurazione Singolare (Rango < m)');
 
@@ -452,9 +450,8 @@ Base Automovimenti N(J_r):
     -1
 Numero Automovimenti: 1
 \end{matlaboutput}
-\newpage
 \begin{center}
-\includegraphics[width=0.75\linewidth]{image_0}
+\includegraphics[width=0.65\linewidth]{image_0}
 \end{center}
 
 \matlabheadingthree{Interpretazione Fisica E Meccanica Della Prima Configurazione}
@@ -483,7 +480,11 @@ In questa configurazione:
 Il calcolo mostra che il \textbf{rango} dello \textbf{Jacobiano} è \textbf{2}, ovvero il massimo possibile (rango pieno), dato che lo spazio di lavoro è bidimensionale ($m=2$).
 
 Poiché $\rho(J_r)=m$, lo Spazio delle Velocità Raggiungibili $R(J_r)$ coincide con l'intero piano $\mathbb{R}^2$. Di conseguenza, il suo complemento ortogonale, lo spazio delle Direzioni di Moto Precluse $N(J_r^T)$, è banale (contiene solo il vettore nullo).
-
+\end{flushleft}
+\end{par}
+\newpage
+\begin{par}
+\begin{flushleft}
 La configurazione non è singolare perché i movimenti generati dai singoli giunti sono linearmente indipendenti. Una rotazione del giunto 1 ($\dot{q}_1$) farebbe ruotare l'intera struttura attorno all'origine, producendo una velocità dell'end-effector istantaneamente tangente a un cerchio (lungo la direzione $[-1,2]$). Le rotazioni dei giunti 2 e 3 ($\dot{q}_2, \dot{q}_3$) producono movimenti che non sono paralleli a quello generato dal giunto 1. Poiché è possibile generare velocità in direzioni non collineari, la loro combinazione lineare può produrre un vettore di velocità arbitrario nel piano $(v_x, v_y)$. L'end-effector può quindi muoversi istantaneamente in qualsiasi direzione.
 \end{flushleft}
 \end{par}
@@ -541,7 +542,9 @@ if size(R_J1, 2) > 1
     quiver(p3(1), p3(2), R_J1(1,2)*scale_v, R_J1(2,2)*scale_v, 0, ...
         'Color', col_green, 'LineWidth', 2.2, 'MaxHeadSize', 0.5, 'HandleVisibility', 'off');
 end
-
+\end{matlabcode}
+\newpage
+\begin{matlabcode}
 % Etichette Giunti con Raggruppamento Automatico Coincidenze
 lbls = {'J_1 (Base)', 'J_2', 'J_3', 'EE'};
 visited = false(4, 1);
@@ -579,14 +582,10 @@ hold off;
 I parametri del robot sono
 \end{flushleft}
 \end{par}
-
-\begin{par}
-$$l_1 =l_2 =l_3 =1$$
-\end{par}
-
-\begin{par}
-$$q_1 =0~~~~q_2 =0~~~~q_3 =0$$
-\end{par}
+\begin{align*}
+    & l_1 = l_2 = l_3 = 1 \\
+    & q_{1} = 0 \qquad q_{2} = 0 \qquad q_{3} = 0
+\end{align*}
 
 \begin{matlabcode}
 % Valori numerici per la configurazione
@@ -594,8 +593,10 @@ q1_val_2 = 0;
 q2_val_2 = 0;
 q3_val_2 = 0;
 q_vals_2 = [q1_val_2, q2_val_2, q3_val_2];
-
-fprintf('------------ Configurazione q = [%.2f, %.2f, %.2f] ------------', q_vals_2(1), q_vals_2(2), q_vals_2(3));
+\end{matlabcode}
+\newpage
+\begin{matlabcode}
+fprintf('--------- Configurazione q = [%.2f, %.2f, %.2f] ---------', q_vals_2(1), q_vals_2(2), q_vals_2(3));
 
 % Sostituzione dei valori numerici nello Jacobiano di posizione simbolico
 vars_sym = [q1, q2, q3];
@@ -619,7 +620,7 @@ fprintf('Rango dello Jacobiano: %d\n', rank_J2);
 \begin{matlaboutput}
 Rango dello Jacobiano: 1
 \end{matlaboutput}
-\newpage
+
 \begin{matlabcode}
 % Dimensione Spazio Lavoro
 m = size(J_r, 1);
@@ -662,6 +663,7 @@ Base Direzioni Di Moto Precluse N(J_r^T):
     -1
      0
 \end{matlaboutput}
+\newpage
 \begin{matlabcode}
 % Per Robot Ridondanti
 if n > m
@@ -752,9 +754,7 @@ plot(p0(1), p0(2), 's', 'MarkerSize', 8, ...
     'MarkerFaceColor', [0.4, 0.4, 0.4], 'MarkerEdgeColor', 'k', 'HandleVisibility', 'off');
 h_ee = plot(p3(1), p3(2), 'p', 'MarkerSize', 10, ...
     'MarkerFaceColor', [0.95, 0.75, 0.10], 'MarkerEdgeColor', 'k', 'DisplayName', 'End-Effector');
-\end{matlabcode}
-\newpage
-\begin{matlabcode}
+
 % Direzione Ammessa R(J_r) (Verde) e Preclusa N(J_r^T) (Rossa Tratteggiata)
 scale_v = 0.55;
 h_rj = quiver(p3(1), p3(2), R_J2(1)*scale_v, R_J2(2)*scale_v, 0, ...

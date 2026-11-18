@@ -287,14 +287,10 @@ disp(d1);
 \end{matlabcode}
 \begin{matlaboutput}
 Vettore d_{1}
+    0
+    0
+    d6
 \end{matlaboutput}
-\begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{c}
-0\\
-0\\
-d_6
-\end{array}\right)$
-\end{matlabsymbolicoutput}
 \newpage
 \begin{par}
 \begin{flushleft}
@@ -707,23 +703,21 @@ Sapendo che le matrici di rotazioni sono invertibili e l'inversa di una matrice 
 \[
     ^3 R_6 ={\bigl(^0 R_3 \bigr)}^{-1} \;^0 R_6 ={\bigl(^0 R_3 \bigr)}^T \;^0 R_6
 \]
-\newpage
 \begin{par}
 \begin{flushleft}
 Dove
 \end{flushleft}
 \end{par}
-
 \begin{itemize}
 
    \item{\begin{flushleft} $^0 R_6$: Rappresenta la matrice di rotazione desiderata per l'end-effector, che è un dato di input del problema di cinematica inversa. \end{flushleft}}
    \item{\begin{flushleft} ${\bigl(^0 R_3 \bigr)}^T$ Dipende da $q_1 ,q_2 ,q_3$ che sono appena stati calcolati. Sostituendo i loro valori numerici nella matrice di rotazione della struttura portante (estratta dalla matrice $^0 T_3$ ), otteniamo una matrice numerica conosciuta. \end{flushleft}}
    \item{\begin{flushleft} $^3 R_6$: Dipende dagli angoli $q_4 ,q_5 ,q_6$  che si devono trovare. \end{flushleft}}
 \end{itemize}
-
+\newpage
 \begin{par}
 \begin{flushleft}
-\textbf{Poichè si stanno facendo dei calcoli simbolici, indichiamo con }\texttt{\textbf{R03\_K}}\textbf{ (Known) la matrice che contiene i valori numerici calcolati (}\textit{\textbf{termini noti}}\textbf{) e con }\texttt{\textbf{R36\_T}}\textbf{ (Target) la matrice di rotazione estratta dalla matrice di trasformazione omogenea }$^3 T_6$\textbf{ ottenuta tramite le tabelle di Denavit-Hartenberg che dipende da }$q_4 ,q_5 ,q_6$\textbf{ (}\textit{\textbf{incognite}}\textbf{)}
+Poichè si stanno facendo dei calcoli simbolici, indichiamo con\texttt{\textbf{R03\_K}} la matrice che contiene i valori numerici calcolati (\textit{\textbf{termini noti}}) e con \texttt{\textbf{R36\_T}} la matrice di rotazione estratta dalla matrice di trasformazione omogenea $^3 T_6$ ottenuta tramite le tabelle di Denavit-Hartenberg che dipende da $q_4 ,q_5 ,q_6$ (\textit{\textbf{incognite}})
 \end{flushleft}
 \end{par}
 
@@ -789,7 +783,6 @@ c\left(q_4 \right)\,s\left(q_6 \right)+c\left(q_5 \right)\,c\left(q_6 \right)\,s
 Con la formula $^3 R_6 ={\bigl(^0 R_3 \bigr)}^T \;^0 R_6$ si può calcolare la matrice $^3 R_6$ nota (\texttt{R36\_K}) e poi confrontandola membro a membro con $^3 R_6$ incognita si ottiene un sistema con incognite ($q_4 ,q_5 ,q_6$)
 \end{flushleft}
 \end{par}
-\newpage
 \begin{matlabcode}
 R03_K_Trasp = R03_K';
 
@@ -809,7 +802,7 @@ $\displaystyle \begin{pmatrix}
 \end{pmatrix}$%
 }
 \end{matlabsymbolicoutput}
-
+\newpage
 \begin{par}
 \begin{flushleft}
 \textbf{Per semplificare la leggibilità delle formule, indichiamo con A la matrice precedente e ogni suo elemento sarà }$\mathbf{A_{ij}}$:

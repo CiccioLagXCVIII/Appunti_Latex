@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Rotismi e Riduttori — Animazioni Interattive</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-badge">ROBOTICA INDUSTRIALE · TRASMISSIONI MECCANICHE</div>
+        <h1>Rotismi e Riduttori di Precisione</h1>
+        <p>Simulatore cinematico e dinamico allineato agli appunti di Laboratorio: primitive di contatto, formula di Willis, pignone-cremagliera e Harmonic Drive.</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="themeBtn" aria-label="Cambia tema chiaro/scuro" title="Cambia tema chiaro/scuro">
+          <span class="theme-icon">◐</span>
+        </button>
+      </div>
+    </header>
+
+    <nav class="tabs" id="tabs" role="tablist" aria-label="Tipologia di rotismo"></nav>
+
+    <div class="workspace">
+      <!-- Colonna Sinistra: Stage Canvas + Controlli Riproduzione + Telemetria -->
+      <div class="stage-col">
+        <div class="stage-card">
+          <div class="stage-wrap">
+            <canvas id="cv" tabindex="0" aria-label="Animazione interattiva del rotismo"></canvas>
+
+            <div class="hud-tau" id="hudTau"></div>
+            <div class="hud-badge" id="hudBadge" hidden></div>
+
+            <div class="stage-legend" id="stageLegend">
+              <span><i class="leg-pitch"></i> Primitiva</span>
+              <span><i class="leg-dot"></i> Contatto</span>
+              <span><i class="leg-fix"></i> Telaio</span>
+            </div>
+            <div class="stage-hint">Trascina per ruotare · Spazio = Pausa</div>
+          </div>
+
+          <div class="transport-bar">
+            <div class="transport-btns">
+              <button class="btn primary" id="playBtn">❚❚ Pausa</button>
+              <button class="btn" id="revBtn" title="Inverti il senso di rotazione">⇄ Inverti</button>
+              <button class="btn toggle on" id="annBtn" title="Mostra circonferenze primitive, vettori velocità e punti di contatto">◎ Primitive</button>
+              <button class="btn" id="resetBtn" title="Ripristina parametri predefiniti">↺ Reset</button>
+            </div>
+            <label class="speed-ctrl">
+              <span>Velocità</span>
+              <input type="range" id="speedRange" min="0.2" max="3" step="0.1" value="1" aria-label="Velocità animazione">
+              <output id="speedOut">1.0×</output>
+            </label>
+          </div>
+        </div>
+
+        <!-- Schede Velocità Angolari e Ruoli -->
+        <section class="panel-card">
+          <div class="panel-head">
+            <h2>Componenti, Ruoli Cinematici e Velocità</h2>
+            <span class="panel-sub" id="refLabel"></span>
+          </div>
+          <div class="roles-grid" id="rolesGrid"></div>
+        </section>
+
+        <!-- Teoria e Formule (allineate a Laboratorio.tex) -->
+        <section class="panel-card theory-card" id="theoryPanel"></section>
+      </div>
+
+      <!-- Colonna Destra: Parametri Geometrici, Configurazioni, Bilancio Coppia & Inerzia -->
+      <aside class="side-col">
+        <section class="panel-card">
+          <div class="panel-head">
+            <h2 id="paramTitle">Parametri Geometrici</h2>
+            <span class="panel-sub" id="paramSub">Modulo uguale per ingranamento</span>
+          </div>
+          <div id="slidersBox" class="sliders-box"></div>
+
+          <!-- Sotto-modalità Rotismo Piano -->
+          <div id="planarModes" class="subcfg" hidden>
+            <h3>Configurazione Rotismo Piano</h3>
+            <div class="cfg-grid">
+              <button class="cfg-btn" data-p="single">
+                <strong><span>Ingranaggio singolo</span><span class="pill">a, b</span></strong>
+                <small>Coppia ad assi paralleli esterni (moto invertito, τ = −z<sub>a</sub>/z<sub>b</sub>)</small>
+              </button>
+              <button class="cfg-btn" data-p="idler">
+                <strong><span>Con ruota oziosa</span><span class="pill">a, b, c</span></strong>
+                <small>Ruota intermedia b: rende concordi i versi senza cambiare |τ|</small>
+              </button>
+              <button class="cfg-btn" data-p="internal">
+                <strong><span>Dentatura interna</span><span class="pill">a, b int.</span></strong>
+                <small>Pignone a dentro corona b: verso concorde (τ = +z<sub>a</sub>/z<sub>b</sub>)</small>
+              </button>
+            </div>
+          </div>
+
+          <!-- Configurazioni Epicicloidale (Planetary / Star / Solar / Differenziale) -->
+          <div id="epiModes" class="subcfg" hidden>
+            <h3>Configurazione Operativa (Willis)</h3>
+            <div class="cfg-grid">
+              <button class="cfg-btn" data-l="planetary">
+                <strong><span>Planetary (Corona fissa)</span><span class="pill">ω<sub>r</sub> = 0</span></strong>
+                <small>Ingresso Solare s → Uscita Portasatelliti c (riduttore concorde)</small>
+              </button>
+              <button class="cfg-btn" data-l="star">
+                <strong><span>Star / A stella (Portasatelliti fisso)</span><span class="pill">ω<sub>c</sub> = 0</span></strong>
+                <small>Ingresso Solare s → Uscita Corona r (inversione, satelliti oziosi)</small>
+              </button>
+              <button class="cfg-btn" data-l="solar">
+                <strong><span>Solar (Solare fisso)</span><span class="pill">ω<sub>s</sub> = 0</span></strong>
+                <small>Ingresso Corona r → Uscita Portasatelliti c (riduzione lieve)</small>
+              </button>
+              <button class="cfg-btn" data-l="diff">
+                <strong><span>Differenziale libero</span><span class="pill">2 GdL</span></strong>
+                <small>Nessun vincolo: regola ω<sub>c</sub>/ω<sub>s</sub> col cursore sotto</small>
+              </button>
+            </div>
+            <label class="slider-row" id="diffSliderRow" hidden>
+              <span class="sl-label">ω<sub>c</sub> / ω<sub>s</sub></span>
+              <input type="range" id="diffRange" min="-1" max="1" step="0.05" value="0.3">
+              <output id="diffOut">+0.30</output>
+            </label>
+          </div>
+
+          <!-- Configurazioni Harmonic Drive -->
+          <div id="hdModes" class="subcfg" hidden>
+            <h3>Configurazione Harmonic Drive</h3>
+            <div class="cfg-grid">
+              <button class="cfg-btn" data-h="cs">
+                <strong><span>Standard (CS fissa)</span><span class="pill">ω<sub>CS</sub> = 0</span></strong>
+                <small>Ingresso WG → Uscita FlexSpline FS (τ = −2/z<sub>FS</sub>, retrogrado)</small>
+              </button>
+              <button class="cfg-btn" data-h="fs">
+                <strong><span>Alternativa (FS fissa)</span><span class="pill">ω<sub>FS</sub> = 0</span></strong>
+                <small>Ingresso WG → Uscita Circular Spline CS (τ = +2/z<sub>CS</sub>, concorde)</small>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Bilancio di Potenza, Coppia, Rendimento e Inerzia Riflessa -->
+        <section class="panel-card" id="dynPanel">
+          <div class="panel-head">
+            <h2>Bilancio Dinamico e Coppia</h2>
+            <span class="panel-sub">C<sub>out</sub> = η · C<sub>in</sub> / |τ|</span>
+          </div>
+          <div class="dyn-inputs">
+            <label class="slider-row">
+              <span class="sl-label">C<sub>in</sub> [N·m]</span>
+              <input type="range" id="cinRange" min="0.5" max="20" step="0.5" value="2">
+              <output id="cinOut">2.0</output>
+            </label>
+            <label class="slider-row">
+              <span class="sl-label">η [rend.]</span>
+              <input type="range" id="etaRange" min="0.60" max="1.00" step="0.01" value="0.96">
+              <output id="etaOut">0.96</output>
+            </label>
+            <label class="slider-row">
+              <span class="sl-label">J<sub>L</sub> [kg·m²]</span>
+              <input type="range" id="jlRange" min="0.5" max="20" step="0.5" value="4">
+              <output id="jlOut">4.0</output>
+            </label>
+          </div>
+          <div class="dyn-metrics" id="dynMetrics"></div>
+        </section>
+      </aside>
+    </div>
+  </div>
+
+  <script src="physics.js"></script>
+  <script src="renderer.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

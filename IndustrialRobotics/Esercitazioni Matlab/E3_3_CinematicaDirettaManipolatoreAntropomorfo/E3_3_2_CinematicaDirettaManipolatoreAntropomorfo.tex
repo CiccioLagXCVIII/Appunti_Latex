@@ -1,0 +1,181 @@
+%!TEX program = xelatex
+% ==============================================================================
+% AA CONFIGURAZIONE DI BASE ED ENGINE
+% ==============================================================================
+% BB CLASSE DEL DOCUMENTO
+\documentclass[11pt, a4paper]{article}
+
+% ==============================================================================
+% AA LINGUA, FONT E TIPOGRAFIA
+% ==============================================================================
+% BB GESTIONE FONT XELATEX
+\usepackage{fontspec}
+\setmainfont{Latin Modern Roman}
+
+% BB LOCALIZZAZIONE LINGUISTICA
+\usepackage[italian]{babel}
+
+% BB TIPOGRAFIA E MICRO-ESTENSIONI
+\usepackage[protrusion=true]{microtype}
+\raggedbottom
+
+% ==============================================================================
+% AA LAYOUT DI PAGINA E SPAZIATURA PARAGRAFI
+% ==============================================================================
+% BB GEOMETRIA DEI MARGINI (A4 verticale con margine sinistro 2.4cm per rilegatura)
+\usepackage[left=2.4cm, right=1.6cm, top=2cm, bottom=2cm]{geometry}
+
+% BB CONTROLLO SPAZIATURA TRA PARAGRAFI
+\usepackage[skip=3pt plus 1pt minus 1pt]{parskip}
+
+% ==============================================================================
+% AA MOTORE DEI COLORI E MACRO LOCALI
+% ==============================================================================
+% BB CARICAMENTO CORE XCOLOR IN SPAZIO GRAY PURO
+\usepackage[gray]{xcolor}
+% BB MACRO PER I SIGMA MONOCROMATICI ED ESTENSIONE RIGHE
+\newcommand{\sigone}{\symbf{\sigma}_1}
+\newcommand{\sigtwo}{\symbf{\sigma}_2}
+\newcommand{\sigthree}{\symbf{\sigma}_3}
+\newcommand{\sigfour}{\symbf{\sigma}_4}
+\newcommand{\sigfive}{\symbf{\sigma}_5}
+\newcommand{\sigsix}{\symbf{\sigma}_6}
+\newcommand{\sigseven}{\symbf{\sigma}_7}
+\renewcommand{\arraystretch}{1.3}
+
+% ==============================================================================
+% AA MATEMATICA E SIMBOLI SCIENTIFICI
+% ==============================================================================
+% BB PACCHETTI MATEMATICI UNICODE
+\usepackage{mathtools}
+\usepackage[warnings-off={mathtools-overbracket,mathtools-colon}]{unicode-math}
+\setmathfont{Latin Modern Math}
+
+% BB METRICHE MATRICI E FORMULE DISPLAY
+\setlength{\arraycolsep}{10pt}
+\setlength{\abovedisplayskip}{3pt plus 1pt minus 1pt}
+\setlength{\belowdisplayskip}{3pt plus 1pt minus 1pt}
+\setlength{\abovedisplayshortskip}{0pt plus 1pt}
+\setlength{\belowdisplayshortskip}{2pt plus 1pt minus 1pt}
+\allowdisplaybreaks
+
+% ==============================================================================
+% AA GRAFICA ED ELEMENTI FLOTTANTI
+% ==============================================================================
+% BB MOTORE DI INCLUSIONE GRAFICA E GESTIONE RIGIDA
+\usepackage{graphicx}
+\usepackage{float}
+
+% ==============================================================================
+% AA TITOLI E STRUTTURA DEL DOCUMENTO (MONOCROMATICI NERI)
+% ==============================================================================
+% BB PACCHETTO TITLESEC
+\usepackage{titlesec}
+
+% BB FORMATTAZIONE TIPOGRAFICA (TITOLI NERI)
+\titleformat{\section}{\normalfont\Large\bfseries}{\thesection}{1em}{}
+\titleformat{name=\section,numberless}{\normalfont\Large\bfseries}{}{0pt}{}
+\titleformat{\subsection}{\normalfont\large\bfseries}{\thesubsection}{1em}{}
+\titleformat{name=\subsection,numberless}{\normalfont\large\bfseries}{}{0pt}{}
+\titleformat{\subsubsection}{\normalfont\normalsize\bfseries}{\thesubsubsection}{1em}{}
+\titleformat{name=\subsubsection,numberless}{\normalfont\normalsize\bfseries}{}{0pt}{}
+
+% BB SPAZIATURA VERTICALE DEI TITOLI
+\titlespacing*{\section}{0pt}{1.2ex plus 0.4ex minus 0.2ex}{0.6ex plus 0.2ex}
+\titlespacing*{\subsection}{0pt}{1ex plus 0.3ex minus 0.2ex}{0.5ex plus 0.2ex}
+\titlespacing*{\subsubsection}{0pt}{0.8ex plus 0.2ex minus 0.1ex}{0.4ex plus 0.1ex}
+
+% ==============================================================================
+% AA INTEGRAZIONE AMBIENTE MATLAB
+% ==============================================================================
+% BB CARICAMENTO PACCHETTO MATLAB
+\usepackage{matlab}
+
+% BB ATTIVAZIONE SEGNALIBRI E INDICE MATLAB
+\matlabmultipletitles
+\matlabhastoc
+
+% BB PERSONALIZZAZIONE BOX CODICE SORGENTE (Margini compatti per pagina orizzontale singola)
+\mdfdefinestyle{matlabcode}{%
+  topline=false,
+  bottomline=false,
+  rightline=false,
+  leftline=true,
+  linewidth=2.5pt,
+  linecolor=codeframe,
+  backgroundcolor=codebg,
+  innertopmargin=3pt,
+  innerbottommargin=3pt,
+  innerleftmargin=7pt,
+  innerrightmargin=6pt,
+  skipabove=2pt,
+  skipbelow=2pt
+}
+
+% ==============================================================================
+% AA IPERTESTO, SEGNALIBRI ED ELENCHI
+% ==============================================================================
+% BB CONFIGURAZIONE HYPERREF E METADATI PDF
+\hypersetup{
+    hidelinks,
+    pdfauthor={Francesco Lo Verde},
+    pdftitle={Cinematica Diretta Manipolatore Antrompomorfo - Configurazione Orizzontale}
+}
+
+% BB SEGNALIBRI AVANZATI
+\usepackage{bookmark}
+
+% BB FORMATTAZIONE ELENCHI PUNTATI E NUMERATI
+\usepackage{enumitem}
+\setlist{itemsep=3.5pt plus 1pt minus 1pt, topsep=4pt plus 1pt minus 1pt, partopsep=0pt, parsep=1pt}
+
+\newsavebox{\rotpagebox}
+
+\begin{document}
+\thispagestyle{empty}
+\begin{lrbox}{\rotpagebox}
+\begin{minipage}[t][\textwidth][t]{\textheight}
+\vspace{0pt}
+\subsection*{Cinematica Diretta Completa Del Manipolatore Antropomorfo}
+
+\begin{matlabcode}
+T06 = simplify(T06);
+
+fprintf('Matrice Di Trasformazione Omogenea Totale ^(0)T_(6):\n');
+disp(T06);
+\end{matlabcode}
+\begin{matlaboutput}
+Matrice Di Trasformazione Omogenea Totale ^{0}T_{6}:
+\end{matlaboutput}
+
+\vspace{10pt}
+\begin{matlabsymbolicoutput}
+\renewcommand{\arraystretch}{1.85}
+\setlength{\arraycolsep}{8pt}
+\resizebox{\linewidth}{!}{$\displaystyle
+{}^{0}\mathbf{T}_{6}(\mathbf{q}) =
+\begin{pmatrix}
+\sin \left(q_6 \right)\,\sigma_5 +\cos \left(q_6 \right)\,\sigma_2  & \cos \left(q_6 \right)\,\sigma_5 -\sin \left(q_6 \right)\,\sigma_2  & -\sin \left(q_5 \right)\,\sigma_6 -\cos \left(q_5 \right)\,\sigma_7  & a_2 \,\cos \left(q_1 \right)\,\cos \left(q_2 \right)-d_4 \,\sin \left(q_2 +q_3 \right)\,\cos \left(q_1 \right)-d_6 \,\sin \left(q_2 +q_3 \right)\,\cos \left(q_1 \right)\,\cos \left(q_5 \right)+a_3 \,\cos \left(q_1 \right)\,\cos \left(q_2 \right)\,\cos \left(q_3 \right)-a_3 \,\cos \left(q_1 \right)\,\sin \left(q_2 \right)\,\sin \left(q_3 \right)-d_6 \,\sin \left(q_1 \right)\,\sin \left(q_4 \right)\,\sin \left(q_5 \right)+d_6 \,\cos \left(q_1 \right)\,\cos \left(q_4 \right)\,\sin \left(q_2 \right)\,\sin \left(q_3 \right)\,\sin \left(q_5 \right)-d_6 \,\cos \left(q_1 \right)\,\cos \left(q_2 \right)\,\cos \left(q_3 \right)\,\cos \left(q_4 \right)\,\sin \left(q_5 \right)\\
+-\sin \left(q_6 \right)\,\sigma_4 -\cos \left(q_6 \right)\,\sigma_3  & \sin \left(q_6 \right)\,\sigma_3 -\cos \left(q_6 \right)\,\sigma_4  & \sin \left(q_5 \right)\,\sigma_8 -\cos \left(q_5 \right)\,\sigma_9  & a_2 \,\cos \left(q_2 \right)\,\sin \left(q_1 \right)-d_4 \,\sin \left(q_2 +q_3 \right)\,\sin \left(q_1 \right)-d_6 \,\sin \left(q_2 +q_3 \right)\,\cos \left(q_5 \right)\,\sin \left(q_1 \right)+a_3 \,\cos \left(q_2 \right)\,\cos \left(q_3 \right)\,\sin \left(q_1 \right)+d_6 \,\cos \left(q_1 \right)\,\sin \left(q_4 \right)\,\sin \left(q_5 \right)-a_3 \,\sin \left(q_1 \right)\,\sin \left(q_2 \right)\,\sin \left(q_3 \right)-d_6 \,\cos \left(q_2 \right)\,\cos \left(q_3 \right)\,\cos \left(q_4 \right)\,\sin \left(q_1 \right)\,\sin \left(q_5 \right)+d_6 \,\cos \left(q_4 \right)\,\sin \left(q_1 \right)\,\sin \left(q_2 \right)\,\sin \left(q_3 \right)\,\sin \left(q_5 \right)\\
+\sin \left(q_2 +q_3 \right)\,\sin \left(q_4 \right)\,\sin \left(q_6 \right)-\cos \left(q_6 \right)\,\sigma_1  & \sin \left(q_6 \right)\,\sigma_1 +\sin \left(q_2 +q_3 \right)\,\cos \left(q_6 \right)\,\sin \left(q_4 \right) & \sin \left(q_2 +q_3 \right)\,\cos \left(q_4 \right)\,\sin \left(q_5 \right)-\cos \left(q_2 +q_3 \right)\,\cos \left(q_5 \right) & \frac{d_6 \,\sin \left(q_2 +q_3 \right)\,\sin \left(q_4 +q_5 \right)}{2}-a_3 \,\sin \left(q_2 +q_3 \right)-a_2 \,\sin \left(q_2 \right)-d_4 \,\cos \left(q_2 +q_3 \right)-d_6 \,\cos \left(q_2 +q_3 \right)\,\cos \left(q_5 \right)-\frac{d_6 \,\sin \left(q_4 -q_5 \right)\,\sin \left(q_2 +q_3 \right)}{2}\\
+0 & 0 & 0 & 1
+\end{pmatrix}
+$}
+\end{matlabsymbolicoutput}
+
+\vspace{12pt}
+
+\[
+\begin{aligned}
+\sigma_1 &= \cos \left(q_2 +q_3 \right)\,\sin \left(q_5 \right)+\sin \left(q_2 +q_3 \right)\,\cos \left(q_4 \right)\,\cos \left(q_5 \right) &\hspace{2.2cm} \sigma_6 &= \sin \left(q_1 \right)\,\sin \left(q_4 \right)+\cos \left(q_4 \right)\,\sigma_{10}\\
+\sigma_2 &= \cos \left(q_5 \right)\,\sigma_6 -\sin \left(q_5 \right)\,\sigma_7 &\hspace{2.2cm} \sigma_7 &= \cos \left(q_1 \right)\,\cos \left(q_2 \right)\,\sin \left(q_3 \right)+\cos \left(q_1 \right)\,\cos \left(q_3 \right)\,\sin \left(q_2 \right) \\
+\sigma_3 &= \cos \left(q_5 \right)\,\sigma_8 +\sin \left(q_5 \right)\,\sigma_9 &\hspace{2.2cm} \sigma_8 &= \cos \left(q_1 \right)\,\sin \left(q_4 \right)+\cos \left(q_4 \right)\,\sigma_{11} \\
+\sigma_4 &= \cos \left(q_1 \right)\,\cos \left(q_4 \right)-\sin \left(q_4 \right)\,\sigma_{11} &\hspace{2.2cm} \sigma_9 &= \cos \left(q_2 \right)\,\sin \left(q_1 \right)\,\sin \left(q_3 \right)+\cos \left(q_3 \right)\,\sin \left(q_1 \right)\,\sin \left(q_2 \right) \\
+\sigma_5 &= \cos \left(q_4 \right)\,\sin \left(q_1 \right)-\sin \left(q_4 \right)\,\sigma_{10} &\hspace{2.2cm} \sigma_{10} &= \cos \left(q_1 \right)\,\cos \left(q_2 \right)\,\cos \left(q_3 \right)-\cos \left(q_1 \right)\,\sin \left(q_2 \right)\,\sin \left(q_3 \right) \\
+\sigma_{11} &= \sin \left(q_1 \right)\,\sin \left(q_2 \right)\,\sin \left(q_3 \right)-\cos \left(q_2 \right)\,\cos \left(q_3 \right)\,\sin \left(q_1 \right) &\hspace{2.2cm}
+\end{aligned}
+\]
+\end{minipage}
+\end{lrbox}
+\noindent\rotatebox{90}{\usebox{\rotpagebox}}
+\end{document}

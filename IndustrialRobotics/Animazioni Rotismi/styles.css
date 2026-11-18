@@ -1,0 +1,646 @@
+:root {
+  --bg: #eef2f7;
+  --surface: #ffffff;
+  --surface-2: #f6f8fc;
+  --chip: #e4eaf3;
+  --ink: #0f172a;
+  --mut: #52617a;
+  --line: #d2dbe8;
+  --grid-dot: #cbd5e4;
+
+  --a: #2563eb;   /* Blu - Ingresso / Solare / WG / Pignone */
+  --b: #ea580c;   /* Arancio - Satelliti / FlexSpline / Condotta */
+  --c: #0d9488;   /* Verde acqua - Portasatelliti / Oziosa / Solidale */
+  --d: #7c3aed;   /* Viola - Corona / Circular Spline / Uscita */
+  --hi: #e11d48;  /* Rosso - Punto di contatto / Zone ingranamento */
+
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 6px 20px rgba(15, 23, 42, 0.06);
+  --radius: 14px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b111e;
+    --surface: #121a2b;
+    --surface-2: #172136;
+    --chip: #1c273f;
+    --ink: #e8eef8;
+    --mut: #94a3b8;
+    --line: #25324c;
+    --grid-dot: #202c44;
+
+    --a: #60a5fa;
+    --b: #fb923c;
+    --c: #2dd4bf;
+    --d: #a78bfa;
+    --hi: #fb7185;
+
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.25);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.32);
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #0b111e;
+  --surface: #121a2b;
+  --surface-2: #172136;
+  --chip: #1c273f;
+  --ink: #e8eef8;
+  --mut: #94a3b8;
+  --line: #25324c;
+  --grid-dot: #202c44;
+
+  --a: #60a5fa;
+  --b: #fb923c;
+  --c: #2dd4bf;
+  --d: #a78bfa;
+  --hi: #fb7185;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.32);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.55 "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+button:focus-visible,
+input:focus-visible,
+canvas:focus-visible {
+  outline: 2px solid var(--a);
+  outline-offset: 2px;
+}
+
+.app-shell {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 20px 18px 48px;
+}
+
+/* Header */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.brand-badge {
+  display: inline-block;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--a);
+  background: color-mix(in srgb, var(--a) 12%, transparent);
+  padding: 3px 9px;
+  border-radius: 999px;
+  margin-bottom: 6px;
+}
+
+.topbar h1 {
+  margin: 0;
+  font-size: 1.65rem;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.topbar p {
+  margin: 5px 0 0;
+  color: var(--mut);
+  font-size: 0.92rem;
+  max-width: 72ch;
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  display: grid;
+  place-items: center;
+  font-size: 1.15rem;
+  flex: none;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.15s, border-color 0.15s;
+}
+.icon-btn:hover { transform: scale(1.05); border-color: var(--a); }
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 6px;
+  padding: 5px;
+  background: var(--chip);
+  border-radius: 13px;
+  overflow-x: auto;
+  margin-bottom: 16px;
+  border: 1px solid var(--line);
+}
+
+.tabs button {
+  flex: 1 0 auto;
+  white-space: nowrap;
+  padding: 9px 14px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--mut);
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+}
+
+.tabs button:hover { color: var(--ink); }
+
+.tabs button.on {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Workspace Layout */
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(320px, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+@media (max-width: 960px) {
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stage-col, .side-col {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Stage Card */
+.stage-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+.stage-wrap {
+  position: relative;
+  background-color: var(--surface);
+  background-image: radial-gradient(var(--grid-dot) 1.15px, transparent 1.15px);
+  background-size: 20px 20px;
+}
+
+canvas {
+  width: 100%;
+  aspect-ratio: 16 / 10.5;
+  display: block;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.hud-tau {
+  position: absolute;
+  left: 14px;
+  top: 12px;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--surface) 86%, transparent);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  padding: 7px 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.hud-tau small {
+  display: block;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--mut);
+}
+
+.hud-tau b {
+  display: block;
+  font-size: 1.55rem;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.hud-tau .hud-sub {
+  display: block;
+  margin-top: 2px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.74rem;
+  color: var(--a);
+  font-weight: 600;
+}
+
+.hud-badge {
+  position: absolute;
+  right: 14px;
+  top: 12px;
+  pointer-events: none;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--ink);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  backdrop-filter: blur(8px);
+  padding: 5px 11px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+}
+
+.stage-legend {
+  position: absolute;
+  left: 14px;
+  bottom: 10px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-size: 0.75rem;
+  color: var(--mut);
+  pointer-events: none;
+  background: color-mix(in srgb, var(--surface) 84%, transparent);
+  backdrop-filter: blur(6px);
+  padding: 3px 9px;
+  border-radius: 7px;
+  border: 1px solid var(--line);
+}
+
+.stage-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.leg-pitch {
+  display: inline-block;
+  width: 12px;
+  height: 2px;
+  border-top: 2px dashed var(--mut);
+}
+
+.leg-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--hi);
+}
+
+.leg-fix {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 8px solid var(--ink);
+}
+
+.stage-hint {
+  position: absolute;
+  right: 14px;
+  bottom: 10px;
+  font-size: 0.75rem;
+  color: var(--mut);
+  pointer-events: none;
+  background: color-mix(in srgb, var(--surface) 84%, transparent);
+  padding: 3px 9px;
+  border-radius: 7px;
+  border: 1px solid var(--line);
+}
+
+/* Transport Bar */
+.transport-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 11px 14px;
+  background: var(--surface-2);
+  border-top: 1px solid var(--line);
+}
+
+.transport-btns {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 7px 12px;
+  border-radius: 9px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  font-weight: 600;
+  font-size: 0.86rem;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.btn:hover { border-color: var(--a); }
+
+.btn.primary {
+  background: var(--a);
+  color: #fff;
+  border-color: var(--a);
+}
+
+.btn.toggle.on {
+  border-color: var(--a);
+  color: var(--a);
+  background: color-mix(in srgb, var(--a) 10%, var(--surface));
+}
+
+.speed-ctrl {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--mut);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.speed-ctrl input[type="range"] { width: 96px; }
+.speed-ctrl output { min-width: 34px; text-align: right; font-weight: 600; color: var(--ink); }
+
+input[type="range"] { accent-color: var(--a); cursor: pointer; }
+
+/* Panel Cards */
+.panel-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.panel-head h2 {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 700;
+}
+
+.panel-sub {
+  font-size: 0.78rem;
+  color: var(--mut);
+  font-family: "IBM Plex Mono", monospace;
+}
+
+/* Sliders */
+.sliders-box, .dyn-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.slider-row {
+  display: grid;
+  grid-template-columns: 92px 1fr 48px;
+  gap: 10px;
+  align-items: center;
+  font-size: 0.88rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.sl-label { font-weight: 600; color: var(--ink); }
+.slider-row output { text-align: right; font-weight: 600; font-family: "IBM Plex Mono", monospace; }
+
+/* Sub-config Cards */
+.subcfg {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.subcfg h3 {
+  margin: 0 0 8px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--mut);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.cfg-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 7px;
+  margin-bottom: 8px;
+}
+
+.cfg-btn {
+  text-align: left;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface-2);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+}
+
+.cfg-btn:hover { transform: translateY(-1px); border-color: var(--a); }
+
+.cfg-btn.on {
+  border-color: var(--a);
+  background: color-mix(in srgb, var(--a) 10%, var(--surface));
+}
+
+.cfg-btn strong {
+  font-size: 0.88rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.cfg-btn small {
+  font-size: 0.77rem;
+  color: var(--mut);
+  line-height: 1.35;
+}
+
+.pill {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--chip);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.cfg-btn.on .pill {
+  background: var(--a);
+  color: #fff;
+}
+
+/* Roles Grid */
+.roles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
+  gap: 8px;
+}
+
+.role-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface-2);
+  transition: border-color 0.15s, transform 0.12s, background 0.15s;
+}
+
+.role-item.on {
+  border-color: var(--ink);
+  background: var(--surface);
+  transform: translateY(-2px);
+}
+
+.role-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.role-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.role-meta b {
+  font-size: 0.88rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.role-meta span {
+  font-size: 0.76rem;
+  color: var(--mut);
+}
+
+.role-val {
+  margin-left: auto;
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 600;
+  font-size: 0.84rem;
+  white-space: nowrap;
+}
+
+/* Dynamic Metrics */
+.dyn-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.metric-box {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 9px 11px;
+}
+
+.metric-box small {
+  display: block;
+  font-size: 0.74rem;
+  color: var(--mut);
+}
+
+.metric-box b {
+  display: block;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 1.02rem;
+  margin-top: 2px;
+}
+
+/* Theory Panel & Math Formatting */
+.theory-card p {
+  margin: 0 0 10px;
+  font-size: 0.92rem;
+}
+
+.formula-box {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--a);
+  border-radius: 9px;
+  padding: 11px 14px;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  overflow-x: auto;
+}
+
+.formula-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 4px 0;
+}
+
+.frac {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  vertical-align: middle;
+  font-size: 0.86em;
+  line-height: 1.15;
+  margin: 0 2px;
+}
+
+.frac .num {
+  padding: 0 4px 2px;
+  border-bottom: 1px solid currentColor;
+}
+
+.frac .den {
+  padding: 2px 4px 0;
+}
+
+.note-list {
+  margin: 10px 0 0;
+  padding-left: 18px;
+  font-size: 0.84rem;
+  color: var(--mut);
+}
+
+.note-list li { margin-bottom: 4px; }

@@ -161,6 +161,7 @@ Matrice Di Trasformazione Omogenea ^{1}A_(2):
 0 & 0 & 0 & 1
 \end{array}\right)$
 \end{matlabsymbolicoutput}
+\newpage
 \begin{matlaboutput}
 Matrice Di Trasformazione Omogenea ^{2}A_(3):
 \end{matlaboutput}
@@ -208,7 +209,6 @@ Matrice Di Trasformazione Omogenea ^(0)T_(3):
 \begin{matlabcode}
 % Definizione Variabili Simboliche
 syms q4 q5 q6 d4 d5 d6 alpha4 alpha5 alpha6 a4 a5 a6 real;
-
 % Tabella Parametri Denavit-Hartenberg (DH)
 DH_table_Polso = [q4, 0, -pi/2, 0;
                   q5, 0, pi/2, 0;
@@ -216,7 +216,6 @@ DH_table_Polso = [q4, 0, -pi/2, 0;
 
 % Numero Giunti Manipolatore
 n = size(DH_table_Polso, 1);
-
 % Calcolo Matrici Trasformazione Polso
 [A_matrices_Polso, R_matrices_Polso] = Compute_DH_Transformations(DH_table_Polso);
 
@@ -229,6 +228,7 @@ for i = 1:n
     j = j+1;
 end
 \end{matlabcode}
+\newpage
 \begin{matlaboutput}
 Matrice Di Trasformazione Omogenea ^(3)A_(4):
 \end{matlaboutput}
@@ -240,7 +240,6 @@ Matrice Di Trasformazione Omogenea ^(3)A_(4):
 0 & 0 & 0 & 1
 \end{array}\right)$
 \end{matlabsymbolicoutput}
-
 \begin{matlaboutput}
 Matrice Di Trasformazione Omogenea ^(4)A_(5):
 \end{matlaboutput}
@@ -313,6 +312,7 @@ d_6 \,\sin \left(q_4 \right)\,\sin \left(q_5 \right)\\
 d_6 \,\cos \left(q_5 \right)
 \end{array}\right)$
 \end{matlabsymbolicoutput}
+\newpage
 \begin{matlabcode}
 % Verifica vettori costanti d_0 e d_1 (Condizione di Pieper)
 d0 = [0; 0; 0];
@@ -329,14 +329,10 @@ Vettore d_{0}:
      0
      0
 Vettore d_{1} = (^{3}R_{6})^{T} ^{3}d_{6}:
+     0
+     0
+     d6
 \end{matlaboutput}
-\begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{c}
-0\\
-0\\
-d_6
-\end{array}\right)$
-\end{matlabsymbolicoutput}
 
 \subsection*{Cinematica Inversa Di Posizione Della Struttura Portante}
 
@@ -392,7 +388,7 @@ A_q1 = [q3*sin(q2), -d2; d2, q3*sin(q2)];
 cs_q1 = simplify(inv(A_q1) * [d03_hat(1); d03_hat(2)]);
 q1_sol = atan2(cs_q1(2), cs_q1(1));
 \end{matlabcode}
-
+\newpage
 \subsection*{Cinematica Inversa Di Orientamento Del Polso Sferico}
 
 \[
@@ -475,7 +471,7 @@ In singolarita q5 = 0, q4 + q6 =
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle \textrm{atan2}\left(r_{\textrm{bar2},1} ,r_{\textrm{bar1},1} \right)$
 \end{matlabsymbolicoutput}
-
+\newpage
 \matlabheadingtwo{Configurazione Singolare Con \texorpdfstring{$q_5 =\pi$}{q5 = pi}}
 
 \begin{matlabcode}

@@ -225,7 +225,6 @@ Funzione Di Costo V(q):
 \hskip1em $\displaystyle \frac{{{\left(l_2 \,\cos \left(q_1 +q_2 \right)-\textrm{rx}+l_1 \,\cos \left(q_1 \right)\right)}}^2 }{2}+\frac{{{\left(l_2 \,\sin \left(q_1 +q_2 \right)-\textrm{ry}+l_1 \,\sin \left(q_1 \right)\right)}}^2 }{2}$
 \end{matlabsymbolicoutput}
 
-\newpage
 \begin{par}
 \begin{flushleft}
 Per analizzare il comportamento della funzione di costo $V(q)$, è necessario studiarne i punti stazionari. Questi si trovano dove il gradiente della funzione è nullo. La natura di tali punti (minimi, massimi, selle) è determinata dalla matrice Hessiana.
@@ -240,6 +239,7 @@ La Matrice Hessiana di una funzione scalare $V$ è la Jacobiana del suo gradient
     H_V (q) = J(q)^T J(q)-\sum_{k=1}^m e_k (q) H_{f_k} (q)
 \]
 
+\newpage
 \begin{matlabcode}
 % Calcolo Gradiente V(q)
 gradV = -J_q.' * e_q;
@@ -287,7 +287,6 @@ I punti critici si trovano risolvendo l'equazione precedente $\nabla_q V=0$. La 
    \item{\begin{flushleft} \textbf{Punto Sella: }Hessiana indefinita (autovalori di segno discordi) \end{flushleft}}
 \end{itemize}
 
-\newpage
 \matlabheadingtwo{Formulazione Teorica Dell'Algoritmo Di Newton}
 
 \begin{par}
@@ -357,17 +356,15 @@ Per il manipolatore RR planare, questo caso non si applica poiché $n=m=2$.
 \end{flushleft}
 \end{par}
 
+\newpage
 \begin{par}
 \begin{flushleft}
 \textbf{Caso Quadrato E Non Singolare:} La Jacobiana è una matrice 2x2. Se non è singolare, la pseudoinversa coincide con l'inversa classica ($J^{\#} =J^{-1}$) e la formula è:
 \end{flushleft}
 \end{par}
-
-\label{H_28f6}
 \[
     \dot{q} = J^{-1}(q) \cdot K \cdot e
 \]
-
 \begin{par}
 \begin{flushleft}
 Poiché l'obiettivo è raggiungere una \textit{\textbf{posa fissa}}, la velocità desiderata dell'end-effector è nulla ($\dot{r} =0$) per tutto il tempo.
@@ -377,13 +374,10 @@ Poiché l'obiettivo è raggiungere una \textit{\textbf{posa fissa}}, la velocit�
 \begin{matlabcode}
 syms q1_dot q2_dot real;
 q_dot = [q1_dot; q2_dot];
-
 % Assumendo r Costante (r_dot = 0)
-
 % Calcolo Derivata Errore
 % e_dot = -J(q) * q_dot
 e_dot = -J_q * q_dot;
-
 fprintf('Relazione Tra Derivata Errore E Velocità Giunti:');
 \end{matlabcode}
 \begin{matlaboutput}
@@ -398,7 +392,7 @@ q_{\dot{1} } \,{\left(l_2 \,\sin \left(q_1 +q_2 \right)+l_1 \,\sin \left(q_1 \ri
 -q_{\dot{1} } \,{\left(l_2 \,\cos \left(q_1 +q_2 \right)+l_1 \,\cos \left(q_1 \right)\right)}-l_2 \,q_{\dot{2} } \,\cos \left(q_1 +q_2 \right)
 \end{array}\right)$
 \end{matlabsymbolicoutput}
-\newpage
+
 \begin{matlabcode}
 % Definizione Matrice Guadagno Esponenziale (Definita Positiva)
 % Scelta Comune: Matrice Diagonale k*I con k > 0
@@ -421,7 +415,6 @@ k\,{\left(l_2 \,\sin \left(q_1 +q_2 \right)-\textrm{ry}+l_1 \,\sin \left(q_1 \ri
 \end{array}\right)$
 \end{matlabsymbolicoutput}
 \begin{matlabcode}
-
 % Risoluzione Per Velocità Giunto
 eqPerDotq = e_dot == e_dot_Target;
 
@@ -442,8 +435,6 @@ disp(q_dot_eq);
 \end{array}\right)$
 \end{matlabsymbolicoutput}
 
-
-\vspace{1em}
 \begin{par}
 \begin{flushleft}
 Per implementare questo metodo si deve discretizzare la legge di controllo. Utilizzando il metodo di Eulero esplicito con un passo di integrazione $T$, l'aggiornamento della configurazione dei giunti diventa:
@@ -629,6 +620,7 @@ Valori q_2:
 -\pi \,{\left(2\,m-1\right)}
 \end{array}\right)$
 \end{matlabsymbolicoutput}
+\newpage
 \begin{matlabcode}
 fprintf('Condizione: ');
 disp(conditions(1));
@@ -837,8 +829,7 @@ Configurazione Critica (q1, q2) = (0.9666, -1.3822)
 	 (0.9666, -1.3822) È Minimo Globale
 \end{matlaboutput}
 
-
-\vspace{1em}
+\newpage
 \begin{matlabcode}
 % --- Figura 1: Visualizzazione Vettoriale delle 6 Configurazioni Critiche ---
 col_link  = [0.25, 0.25, 0.25];
@@ -902,7 +893,9 @@ for k = 1:size(puntiCritici, 1)
         'FontWeight', 'bold');
     xlim([-2.1, 2.1]); ylim([-2.1, 2.1]);
     xticks(-2:1:2); yticks(-2:1:2);
-
+\end{matlabcode}
+\newpage
+\begin{matlabcode}
     if k == 1
         lgd1 = legend([h_arm, h_ee, h_tgt],
             {'Manipolatore RR', 'End-Effector', 'Target r = [1.3, 0.5] m'},
@@ -931,7 +924,9 @@ for i = 1:size(puntiCritici, 1)
     l1Crit = l_val(1);
     l2Crit = l_val(2);
     fprintf('Configurazione Critica (q1, q2) = (%.4f, %.4f)\n', q1Crit, q2Crit);
-
+\end{matlabcode}
+\newpage
+\begin{matlabcode}
     % Posizione Base Giunto
     x0 = 0;
     y0 = 0;
@@ -1116,6 +1111,7 @@ for i = 1:nrSol
         q_history(:, k+1) = q_k;
     end
 \end{matlabcode}
+\newpage
 \begin{matlabcode}
     if k == 100 && error_norm >= 1e-6
         fprintf('\t Algoritmo Terminato Per Numero Massimo Iterazioni.\n');
@@ -1292,7 +1288,6 @@ for bm = 1:size(base_minima, 1)
         end
     end
 end
-
 off_n   = [0.22, -0.25; 0.22, 0.28; -0.24, -0.28];
 align_n = {'left', 'left', 'right'};
 for i = 1:nrSol
@@ -1309,6 +1304,9 @@ for i = 1:nrSol
          'FontSize', 9, 'FontWeight', 'bold', 'HorizontalAlignment', align_n{i},
          'BackgroundColor', [1, 1, 1], 'EdgeColor', colors_q(i,:), 'Margin', 1.2);
 end
+\end{matlabcode}
+\newpage
+\begin{matlabcode}
 xlim(dx_n); ylim(dy_n);
 xticks([-2*pi, -pi, 0, pi]);
 xticklabels({'$-2\pi$', '$-\pi$', '$0$', '$\pi$'});
@@ -1428,9 +1426,6 @@ xlabel('$q_1\;[\mathrm{rad}]$', 'Interpreter', 'latex', 'FontWeight', 'bold');
 ylabel('$q_2\;[\mathrm{rad}]$', 'Interpreter', 'latex', 'FontWeight', 'bold');
 title('Traiettorie Gradiente su $V(\mathbf{q})$ ($[-2.5, 2.5]^2$)', 'Interpreter', 'latex', 'FontSize', 10.5, 'FontWeight', 'bold');
 hold off;
-\end{matlabcode}
-\newpage
-\begin{matlabcode}
 % --- Gradiente 2: Decadimento Errore (Log-Log) ---
 nexttile;
 hold on; grid on; box on;
@@ -1438,7 +1433,9 @@ set(gca, 'XScale', 'log', 'YScale', 'log');
 yline(1e-6, ':k', 'LineWidth', 1.2, 'HandleVisibility', 'off');
 text(3.2, 2.2e-6, 'Tolleranza $10^{-6}$', 'Interpreter', 'latex', 'FontSize', 8.5,
      'HorizontalAlignment', 'center');
-
+\end{matlabcode}
+\newpage
+\begin{matlabcode}
 for i = 1:nrSol
     if i == 2
         plot(1, 1e-8, 's', 'MarkerSize', 7.5, 'MarkerFaceColor', colors_q(i,:), 'MarkerEdgeColor', 'k',
