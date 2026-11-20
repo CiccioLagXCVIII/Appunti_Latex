@@ -142,18 +142,20 @@ Poiché il numero di gradi di libertà ($n=3$) è uguale alla dimensione dello s
 
 \begin{par}
 \begin{flushleft}
-Per risolvere il problema analiticamente, utilizziamo il \textit{Symbolic Math Toolbox}. Si definiscono prima di tutto le variabili simboliche che rappresentano le costanti del sistema (l\textbf{e lunghezze dei bracci}) e le variabili (\textbf{gli angoli dei giunti} e la \textbf{posa desiderata}).
+Per risolvere il problema analiticamente, utilizziamo il \textit{Symbolic Math Toolbox}. Si definiscono prima di tutto le variabili simboliche che rappresentano le costanti del sistema (\textbf{le lunghezze dei bracci}) e le variabili (\textbf{gli angoli dei giunti} e la \textbf{posa desiderata}).
 \end{flushleft}
 \end{par}
 
 \begin{matlabcode}
+clc; clear; close all;
+
 % l1, l2, l3 sono le lunghezze dei tre bracci del manipolatore.
 syms l1 l2 l3 real;
 
-% q1, q2, q3 sono gli angoli dei tre giunti rotoidali.
+% q1, q2, q3_calc sono gli angoli dei tre giunti rotoidali.
 syms q1 q2 q3_calc real;
 
-% px, py, phi rappresentano la posizione (x, y) e l'orientamento desiderati.
+% Px, Py, phi rappresentano la posizione (x, y) e l'orientamento desiderati.
 syms Px Py phi real;
 
 % P_wx, P_wy rappresentano la posizione del polso
@@ -213,7 +215,7 @@ Phi = q1 + q2 + q3_calc
 
 \begin{par}
 \begin{flushleft}
-La \textbf{cinematica inversa }si occupa di determinare il vettore degli angoli dei giunti $\mathbf{q}={\bigl\lbrack q_1 \;\;q_2 \;\;q_3 \bigr\rbrack }^T$ che permette all'end-effector di raggiungere una \textbf{posa desiderata}, data dal vettore $\mathbf{r}={\bigl\lbrack P_x \;\;P_y \;\;\phi \bigr\rbrack }^T$.
+La \textbf{cinematica inversa} si occupa di determinare il vettore degli angoli dei giunti $\mathbf{q}={\bigl\lbrack q_1 \;\;q_2 \;\;q_3 \bigr\rbrack }^T$ che permette all'end-effector di raggiungere una \textbf{posa desiderata}, data dal vettore $\mathbf{r}={\bigl\lbrack P_x \;\;P_y \;\;\phi \bigr\rbrack }^T$.
 \end{flushleft}
 \end{par}
 
@@ -231,19 +233,19 @@ A differenza della cinematica diretta, che ammette sempre una soluzione unica, i
 
 \begin{par}
 \begin{flushleft}
-\textbf{Nessuna Soluzione: }Se la posa è fuori dallo spazio di lavoro del robot
+\textbf{Nessuna Soluzione:} Se la posa è fuori dallo spazio di lavoro del robot.
 \end{flushleft}
 \end{par}
 
 \begin{par}
 \begin{flushleft}
-\textbf{Una O Più Soluzioni: }Diverse configurazioni dei giunti portano alla stessa posa dell'end-effector
+\textbf{Una O Più Soluzioni:} Diverse configurazioni dei giunti portano alla stessa posa dell'end-effector.
 \end{flushleft}
 \end{par}
 
 \begin{par}
 \begin{flushleft}
-La posizione finale desiderata dell'end-effector $(P_x ,P_y )$, è una funzione complessa e accoppiata di tutti e tre gli angoli $(q_1 ,q_2 ,q_3 )$. Tentare di risolvere direttamente il sistema sarebbe estremamente difficile. L'informazione cruciale che permette di sbloccare il problema è l'\textbf{orientamento finale}, cioè $\phi =q_1 +q_2 +q_3$. La conoscenza della \textbf{posizione} dell'\textbf{end-effector} $(x,y)$, del suo \textbf{orientamento }$\phi$ e della \textbf{lunghezza} dell'ultimo \textbf{braccio} $l_3$, permette di calcolare \textit{univocamente} la posizione del giunto precedente (il "polso"), che chiameremo $(P_{wx} ,P_{wy} )$.
+La posizione finale desiderata dell'end-effector $(P_x ,P_y )$ è una funzione complessa e accoppiata di tutti e tre gli angoli $(q_1 ,q_2 ,q_3 )$. Tentare di risolvere direttamente il sistema sarebbe estremamente difficile. L'informazione cruciale che permette di sbloccare il problema è l'\textbf{orientamento finale}, cioè $\phi =q_1 +q_2 +q_3$. La conoscenza della \textbf{posizione} dell'\textbf{end-effector} $(x,y)$, del suo \textbf{orientamento} $\phi$ e della \textbf{lunghezza} dell'ultimo \textbf{braccio} $l_3$, permette di calcolare \textit{univocamente} la posizione del giunto precedente (il "polso"), che chiameremo $(P_{wx} ,P_{wy} )$.
 \end{flushleft}
 \end{par}
 
@@ -270,7 +272,7 @@ La posizione dell'end-effector $(P_x ,P_y )$ può essere vista come la somma vet
 \]
 \begin{par}
 \begin{flushleft}
-Dove
+Dove:
 \end{flushleft}
 \end{par}
 
@@ -351,7 +353,7 @@ Matrice R:
 \end{matlaboutput}
 
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{cc}
+$\displaystyle \left(\begin{array}{cc}
 \cos \left(\phi \right) & -\sin \left(\phi \right)\\
 \sin \left(\phi \right) & \cos \left(\phi \right)
 \end{array}\right)$
@@ -370,7 +372,7 @@ disp(Pe_calc);
 Posizione End Effector:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{c}
+$\displaystyle \left(\begin{array}{c}
 l_2 \,\cos \left(q_1 +q_2 \right)+l_1 \,\cos \left(q_1 \right)+l_3 \,\cos \left(q_1 +q_2 +q_{3,\textrm{calc}} \right)\\
 l_2 \,\sin \left(q_1 +q_2 \right)+l_1 \,\sin \left(q_1 \right)+l_3 \,\sin \left(q_1 +q_2 +q_{3,\textrm{calc}} \right)
 \end{array}\right)$
@@ -387,7 +389,7 @@ disp(Pw_des);
 Posizione Polso:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{c}
+$\displaystyle \left(\begin{array}{c}
 \textrm{Px}-l_3 \,\cos \left(\phi \right)\\
 \textrm{Py}-l_3 \,\sin \left(\phi \right)
 \end{array}\right)$
@@ -405,19 +407,19 @@ A questo punto, è fondamentale verificare la \textbf{raggiungibilità} del pols
 
 \begin{par}
 \begin{flushleft}
-Se questa \textbf{condizione} è \textbf{soddisfatta}, il punto $\biggl(\sqrt{P_{wx}^2 +P_{wy}^2 }\biggr)$ è all'interno dello spazio di lavoro del manipolatore RR. Questo garantisce che esista una soluzione reale per gli angoli $q_1$ e $q_2$. Matematicamente, questo assicura che il valore $\cos (q_2 )$ sarà compreso nell'intervallo $[-1,1]$.
+Se questa \textbf{condizione} è \textbf{soddisfatta}, il punto $P_w = (P_{wx}, P_{wy})$ è all'interno dello spazio di lavoro del manipolatore RR. Questo garantisce che esista una soluzione reale per gli angoli $q_1$ e $q_2$. Matematicamente, questo assicura che il valore $\cos (q_2 )$ sarà compreso nell'intervallo $[-1,1]$.
 \end{flushleft}
 \end{par}
 
 \begin{par}
 \begin{flushleft}
-Se questa \textbf{condizione non} è \textbf{soddisfatta}, la posa desiderata è irraggiungibile. Cioè, non esiste alcuna configurazione reale degli angoli $q_1$ e $q_2$ che possa posizionare il polso in quel punto. Il valore di $\cos (q_2 )$, avrebbe modulo maggiore di $1$, rendendo impossibile trovare un angolo reale $q_2$.
+Se questa \textbf{condizione non} è \textbf{soddisfatta}, la posa desiderata è irraggiungibile. Cioè, non esiste alcuna configurazione reale degli angoli $q_1$ e $q_2$ che possa posizionare il polso in quel punto. Il valore di $\cos (q_2 )$ avrebbe modulo maggiore di $1$, rendendo impossibile trovare un angolo reale $q_2$.
 \end{flushleft}
 \end{par}
 
 \begin{par}
 \begin{flushleft}
-Si devono, quindi trovare $q_1$ e $q_2$ tali che il manipolatore RR posizioni il suo estremo in $P_w$.
+Si devono quindi trovare $q_1$ e $q_2$ tali che il manipolatore RR posizioni il suo estremo in $P_w$.
 \end{flushleft}
 \end{par}
 \newpage
@@ -453,7 +455,7 @@ disp(quadSum);
 P_{wx}^2 + P_{wy}^2 =
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle {l_1 }^2 +2\,\cos \left(q_2 \right)\,l_1 \,l_2 +{l_2 }^2 $
+$\displaystyle {l_1 }^2 +2\,\cos \left(q_2 \right)\,l_1 \,l_2 +{l_2 }^2 $
 \end{matlabsymbolicoutput}
 
 \begin{matlabcode}
@@ -467,7 +469,7 @@ disp(cos_q2);
 Equazione Simbolica cos(q2):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \cos \left(q_2 \right)=\frac{{P_{\textrm{wx}} }^2 +{P_{\textrm{wy}} }^2 -{l_1 }^2 -{l_2 }^2 }{2\,l_1 \,l_2 }$
+$\displaystyle \cos \left(q_2 \right)=\frac{{P_{\textrm{wx}} }^2 +{P_{\textrm{wy}} }^2 -{l_1 }^2 -{l_2 }^2 }{2\,l_1 \,l_2 }$
 \end{matlabsymbolicoutput}
 \begin{matlabcode}
 
@@ -496,8 +498,8 @@ Queste due soluzioni corrispondono a due diverse configurazioni del braccio:
 
 \begin{itemize}
 \setlength{\itemsep}{-1ex}
-   \item{\begin{flushleft} \textbf{Gomito Basso} (Soluzione Positiva): Il gomito è sotto la linea che collega la base all'end-effector \end{flushleft}}
-   \item{\begin{flushleft} \textbf{Gomito Alto} (Soluzione Negativa): Il gomito è sopra la linea che collega la base all'end-effector \end{flushleft}}
+   \item{\begin{flushleft} \textbf{Gomito Basso} (Soluzione Positiva): Il gomito è sotto la linea che collega la base al polso $P_w$ \end{flushleft}}
+   \item{\begin{flushleft} \textbf{Gomito Alto} (Soluzione Negativa): Il gomito è sopra la linea che collega la base al polso $P_w$ \end{flushleft}}
 \end{itemize}
 
 \begin{par}
@@ -524,7 +526,7 @@ disp(q2_neg);
 Valore q2 Per Valore Seno Negativo:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \textrm{atan2}\left(-2\,\sqrt{1-\frac{{{\left({P_{\textrm{wx}} }^2 +{P_{\textrm{wy}} }^2 -{l_1 }^2 -{l_2 }^2 \right)}}^2 }{4\,{l_1 }^2 \,{l_2 }^2 }},\frac{{P_{\textrm{wx}} }^2 +{P_{\textrm{wy}} }^2 -{l_1 }^2 -{l_2 }^2 }{l_1 \,l_2 }\right)$
+$\displaystyle \textrm{atan2}\left(-2\,\sqrt{1-\frac{{{\left({P_{\textrm{wx}} }^2 +{P_{\textrm{wy}} }^2 -{l_1 }^2 -{l_2 }^2 \right)}}^2 }{4\,{l_1 }^2 \,{l_2 }^2 }},\frac{{P_{\textrm{wx}} }^2 +{P_{\textrm{wy}} }^2 -{l_1 }^2 -{l_2 }^2 }{l_1 \,l_2 }\right)$
 \end{matlabsymbolicoutput}
 \begin{matlabcode}
 fprintf('Valore q2 Per Valore Seno Positivo:\n');
@@ -534,7 +536,7 @@ disp(q2_pos);
 Valore q2 Per Valore Seno Positivo:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \textrm{atan2}\left(2\,\sqrt{1-\frac{{{\left({P_{\textrm{wx}} }^2 +{P_{\textrm{wy}} }^2 -{l_1 }^2 -{l_2 }^2 \right)}}^2 }{4\,{l_1 }^2 \,{l_2 }^2 }},\frac{{P_{\textrm{wx}} }^2 +{P_{\textrm{wy}} }^2 -{l_1 }^2 -{l_2 }^2 }{l_1 \,l_2 }\right)$
+$\displaystyle \textrm{atan2}\left(2\,\sqrt{1-\frac{{{\left({P_{\textrm{wx}} }^2 +{P_{\textrm{wy}} }^2 -{l_1 }^2 -{l_2 }^2 \right)}}^2 }{4\,{l_1 }^2 \,{l_2 }^2 }},\frac{{P_{\textrm{wx}} }^2 +{P_{\textrm{wy}} }^2 -{l_1 }^2 -{l_2 }^2 }{l_1 \,l_2 }\right)$
 \end{matlabsymbolicoutput}
 
 \matlabheadingtwo{Calcolo Variabile Di Giunto \texorpdfstring{$q_1$}{q1}}
@@ -556,7 +558,7 @@ disp(eq_Pwx);
 Equazione P_wx:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle P_{\textrm{wx}} =l_2 \,\cos \left(q_1 +q_2 \right)+l_1 \,\cos \left(q_1 \right)$
+$\displaystyle P_{\textrm{wx}} =l_2 \,\cos \left(q_1 +q_2 \right)+l_1 \,\cos \left(q_1 \right)$
 \end{matlabsymbolicoutput}
 \begin{matlabcode}
 fprintf('Equazione P_wy:\n');
@@ -566,7 +568,7 @@ disp(eq_Pwy);
 Equazione P_wy:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle P_{\textrm{wy}} =l_2 \,\sin \left(q_1 +q_2 \right)+l_1 \,\sin \left(q_1 \right)$
+$\displaystyle P_{\textrm{wy}} =l_2 \,\sin \left(q_1 +q_2 \right)+l_1 \,\sin \left(q_1 \right)$
 \end{matlabsymbolicoutput}
 
 \begin{par}
@@ -584,7 +586,7 @@ Ricordando che:
 
 \begin{par}
 \begin{flushleft}
-Si può isolare $\cos (q_1 )$ nell'equazione precedente:
+Si possono raccogliere $\cos (q_1 )$ e $\sin (q_1 )$ per formare il sistema lineare $2 \times 2$:
 \end{flushleft}
 \end{par}
 
@@ -614,10 +616,10 @@ disp(lhs(eq_Pwy) == rhs(eq_Pwy));
 Sistema Lineare Per [cos(q1), sin(q1)]:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle P_{\textrm{wx}} =\cos \left(q_1 \right)\,{\left(l_1 +l_2 \,\cos \left(q_2 \right)\right)}-l_2 \,\sin \left(q_1 \right)\,\sin \left(q_2 \right)$
+$\displaystyle P_{\textrm{wx}} =\cos \left(q_1 \right)\,{\left(l_1 +l_2 \,\cos \left(q_2 \right)\right)}-l_2 \,\sin \left(q_1 \right)\,\sin \left(q_2 \right)$
 \end{matlabsymbolicoutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle P_{\textrm{wy}} =\sin \left(q_1 \right)\,{\left(l_1 +l_2 \,\cos \left(q_2 \right)\right)}+l_2 \,\cos \left(q_1 \right)\,\sin \left(q_2 \right)$
+$\displaystyle P_{\textrm{wy}} =\sin \left(q_1 \right)\,{\left(l_1 +l_2 \,\cos \left(q_2 \right)\right)}+l_2 \,\cos \left(q_1 \right)\,\sin \left(q_2 \right)$
 \end{matlabsymbolicoutput}
 \newpage
 \begin{par}
@@ -647,7 +649,7 @@ A = [ l1 + l2*cos(q2),  -l2*sin(q2);
 % Vettore Dei Termini Noti
 b = [P_wx; P_wy];
 
-% 3. Definire il vettore delle incognite (per riferimento)
+% Vettore delle incognite (per riferimento)
 vars = [c1; s1];
 
 fprintf('Matrice Coefficienti A:\n');
@@ -657,7 +659,7 @@ disp(A);
 Matrice Coefficienti A:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{cc}
+$\displaystyle \left(\begin{array}{cc}
 l_1 +l_2 \,\cos \left(q_2 \right) & -l_2 \,\sin \left(q_2 \right)\\
 l_2 \,\sin \left(q_2 \right) & l_1 +l_2 \,\cos \left(q_2 \right)
 \end{array}\right)$
@@ -670,7 +672,7 @@ disp(b);
 Vettore Termini Noti b:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{c}
+$\displaystyle \left(\begin{array}{c}
 P_{\textrm{wx}} \\
 P_{\textrm{wy}}
 \end{array}\right)$
@@ -684,7 +686,7 @@ disp(det_A);
 Determinante Matrice Coefficienti:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle {l_1 }^2 +2\,\cos \left(q_2 \right)\,l_1 \,l_2 +{l_2 }^2 $
+$\displaystyle {l_1 }^2 +2\,\cos \left(q_2 \right)\,l_1 \,l_2 +{l_2 }^2 $
 \end{matlabsymbolicoutput}
 
 \begin{par}
@@ -695,7 +697,7 @@ Si nota che il determinante è esattamente uguale a $P_{wx}^2 +P_{wy}^2 =l_1^2 +
 
 \begin{par}
 \begin{flushleft}
-Una configurazione singolare rappresenta una condizione in cui il manipolatore perde uno o più gradi di libertà nel suo spazio operativo. Anche se possiede 3 giunti, in una singolarità non può muovere istantaneamente il suo end-effector in 3 direzioni indipendenti. Il manipolatore RRR planare, ha due tipi di singolarità:
+Una configurazione singolare rappresenta una condizione in cui il manipolatore perde uno o più gradi di libertà nel suo spazio operativo. Anche se possiede 3 giunti, in una singolarità non può muovere istantaneamente il suo end-effector in 3 direzioni indipendenti. Il manipolatore RRR planare ha due tipi di singolarità:
 \end{flushleft}
 \end{par}
 
@@ -743,7 +745,7 @@ disp(sol_cosq1);
 Soluzione Di cos(q1):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \frac{P_{\textrm{wx}} \,l_1 +P_{\textrm{wy}} \,l_2 \,\sin \left(q_2 \right)+P_{\textrm{wx}} \,l_2 \,\cos \left(q_2 \right)}{{l_1 }^2 +2\,\cos \left(q_2 \right)\,l_1 \,l_2 +{l_2 }^2 }$
+$\displaystyle \frac{P_{\textrm{wx}} \,l_1 +P_{\textrm{wy}} \,l_2 \,\sin \left(q_2 \right)+P_{\textrm{wx}} \,l_2 \,\cos \left(q_2 \right)}{{l_1 }^2 +2\,\cos \left(q_2 \right)\,l_1 \,l_2 +{l_2 }^2 }$
 \end{matlabsymbolicoutput}
 \begin{matlabcode}
 fprintf('Soluzione Di sin(q1):\n');
@@ -753,7 +755,7 @@ disp(sol_sinq1);
 Soluzione Di sin(q1):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \frac{P_{\textrm{wy}} \,l_1 -P_{\textrm{wx}} \,l_2 \,\sin \left(q_2 \right)+P_{\textrm{wy}} \,l_2 \,\cos \left(q_2 \right)}{{l_1 }^2 +2\,\cos \left(q_2 \right)\,l_1 \,l_2 +{l_2 }^2 }$
+$\displaystyle \frac{P_{\textrm{wy}} \,l_1 -P_{\textrm{wx}} \,l_2 \,\sin \left(q_2 \right)+P_{\textrm{wy}} \,l_2 \,\cos \left(q_2 \right)}{{l_1 }^2 +2\,\cos \left(q_2 \right)\,l_1 \,l_2 +{l_2 }^2 }$
 \end{matlabsymbolicoutput}
 
 \begin{par}
@@ -761,6 +763,25 @@ Soluzione Di sin(q1):
 Ricordando che $P_{wx}^2 +P_{wy}^2 =l_1^2 +l_2^2 +2l_1 l_2 \cos (q_2 )$, andando a sostituire si avrà che
 \end{flushleft}
 \end{par}
+
+\begin{matlabcode}
+cosq1_final = subs(sol_cosq1, l1^2 + 2*cos(q2)*l1*l2 + l2^2, P_wx^2 + P_wy^2);
+fprintf('Valore Finale Di cos(q1):\n');
+disp(cosq1_final);
+sinq1_final = subs(sol_sinq1, l1^2 + 2*cos(q2)*l1*l2 + l2^2, P_wx^2 + P_wy^2);
+fprintf('Valore Finale Di sin(q1):\n');
+disp(sinq1_final);
+\end{matlabcode}
+
+\begin{par}
+\begin{flushleft}
+L'angolo $q_1$ si trova quindi con:
+\end{flushleft}
+\end{par}
+
+\[
+    q_1 =\textrm{atan2}(\sin (q_1 ),\cos (q_1 ))
+\]
 
 \begin{matlabcode}
 % GOMITO BASSO (+)
@@ -776,11 +797,12 @@ q1_neg = atan2(sinq1_neg, cosq1_neg);
 fprintf('Valore q1 Gomito Basso (+):\n');
 disp(q1_pos);
 \end{matlabcode}
+\newpage
 \begin{matlaboutput}
 Valore q1 Gomito Basso (+):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \begin{array}{l}
+$\displaystyle \begin{array}{l}
 \textrm{atan2}\left(\frac{P_{\textrm{wy}} \,l_1 -P_{\textrm{wx}} \,l_2 \,\sigma_1 +\frac{P_{\textrm{wy}} \,\sigma_2 }{2\,l_1 }}{{P_{\textrm{wx}} }^2 +{P_{\textrm{wy}} }^2 },\frac{P_{\textrm{wx}} \,l_1 +P_{\textrm{wy}} \,l_2 \,\sigma_1 +\frac{P_{\textrm{wx}} \,\sigma_2 }{2\,l_1 }}{{P_{\textrm{wx}} }^2 +{P_{\textrm{wy}} }^2 }\right)\\
 \mathrm{}\\
 \textrm{where}\\
@@ -798,13 +820,10 @@ disp(q1_neg);
 Valore q1 Gomito Alto (-):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \begin{array}{l}
+$\displaystyle \begin{array}{l}
 \textrm{atan2}\left(\frac{P_{\textrm{wy}} \,l_1 +P_{\textrm{wx}} \,l_2 \,\sigma_1 +\frac{P_{\textrm{wy}} \,\sigma_2 }{2\,l_1 }}{{P_{\textrm{wx}} }^2 +{P_{\textrm{wy}} }^2 },\frac{P_{\textrm{wx}} \,l_1 -P_{\textrm{wy}} \,l_2 \,\sigma_1 +\frac{P_{\textrm{wx}} \,\sigma_2 }{2\,l_1 }}{{P_{\textrm{wx}} }^2 +{P_{\textrm{wy}} }^2 }\right)\\
-\mathrm{}\\
-\textrm{where}\\
-\mathrm{}\\
+\textrm{Dove:}\\
 \;\;\sigma_1 =\sqrt{1-\frac{{\sigma_2 }^2 }{4\,{l_1 }^2 \,{l_2 }^2 }}\\
-\mathrm{}\\
 \;\;\sigma_2 ={P_{\textrm{wx}} }^2 +{P_{\textrm{wy}} }^2 -{l_1 }^2 -{l_2 }^2
 \end{array}$
 \end{matlabsymbolicoutput}
@@ -822,10 +841,15 @@ A questo punto, avendo ricavato $q_1$ e $q_2$ l'angolo $q_3$ è ricavabile da:
 \]
 \begin{matlabcode}
 % Si calcola q3 per Gomito Basso (+) con valore positivo di sin(q2)
-q3_calc_1 = phi - q1_pos - q2_pos;
+q3_calc_1 = atan2(sin(phi - q1_pos - q2_pos), cos(phi - q1_pos - q2_pos));
 
 % Si calcola q3 per Gomito Alto (-) con valore negativo di sin(q2)
-q3_calc_2 = phi - q1_neg - q2_neg;
+q3_calc_2 = atan2(sin(phi - q1_neg - q2_neg), cos(phi - q1_neg - q2_neg));
+
+fprintf('Valore q3 Gomito Basso (+):\n');
+disp(q3_calc_1);
+fprintf('Valore q3 Gomito Alto (-):\n');
+disp(q3_calc_2);
 \end{matlabcode}
 
 \begin{par}
@@ -847,7 +871,7 @@ Se la posa desiderata $(P_x ,P_y ,\phi )$ è all'interno dello spazio di lavoro 
      \mathbf{q}_{\text{Basso}} = \begin{pmatrix} q_{1,\text{Basso}} & q_{2,\text{Basso}} & q_{3,\text{Basso}} \end{pmatrix}^T
    \]
 \end{itemize}
-
+\newpage
 \matlabheadingthree{2. Soluzione Cinematica Gomito Alto (-)}
 
 \begin{itemize}
@@ -862,24 +886,13 @@ Se la posa desiderata $(P_x ,P_y ,\phi )$ è all'interno dello spazio di lavoro 
    \]
 \end{itemize}
 
-\newpage
 \matlabheading{Analisi Dello Spazio Operativo Primario E Secondario}
 
 \begin{par}
 \begin{flushleft}
-Lo studio dello spazio operativo di un manipolatore è fondamentale per comprenderne le capacità e i limiti. Questo spazio viene suddiviso in due categorie principali: il Workspace Primario, che definisce l'area raggiungibile, e il Workspace Secondario, che caratterizza la destrezza del manipolatore.
-\end{flushleft}
-\end{par}
-
-\begin{par}
-\begin{flushleft}
-Il \textbf{Workspace Primario} (o \textit{\textbf{Spazio Operativo Primario}}) $WS_1$ (Spazio Raggiungibile) è l'insieme di tutti i punti che l'organo terminale (end-effector) del manipolatore può raggiungere con almeno un orientamento possibile. In altre parole, se un punto target si trova all'interno di questo spazio, $P\in WS_1$, esiste almeno una configurazione di giunti che permette al manipolatore di raggiungerlo. Al contrario, se un punto si trova al di fuori di $WS_1$, il suo raggiungimento è impossibile e il problema cinematico non ammette soluzioni.
-\end{flushleft}
-\end{par}
-
-\begin{par}
-\begin{flushleft}
-Il \textbf{Workspace Secondario} (o \textit{\textbf{Spazio Operativo Secondario}}) $WS_2$ (Spazio di Destrezza) è un sottoinsieme del workspace primario. Esso rappresenta l'insieme dei punti che l'end-effector può raggiungere con qualsiasi orientamento fisicamente realizzabile. Se un punto appartiene allo spazio secondario, $P\in WS_2$, significa che per quel punto esistono molteplici soluzioni cinematiche, garantendo una maggiore flessibilità nel completamento del task.
+Lo studio dello spazio operativo di un manipolatore è fondamentale per comprenderne le capacità e i limiti. Questo spazio viene suddiviso in due categorie principali: il Workspace Primario, che definisce l'area raggiungibile, e il Workspace Secondario, che caratterizza la destrezza del manipolatore.\\
+Il \textbf{Workspace Primario} (o \textit{\textbf{Spazio Operativo Primario}}) $WS_1$ (Spazio Raggiungibile) è l'insieme di tutti i punti che l'organo terminale (end-effector) del manipolatore può raggiungere con almeno un orientamento possibile. In altre parole, se un punto target si trova all'interno di questo spazio, $P\in WS_1$, esiste almeno una configurazione di giunti che permette al manipolatore di raggiungerlo. Al contrario, se un punto si trova al di fuori di $WS_1$, il suo raggiungimento è impossibile e il problema cinematico non ammette soluzioni.\\
+Il \textbf{Workspace Secondario} (o \textit{\textbf{Spazio Operativo Secondario}}) $WS_2$ (Spazio di Destrezza) è un sottoinsieme del workspace primario. Esso rappresenta l'insieme dei punti che l'end-effector può raggiungere con qualsiasi orientamento fisicamente realizzabile. Se un punto appartiene allo spazio secondario, $P\in WS_2$, la sua proprietà distintiva è che può essere raggiunto dall'end-effector con \textbf{qualsiasi orientamento $\phi \in [0, 2\pi)$}, garantendo la massima destrezza e flessibilità nel completamento del task.
 \end{flushleft}
 \end{par}
 
@@ -887,39 +900,31 @@ Il \textbf{Workspace Secondario} (o \textit{\textbf{Spazio Operativo Secondario}
 
 \begin{par}
 \begin{flushleft}
-Si analizza il caso in cui la geometria del manipolatore non consente di raggiungere l'origine degli assi. Questa situazione si verifica quando il terzo braccio ($l_3$) è troppo corto per raggiungere l'origine dal punto più vicino a cui il polso (il giunto tra il secondo e il terzo braccio) può posizionarsi. Di conseguenza, lo spazio di lavoro presenterà un'area vuota al suo centro.
-\end{flushleft}
-\end{par}
-
-\begin{par}
-\begin{flushleft}
+Si analizza il caso in cui la geometria del manipolatore non consente di raggiungere l'origine degli assi. Questa situazione si verifica quando il terzo braccio ($l_3$) è troppo corto per raggiungere l'origine dal punto più vicino a cui il polso (il giunto tra il secondo e il terzo braccio) può posizionarsi. Di conseguenza, lo spazio di lavoro presenterà un'area vuota al suo centro.\\
 Lo \textit{\textbf{Spazio Operativo Primario}} è definito dalla regione compresa tra due circonferenze concentriche. Il raggio massimo di questa regione, $R_{max}$, corrisponde alla massima estensione del manipolatore, ottenuta quando tutti e tre i bracci sono allineati e puntano verso l'esterno. La distanza minima, $R_{min}$, si ha invece quando il polso si trova alla sua minima distanza dall'origine ($|l_1 -l_2 |$) e il terzo braccio è orientato in direzione opposta, verso l'origine.
+
+Analiticamente, un punto $P$ appartiene allo spazio di lavoro primario se la sua distanza
+dall'origine $\|p\|=\sqrt{x^2+y^2}$ soddisfa
 \end{flushleft}
 \end{par}
-
-\begin{par}
-\begin{flushleft}
-Analiticamente, un punto $P$ appartiene allo spazio primario se la sua distanza dall'origine $\|p\|=\sqrt{x^2 +y^2 }$, soddisfa la seguente relazione:
-\end{flushleft}
-\end{par}
-
 \[
-    ||l_1 -l_2 |-l_3 |\le \|p\|\le l_1 +l_2 +l_3
+    R_{\min} \le \|p\| \le R_{\max},
+    \qquad
+    R_{\max} = l_1 + l_2 + l_3 ,
+    \qquad
+    R_{\min} = \max\big(0,\; l_{\max} - (l_{\mathrm{a}} + l_{\mathrm{b}})\big),
 \]
-
+Dove $l_{\max}$ è il link più lungo e $l_{\mathrm{a}}, l_{\mathrm{b}}$ sono gli altri due.
 
 \begin{matlabcode}
 % Lunghezze dei bracci del manipolatore RRR.
 l1 = 10;
 l2 = 4;
 l3 = 2;
-
 % Calcolo Raggio Esterno: Massima Estensione
 R_max = l1 + l2 + l3;
-
 % Calcolo Raggio Interno: Minima Distanza Raggiungibile
-R_min = abs(abs(l1 - l2) - l3);
-
+R_min = max(0, 2 * max([l1, l2, l3]) - (l1 + l2 + l3));
 fprintf('Spazio Primario - Raggio Interno (R_min): %.2f\n', R_min);
 fprintf('Spazio Primario - Raggio Esterno (R_max): %.2f\n', R_max);
 \end{matlabcode}
@@ -944,7 +949,7 @@ xlabel('Asse X [m]', 'FontWeight', 'bold');
 ylabel('Asse Y [m]', 'FontWeight', 'bold');
 
 % Corona circolare WS1 e bordi limite
-h_ws1 = fill([x_ext, fliplr(x_in)], [y_ext, fliplr(y_in)], [0.92, 0.92, 0.92], 'EdgeColor', 'none',
+h_ws1 = fill([x_ext, fliplr(x_in)], [y_ext, fliplr(y_in)], [0.92, 0.92, 0.92], 'EdgeColor', 'none', ...
     'DisplayName', 'Spazio Raggiungibile ($WS_1$)');
 h_lim = plot(x_ext, y_ext, '--', 'Color', col_link, 'LineWidth', 1.5, 'DisplayName', 'Limiti $WS_1$');
 plot(x_in, y_in, '--', 'Color', col_link, 'LineWidth', 1.5, 'HandleVisibility', 'off');
@@ -960,20 +965,20 @@ p2 = p1 + [l2*cos(q_ex1(1)+q_ex1(2)), l2*sin(q_ex1(1)+q_ex1(2))];
 p3 = p2 + [l3*cos(sum(q_ex1)), l3*sin(sum(q_ex1))];
 pts_arm1 = [p0; p1; p2; p3];
 
-h_arm = plot(pts_arm1(:,1), pts_arm1(:,2), '-', 'Color', col_link, 'LineWidth', 2.5,
+h_arm = plot(pts_arm1(:,1), pts_arm1(:,2), '-', 'Color', col_link, 'LineWidth', 2.5, ...
     'DisplayName', 'Manipolatore RRR');
 plot(pts_arm1(2:3,1), pts_arm1(2:3,2), 'o', 'MarkerSize', 6, 'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'k', 'HandleVisibility', 'off');
-plot(p0(1), p0(2), 's', 'MarkerSize', 8, 'MarkerFaceColor', [0.4, 0.4, 0.4],
+plot(p0(1), p0(2), 's', 'MarkerSize', 8, 'MarkerFaceColor', [0.4, 0.4, 0.4], ...
     'MarkerEdgeColor', 'k', 'HandleVisibility', 'off');
-h_ee = plot(p3(1), p3(2), 'p', 'MarkerSize', 10, 'MarkerFaceColor', [0.95, 0.75, 0.10],
+h_ee = plot(p3(1), p3(2), 'p', 'MarkerSize', 10, 'MarkerFaceColor', [0.95, 0.75, 0.10], ...
     'MarkerEdgeColor', 'k', 'DisplayName', 'End-Effector');
 quiver(p3(1), p3(2), 1.8*cos(sum(q_ex1)), 1.8*sin(sum(q_ex1)), 0, 'Color', col_red, 'LineWidth', 1.8, 'MaxHeadSize', 0.6, 'HandleVisibility', 'off');
 
 % Annotazioni Raggi Limite (posizionate nel II/III quadrante, lontano dal braccio)
 ang_in = -3*pi/4;  ang_out = 3*pi/4;
-text(R_min*cos(ang_in), R_min*sin(ang_in), sprintf('$R_{min} = %.0f$ m', R_min), 'Interpreter', 'latex',
+text(R_min*cos(ang_in), R_min*sin(ang_in), sprintf('$R_{min} = %.0f$ m', R_min), 'Interpreter', 'latex', ...
     'FontSize', 9, 'FontWeight', 'bold', 'BackgroundColor', [1 1 1], 'EdgeColor', [0.8 0.8 0.8], 'Margin', 1);
-text(R_max*cos(ang_out), R_max*sin(ang_out), sprintf('$R_{max} = %.0f$ m', R_max), 'Interpreter', 'latex',
+text(R_max*cos(ang_out), R_max*sin(ang_out), sprintf('$R_{max} = %.0f$ m', R_max), 'Interpreter', 'latex', ...
     'FontSize', 9, 'FontWeight', 'bold', 'BackgroundColor', [1 1 1],  'EdgeColor', [0.8 0.8 0.8], 'Margin', 1);
 
 title('Spazio Operativo Primario ($WS_1$) del Manipolatore RRR', 'Interpreter', 'latex', 'FontSize', 11, 'FontWeight', 'bold');
@@ -988,7 +993,7 @@ hold off;
 
 \begin{par}
 \begin{flushleft}
-Lo \textit{\textbf{Spazio Operativo Secondario}}, è quel sottoinsieme dello spazio primario dove l'end-effector può non solo raggiungere un punto, ma può farlo assumendo qualsiasi orientamento. La capacità di orientarsi liberamente è cruciale in molte applicazioni robotiche.
+Lo \textit{\textbf{Spazio Operativo Secondario}} è quel sottoinsieme dello spazio primario dove l'end-effector può non solo raggiungere un punto, ma può farlo assumendo qualsiasi orientamento. La capacità di orientarsi liberamente è cruciale in molte applicazioni robotiche.
 \end{flushleft}
 \end{par}
 
@@ -1059,9 +1064,9 @@ x_ext_ws2 = R_max_ws2 * cos(theta);  y_ext_ws2 = R_max_ws2 * sin(theta);
 x_int_ws2 = R_min_ws2 * cos(theta);  y_int_ws2 = R_min_ws2 * sin(theta);
 
 % Corona WS1 (Raggiungibile) e Corona WS2 (Destrezza)
-h_ws1 = fill([x_ext_ws1, fliplr(x_int_ws1)], [y_ext_ws1, fliplr(y_int_ws1)], [0.92, 0.92, 0.92],
+h_ws1 = fill([x_ext_ws1, fliplr(x_int_ws1)], [y_ext_ws1, fliplr(y_int_ws1)], [0.92, 0.92, 0.92], ...
     'EdgeColor', 'none', 'DisplayName', 'Spazio Raggiungibile ($WS_1$)');
-h_ws2 = fill([x_ext_ws2, fliplr(x_int_ws2)], [y_ext_ws2, fliplr(y_int_ws2)], [0.80, 0.90, 0.98],
+h_ws2 = fill([x_ext_ws2, fliplr(x_int_ws2)], [y_ext_ws2, fliplr(y_int_ws2)], [0.80, 0.90, 0.98], ...
     'EdgeColor', 'none', 'DisplayName', 'Spazio di Destrezza ($WS_2$)');
 
 % Bordi Limite Tratteggiati
@@ -1072,7 +1077,6 @@ plot(x_int_ws2, y_int_ws2, '--', 'Color', col_blue, 'LineWidth', 1.6, 'HandleVis
 
 % Origine Assi
 plot(0, 0, 'k+', 'MarkerSize', 8, 'LineWidth', 1.5, 'HandleVisibility', 'off');
-
 % Configurazione d'esempio del Manipolatore RRR dentro WS2 (Destrezza)
 q_ex2 = [pi/4, 2*pi/3, -pi/2];
 p0 = [0, 0];
@@ -1081,26 +1085,26 @@ p2 = p1 + [l2*cos(q_ex2(1)+q_ex2(2)), l2*sin(q_ex2(1)+q_ex2(2))];
 p3 = p2 + [l3*cos(sum(q_ex2)), l3*sin(sum(q_ex2))];
 pts_arm2 = [p0; p1; p2; p3];
 
-h_arm = plot(pts_arm2(:,1), pts_arm2(:,2), '-', 'Color', col_link, 'LineWidth', 2.5,
+h_arm = plot(pts_arm2(:,1), pts_arm2(:,2), '-', 'Color', col_link, 'LineWidth', 2.5, ...
     'DisplayName', 'Manipolatore RRR (in $WS_2$)');
-plot(pts_arm2(2:3,1), pts_arm2(2:3,2), 'o', 'MarkerSize', 6 'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'k',
+plot(pts_arm2(2:3,1), pts_arm2(2:3,2), 'o', 'MarkerSize', 6, 'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'k', ...
     'HandleVisibility', 'off');
-plot(p0(1), p0(2), 's', 'MarkerSize', 8, 'MarkerFaceColor', [0.4, 0.4, 0.4], 'MarkerEdgeColor', 'k',
+plot(p0(1), p0(2), 's', 'MarkerSize', 8, 'MarkerFaceColor', [0.4, 0.4, 0.4], 'MarkerEdgeColor', 'k', ...
     'HandleVisibility', 'off');
-h_ee = plot(p3(1), p3(2), 'p', 'MarkerSize', 10, 'MarkerFaceColor', [0.95, 0.75, 0.10],
+h_ee = plot(p3(1), p3(2), 'p', 'MarkerSize', 10, 'MarkerFaceColor', [0.95, 0.75, 0.10], ...
     'MarkerEdgeColor', 'k', 'DisplayName', 'End-Effector');
 quiver(p3(1), p3(2), 1.8*cos(sum(q_ex2)), 1.8*sin(sum(q_ex2)), 0, 'Color', col_red, 'LineWidth', 1.8, 'MaxHeadSize', 0.6, 'HandleVisibility', 'off');
 
 % Annotazioni Raggi WS2 (posizionate nel II/III quadrante, lontano dal braccio)
 ang_ws2_in = -3*pi/4;  ang_ws2_out = 3*pi/4;
-text(R_min_ws2*cos(ang_ws2_in), R_min_ws2*sin(ang_ws2_in), sprintf('$R_{min,WS2} = %.0f$ m', R_min_ws2),
-    'Interpreter', 'latex', 'FontSize', 9, 'FontWeight', 'bold', 'BackgroundColor', [1 1 1],
+text(R_min_ws2*cos(ang_ws2_in), R_min_ws2*sin(ang_ws2_in), sprintf('$R_{min,WS2} = %.0f$ m', R_min_ws2), ...
+    'Interpreter', 'latex', 'FontSize', 9, 'FontWeight', 'bold', 'BackgroundColor', [1 1 1], ...
     'EdgeColor', [0.8 0.8 0.8], 'Margin', 1);
-text(R_max_ws2*cos(ang_ws2_out), R_max_ws2*sin(ang_ws2_out), sprintf('$R_{max,WS2} = %.0f$ m', R_max_ws2),
-    'Interpreter', 'latex', 'FontSize', 9, 'FontWeight', 'bold','BackgroundColor', [1 1 1],
+text(R_max_ws2*cos(ang_ws2_out), R_max_ws2*sin(ang_ws2_out), sprintf('$R_{max,WS2} = %.0f$ m', R_max_ws2), ...
+    'Interpreter', 'latex', 'FontSize', 9, 'FontWeight', 'bold','BackgroundColor', [1 1 1], ...
     'EdgeColor', [0.8 0.8 0.8], 'Margin', 1);
 
-title('Spazio Operativo Primario ($WS_1$) e Secondario ($WS_2$)', 'Interpreter', 'latex', 'FontSize', 11,
+title('Spazio Operativo Primario ($WS_1$) e Secondario ($WS_2$)', 'Interpreter', 'latex', 'FontSize', 11, ...
     'FontWeight', 'bold');
 legend([h_ws1, h_ws2, h_lim_ws1, h_lim_ws2, h_arm, h_ee], 'Interpreter', 'latex', 'Location', 'bestoutside');
 lim = R_max * 1.15;

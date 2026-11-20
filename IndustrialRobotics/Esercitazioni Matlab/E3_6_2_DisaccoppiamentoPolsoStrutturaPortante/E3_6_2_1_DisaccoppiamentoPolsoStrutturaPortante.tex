@@ -105,13 +105,13 @@
 \setlist{itemsep=3.5pt plus 1pt minus 1pt, topsep=4pt plus 1pt minus 1pt, partopsep=0pt, parsep=1pt}
 
 \begin{document}
-\matlabtitle{\texorpdfstring{Disaccoppiamento Polso--Struttura Portante\\Nel Manipolatore Di Stanford}{Disaccoppiamento Polso-Struttura Portante Nel Manipolatore Di Stanford}}
+\matlabtitle{\texorpdfstring{Disaccoppiamento Polso-Struttura Portante Nel Manipolatore Di\\ Stanford}{Disaccoppiamento Polso-Struttura Portante Manipolatore Di Stanford}}
 \subsection*{Cinematica Diretta Della Struttura Portante Sferica}
 
 \begin{par}
     \begin{figure}[!htbp]
         \centering
-        \includegraphics[width=0.3\linewidth]{image_0.jpeg}
+        \includegraphics[width=0.25\linewidth]{image_0.jpeg}
     \end{figure}
 \end{par}
 
@@ -119,15 +119,13 @@
 clc; clear; close all;
 
 % Definizione Variabili Simboliche
-syms q1 q2 q3 d1 d2 d3 alpha1 alpha2 alpha3 a1 a2 a3 real;
-
+syms q1 q2 q3 d2 real;
 DH_table_Strut = [q1, 0, -pi/2, 0;
                   q2, d2, pi/2, 0;
                   0, q3, 0, 0];
 
 % Numero Giunti Manipolatore
 n = size(DH_table_Strut, 1);
-
 % Calcolo Matrici Trasformazione Struttura
 [A_matrices_Strut, R_matrices_Strut] = Compute_DH_Transformations(DH_table_Strut);
 % Visualizzazione Matrici Trasformazione Struttura
@@ -142,7 +140,7 @@ end
 Matrice Di Trasformazione Omogenea ^{0}A_(1):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{cccc}
+$\displaystyle \left(\begin{array}{cccc}
 \cos \left(q_1 \right) & 0 & -\sin \left(q_1 \right) & 0\\
 \sin \left(q_1 \right) & 0 & \cos \left(q_1 \right) & 0\\
 0 & -1 & 0 & 0\\
@@ -154,27 +152,27 @@ Matrice Di Trasformazione Omogenea ^{0}A_(1):
 Matrice Di Trasformazione Omogenea ^{1}A_(2):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{cccc}
+$\displaystyle \left(\begin{array}{cccc}
 \cos \left(q_2 \right) & 0 & \sin \left(q_2 \right) & 0\\
 \sin \left(q_2 \right) & 0 & -\cos \left(q_2 \right) & 0\\
 0 & 1 & 0 & d_2 \\
 0 & 0 & 0 & 1
 \end{array}\right)$
 \end{matlabsymbolicoutput}
-\newpage
 \begin{matlaboutput}
 Matrice Di Trasformazione Omogenea ^{2}A_(3):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{cccc}
+$\displaystyle \left(\begin{array}{cccc}
 1 & 0 & 0 & 0\\
 0 & 1 & 0 & 0\\
 0 & 0 & 1 & q_3 \\
 0 & 0 & 0 & 1
 \end{array}\right)$
 \end{matlabsymbolicoutput}
+\newpage
 \begin{matlabcode}
-% Calcolo Matrice Di Trasformazione Totale Dalla Base All'End Effector
+% Calcolo Matrice Di Trasformazione Omogenea Da Base A Centro Del Polso
 T03 = A_matrices_Strut(:,:,1) * A_matrices_Strut(:,:,2) * A_matrices_Strut(:,:,3);
 T03 = simplify(T03);
 
@@ -202,13 +200,13 @@ Matrice Di Trasformazione Omogenea ^(0)T_(3):
 \begin{par}
     \begin{figure}[htbp]
         \centering
-        \includegraphics[width=0.45\linewidth]{image_1.jpeg}
+        \includegraphics[width=0.375\linewidth]{image_1.jpeg}
     \end{figure}
 \end{par}
 
 \begin{matlabcode}
 % Definizione Variabili Simboliche
-syms q4 q5 q6 d4 d5 d6 alpha4 alpha5 alpha6 a4 a5 a6 real;
+syms q4 q5 q6 d6 real;
 % Tabella Parametri Denavit-Hartenberg (DH)
 DH_table_Polso = [q4, 0, -pi/2, 0;
                   q5, 0, pi/2, 0;
@@ -233,7 +231,7 @@ end
 Matrice Di Trasformazione Omogenea ^(3)A_(4):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{cccc}
+$\displaystyle \left(\begin{array}{cccc}
 \cos \left(q_4 \right) & 0 & -\sin \left(q_4 \right) & 0\\
 \sin \left(q_4 \right) & 0 & \cos \left(q_4 \right) & 0\\
 0 & -1 & 0 & 0\\
@@ -244,7 +242,7 @@ Matrice Di Trasformazione Omogenea ^(3)A_(4):
 Matrice Di Trasformazione Omogenea ^(4)A_(5):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{cccc}
+$\displaystyle \left(\begin{array}{cccc}
 \cos \left(q_5 \right) & 0 & \sin \left(q_5 \right) & 0\\
 \sin \left(q_5 \right) & 0 & -\cos \left(q_5 \right) & 0\\
 0 & 1 & 0 & 0\\
@@ -255,7 +253,7 @@ Matrice Di Trasformazione Omogenea ^(4)A_(5):
 Matrice Di Trasformazione Omogenea ^(5)A_(6):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{cccc}
+$\displaystyle \left(\begin{array}{cccc}
 \cos \left(q_6 \right) & -\sin \left(q_6 \right) & 0 & 0\\
 \sin \left(q_6 \right) & \cos \left(q_6 \right) & 0 & 0\\
 0 & 0 & 1 & d_6 \\
@@ -264,6 +262,7 @@ Matrice Di Trasformazione Omogenea ^(5)A_(6):
 \end{matlabsymbolicoutput}
 
 \begin{matlabcode}
+% Calcolo Matrice Di Trasformazione Omogenea Da Centro Del Polso A End Effector
 T36 = A_matrices_Polso(:,:,1) * A_matrices_Polso(:,:,2) * A_matrices_Polso(:,:,3);
 T36 = simplify(T36);
 
@@ -288,8 +287,17 @@ Matrice Di Trasformazione Omogenea ^{3}T_(6):
 \]
 
 \subsection*{Cinematica Diretta Completa Del Manipolatore Di Stanford}
-Vedi File E3\_6\_2\_2\_CinematicaDirettaManipolatoreStanford.tex
-\newpage
+\begin{matlabcode}
+% Calcolo Matrice Di Trasformazione Totale Da Base A End Effector
+T06 = T03 * T36;
+\end{matlabcode}
+
+\begin{par}
+\begin{flushleft}
+Vedere pagina orizzontale per la matrice di trasformazione omogenea completa ${}^0T_6$.
+\end{flushleft}
+\end{par}
+
 \subsection*{Verifica Della Condizione Di Disaccoppiamento Cinematico}
 
 \begin{par}
@@ -309,13 +317,13 @@ Vettore Posizione ^{3}d_{6}:
 \end{matlaboutput}
 
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{c}
+$\displaystyle \left(\begin{array}{c}
 d_6 \,\cos \left(q_4 \right)\,\sin \left(q_5 \right)\\
 d_6 \,\sin \left(q_4 \right)\,\sin \left(q_5 \right)\\
 d_6 \,\cos \left(q_5 \right)
 \end{array}\right)$
 \end{matlabsymbolicoutput}
-
+\newpage
 \begin{matlabcode}
 % Verifica vettori costanti d_0 e d_1 (Condizione di Pieper)
 d0 = [0; 0; 0];
@@ -361,13 +369,13 @@ disp(d03);
 Vettore Posizione ^{0}d_{3}:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{c}
+$\displaystyle \left(\begin{array}{c}
 q_3 \,\cos \left(q_1 \right)\,\sin \left(q_2 \right)-d_2 \,\sin \left(q_1 \right)\\
 d_2 \,\cos \left(q_1 \right)+q_3 \,\sin \left(q_1 \right)\,\sin \left(q_2 \right)\\
 q_3 \,\cos \left(q_2 \right)
 \end{array}\right)$
 \end{matlabsymbolicoutput}
-\newpage
+
 \begin{matlabcode}
 % Isolamento posizione desiderata del centro polso e risoluzione (q3, q2, q1)
 syms dx dy dz d03HatNormSq real;
@@ -381,7 +389,7 @@ disp(d03_hat);
 Vettore Desiderato Centro Del Polso \hat{^{0}d_{3}} = ^{0}d_{6} - ^{0}R_{6} d_{1}:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{c}
+$\displaystyle \left(\begin{array}{c}
 \textrm{dx}-d_6 \,r_{06,1,3} \\
 \textrm{dy}-d_6 \,r_{06,2,3} \\
 \textrm{dz}-d_6 \,r_{06,3,3}
@@ -398,6 +406,49 @@ A_q1 = [q3*sin(q2), -d2; d2, q3*sin(q2)];
 cs_q1 = simplify(inv(A_q1) * [d03_hat(1); d03_hat(2)]);
 q1_sol = atan2(cs_q1(2), cs_q1(1));
 \end{matlabcode}
+\newpage
+\begin{matlabcode}
+fprintf('Soluzioni simboliche (q3, q2, q1):\n');
+fprintf('q3 (+):\n'); disp(q3_sol_pos);
+fprintf('q3 (-):\n'); disp(q3_sol_neg);
+fprintf('q2 (+):\n'); disp(q2_sol_pos);
+fprintf('q2 (-):\n'); disp(q2_sol_neg);
+fprintf('q1:\n'); disp(q1_sol);
+\end{matlabcode}
+\begin{matlaboutput}
+Soluzioni simboliche (q3, q2, q1):
+q3 (+):
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+$\displaystyle \sqrt{\textrm{d03HatNormSq}-{d_2}^2}$
+\end{matlabsymbolicoutput}
+\begin{matlaboutput}
+q3 (-):
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+$\displaystyle -\sqrt{\textrm{d03HatNormSq}-{d_2}^2}$
+\end{matlabsymbolicoutput}
+\begin{matlaboutput}
+q2 (+):
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{%
+$\displaystyle \textrm{atan2}\left(\sqrt{1-\frac{{\left(\textrm{dz}-d_6\,r_{06,3,3}\right)}^2}{{q_3}^2}}, \frac{\textrm{dz}-d_6\,r_{06,3,3}}{q_3}\right)$}
+\end{matlabsymbolicoutput}
+\begin{matlaboutput}
+q2 (-):
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{%
+$\displaystyle \textrm{atan2}\left(-\sqrt{1-\frac{{\left(\textrm{dz}-d_6\,r_{06,3,3}\right)}^2}{{q_3}^2}}, \frac{\textrm{dz}-d_6\,r_{06,3,3}}{q_3}\right)$}
+\end{matlabsymbolicoutput}
+\begin{matlaboutput}
+q1:
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{%
+$\displaystyle \textrm{atan2}\left(\frac{q_3\,\sin(q_2)\,(\textrm{dy}-d_6\,r_{06,2,3})-d_2\,(\textrm{dx}-d_6\,r_{06,1,3})}{{d_2}^2+{q_3}^2\,\sin(q_2)^2}, \frac{d_2\,(\textrm{dy}-d_6\,r_{06,2,3})+q_3\,\sin(q_2)\,(\textrm{dx}-d_6\,r_{06,1,3})}{{d_2}^2+{q_3}^2\,\sin(q_2)^2}\right)$}
+\end{matlabsymbolicoutput}
 
 \subsection*{Cinematica Inversa Di Orientamento Del Polso Sferico}
 
@@ -424,7 +475,7 @@ disp(R36);
 Matrice Di Rotazione R36 = (R03)^{T} R06 =:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{%
+\resizebox{0.9\linewidth}{!}{%
 $\displaystyle \begin{pmatrix}
     \cos \left(q_4 \right)\,\cos \left(q_5 \right)\,\cos \left(q_6 \right)-\sin \left(q_4 \right)\,\sin \left(q_6 \right) & -\cos \left(q_6 \right)\,\sin \left(q_4 \right)-\cos \left(q_4 \right)\,\cos \left(q_5 \right)\,\sin \left(q_6 \right) & \cos \left(q_4 \right)\,\sin \left(q_5 \right)\\
     \cos \left(q_4 \right)\,\sin \left(q_6 \right)+\cos \left(q_5 \right)\,\cos \left(q_6 \right)\,\sin \left(q_4 \right) & \cos \left(q_4 \right)\,\cos \left(q_6 \right)-\cos \left(q_5 \right)\,\sin \left(q_4 \right)\,\sin \left(q_6 \right) & \sin \left(q_4 \right)\,\sin \left(q_5 \right)\\
@@ -443,9 +494,38 @@ q5_sol_pos = atan2(sqrt(1 - cos_q5^2), cos_q5);
 q5_sol_neg = atan2(-sqrt(1 - cos_q5^2), cos_q5);
 q4_sol = atan2(R_bar(2,3) / sin(q5), R_bar(1,3) / sin(q5));
 q6_sol = atan2(R_bar(3,2) / sin(q5), -R_bar(3,1) / sin(q5));
+fprintf('Soluzioni simboliche (q5, q4, q6):\n');
+fprintf('q5 (+):\n'); disp(q5_sol_pos);
+fprintf('q5 (-):\n'); disp(q5_sol_neg);
+fprintf('q4:\n'); disp(q4_sol);
+fprintf('q6:\n'); disp(q6_sol);
 \end{matlabcode}
+\begin{matlaboutput}
+Soluzioni simboliche (q5, q4, q6):
+q5 (+):
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+$\displaystyle \textrm{atan2}\left(\sqrt{1-{r_{\textrm{bar3},3}}^2}, r_{\textrm{bar3},3}\right)$
+\end{matlabsymbolicoutput}
+\begin{matlaboutput}
+q5 (-):
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+$\displaystyle \textrm{atan2}\left(-\sqrt{1-{r_{\textrm{bar3},3}}^2}, r_{\textrm{bar3},3}\right)$
+\end{matlabsymbolicoutput}
+\begin{matlaboutput}
+q4:
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+$\displaystyle \textrm{atan2}\left(\frac{r_{\textrm{bar2},3}}{\sin(q_5)}, \frac{r_{\textrm{bar1},3}}{\sin(q_5)}\right)$
+\end{matlabsymbolicoutput}
+\begin{matlaboutput}
+q6:
+\end{matlaboutput}
+\begin{matlabsymbolicoutput}
+$\displaystyle \textrm{atan2}\left(\frac{r_{\textrm{bar3},2}}{\sin(q_5)}, -\frac{r_{\textrm{bar3},1}}{\sin(q_5)}\right)$
+\end{matlabsymbolicoutput}
 
-\newpage
 \matlabheading{Analisi Del Caso Singolare Del Polso \texorpdfstring{$\sin (q_5 )=0$}{sin(q5) = 0}}
 
 \matlabheadingtwo{Configurazione Singolare Con \texorpdfstring{$q_5 =0$}{q5 = 0}}
@@ -464,7 +544,7 @@ Matrice Di Rotazione R36 Calcolata Con q5 = 0:
 \end{matlaboutput}
 
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{ccc}
+$\displaystyle \left(\begin{array}{ccc}
 \cos \left(q_4 +q_6 \right) & -\sin \left(q_4 +q_6 \right) & 0\\
 \sin \left(q_4 +q_6 \right) & \cos \left(q_4 +q_6 \right) & 0\\
 0 & 0 & 1
@@ -472,21 +552,21 @@ Matrice Di Rotazione R36 Calcolata Con q5 = 0:
 \end{matlabsymbolicoutput}
 \begin{matlabcode}
 q4_plus_q6 = atan2(R_bar(2,1), R_bar(1,1));
-fprintf('In singolarita q5 = 0, q4 + q6 =\n');
+fprintf('In singolarità q5 = 0, q4 + q6 =\n');
 disp(q4_plus_q6);
 \end{matlabcode}
 \begin{matlaboutput}
-In singolarita q5 = 0, q4 + q6 =
+In singolarità q5 = 0, q4 + q6 =
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \textrm{atan2}\left(r_{\textrm{bar2},1} ,r_{\textrm{bar1},1} \right)$
+$\displaystyle \textrm{atan2}\left(r_{\textrm{bar2},1} ,r_{\textrm{bar1},1} \right)$
 \end{matlabsymbolicoutput}
 Dove:
 \begin{align*}
-    r_{\textrm{bar2},1} &= \sin{q_{4}- q_{6}} \\
-    r_{\textrm{bar1},1} &= \cos{q_{4}- q_{6}}
+    r_{\textrm{bar2},1} &= \sin(q_{4} + q_{6}) \\
+    r_{\textrm{bar1},1} &= \cos(q_{4} + q_{6})
 \end{align*}
-
+\newpage
 \matlabheadingtwo{Configurazione Singolare Con \texorpdfstring{$q_5 =\pi$}{q5 = pi}}
 
 \begin{matlabcode}
@@ -502,7 +582,7 @@ disp(R36_Pi);
 Matrice Di Rotazione R36 Calcolata Con q5 = Pi:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{ccc}
+$\displaystyle \left(\begin{array}{ccc}
 -\cos \left(q_4 -q_6 \right) & -\sin \left(q_4 -q_6 \right) & 0\\
 -\sin \left(q_4 -q_6 \right) & \cos \left(q_4 -q_6 \right) & 0\\
 0 & 0 & -1
@@ -510,18 +590,18 @@ Matrice Di Rotazione R36 Calcolata Con q5 = Pi:
 \end{matlabsymbolicoutput}
 \begin{matlabcode}
 q4_minus_q6 = atan2(-R_bar(2,1), R_bar(2,2));
-fprintf('In singolarita q5 = Pi, q4 - q6 =\n');
+fprintf('In singolarità q5 = Pi, q4 - q6 =\n');
 disp(q4_minus_q6);
 \end{matlabcode}
 \begin{matlaboutput}
-In singolarita q5 = Pi, q4 - q6 =
+In singolarità q5 = Pi, q4 - q6 =
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \textrm{atan2}\left(-r_{\textrm{bar2},1} ,r_{\textrm{bar2},2} \right)$
+$\displaystyle \textrm{atan2}\left(-r_{\textrm{bar2},1} ,r_{\textrm{bar2},2} \right)$
 \end{matlabsymbolicoutput}
 Dove:
 \begin{align*}
-    -r_{\textrm{bar2},1} &= \sin{q_{4} + q_{6}} \\
-    r_{\textrm{bar2},2} &= \cos{q_{4} + q_{6}}
+    -r_{\textrm{bar2},1} &= \sin(q_{4} - q_{6}) \\
+    r_{\textrm{bar2},2} &= \cos(q_{4} - q_{6})
 \end{align*}
 \end{document}

@@ -110,14 +110,14 @@
 
 \begin{par}
 \begin{flushleft}
-Il \textbf{disaccoppiamento }permette di separare il problema in parti piu semplici:
+Il \textbf{disaccoppiamento} permette di separare il problema in parti più semplici:
 \end{flushleft}
 \end{par}
 
 \begin{itemize}
 
-   \item{\begin{flushleft} \textbf{Cinematica Posizione: }Trovare i valori dei primi tre giunti $(q_1 ,q_2 ,q_3 )$ che posizionano il centro del polso nel punto desiderato \end{flushleft}}
-   \item{\begin{flushleft} \textbf{Cinematica Orientamento: }Trovare i valori degli ultimi tre giunti $(q_4 ,q_5 ,q_6 )$ per ottenere l'orientamento desiderato dell'end effector avendo già posizionato il polso \end{flushleft}}
+   \item{\begin{flushleft} \textbf{Cinematica Posizione:} Trovare i valori dei primi tre giunti $(q_1 ,q_2 ,q_3 )$ che posizionano il centro del polso nel punto desiderato. \end{flushleft}}
+   \item{\begin{flushleft} \textbf{Cinematica Orientamento:} Trovare i valori degli ultimi tre giunti $(q_4 ,q_5 ,q_6 )$ per ottenere l'orientamento desiderato dell'end-effector avendo già posizionato il polso. \end{flushleft}}
 \end{itemize}
 
 \begin{par}
@@ -174,8 +174,8 @@ A questo punto si possono comporre le matrici individuali per ottenere le trasfo
 
 \begin{itemize}
 
-   \item{\begin{flushleft} \texttt{T03}: Dalla base al centro del polso . \end{flushleft}}
-   \item{\begin{flushleft} \texttt{T36}: dal centro del polso all'end-effector \end{flushleft}}
+   \item{\begin{flushleft} \texttt{T03}: Dalla base al centro del polso. \end{flushleft}}
+   \item{\begin{flushleft} \texttt{T36}: Dal centro del polso all'end-effector. \end{flushleft}}
 \end{itemize}
 
 \begin{matlabcode}
@@ -187,7 +187,7 @@ disp(T03);
 Matrice di trasformazione omogenea ^{0}T_(3):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{cccc}
+$\displaystyle \left(\begin{array}{cccc}
 \cos \left(q_1 \right)\,\cos \left(q_2 \right) & -\sin \left(q_1 \right) & \cos \left(q_1 \right)\,\sin \left(q_2 \right) & q_3 \,\cos \left(q_1 \right)\,\sin \left(q_2 \right)-d_2 \,\sin \left(q_1 \right)\\
 \cos \left(q_2 \right)\,\sin \left(q_1 \right) & \cos \left(q_1 \right) & \sin \left(q_1 \right)\,\sin \left(q_2 \right) & d_2 \,\cos \left(q_1 \right)+q_3 \,\sin \left(q_1 \right)\,\sin \left(q_2 \right)\\
 -\sin \left(q_2 \right) & 0 & \cos \left(q_2 \right) & q_3 \,\cos \left(q_2 \right)\\
@@ -215,7 +215,7 @@ $\displaystyle \begin{pmatrix}
 \end{matlabsymbolicoutput}
 \begin{par}
 \begin{flushleft}
-La terna 3 del \textbf{manipolatore sferico} coincide con la terna 3 del \textbf{polso sferico}, la funzione cinematica diretta può essere ottenuta semplicemente per composizione delle matrici di trasformazione come${\,}^0 T_6 ={\,}^0 T_3 \cdot {\,}^3 T_6$
+La terna 3 del \textbf{manipolatore sferico} coincide con la terna 3 del \textbf{polso sferico}, quindi la funzione cinematica diretta può essere ottenuta semplicemente per composizione delle matrici di trasformazione come ${}^0 T_6 = {}^0 T_3 \cdot {}^3 T_6$.
 \end{flushleft}
 \end{par}
 
@@ -240,7 +240,7 @@ disp(d36);
 Vettore ^{3}d_{6}
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{c}
+$\displaystyle \left(\begin{array}{c}
 d_6 \,\cos \left(q_4 \right)\,\sin \left(q_5 \right)\\
 d_6 \,\sin \left(q_4 \right)\,\sin \left(q_5 \right)\\
 d_6 \,\cos \left(q_5 \right)
@@ -274,7 +274,7 @@ Dato che $^3 d_6$ non presenta termini indipendenti dalle variabili di giunto, q
 
 \begin{par}
 \begin{flushleft}
-Poichè $^3 R_6$ è una matrice di rotazione, si ha che ${\bigl(^3 R_6 \bigr)}^{-1} ={\bigl(^3 R_6 \bigr)}^T$
+Poiché $^3 R_6$ è una matrice di rotazione, si ha che ${\bigl(^3 R_6 \bigr)}^{-1} ={\bigl(^3 R_6 \bigr)}^T$
 \end{flushleft}
 \end{par}
 
@@ -316,7 +316,7 @@ Sapendo che la posizione desiderata dell'end-effector è $^0 d_6$, si può scriv
 
 \begin{par}
 \begin{flushleft}
-Cioè, il vettore che va dalla \textbf{base all'end effector} è uguale al vettore che va dalla \textbf{base al polso} più il vettore che va dal \textbf{polso all'end effector. }Quindi, dalla precedente si può dire che la posizione del centro del polso $^0 d_3$ può essere calcolata come $^0 d_3 =^0 d_6 -^0 R_6 \;d_1$, dove $^0 d_6$ è il vettore obiettivo cioè la posizione finale che deve avere l'end effector
+Cioè, il vettore che va dalla \textbf{base all'end-effector} è uguale al vettore che va dalla \textbf{base al polso} più il vettore che va dal \textbf{polso all'end-effector.} Quindi, dalla precedente si può dire che la posizione del centro del polso $^0 d_3$ può essere calcolata come $^0 d_3 =^0 d_6 -^0 R_6 \;d_1$, dove $^0 d_6$ è il vettore obiettivo cioè la posizione finale che deve avere l'end-effector.
 \end{flushleft}
 \end{par}
 
@@ -336,7 +336,7 @@ disp(d06);
 Posizione Desiderata (^{0}d_{6}):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{c}
+$\displaystyle \left(\begin{array}{c}
 \textrm{dx}\\
 \textrm{dy}\\
 \textrm{dz}
@@ -350,7 +350,7 @@ disp(R06_End);
 Orientamento Desiderato (R06_End):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{ccc}
+$\displaystyle \left(\begin{array}{ccc}
 R_{1,1}  & R_{1,2}  & R_{1,3} \\
 R_{2,1}  & R_{2,2}  & R_{2,3} \\
 R_{3,1}  & R_{3,2}  & R_{3,3}
@@ -366,7 +366,7 @@ disp(d03);
 Posizione Calcolata Struttura Portante (^{0}d_{3}):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{c}
+$\displaystyle \left(\begin{array}{c}
 q_3 \,\cos \left(q_1 \right)\,\sin \left(q_2 \right)-d_2 \,\sin \left(q_1 \right)\\
 d_2 \,\cos \left(q_1 \right)+q_3 \,\sin \left(q_1 \right)\,\sin \left(q_2 \right)\\
 q_3 \,\cos \left(q_2 \right)
@@ -388,7 +388,7 @@ Si indica con $\hat{^0 d_3 }$ il vettore che rappresenta la posizione desiderata
 
 \begin{par}
 \begin{flushleft}
-Questo vettore $\hat{^0 d_3 }$ è considerato \textbf{noto}, in quanto $^0 d_6$ (la posizione finale) e $^0 R_6$ (l'orientamento finale) sono \textbf{gli input problema} di cinematica inversa.
+Questo vettore $\hat{^0 d_3 }$ è considerato \textbf{noto}, in quanto $^0 d_6$ (la posizione finale) e $^0 R_6$ (l'orientamento finale) sono \textbf{gli input del problema} di cinematica inversa.
 \end{flushleft}
 \end{par}
 
@@ -405,7 +405,7 @@ disp(d03_hat);
 Posizione Desiderata Struttura Portante (d03_hat):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{c}
+$\displaystyle \left(\begin{array}{c}
 \textrm{dx}-R_{1,3} \,d_6 \\
 \textrm{dy}-R_{2,3} \,d_6 \\
 \textrm{dz}-R_{3,3} \,d_6
@@ -424,7 +424,7 @@ A questo punto si hanno due rappresentazioni della posizione del centro del pols
 \begin{itemize}
 
    \item{\begin{flushleft} $\hat{^0 d_3 }$: che è un vettore noto in quanto calcolato tramite gli \textbf{input del problema} \end{flushleft}}
-   \item{\begin{flushleft} $^0 d_3$: che è il vettore di posizione calcolato dalla cinematica diretta e dipende da $q1,q2,q3$ \end{flushleft}}
+   \item{\begin{flushleft} $^0 d_3$: che è il vettore di posizione calcolato dalla cinematica diretta e dipende da $q_1, q_2, q_3$ \end{flushleft}}
 \end{itemize}
 
 \begin{par}
@@ -448,12 +448,12 @@ disp(norm_sq_d03_hat);
 Norma del vettore target (\hat{^{0}d_{3}}):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle {{\left(\textrm{dx}-R_{1,3} \,d_6 \right)}}^2 +{{\left(\textrm{dy}-R_{2,3} \,d_6 \right)}}^2 +{{\left(\textrm{dz}-R_{3,3} \,d_6 \right)}}^2 $
+$\displaystyle {{\left(\textrm{dx}-R_{1,3} \,d_6 \right)}}^2 +{{\left(\textrm{dy}-R_{2,3} \,d_6 \right)}}^2 +{{\left(\textrm{dz}-R_{3,3} \,d_6 \right)}}^2 $
 \end{matlabsymbolicoutput}
 
 \begin{par}
 \begin{flushleft}
-Come detto prima $\hat{^0 d_3 }$ è un vettore noto, la sua norma al quadrato sarà un valore numerico. Poichè si stanno eseguendo i calcoli in maniera simbolica, per evitare risultati simbolici troppo lunghi e complessi chiamo questo valore \texttt{d03HatNormSq}
+Come detto prima $\hat{^0 d_3 }$ è un vettore noto, la sua norma al quadrato sarà un valore numerico. Poiché si stanno eseguendo i calcoli in maniera simbolica, per evitare risultati simbolici troppo lunghi e complessi chiamo questo valore \texttt{d03HatNormSq}.
 \end{flushleft}
 \end{par}
 
@@ -468,7 +468,7 @@ disp(norm_sq_d03);
 Norma al quadrato del vettore calcolato (^{0}d_{3}):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle {d_2 }^2 +{q_3 }^2 $
+$\displaystyle {d_2 }^2 +{q_3 }^2 $
 \end{matlabsymbolicoutput}
 \newpage
 \begin{matlabcode}
@@ -481,7 +481,7 @@ disp(eq_q3);
 Equazione per trovare q3:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \textrm{d03HatNormSq}={d_2 }^2 +{q_3 }^2 $
+$\displaystyle \textrm{d03HatNormSq}={d_2 }^2 +{q_3 }^2 $
 \end{matlabsymbolicoutput}
 \begin{matlabcode}
 
@@ -499,7 +499,7 @@ Soluzioni per q3:
 q3_1 =
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \sqrt{\textrm{d03HatNormSq}-{d_2 }^2 }$
+$\displaystyle \sqrt{\textrm{d03HatNormSq}-{d_2 }^2 }$
 \end{matlabsymbolicoutput}
 \begin{matlabcode}
 fprintf('q3_2 =');
@@ -509,7 +509,7 @@ disp(q3_neg);
 q3_2 =
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle -\sqrt{\textrm{d03HatNormSq}-{d_2 }^2 }$
+$\displaystyle -\sqrt{\textrm{d03HatNormSq}-{d_2 }^2 }$
 \end{matlabsymbolicoutput}
 \begin{matlabcode}
 fprintf('Entrambe le soluzioni sono valide se:');
@@ -519,7 +519,7 @@ disp(sol_q3.conditions(2));
 Entrambe le soluzioni sono valide se:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle {d_2 }^2 \le \textrm{d03HatNormSq}$
+$\displaystyle {d_2 }^2 \le \textrm{d03HatNormSq}$
 \end{matlabsymbolicoutput}
 
 \begin{par}
@@ -530,7 +530,7 @@ Queste due soluzioni corrispondono alle due possibili configurazioni di estensio
 
 \begin{par}
 \begin{flushleft}
-Ugualiando $\hat{^0 d_3 }$ (\textbf{Vettore posizione target polso}) e $^0 d_3$ (\textbf{Vettore posizione polso cinematica diretta}) si ottiene il sistema
+Uguagliando $\hat{^0 d_3 }$ (\textbf{Vettore posizione target polso}) e $^0 d_3$ (\textbf{Vettore posizione polso cinematica diretta}) si ottiene il sistema:
 \end{flushleft}
 \end{par}
 
@@ -543,7 +543,7 @@ disp(eq_system);
 Sistema da risolvere per trovare q1 e q2
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{c}
+$\displaystyle \left(\begin{array}{c}
 q_3 \,\cos \left(q_1 \right)\,\sin \left(q_2 \right)-d_2 \,\sin \left(q_1 \right)=\textrm{dx}-R_{1,3} \,d_6 \\
 d_2 \,\cos \left(q_1 \right)+q_3 \,\sin \left(q_1 \right)\,\sin \left(q_2 \right)=\textrm{dy}-R_{2,3} \,d_6 \\
 q_3 \,\cos \left(q_2 \right)=\textrm{dz}-R_{3,3} \,d_6
@@ -554,12 +554,11 @@ q_3 \,\cos \left(q_2 \right)=\textrm{dz}-R_{3,3} \,d_6
 
 \begin{par}
 \begin{flushleft}
-Si nota che, dalla terza equazione si può trovare $\cos (q_2 )$
+Si nota che dalla terza equazione, nell'ipotesi $q_3 \neq 0$, si può trovare $\cos (q_2 )$:
 \end{flushleft}
 \end{par}
 
 \begin{matlabcode}
-syms c2 real;
 eq_cosq2 = eq_system(3);
 fprintf('Terza Equazione:');
 disp(eq_cosq2);
@@ -568,7 +567,7 @@ disp(eq_cosq2);
 Terza Equazione:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle q_3 \,\cos \left(q_2 \right)=\textrm{dz}-R_{3,3} \,d_6 $
+$\displaystyle q_3 \,\cos \left(q_2 \right)=\textrm{dz}-R_{3,3} \,d_6 $
 \end{matlabsymbolicoutput}
 \begin{matlabcode}
 
@@ -580,7 +579,7 @@ disp(cosq2_eq);
 Equazione cos(q2):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \cos \left(q_2 \right)=\frac{\textrm{dz}-R_{3,3} \,d_6 }{q_3 }$
+$\displaystyle \cos \left(q_2 \right)=\frac{\textrm{dz}-R_{3,3} \,d_6 }{q_3 }$
 \end{matlabsymbolicoutput}
 
 \begin{par}
@@ -602,7 +601,7 @@ disp(cond_esistenza_q2);
 Condizione di esistenza per q2:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle {d_2 }^2 \le {{\left(\textrm{dx}-R_{1,3} \,d_6 \right)}}^2 +{{\left(\textrm{dy}-R_{2,3} \,d_6 \right)}}^2 $
+$\displaystyle {d_2 }^2 \le {{\left(\textrm{dx}-R_{1,3} \,d_6 \right)}}^2 +{{\left(\textrm{dy}-R_{2,3} \,d_6 \right)}}^2 $
 \end{matlabsymbolicoutput}
 \begin{matlabcode}
 cosq2 = rhs(cosq2_eq);
@@ -621,7 +620,7 @@ Valore q2 Per Valore Seno Negativo:
 \end{matlaboutput}
 
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \textrm{atan2}\left(-\sqrt{1-\frac{{{\left(\textrm{dz}-R_{3,3} \,d_6 \right)}}^2 }{{q_3 }^2 }},\frac{\textrm{dz}-R_{3,3} \,d_6 }{q_3 }\right)$
+$\displaystyle \textrm{atan2}\left(-\sqrt{1-\frac{{{\left(\textrm{dz}-R_{3,3} \,d_6 \right)}}^2 }{{q_3 }^2 }},\frac{\textrm{dz}-R_{3,3} \,d_6 }{q_3 }\right)$
 \end{matlabsymbolicoutput}
 \begin{matlabcode}
 fprintf('Valore q2 Per Valore Seno Positivo:');
@@ -632,7 +631,7 @@ Valore q2 Per Valore Seno Positivo:
 \end{matlaboutput}
 
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \textrm{atan2}\left(\sqrt{1-\frac{{{\left(\textrm{dz}-R_{3,3} \,d_6 \right)}}^2 }{{q_3 }^2 }},\frac{\textrm{dz}-R_{3,3} \,d_6 }{q_3 }\right)$
+$\displaystyle \textrm{atan2}\left(\sqrt{1-\frac{{{\left(\textrm{dz}-R_{3,3} \,d_6 \right)}}^2 }{{q_3 }^2 }},\frac{\textrm{dz}-R_{3,3} \,d_6 }{q_3 }\right)$
 \end{matlabsymbolicoutput}
 
 \newpage
@@ -661,10 +660,10 @@ disp(cos(q1) == cosq1);
 Soluzioni Del Sistema:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \sin \left(q_1 \right)=-\frac{d_2 \,\textrm{dx}-\textrm{dy}\,q_3 \,\sin \left(q_2 \right)-R_{1,3} \,d_2 \,d_6 +R_{2,3} \,d_6 \,q_3 \,\sin \left(q_2 \right)}{{d_2 }^2 +{q_3 }^2 \,{\sin \left(q_2 \right)}^2 }$
+$\displaystyle \sin \left(q_1 \right)=-\frac{d_2 \,\textrm{dx}-\textrm{dy}\,q_3 \,\sin \left(q_2 \right)-R_{1,3} \,d_2 \,d_6 +R_{2,3} \,d_6 \,q_3 \,\sin \left(q_2 \right)}{{d_2 }^2 +{q_3 }^2 \,{\sin \left(q_2 \right)}^2 }$
 \end{matlabsymbolicoutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \cos \left(q_1 \right)=\frac{d_2 \,\textrm{dy}+\textrm{dx}\,q_3 \,\sin \left(q_2 \right)-R_{2,3} \,d_2 \,d_6 -R_{1,3} \,d_6 \,q_3 \,\sin \left(q_2 \right)}{{d_2 }^2 +{q_3 }^2 \,{\sin \left(q_2 \right)}^2 }$
+$\displaystyle \cos \left(q_1 \right)=\frac{d_2 \,\textrm{dy}+\textrm{dx}\,q_3 \,\sin \left(q_2 \right)-R_{2,3} \,d_2 \,d_6 -R_{1,3} \,d_6 \,q_3 \,\sin \left(q_2 \right)}{{d_2 }^2 +{q_3 }^2 \,{\sin \left(q_2 \right)}^2 }$
 \end{matlabsymbolicoutput}
 
 \begin{par}
@@ -702,7 +701,7 @@ Una volta determinati $q_1 ,q_2 ,q_3$, la matrice di rotazione $^0 R_3$ è nota,
 
 \begin{par}
 \begin{flushleft}
-Sapendo che le matrici di rotazioni sono invertibili e l'inversa di una matrice di rotazione è uguale alla trasposta, si ha che la matrice "target" per ottenere l'orientamento desiderato è:
+Sapendo che le matrici di rotazione sono invertibili e l'inversa di una matrice di rotazione è uguale alla trasposta, si ha che la matrice "target" per ottenere l'orientamento desiderato è:
 \end{flushleft}
 \end{par}
 
@@ -723,7 +722,7 @@ Dove
 \newpage
 \begin{par}
 \begin{flushleft}
-Poichè si stanno facendo dei calcoli simbolici, indichiamo con\texttt{\textbf{R03\_K}} la matrice che contiene i valori numerici calcolati (\textit{\textbf{termini noti}}) e con \texttt{\textbf{R36\_T}} la matrice di rotazione estratta dalla matrice di trasformazione omogenea $^3 T_6$ ottenuta tramite le tabelle di Denavit-Hartenberg che dipende da $q_4 ,q_5 ,q_6$ (\textit{\textbf{incognite}})
+Poiché si stanno facendo dei calcoli simbolici, indichiamo con \texttt{\textbf{R03\_K}} la matrice che contiene i valori numerici calcolati (\textit{\textbf{termini noti}}) e con \texttt{\textbf{R36\_T}} la matrice di rotazione estratta dalla matrice di trasformazione omogenea $^3 T_6$ ottenuta tramite le tabelle di Denavit-Hartenberg che dipende da $q_4 ,q_5 ,q_6$ (\textit{\textbf{incognite}}).
 \end{flushleft}
 \end{par}
 
@@ -742,7 +741,7 @@ disp(R06_K);
 Matrice Rotazione R06 Nota:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{ccc}
+$\displaystyle \left(\begin{array}{ccc}
 {\textrm{R06K}}_{1,1}  & {\textrm{R06K}}_{1,2}  & {\textrm{R06K}}_{1,3} \\
 {\textrm{R06K}}_{2,1}  & {\textrm{R06K}}_{2,2}  & {\textrm{R06K}}_{2,3} \\
 {\textrm{R06K}}_{3,1}  & {\textrm{R06K}}_{3,2}  & {\textrm{R06K}}_{3,3}
@@ -760,7 +759,7 @@ disp(R03_K);
 Matrice Rotazione R03 Nota:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{ccc}
+$\displaystyle \left(\begin{array}{ccc}
 {\textrm{R03K}}_{1,1}  & {\textrm{R03K}}_{1,2}  & {\textrm{R03K}}_{1,3} \\
 {\textrm{R03K}}_{2,1}  & {\textrm{R03K}}_{2,2}  & {\textrm{R03K}}_{2,3} \\
 {\textrm{R03K}}_{3,1}  & {\textrm{R03K}}_{3,2}  & {\textrm{R03K}}_{3,3}
@@ -777,7 +776,7 @@ disp(R36_T);
 Matrice Rotazione R36 Incognite:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \begin{pmatrix}
+$\displaystyle \begin{pmatrix}
 c\left(q_4 \right)\,c\left(q_5 \right)\,c\left(q_6 \right)-s\left(q_4 \right)\,s\left(q_6 \right) & -c\left(q_6 \right)\,s\left(q_4 \right)-c\left(q_4 \right)\,c\left(q_5 \right)\,s\left(q_6 \right) & c\left(q_4 \right)\,s\left(q_5 \right)\\
 c\left(q_4 \right)\,s\left(q_6 \right)+c\left(q_5 \right)\,c\left(q_6 \right)\,s\left(q_4 \right) & c\left(q_4 \right)\,c\left(q_6 \right)-c\left(q_5 \right)\,s\left(q_4 \right)\,s\left(q_6 \right) & s\left(q_4 \right)\,s\left(q_5 \right)\\
 -c\left(q_6 \right)\,s\left(q_5 \right) & s\left(q_5 \right)\,s\left(q_6 \right) & c\left(q_5 \right)
@@ -792,9 +791,9 @@ Con la formula $^3 R_6 ={\bigl(^0 R_3 \bigr)}^T \;^0 R_6$ si può calcolare la m
 \begin{matlabcode}
 R03_K_Trasp = R03_K';
 
-R36_Calc = R03_K_Trasp * R06_K;
+R36_K = R03_K_Trasp * R06_K;
 fprintf('Matrice Rotazione R36 Nota Calcolata:');
-disp(R36_Calc);
+disp(R36_K);
 \end{matlabcode}
 \begin{matlaboutput}
 Matrice Rotazione R36 Nota Calcolata:
@@ -811,21 +810,21 @@ $\displaystyle \begin{pmatrix}
 \newpage
 \begin{par}
 \begin{flushleft}
-\textbf{Per semplificare la leggibilità delle formule, indichiamo con A la matrice precedente e ogni suo elemento sarà }$\mathbf{A_{ij}}$:
+\textbf{Per semplificare la leggibilità delle formule, indichiamo con \texttt{A} (variabile \texttt{R36\_A}) la matrice precedente e ogni suo elemento sarà }$\mathbf{A_{ij}}$:
 \end{flushleft}
 \end{par}
 
 \begin{matlabcode}
 % Matrice R36 Calcolata Che Rinomino In A
-R36_K = sym('A', [3, 3], 'real');
+R36_A = sym('A', [3, 3], 'real');
 fprintf('Matrice Rotazione R36 Calcolata Con Termini Rinominati Con A_{ij}:');
-disp(R36_K);
+disp(R36_A);
 \end{matlabcode}
 \begin{matlaboutput}
 Matrice Rotazione R36 Calcolata Con Termini Rinominati Con A_{ij}:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{ccc}
+$\displaystyle \left(\begin{array}{ccc}
 A_{1,1}  & A_{1,2}  & A_{1,3} \\
 A_{2,1}  & A_{2,2}  & A_{2,3} \\
 A_{3,1}  & A_{3,2}  & A_{3,3}
@@ -839,7 +838,7 @@ Quindi si ottiene:
 \end{par}
 
 \begin{matlabcode}
-eqSystem = R36_T == R36_K;
+eqSystem = R36_T == R36_A;
 fprintf('Sistema Da Risolvere Per Trovare q4, q5, q6');
 disp(eqSystem);
 \end{matlabcode}
@@ -878,7 +877,7 @@ disp(q5_neg);
 Valore q5 Per Valore Seno Negativo:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \textrm{atan2}\left(-\sqrt{1-{A_{3,3} }^2 },A_{3,3} \right)$
+$\displaystyle \textrm{atan2}\left(-\sqrt{1-{A_{3,3} }^2 },A_{3,3} \right)$
 \end{matlabsymbolicoutput}
 \begin{matlabcode}
 fprintf('Valore q5 Per Valore Seno Positivo:');
@@ -888,7 +887,7 @@ disp(q5_pos);
 Valore q5 Per Valore Seno Positivo:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \textrm{atan2}\left(\sqrt{1-{A_{3,3} }^2 },A_{3,3} \right)$
+$\displaystyle \textrm{atan2}\left(\sqrt{1-{A_{3,3} }^2 },A_{3,3} \right)$
 \end{matlabsymbolicoutput}
 \newpage
 \begin{par}
@@ -914,10 +913,10 @@ disp(eq_sinq4);
 Sistema Da Risolvere Per Trovare q4:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \cos \left(q_4 \right)\,\sin \left(q_5 \right)=A_{1,3} $
+$\displaystyle \cos \left(q_4 \right)\,\sin \left(q_5 \right)=A_{1,3} $
 \end{matlabsymbolicoutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \sin \left(q_4 \right)\,\sin \left(q_5 \right)=A_{2,3} $
+$\displaystyle \sin \left(q_4 \right)\,\sin \left(q_5 \right)=A_{2,3} $
 \end{matlabsymbolicoutput}
 \begin{matlabcode}
 fprintf('Soluzioni:');
@@ -930,10 +929,10 @@ disp(sinq4_eq);
 Soluzioni:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \cos \left(q_4 \right)=\frac{A_{1,3} }{\sin \left(q_5 \right)}$
+$\displaystyle \cos \left(q_4 \right)=\frac{A_{1,3} }{\sin \left(q_5 \right)}$
 \end{matlabsymbolicoutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \sin \left(q_4 \right)=\frac{A_{2,3} }{\sin \left(q_5 \right)}$
+$\displaystyle \sin \left(q_4 \right)=\frac{A_{2,3} }{\sin \left(q_5 \right)}$
 \end{matlabsymbolicoutput}
 \begin{matlabcode}
 cosq4 = rhs(cosq4_eq);
@@ -946,7 +945,7 @@ disp(q4_val);
 Valore q4:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \textrm{atan2}\left(\frac{A_{2,3} }{\sin \left(q_5 \right)},\frac{A_{1,3} }{\sin \left(q_5 \right)}\right)$
+$\displaystyle \textrm{atan2}\left(\frac{A_{2,3} }{\sin \left(q_5 \right)},\frac{A_{1,3} }{\sin \left(q_5 \right)}\right)$
 \end{matlabsymbolicoutput}
 
 \begin{flushleft}
@@ -964,10 +963,10 @@ disp(eq_sinq6);
 Sistema Da Risolvere Per Trovare q6:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle -\cos \left(q_6 \right)\,\sin \left(q_5 \right)=A_{3,1} $
+$\displaystyle -\cos \left(q_6 \right)\,\sin \left(q_5 \right)=A_{3,1} $
 \end{matlabsymbolicoutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \sin \left(q_5 \right)\,\sin \left(q_6 \right)=A_{3,2} $
+$\displaystyle \sin \left(q_5 \right)\,\sin \left(q_6 \right)=A_{3,2} $
 \end{matlabsymbolicoutput}
 \newpage
 \begin{matlabcode}
@@ -981,10 +980,10 @@ disp(sinq6_eq);
 Soluzioni:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \cos \left(q_6 \right)=-\frac{A_{3,1} }{\sin \left(q_5 \right)}$
+$\displaystyle \cos \left(q_6 \right)=-\frac{A_{3,1} }{\sin \left(q_5 \right)}$
 \end{matlabsymbolicoutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \sin \left(q_6 \right)=\frac{A_{3,2} }{\sin \left(q_5 \right)}$
+$\displaystyle \sin \left(q_6 \right)=\frac{A_{3,2} }{\sin \left(q_5 \right)}$
 \end{matlabsymbolicoutput}
 \begin{matlabcode}
 cosq6 = rhs(cosq6_eq);
@@ -997,7 +996,7 @@ disp(q6_val);
 Valore q6:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \textrm{atan2}\left(\frac{A_{3,2} }{\sin \left(q_5 \right)},-\frac{A_{3,1} }{\sin \left(q_5 \right)}\right)$
+$\displaystyle \textrm{atan2}\left(\frac{A_{3,2} }{\sin \left(q_5 \right)},-\frac{A_{3,1} }{\sin \left(q_5 \right)}\right)$
 \end{matlabsymbolicoutput}
 
 \matlabheading{Analisi Delle Configurazioni Singolari Del Manipolatore Di Stanford}
@@ -1014,7 +1013,7 @@ Una configurazione singolare si verifica quando la struttura del manipolatore li
 
 \begin{par}
 \begin{flushleft}
-Queste singolarità dipendono dai giunti $q_1 ,q_2 ,q_3$ e determinano la capacità del robot di posizionare il centro del polso. Si verifica quando:
+Queste singolarità dipendono dai giunti $q_1 ,q_2 ,q_3$ e determinano la capacità del robot di posizionare il centro del polso. Si presentano due casi:
 \end{flushleft}
 \end{par}
 
@@ -1032,13 +1031,13 @@ Si verifica quando l'argomento della radice quadrata usata per calcolare $q_3$ d
 
 \begin{par}
 \begin{flushleft}
-Dove $\|\hat{^0 d_3 } {\|}^2$ è noto, poichè $\hat{^0 d_3 } =^0 d_6 -^0 R_6 \cdot d_1$, i valori $^0 d_6$ e $^0 R_6$ sono gli input del problema, $d_1 =[0,0,d_6 ]^T$ è il vettore costante di offset dal polso all'end-effector, mentre $d_2$ e $d_6$ sono i parametri fisici del sistema.
+Dove $\|\hat{^0 d_3 } {\|}^2$ è noto, poiché $\hat{^0 d_3 } =^0 d_6 -^0 R_6 \cdot d_1$, i valori $^0 d_6$ e $^0 R_6$ sono gli input del problema, $d_1 =[0,0,d_6 ]^T$ è il vettore costante di offset dal polso all'end-effector, mentre $d_2$ e $d_6$ sono i parametri fisici del sistema.
 \end{flushleft}
 \end{par}
 
 \begin{par}
 \begin{flushleft}
-Se si verifica questo, il centro del polso si trova sul confine della superficie interna del suo spazio di lavoro (sfera di raggio $d_2$ attorno a $RF_1$).
+La regione interna irraggiungibile della struttura portante è un \textbf{cilindro} di raggio $d_2$ attorno all'asse $z_0$: in particolare, i punti sulla sfera di raggio $d_2$ con $z \neq 0$ sono irraggiungibili, mentre $q_3 = 0$ corrisponde unicamente alla \textbf{circonferenza} di raggio $d_2$ sul piano $z = 0$.
 \end{flushleft}
 \end{par}
 
@@ -1052,8 +1051,9 @@ disp(norm_sq_d03);
 Norma al quadrato del vettore calcolato (^{0}d_{3}):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle {d_2 }^2 +{q_3 }^2 $
+$\displaystyle {d_2 }^2 +{q_3 }^2 $
 \end{matlabsymbolicoutput}
+\newpage
 \begin{matlabcode}
 fprintf('Norma al quadrato del vettore target (\\hat{^{0}d_{3}}): d2^2');
 \end{matlabcode}
@@ -1070,7 +1070,7 @@ disp(eq_q3_Sing);
 Equazione per trovare q3:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle {d_2 }^2 ={d_2 }^2 +{q_3 }^2 $
+$\displaystyle {d_2 }^2 ={d_2 }^2 +{q_3 }^2 $
 \end{matlabsymbolicoutput}
 \begin{matlabcode}
 
@@ -1083,7 +1083,7 @@ disp(sol_q3.q3);
 Valore Di q3:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{c}
+$\displaystyle \left(\begin{array}{c}
 0\\
 0
 \end{array}\right)$
@@ -1108,14 +1108,14 @@ disp(q1_sing_q3_zero);
 Valore di q1 per q3 = 0 (con q2 arbitrario):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \textrm{atan2}\left(R_{1,3} \,d_6 -\textrm{dx},\textrm{dy}-R_{2,3} \,d_6 \right)$
+$\displaystyle \textrm{atan2}\left(R_{1,3} \,d_6 -\textrm{dx},\textrm{dy}-R_{2,3} \,d_6 \right)$
 \end{matlabsymbolicoutput}
 
 \matlabheadingthree{Singolarità Di Allineamento Sull'Asse \texorpdfstring{$z_0$ ($s(q_2)=0$)}{z0 (s(q2)=0)}}
 
 \begin{par}
 \begin{flushleft}
-Questa configurazione di singolarità si verifica quando $s(q_2 )=0$, ovvero $q_2 =0$ oppure $q_2 =\pi$ ($\cos (q_2 )=\pm 1$), in cui il braccio prismatico risulta allineato con l'asse $z_0$. Grazie all'offset $d_2 \not= 0$, il centro del polso rimane a distanza $d_2$ dall'asse $z_0$ e la condizione $d_2^2 \le {\hat{^{0}d_{3}}}_x^2 + {\hat{^{0}d_{3}}}_y^2$ è ancora soddisfatta.
+Questa configurazione di singolarità si verifica quando $s(q_2 )=0$, ovvero $q_2 =0$ oppure $q_2 =\pi$ ($\cos (q_2 )=\pm 1$), in cui il braccio prismatico risulta allineato con l'asse $z_0$. Grazie all'offset $d_2 \not= 0$, il centro del polso rimane a distanza $d_2$ dall'asse $z_0$ e vale l'uguaglianza stretta $d_2^2 = {}^0\hat{d}_{3x}^2 + {}^0\hat{d}_{3y}^2$ (superficie laterale del cilindro di raggio $d_2$).
 \end{flushleft}
 \end{par}
 
@@ -1136,10 +1136,10 @@ disp(q1_sing_s2_zero);
 Valore di q1 per sin(q2) = 0:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \textrm{atan2}\left(-\frac{\textrm{dx}-R_{1,3} \,d_6 }{d_2 },\frac{\textrm{dy}-R_{2,3} \,d_6 }{d_2 }\right)$
+$\displaystyle \textrm{atan2}\left(-\frac{\textrm{dx}-R_{1,3} \,d_6 }{d_2 },\frac{\textrm{dy}-R_{2,3} \,d_6 }{d_2 }\right)$
 \end{matlabsymbolicoutput}
 
-\vspace{1em}
+\newpage
 \matlabheadingtwo{Singolarità Cinematiche Del Polso Sferico}
 \begin{par}
 \begin{flushleft}
@@ -1183,7 +1183,7 @@ Nel caso di questa singolarità gli assi di rotazione del giunto $q_4$ e del giu
 
 \begin{par}
 \begin{flushleft}
-Se si verifica questa singolarità è impossibile determinare in modo univoco i valori di $q_4$ e $q_6$ poichè equazioni per trovarli diventano dipendenti. Si può risolvere solo per la loro somma ($q_5 =0$) o differenza ($q_5 =\pi$). Questo significa che esiste un numero infinito di coppie ($q_4$, $q_6$) che soddisfano l'orientamento target, e qualsiasi coppia è una soluzione valida.
+Se si verifica questa singolarità è impossibile determinare in modo univoco i valori di $q_4$ e $q_6$ poiché le equazioni per trovarli diventano dipendenti. Si può risolvere solo per la loro somma ($q_5 =0$) o differenza ($q_5 =\pi$). Questo significa che esiste un numero infinito di coppie ($q_4$, $q_6$) che soddisfano l'orientamento target, e qualsiasi coppia è una soluzione valida.
 \end{flushleft}
 \end{par}
 
@@ -1196,7 +1196,7 @@ disp(R36_T_Sing_0);
 Matrice Rotazione R36 (Singolarita q5 = 0):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{ccc}
+$\displaystyle \left(\begin{array}{ccc}
 \cos \left(q_4 +q_6 \right) & -\sin \left(q_4 +q_6 \right) & 0\\
 \sin \left(q_4 +q_6 \right) & \cos \left(q_4 +q_6 \right) & 0\\
 0 & 0 & 1
@@ -1209,7 +1209,7 @@ Matrice Rotazione R36 (Singolarita q5 = 0):
 \end{par}
 
 \begin{matlabcode}
-q4_plus_q6 = atan2(R36_K(2,1), R36_K(1,1));
+q4_plus_q6 = atan2(R36_A(2,1), R36_A(1,1));
 fprintf('Somma q4 + q6 per q5 = 0:\n');
 disp(q4_plus_q6);
 \end{matlabcode}
@@ -1217,7 +1217,7 @@ disp(q4_plus_q6);
 Somma q4 + q6 per q5 = 0:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \textrm{atan2}\left(A_{2,1} ,A_{1,1} \right)$
+$\displaystyle \textrm{atan2}\left(A_{2,1} ,A_{1,1} \right)$
 \end{matlabsymbolicoutput}
 
 \begin{matlabcode}
@@ -1229,7 +1229,7 @@ disp(R36_T_Sing_Pi);
 Matrice Rotazione R36 (Singolarita q5 = pi):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{ccc}
+$\displaystyle \left(\begin{array}{ccc}
 -\cos \left(q_4 -q_6 \right) & -\sin \left(q_4 -q_6 \right) & 0\\
 -\sin \left(q_4 -q_6 \right) & \cos \left(q_4 -q_6 \right) & 0\\
 0 & 0 & -1
@@ -1241,7 +1241,7 @@ Matrice Rotazione R36 (Singolarita q5 = pi):
 \end{flushleft}
 \end{par}
 \begin{matlabcode}
-q4_minus_q6 = atan2(-R36_K(2,1), R36_K(2,2));
+q4_minus_q6 = atan2(-R36_A(2,1), R36_A(2,2));
 fprintf('Differenza q4 - q6 per q5 = pi:\n');
 disp(q4_minus_q6);
 \end{matlabcode}
@@ -1249,7 +1249,7 @@ disp(q4_minus_q6);
 Differenza q4 - q6 per q5 = pi:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \textrm{atan2}\left(-A_{2,1} ,A_{2,2} \right)$
+$\displaystyle \textrm{atan2}\left(-A_{2,1} ,A_{2,2} \right)$
 \end{matlabsymbolicoutput}
 
 \newpage
@@ -1348,16 +1348,18 @@ q3_sol = q3_pos_num;
 if d2_num^2 > d03_hat_num(1)^2 + d03_hat_num(2)^2
     error('Posizione Non Raggiungibile per q2: d2^2 > \\hat{^{0}d_{3}}_x^2 + \\hat{^{0}d_{3}}_y^2.');
 end
-cosq2_num = d03_hat_num(3) / q3_sol;
-
-% Si Sceglie La Soluzione Positiva
-sinq2_num = sqrt(1 - cosq2_num^2);
-q2_sol = atan2(sinq2_num, cosq2_num);
+if abs(q3_sol) < 1e-6
+    warning('Singolarita Struttura (q3 = 0): q2 indeterminato, si impone q2 = pi/2.');
+    q2_sol = pi/2;
+    sinq2_num = sin(q2_sol);
+else
+    cosq2_num = max(-1, min(1, d03_hat_num(3) / q3_sol));
+    % Si Sceglie La Soluzione Positiva
+    sinq2_num = sqrt(1 - cosq2_num^2);
+    q2_sol = atan2(sinq2_num, cosq2_num);
+end
 
 % 4. Calcolo Di q1
-vars_to_sub = {d2, q3, q2, d03_hat(1), d03_hat(2)};
-vals_to_sub = {d2_num, q3_sol, q2_sol, d03_hat_num(1), d03_hat_num(2)};
-
 % sin(q1) = (-d2*dx + dy*q3*sin(q2)) / (d2^2 + q3^2*sin(q2)^2)
 % cos(q1) = (d2*dy + dx*q3*sin(q2)) / (d2^2 + q3^2*sin(q2)^2)
 % dx, dy sono gli elementi di d03_hat
@@ -1446,6 +1448,27 @@ fprintf('q3 = %.3f m \n', q3_sol);
 fprintf('q4 = %.3f rad = %4.2fdeg\n', q4_sol, rad2deg(q4_sol));
 fprintf('q5 = %.3f rad = %4.2fdeg\n', q5_sol, rad2deg(q5_sol));
 fprintf('q6 = %.3f rad = %4.2fdeg\n', q6_sol, rad2deg(q6_sol));
+
+% Nota: quella calcolata rappresenta 1 delle fino a 8 soluzioni possibili
+% (ottenuta scegliendo i segni positivi di q3, sin(q2) e sin(q5)).
+% Verifica numerica della cinematica diretta finale
+DH_Table_Num = [q1_sol, 0,      -pi/2, 0;
+                q2_sol, d2_num,  pi/2, 0;
+                0,      q3_sol,  0,    0;
+                q4_sol, 0,      -pi/2, 0;
+                q5_sol, 0,       pi/2, 0;
+                q6_sol, d6_num,  0,    0];
+[T_Num_all, ~] = Compute_DH_Transformations(DH_Table_Num);
+T_Num = double(T_Num_all);
+T06_check = eye(4);
+for i = 1:6
+    T06_check = T06_check * T_Num(:, :, i);
+end
+err_pos = norm(T06_check(1:3, 4) - d06_des);
+err_rot = norm(T06_check(1:3, 1:3) - R06_des, 'fro');
+fprintf('\nVerifica Cinematica Diretta:\n');
+fprintf('Errore Posizione ||p_hat - p_des||   = %.2e m\n', err_pos);
+fprintf('Errore Orientamento ||R_hat - R_des||_F = %.2e\n', err_rot);
 \end{matlabcode}
 \begin{matlaboutput}
 SOLUZIONE CINEMATICA INVERSA:
@@ -1457,20 +1480,10 @@ q5 = 2.108 rad = 120.79deg
 q6 = -2.644 rad = -151.48deg
 \end{matlaboutput}
 
-\newpage
 \matlabheadingtwo{Visualizzazione Grafica Della Configurazione Calcolata}
 
 \begin{matlabcode}
-% Costruzione Tabella DH Numerica Completa nella Soluzione IK Calcolata
-DH_Table_Num = [q1_sol, 0,      -pi/2, 0;
-                q2_sol, d2_num,  pi/2, 0;
-                0,      q3_sol,  0,    0;
-                q4_sol, 0,      -pi/2, 0;
-                q5_sol, 0,       pi/2, 0;
-                q6_sol, d6_num,  0,    0];
-
-[T_Num_all, ~] = Compute_DH_Transformations(DH_Table_Num);
-T_Num = double(T_Num_all);
+% Utilizzo della Tabella DH Numerica Completa gia calcolata per la verifica
 n = size(DH_Table_Num, 1);
 
 fig_name    = 'Verifica Cinematica Inversa - Manipolatore di Stanford';
@@ -1503,36 +1516,36 @@ for i = 1:n
 end
 
 % 2. Disegno Bracci
-h_link = plot3(positions(:,1), positions(:,2), positions(:,3), '-', 'Color', [0.25 0.25 0.25],
+h_link = plot3(positions(:,1), positions(:,2), positions(:,3), '-', 'Color', [0.25 0.25 0.25], ...
     'LineWidth', 2.5);
 
 % 3. Evidenziazione Giunti Meccanici, End-Effector e Target Desiderato d06_des
 col_X = [0.85, 0.15, 0.15];
 col_Y = [0.15, 0.65, 0.20];
 col_Z = [0.15, 0.35, 0.85];
-
-h_base = plot3(positions(1,1), positions(1,2), positions(1,3), 's', 'MarkerSize', 8,
-    'MarkerFaceColor', [0.4 0.4 0.4], 'MarkerEdgeColor', 'k');
-h_joints = plot3(positions(2:end-1,1), positions(2:end-1,2), positions(2:end-1,3), 'o', 'MarkerSize', 6,
-    'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'k');
-h_ee = plot3(positions(end,1), positions(end,2), positions(end,3), 'p', 'MarkerSize', 10,
-    'MarkerFaceColor', [0.95 0.75 0.1], 'MarkerEdgeColor', 'k');
-h_target = plot3(d06_des(1), d06_des(2), d06_des(3), 'o', 'MarkerSize', 13, 'MarkerEdgeColor', col_X,
-    'LineWidth', 2.0);
-\end{matlabcode}
+\end{mathlabcode}
 \newpage
 \begin{matlabcode}
+h_base = plot3(positions(1,1), positions(1,2), positions(1,3), 's', 'MarkerSize', 8, ...
+    'MarkerFaceColor', [0.4 0.4 0.4], 'MarkerEdgeColor', 'k');
+h_joints = plot3(positions(2:end-1,1), positions(2:end-1,2), positions(2:end-1,3), 'o', 'MarkerSize', 6, ...
+    'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'k');
+h_ee = plot3(positions(end,1), positions(end,2), positions(end,3), 'p', 'MarkerSize', 10, ...
+    'MarkerFaceColor', [0.95 0.75 0.1], 'MarkerEdgeColor', 'k');
+h_target = plot3(d06_des(1), d06_des(2), d06_des(3), 'o', 'MarkerSize', 13, 'MarkerEdgeColor', col_X, ...
+    'LineWidth', 2.0);
+
 % 4. Disegno delle Terne di Riferimento DH (X=Rosso, Y=Verde, Z=Blu)
 h_axes = gobjects(1, 3);
 for i = 1:(n+1)
     p = positions(i, :);
     R = R_all(:, :, i);
 
-    qx = quiver3(p(1), p(2), p(3), R(1,1)*arrow_scale, R(2,1)*arrow_scale, R(3,1)*arrow_scale, 0,
+    qx = quiver3(p(1), p(2), p(3), R(1,1)*arrow_scale, R(2,1)*arrow_scale, R(3,1)*arrow_scale, 0, ...
         'Color', col_X, 'LineWidth', 1.8, 'MaxHeadSize', 0.35);
-    qy = quiver3(p(1), p(2), p(3), R(1,2)*arrow_scale, R(2,2)*arrow_scale, R(3,2)*arrow_scale, 0,
+    qy = quiver3(p(1), p(2), p(3), R(1,2)*arrow_scale, R(2,2)*arrow_scale, R(3,2)*arrow_scale, 0, ...
         'Color', col_Y, 'LineWidth', 1.8, 'MaxHeadSize', 0.35);
-    qz = quiver3(p(1), p(2), p(3), R(1,3)*arrow_scale, R(2,3)*arrow_scale, R(3,3)*arrow_scale, 0,
+    qz = quiver3(p(1), p(2), p(3), R(1,3)*arrow_scale, R(2,3)*arrow_scale, R(3,3)*arrow_scale, 0, ...
         'Color', col_Z, 'LineWidth', 1.8, 'MaxHeadSize', 0.35);
 
     if i == 1
@@ -1553,7 +1566,7 @@ for i = 1:(n+1)
     visited(coincident_idx) = true;
     combined_label = strjoin(labels(coincident_idx), ' / ');
     p = positions(i, :);
-    text(p(1), p(2), p(3) + 0.18*arrow_scale, sprintf(' %s', combined_label), 'FontSize', 9,
+    text(p(1), p(2), p(3) + 0.18*arrow_scale, sprintf(' %s', combined_label), 'FontSize', 9, ...
         'FontWeight', 'bold', 'BackgroundColor', [1 1 1], 'EdgeColor', [0.8 0.8 0.8], 'Margin', 1);
 end
 
@@ -1569,8 +1582,9 @@ ylim([min_xyz(2) - margin, max_xyz(2) + margin]);
 zlim([min_xyz(3) - margin, max_xyz(3) + margin]);
 
 % 7. Legenda e Titolo
-legend([h_axes(1), h_axes(2), h_axes(3), h_link, h_ee, h_target], {'Asse X', 'Asse Y', 'Asse Z',
-    'Bracci (Link)', 'End-Effector', 'Target d_{06,des}'}, 'Location', 'bestoutside');
+legend([h_axes(1), h_axes(2), h_axes(3), h_link, h_base, h_joints, h_ee, h_target], ...
+    {'Asse X', 'Asse Y', 'Asse Z', 'Bracci (Link)', 'Base', 'Giunti', 'End-Effector', 'Target d_{06,des}'}, ...
+    'Location', 'bestoutside');
 title(fig_name, 'FontSize', 12, 'FontWeight', 'bold');
 hold off;
 \end{matlabcode}

@@ -1,7 +1,7 @@
 %[text] # Cinematica Inversa E Analisi Singolarità Manipolatore Di Stanford
-%[text] Il **disaccoppiamento **permette di separare il problema in parti piu semplici:
-%[text] - **Cinematica Posizione: **Trovare i valori dei primi tre giunti $(q_1 ,q_2 ,q_3 )$ che posizionano il centro del polso nel punto desiderato
-%[text] - **Cinematica Orientamento: **Trovare i valori degli ultimi tre giunti $(q_4 ,q_5 ,q_6 )$ per ottenere l'orientamento desiderato dell'end effector avendo già posizionato il polso \
+%[text] Il **disaccoppiamento** permette di separare il problema in parti più semplici:
+%[text] - **Cinematica Posizione:** Trovare i valori dei primi tre giunti $(q_1 ,q_2 ,q_3 )$ che posizionano il centro del polso nel punto desiderato.
+%[text] - **Cinematica Orientamento:** Trovare i valori degli ultimi tre giunti $(q_4 ,q_5 ,q_6 )$ per ottenere l'orientamento desiderato dell'end-effector avendo già posizionato il polso. \
 %[text] Si definiscono tutte le variabili simboliche che includono le variabili di giunto $(q_1 ,\\ldots,q_6 )$ e i parametri geometrici costanti del manipolatore, come le lunghezze dei link $d_2$ e $d_6$
 clc; clear; close all;
 % Variabili Simboliche Struttura
@@ -25,8 +25,8 @@ DH_Table_Polso = [q4, 0, -pi/2, 0;
 % Calcolo Matrici Trasformazione E Rotazione Polso
 [T_Mat_Polso, R_Mat_Polso] = Compute_DH_Transformations(DH_Table_Polso);
 %[text] A questo punto si possono comporre le matrici individuali per ottenere le trasformazioni totali:
-%[text] - `T03`: Dalla base al centro del polso .
-%[text] - `T36`: dal centro del polso all'end-effector \
+%[text] - `T03`: Dalla base al centro del polso.
+%[text] - `T36`: Dal centro del polso all'end-effector. \
 fprintf('Matrice di trasformazione omogenea ^{%d}T_(%d):', 0, 3);
 T03 = simplify(T_Mat_Strut(:,:,1) * T_Mat_Strut(:,:,2) * T_Mat_Strut(:,:,3));
 disp(T03);
@@ -34,7 +34,7 @@ fprintf('Matrice di trasformazione omogenea ^{%d}T_(%d):', 3, 6);
 T36 = simplify(T_Mat_Polso(:,:,1) * T_Mat_Polso(:,:,2) * T_Mat_Polso(:,:,3));
 disp(T36);
 %[text]{"align":"center"} $\\begin{pmatrix} c\\left(q_4 \\right)\\,c\\left(q_5 \\right)\\,c\\left(q_6 \\right)-s\\left(q_4 \\right)\\,s\\left(q_6 \\right) & -c\\left(q_6 \\right)\\,s\\left(q_4 \\right)-c\\left(q_4 \\right)\\,c\\left(q_5 \\right)\\,s\\left(q_6 \\right) & c\\left(q_4 \\right)\\,s\\left(q_5 \\right) & d_6 \\,c\\left(q_4 \\right)\\,s\\left(q_5 \\right)\\\\ c\\left(q_4 \\right)\\,s\\left(q_6 \\right)+c\\left(q_5 \\right)\\,c\\left(q_6 \\right)\\,s\\left(q_4 \\right) & c\\left(q_4 \\right)\\,c\\left(q_6 \\right)-c\\left(q_5 \\right)\\,s\\left(q_4 \\right)\\,s\\left(q_6 \\right) & s\\left(q_4 \\right)\\,s\\left(q_5 \\right) & d_6 \\,s\\left(q_4 \\right)\\,s\\left(q_5 \\right)\\\\ -c\\left(q_6 \\right)\\,s\\left(q_5 \\right) & s\\left(q_5 \\right)\\,s\\left(q_6 \\right) & c\\left(q_5 \\right) & d_6 \\,c\\left(q_5 \\right)\\\\ 0 & 0 & 0 & 1 \\end{pmatrix}$
-%[text] La terna 3 del **manipolatore sferico** coincide con la terna 3 del **polso sferico**, la funzione cinematica diretta può essere ottenuta semplicemente per composizione delle matrici di trasformazione come${\\,}^0 T_6 ={\\,}^0 T_3 \\cdot {\\,}^3 T_6$
+%[text] La terna 3 del **manipolatore sferico** coincide con la terna 3 del **polso sferico**, quindi la funzione cinematica diretta può essere ottenuta semplicemente per composizione delle matrici di trasformazione come ${}^0 T_6 = {}^0 T_3 \cdot {}^3 T_6$.
 T06 = simplify(T03 * T36);
 % fprintf('Matrice di trasformazione omogenea ^{%d}T_(%d):', 0, 6);
 % disp(T06);
@@ -48,7 +48,7 @@ disp(d36);
 %[text] $\\exists \\;d_0 ,\\,d_1 \\in {\\mathbb{R}}^3 \\;\\mid \\;^{3}d_{6} =^3 R_6 d_1 +d_0$
 %[text] Dato che $^{3}d_{6}$ non presenta termini indipendenti dalle variabili di giunto, questo ci dice che non c'è un offset fisso dal polso, e quindi non c'è uno spostamento strutturale fisso, visto dal polso e di conseguenza allora $d_0 =0$
 %[text]{"align":"center"} $^{3}d_{6} = {}^{3}R_{6} \\; d_{1} \\qquad \\longrightarrow \\qquad d_{1} = \\bigl({}^{3}R_{6}\\bigr)^{T} {}^{3}d_{6}$
-%[text] Poichè $^3 R_6$ è una matrice di rotazione, si ha che ${\\bigl(^3 R_6 \\bigr)}^{-1} ={\\bigl(^3 R_6 \\bigr)}^T$
+%[text] Poiché $^3 R_6$ è una matrice di rotazione, si ha che ${\\bigl(^3 R_6 \\bigr)}^{-1} ={\\bigl(^3 R_6 \\bigr)}^T$
 R36 = simplify(R_Mat_Polso(:,:,1) * R_Mat_Polso(:,:,2) * R_Mat_Polso(:,:,3));
 R36_T = R36';
 d1 = simplify(R36_T * d36);
@@ -57,7 +57,7 @@ disp(d1);
 %[text] Questo è il vettore che collega il centro del polso (origine di $RF_3$) all'end-effector (origine di $RF_6$), espresso in coordinate del sistema $RF_6$.
 %[text] Sapendo che la posizione desiderata dell'end-effector è $^{0}d_{6}$, si può scrivere
 %[text] $^{0}d_{6} = {}^{0}d_{3} + {}^{0}R_{3} \\; {}^{3}d_{6} = {}^{0}d_{3} + {}^{0}R_{3} \\bigl({}^{3}R_{6} \\; d_1\\bigr) = {}^{0}d_{3} + {}^{0}R_{6} \\; d_1$
-%[text] Cioè, il vettore che va dalla **base all'end effector** è uguale al vettore che va dalla **base al polso** più il vettore che va dal **polso all'end effector. **Quindi, dalla precedente si può dire che la posizione del centro del polso $^{0}d_{3}$ può essere calcolata come $^{0}d_{3} = {}^{0}d_{6} - {}^{0}R_{6} \\; d_1$, dove $^{0}d_{6}$ è il vettore obiettivo cioè la posizione finale che deve avere l'end effector
+%[text] Cioè, il vettore che va dalla **base all'end-effector** è uguale al vettore che va dalla **base al polso** più il vettore che va dal **polso all'end-effector.** Quindi, dalla precedente si può dire che la posizione del centro del polso $^{0}d_{3}$ può essere calcolata come $^{0}d_{3} = {}^{0}d_{6} - {}^{0}R_{6} \\; d_1$, dove $^{0}d_{6}$ è il vettore obiettivo cioè la posizione finale che deve avere l'end-effector.
 syms dx dy dz real;
 
 % Posa Desiderata (INPUT DEL PROBLEMA)
@@ -77,7 +77,7 @@ disp(d03);
 %[text] ## Calcolo Variabile Di Giunto $q_3$
 %[text] Si indica con $\\hat{^{0}d_{3}}$ il vettore che rappresenta la posizione desiderata del centro del polso rispetto al sistema di riferimento di base. Questo si può calcolare come:
 %[text] $\\hat{^{0}d_{3}} = {}^{0}d_{6} - {}^{0}R_{6} \\cdot d_1$
-%[text] Questo vettore $\\hat{^{0}d_{3}}$ è considerato **noto**, in quanto $^{0}d_{6}$ (la posizione finale) e $^0 R_6$ (l'orientamento finale) sono **gli input problema** di cinematica inversa.
+%[text] Questo vettore $\\hat{^{0}d_{3}}$ è considerato **noto**, in quanto $^{0}d_{6}$ (la posizione finale) e $^0 R_6$ (l'orientamento finale) sono **gli input del problema** di cinematica inversa.
 % Box di Calcolo d03_hat
 % d03_hat = d06_des - R06_des * d1_vec
 
@@ -88,7 +88,7 @@ disp(d03_hat);
 % Avendo come input un vettore e un orientamento numerici, questo sara un vettore numerico
 %[text] A questo punto si hanno due rappresentazioni della posizione del centro del polso:
 %[text] - $\\hat{^{0}d_{3}}$: che è un vettore noto in quanto calcolato tramite gli **input del problema**
-%[text] - $^{0}d_{3}$: che è il vettore di posizione calcolato dalla cinematica diretta e dipende da $q1,q2,q3$ \
+%[text] - $^{0}d_{3}$: che è il vettore di posizione calcolato dalla cinematica diretta e dipende da $q_1, q_2, q_3$ \
 %[text] L'end-effector deve poter raggiungere la posa, quindi una condizione necessaria è che la lunghezza (o norma) del vettore target $\\hat{^{0}d_{3}}$ sia uguale alla lunghezza del vettore $^{0}d_{3}$. Quindi, uguagliando le loro norme al quadrato, si ottiene:
 norm_sq_d03_hat = norm(d03_hat)^2;
 norm_sq_d03 = norm(d03)^2;
@@ -99,7 +99,7 @@ norm_sq_d03 = simplify(norm_sq_d03);
 fprintf('Norma del vettore target (\\hat{^{0}d_{3}}):');
 
 disp(norm_sq_d03_hat);
-%[text] Come detto prima $\\hat{^{0}d_{3}}$ è un vettore noto, la sua norma al quadrato sarà un valore numerico. Poichè si stanno eseguendo i calcoli in maniera simbolica, per evitare risultati simbolici troppo lunghi e complessi chiamo questo valore `d03HatNormSq`
+%[text] Come detto prima $\\hat{^{0}d_{3}}$ è un vettore noto, la sua norma al quadrato sarà un valore numerico. Poiché si stanno eseguendo i calcoli in maniera simbolica, per evitare risultati simbolici troppo lunghi e complessi chiamo questo valore `d03HatNormSq`.
 syms d03HatNormSq real;
 
 fprintf('Norma al quadrato del vettore calcolato (^{0}d_{3}):');
@@ -122,14 +122,13 @@ disp(q3_neg);
 fprintf('Entrambe le soluzioni sono valide se:');
 disp(sol_q3.conditions(2));
 %[text] Queste due soluzioni corrispondono alle due possibili configurazioni di estensione ($q_3 > 0$ e $q_3 < 0$) del giunto prismatico.
-%[text] Ugualiando $\\hat{^{0}d_{3}}$ (**Vettore posizione target polso**) e $^{0}d_{3}$ (**Vettore posizione polso cinematica diretta**) si ottiene il sistema
+%[text] Uguagliando $\\hat{^{0}d_{3}}$ (**Vettore posizione target polso**) e $^{0}d_{3}$ (**Vettore posizione polso cinematica diretta**) si ottiene il sistema:
 fprintf('Sistema da risolvere per trovare q1 e q2');
 eq_system = d03 == d03_hat;
 disp(eq_system);
 %%
 %[text] ## Calcolo Variabile Di Giunto $q_2$
-%[text] Si nota che, dalla terza equazione si può trovare $\\cos (q_2 )$
-syms c2 real;
+%[text] Si nota che dalla terza equazione, nell'ipotesi $q_3 \\neq 0$, si può trovare $\\cos (q_2 )$:
 eq_cosq2 = eq_system(3);
 fprintf('Terza Equazione:');
 disp(eq_cosq2);
@@ -175,15 +174,15 @@ fprintf('Valore q1:');
 disp(q1_val);
 %%
 %[text] ## Cinematica Inversa Di Orientamento Del Polso Sferico
-%[text] Una volta determinati $q_1 ,q_2 ,q_3$, la matrice di rotazione $^0 R_3$ è nota, quindi si può o calcolare la matrice di rotazione del polso $^3 R_6$richiesta per raggiungere l'orientamento finale $^0 R_6$ dato che:
+%[text] Una volta determinati $q_1 ,q_2 ,q_3$, la matrice di rotazione $^0 R_3$ è nota, quindi si può calcolare la matrice di rotazione del polso $^3 R_6$ richiesta per raggiungere l'orientamento finale $^0 R_6$ dato che:
 %[text] $^0 R_6 =^0 R_3 \\cdot ^3 R_6$
-%[text] Sapendo che le matrici di rotazioni sono invertibili e l'inversa di una matrice di rotazione è uguale alla trasposta si ha che la matrice "target" per ottenere l'orientamento desiderato è
+%[text] Sapendo che le matrici di rotazione sono invertibili e l'inversa di una matrice di rotazione è uguale alla trasposta si ha che la matrice "target" per ottenere l'orientamento desiderato è:
 %[text] $^3 R_6 ={\\bigl(^0 R_3 \\bigr)}^{-1} \\;^0 R_6 ={\\bigl(^0 R_3 \\bigr)}^T \\;^0 R_6$
-%[text] Dove
+%[text] Dove:
 %[text] - $^0 R_6$: Rappresenta la matrice di rotazione desiderata per l'end-effector, che è un dato di input del problema di cinematica inversa.
-%[text] - ${\\bigl(^0 R_3 \\bigr)}^T$ Dipende da $q_1 ,q_2 ,q_3$ che sono appena stati calcolati. Sostituendo i loro valori numerici nella matrice di rotazione della struttura portante (estratta dalla matrice $^0 T_3$ ), otteniamo una matrice numerica conosciuta.
+%[text] - ${\\bigl(^0 R_3 \\bigr)}^T$: Dipende da $q_1 ,q_2 ,q_3$ che sono appena stati calcolati. Sostituendo i loro valori numerici nella matrice di rotazione della struttura portante (estratta dalla matrice $^0 T_3$ ), otteniamo una matrice numerica conosciuta.
 %[text] - $^3 R_6$: Dipende dagli angoli $q_4 ,q_5 ,q_6$ che si devono trovare. \
-%[text] **Poichè si stanno facendo dei calcoli simbolici, indichiamo con **`R03_K`** (Known) la matrice che contiene i valori numerici calcolati (*****termini noti*****) e con **`R36_T`** (Target) la matrice di rotazione estratta dalla matrice di trasformazione omogenea **$^3 T_6$** ottenuta tramite le tabelle di Denavit-Hartenberg che dipende da **$q_4 ,q_5 ,q_6$** (*****incognite*****)**
+%[text] **Poiché si stanno facendo dei calcoli simbolici, indichiamo con** **`R03_K`** **(Known) la matrice che contiene i valori numerici calcolati (** ***termini noti*** **) e con** **`R36_T`** **(Target) la matrice di rotazione estratta dalla matrice di trasformazione omogenea** **$^3 T_6$** **ottenuta tramite le tabelle di Denavit-Hartenberg che dipende da** **$q_4 ,q_5 ,q_6$** **(** ***incognite*** **).**
 % Valori noti a questo punto "_K"
 % Valori da calcolare "_T"
 % Orientamento Finale R06_K = R03_K * R36_T
@@ -202,19 +201,19 @@ disp(R03_K);
 R36_T = simplify(R_Mat_Polso(:,:,1) * R_Mat_Polso(:,:,2) * R_Mat_Polso(:,:,3));
 fprintf('Matrice Rotazione R36 Incognite:');
 disp(R36_T);
-%[text] Con la formula $^3 R_6 ={\\bigl(^0 R_3 \\bigr)}^T \\;^0 R_6$ si può calcolare la matrice $^3 R_6$ nota (`R36_K`) e poi confrontandola membro a membro con $^3 R_6$ incognita si ottiene un sistema con incognite ($q_4 ,q_5 ,q_6$)
+%[text] Con la formula $^3 R_6 ={\\bigl(^0 R_3 \\bigr)}^T \\;^0 R_6$ si può calcolare la matrice $^3 R_6$ nota (`R36_K`) e poi confrontandola membro a membro con $^3 R_6$ incognita si ottiene un sistema con incognite ($q_4 ,q_5 ,q_6$).
 R03_K_Trasp = R03_K';
 
-R36_Calc = R03_K_Trasp * R06_K;
+R36_K = R03_K_Trasp * R06_K;
 fprintf('Matrice Rotazione R36 Nota Calcolata:');
-disp(R36_Calc);
-%[text] **Per semplificare la leggibilità delle formule, indichiamo con A** **la matrice precedente e ogni suo elemento sarà **$\\mathbf{A_{ij} }$
-% Matrice R36 Calcolata Che Rinomino In A
-R36_K = sym('A', [3, 3], 'real');
-fprintf('Matrice Rotazione R36 Calcolata Con Termini Rinominati Con A_{ij}:');
 disp(R36_K);
+%[text] **Per semplificare la leggibilità delle formule, indichiamo con `A` (variabile `R36_A`) la matrice precedente e ogni suo elemento sarà $\\mathbf{A_{ij}}$.**
+% Matrice R36 Calcolata Che Rinomino In A
+R36_A = sym('A', [3, 3], 'real');
+fprintf('Matrice Rotazione R36 Calcolata Con Termini Rinominati Con A_{ij}:');
+disp(R36_A);
 %[text] Quindi si ottiene:
-eqSystem = R36_T == R36_K;
+eqSystem = R36_T == R36_A;
 fprintf('Sistema Da Risolvere Per Trovare q4, q5, q6');
 disp(eqSystem);
 %[text] Si nota che il valore di $\\cos (q_5 )$ è noto in quanto è l'elemento $(3,3)$ della matrice $^3 R_6$ e di conseguenza si può calcolare anche $\\sin (q_5 )$ e quindi il valore dell'angolo di giunto
@@ -268,12 +267,12 @@ disp(q6_val);
 %[text] Una configurazione singolare si verifica quando la struttura del manipolatore limita la capacità di muoversi in certe direzioni, portando a una perdita di uno o più gradi di libertà . Dal punto di vista della cinematica inversa, le singolarità emergono quando le equazioni che usiamo per risolvere le variabili di giunto diventano indeterminate o non ammettono una soluzione unica.
 %%
 %[text] ## Singolarità Cinematiche Della Struttura Portante
-%[text] Queste singolarità dipendono dai giunti $q_1 ,q_2 ,q_3$ e determinano la capacità del robot di posizionare il centro del polso. Si verifica quando:
+%[text] Queste singolarità dipendono dai giunti $q_1 ,q_2 ,q_3$ e determinano la capacità del robot di posizionare il centro del polso. Si presentano due casi:
 %[text] ### Singolarità Di Bordo Interna Della Struttura Portante ($q_3 = 0$)
-%[text] Si verifica quando l'argomento della radice quadrata usata per calcolare $q_3$ diventa nullo. Cioè quando
+%[text] Si verifica quando l'argomento della radice quadrata usata per calcolare $q_3$ diventa nullo. Cioè quando:
 %[text] $\\|\\hat{^{0}d_{3}} {\\|}^2 -d_2^2 =0$
-%[text] Dove $\\|\\hat{^{0}d_{3}}{\\|}^2$ è noto, poichè $\\hat{^{0}d_{3}} = {}^{0}d_{6} -^0 R_6 \\cdot d_1$, i valori $^{0}d_{6}$ e $^0 R_6$ sono gli input del problema, $d_1 = [0, 0, d_6]^T$ è il vettore costante di offset dal polso all'end-effector, mentre $d_2$ e $d_6$ sono i parametri fisici del sistema.
-%[text] Se si verifica questo, il centro del polso si trova sul confine della superficie interna del suo spazio di lavoro (sfera di raggio $d_2$ attorno a $RF_1$).
+%[text] Dove $\\|\\hat{^{0}d_{3}}{\\|}^2$ è noto, poiché $\\hat{^{0}d_{3}} = {}^{0}d_{6} -^0 R_6 \\cdot d_1$, i valori $^{0}d_{6}$ e $^0 R_6$ sono gli input del problema, $d_1 = [0, 0, d_6]^T$ è il vettore costante di offset dal polso all'end-effector, mentre $d_2$ e $d_6$ sono i parametri fisici del sistema.
+%[text] La regione interna irraggiungibile della struttura portante è un **cilindro** di raggio $d_2$ attorno all'asse $z_0$: in particolare, i punti sulla sfera di raggio $d_2$ con $z \\neq 0$ sono irraggiungibili, mentre $q_3 = 0$ corrisponde unicamente alla **circonferenza** di raggio $d_2$ sul piano $z = 0$.
 d03HatNormSq_Sing = d2^2;
 
 fprintf('Norma al quadrato del vettore calcolato (^{0}d_{3}):');
@@ -293,7 +292,7 @@ q1_sing_q3_zero = atan2(-d03_hat(1), d03_hat(2));
 fprintf('Valore di q1 per q3 = 0 (con q2 arbitrario):');
 disp(q1_sing_q3_zero);
 %[text] ### Singolarità Di Allineamento Sull'Asse $z_0$ ($s(q_2) = 0$)
-%[text] Questa configurazione di singolarità si verifica quando $s(q_2) = 0$, ovvero $q_2 = 0$ oppure $q_2 = \\pi$ ($\\cos(q_2) = \\pm 1$), in cui il braccio prismatico risulta allineato con l'asse $z_0$. Grazie all'offset $d_2 \\neq 0$, il centro del polso rimane a distanza $d_2$ dall'asse $z_0$ e la condizione $d_2^2 \\le \\hat{^{0}d_{3}}_x^2 + \\hat{^{0}d_{3}}_y^2$ è ancora soddisfatta.
+%[text] Questa configurazione di singolarità si verifica quando $s(q_2) = 0$, ovvero $q_2 = 0$ oppure $q_2 = \\pi$ ($\\cos(q_2) = \\pm 1$), in cui il braccio prismatico risulta allineato con l'asse $z_0$. Grazie all'offset $d_2 \\neq 0$, il centro del polso rimane a distanza $d_2$ dall'asse $z_0$ e vale l'uguaglianza stretta $d_2^2 = {}^0\\hat{d}_{3x}^2 + {}^0\\hat{d}_{3y}^2$ (superficie laterale del cilindro di raggio $d_2$).
 %[text] In questa configurazione si ottengono due soluzioni per $q_3 = \\pm \\sqrt{\\|\\hat{^{0}d_{3}}\\|^2 - d_2^2}$ e, per ciascuna di esse, un valore univoco di $q_1$ (complessivamente due soluzioni distinte).
 cosq1_s2_zero = simplify(subs(cosq1, sin(q2), 0));
 sinq1_s2_zero = simplify(subs(sinq1, sin(q2), 0));
@@ -310,12 +309,12 @@ disp(q1_sing_s2_zero);
 %[text] - $^0 R_6$: è un dato di input del problema di cinematica inversa.
 %[text] - ${\\bigl(^0 R_3 \\bigr)}^T$ Dipende da $q_1 ,q_2 ,q_3$ che sono appena stati calcolati. \
 %[text] Nel caso di questa singolarità gli assi di rotazione del giunto $q_4$ e del giunto $q_6$ si allineano e quindi il polso perde un grado di libertà rotazionale e di conseguenza non può più ruotare indipendentemente attorno a tre assi ortogonali distinti.
-%[text] Se si verifica questa singolarità è impossibile determinare in modo univoco i valori di $q_4$ e $q_6$ poichè equazioni per trovarli diventano dipendenti. Si può risolvere solo per la loro somma ($q_5 = 0$) o differenza ($q_5 = \\pi$). Questo significa che esiste un numero infinito di coppie ($q_4$,$q_6$) che soddisfano l'orientamento target, e qualsiasi coppia è una soluzione valida.
+%[text] Se si verifica questa singolarità è impossibile determinare in modo univoco i valori di $q_4$ e $q_6$ poiché le equazioni per trovarli diventano dipendenti. Si può risolvere solo per la loro somma ($q_5 = 0$) o differenza ($q_5 = \\pi$). Questo significa che esiste un numero infinito di coppie ($q_4$,$q_6$) che soddisfano l'orientamento target, e qualsiasi coppia è una soluzione valida.
 R36_T_Sing_0 = simplify(subs(R36_T, q5, 0));
 fprintf('Matrice Rotazione R36 (Singolarita q5 = 0):');
 disp(R36_T_Sing_0);
 %[text] \underline{Nel caso }$q_5 = 0$\underline{, le variabili }$q_4$\underline{ e }$q_6$\underline{ compaiono solo tramite la somma }$q_4 + q_6 = \\textrm{atan2}(A_{21}, A_{11})$.
-q4_plus_q6 = atan2(R36_K(2,1), R36_K(1,1));
+q4_plus_q6 = atan2(R36_A(2,1), R36_A(1,1));
 fprintf('Somma q4 + q6 per q5 = 0:\n');
 disp(q4_plus_q6);
 
@@ -323,7 +322,7 @@ R36_T_Sing_Pi = simplify(subs(R36_T, q5, pi));
 fprintf('Matrice Rotazione R36 (Singolarita q5 = pi):');
 disp(R36_T_Sing_Pi);
 %[text] \underline{Nel caso }$q_5 = \\pi$\underline{, le variabili }$q_4$\underline{ e }$q_6$\underline{ compaiono solo tramite la differenza }$q_4 - q_6 = \\textrm{atan2}(-A_{21}, A_{22})$.
-q4_minus_q6 = atan2(-R36_K(2,1), R36_K(2,2));
+q4_minus_q6 = atan2(-R36_A(2,1), R36_A(2,2));
 fprintf('Differenza q4 - q6 per q5 = pi:\n');
 disp(q4_minus_q6);
 %%
@@ -386,16 +385,18 @@ q3_sol = q3_pos_num;
 if d2_num^2 > d03_hat_num(1)^2 + d03_hat_num(2)^2
     error('Posizione Non Raggiungibile per q2: d2^2 > \\hat{^{0}d_{3}}_x^2 + \\hat{^{0}d_{3}}_y^2.');
 end
-cosq2_num = d03_hat_num(3) / q3_sol;
-
-% Si Sceglie La Soluzione Positiva
-sinq2_num = sqrt(1 - cosq2_num^2);
-q2_sol = atan2(sinq2_num, cosq2_num);
+if abs(q3_sol) < 1e-6
+    warning('Singolarita Struttura (q3 = 0): q2 indeterminato, si impone q2 = pi/2.');
+    q2_sol = pi/2;
+    sinq2_num = sin(q2_sol);
+else
+    cosq2_num = max(-1, min(1, d03_hat_num(3) / q3_sol));
+    % Si Sceglie La Soluzione Positiva
+    sinq2_num = sqrt(1 - cosq2_num^2);
+    q2_sol = atan2(sinq2_num, cosq2_num);
+end
 
 % 4. Calcolo Di q1
-vars_to_sub = {d2, q3, q2, d03_hat(1), d03_hat(2)};
-vals_to_sub = {d2_num, q3_sol, q2_sol, d03_hat_num(1), d03_hat_num(2)};
-
 % sin(q1) = (-d2*dx + dy*q3*sin(q2)) / (d2^2 + q3^2*sin(q2)^2)
 % cos(q1) = (d2*dy + dx*q3*sin(q2)) / (d2^2 + q3^2*sin(q2)^2)
 % dx, dy sono gli elementi di d03_hat
@@ -467,18 +468,30 @@ fprintf('q3 = %.3f m \n', q3_sol);
 fprintf('q4 = %.3f rad = %4.2fdeg\n', q4_sol, rad2deg(q4_sol));
 fprintf('q5 = %.3f rad = %4.2fdeg\n', q5_sol, rad2deg(q5_sol));
 fprintf('q6 = %.3f rad = %4.2fdeg\n', q6_sol, rad2deg(q6_sol));
-%%
-%[text] ## Visualizzazione Grafica 3D Della Configurazione Calcolata
-% Costruzione Tabella DH Numerica Completa nella Soluzione IK Calcolata
+
+% Nota: quella calcolata rappresenta 1 delle fino a 8 soluzioni possibili
+% (ottenuta scegliendo i segni positivi di q3, sin(q2) e sin(q5)).
+% Verifica numerica della cinematica diretta finale
 DH_Table_Num = [q1_sol, 0,      -pi/2, 0;
                 q2_sol, d2_num,  pi/2, 0;
                 0,      q3_sol,  0,    0;
                 q4_sol, 0,      -pi/2, 0;
                 q5_sol, 0,       pi/2, 0;
                 q6_sol, d6_num,  0,    0];
-
 [T_Num_all, ~] = Compute_DH_Transformations(DH_Table_Num);
 T_Num = double(T_Num_all);
+T06_check = eye(4);
+for i = 1:6
+    T06_check = T06_check * T_Num(:, :, i);
+end
+err_pos = norm(T06_check(1:3, 4) - d06_des);
+err_rot = norm(T06_check(1:3, 1:3) - R06_des, 'fro');
+fprintf('\nVerifica Cinematica Diretta:\n');
+fprintf('Errore Posizione ||p_hat - p_des||   = %.2e m\n', err_pos);
+fprintf('Errore Orientamento ||R_hat - R_des||_F = %.2e\n', err_rot);
+%%
+%[text] ## Visualizzazione Grafica 3D Della Configurazione Calcolata
+% Utilizzo della Tabella DH Numerica Completa gia calcolata per la verifica
 n = size(DH_Table_Num, 1);
 
 fig_name    = 'Verifica Cinematica Inversa - Manipolatore di Stanford';
@@ -576,8 +589,8 @@ ylim([min_xyz(2) - margin, max_xyz(2) + margin]);
 zlim([min_xyz(3) - margin, max_xyz(3) + margin]);
 
 % 7. Legenda e Titolo
-legend([h_axes(1), h_axes(2), h_axes(3), h_link, h_ee, h_target], ...
-    {'Asse X', 'Asse Y', 'Asse Z', 'Bracci (Link)', 'End-Effector', 'Target d_{06,des}'}, ...
+legend([h_axes(1), h_axes(2), h_axes(3), h_link, h_base, h_joints, h_ee, h_target], ...
+    {'Asse X', 'Asse Y', 'Asse Z', 'Bracci (Link)', 'Base', 'Giunti', 'End-Effector', 'Target d_{06,des}'}, ...
     'Location', 'bestoutside');
 title(fig_name, 'FontSize', 12, 'FontWeight', 'bold');
 hold off;

@@ -43,7 +43,7 @@ r = [rx; ry];
 e_q = r - fr_q;
 
 % Definizione Funzione Di Costo Scalare V(q) (Norma Dell'Errore Al Quadrato)
-% V = (1/2) * e^T * e, che in MATLAB si traduce in e' * e
+% V = (1/2) * e^T * e, che in MATLAB per vettori reali si traduce in e.' * e
 V = (1/2) * (e_q.' * e_q);
 V = simplify(V);
 
@@ -65,17 +65,17 @@ fprintf('Matrice Hessiana:');
 disp(H_V);
 % Calcolo Jacobiana Gradiente Di V
 %H_V_Da_Grad = jacobian(gradV, q);
-%[text] I punti critici si trovano risolvendo l'equazione precedente $\\nabla_q V=0$. La loro classificazione dipende dagli autovalori della matrice Hessiana $H_V$ valutata in tali punti:
+%[text] I punti critici si trovano risolvendo l'equazione $\\nabla_q V=0$. La loro classificazione dipende dagli autovalori della matrice Hessiana $H_V$ valutata in tali punti:
 %[text] - **Minimo Locale: **Hessiana definita positiva (autovalori tutti positivi)
 %[text] - **Massimo Locale: **Hessiana definita negativa (autovalori tutti negativi)
-%[text] - **Punto Sella: **Hessiana indefinita (autovalori di segno discordi) \
+%[text] - **Punto Sella: **Hessiana indefinita (autovalori di segno discorde) \
 %%
 %[text] ## Formulazione Teorica Dell'Algoritmo Di Newton
 %[text] L'idea alla base del metodo di Newton, in questo contesto, è di trattare il problema come un sistema di controllo in cui si progetta una velocità dei giunti $\\dot{q}$ per annullare l'errore. Assumendo la posa desiderata costante ($\\dot{r}=0$), l'algoritmo iterativo deve fornire un'evoluzione per $\\mathbf{q}$ tale che $f_r(\\mathbf{q})\\to r$ in modo che:
 %[text] ### $\\dot{e} (\\mathbf{q})=-\\dot{f}_r (\\mathbf{q})=-J(\\mathbf{q})\\;\\dot{q}$
 %[text] Si consideri la matrice $J$ quadrata e non singolare e si imponga una dinamica dell'errore convergente a zero:
 %[text] ### $\\dot{e} =-K\\cdot e$
-%[text] Quando $K$ è una matrice definita positiva ($k>0$), gli autovalori di $-K$ sono tutti a parte reale negativa e si fa tendere l'errore a ***zero***. Quindi:
+%[text] Quando $K = k I$ è una matrice diagonale definita positiva ($k>0$), gli autovalori di $-K$ sono tutti a parte reale negativa e si fa tendere l'errore a ***zero***. Quindi:
 %[text] ### $-J(\\mathbf{q})\\;\\dot{q} =-K\\cdot e$
 %[text] Da cui si può ottenere $\\dot{q}$ come:
 %[text] ### $\\dot{q} =J^{-1} (\\mathbf{q})\\;K\\cdot e$
@@ -106,9 +106,7 @@ e_dot_Target = - K * e_q;
 fprintf("Errore Desiderato (Target):");
 disp(e_dot_Target);
 % Risoluzione Per Velocità Giunto
-eqPerDotq = e_dot == e_dot_Target;
-
-q_dot_eq = inv(J_q) * (K * e_q);
+q_dot_eq = J_q \ (K * e_q);
 q_dot_eq = simplify(q_dot_eq);
 fprintf("Equazione Di q_dot (Velocità Giunti)");
 disp(q_dot_eq);
@@ -134,11 +132,7 @@ q_dot_grad = simplify(q_dot_grad);
 
 fprintf('Equazione Velocità Dei Giunti:');
 disp(q_dot_grad);
-%[text] L'analisi della funzione di costo $V(q)$ è fondamentale per comprendere il comportamento degli algoritmi di ottimizzazione, in particolare quello del gradiente. I punti critici (o *stazionari*) si trovano dove il gradiente di $V(q)$ si annulla, ovvero $\\nabla_q V=-J(q)^T e(q)=0$. Questi punti non corrispondono necessariamente alla soluzione desiderata ($e=0$), ma possono rappresentare minimi locali o punti di sella in cui l'algoritmo del gradiente può arrestarsi prematuramente.
-%[text] Per classificare un punto critico $q_c$ (per cui $\\nabla_q V(q_c )=0$), si analizzano gli autovalori della matrice Hessiana $H_V (q_c )$ valutata in quel punto:
-%[text] - **Minimo Locale: **Hessiana definita positiva (autovalori tutti positivi)
-%[text] - **Massimo Locale: **Hessiana definita negativa (autovalori tutti negativi)
-%[text] - **Punto Sella: **Hessiana indefinita (autovalori di segno discordi) \
+%[text] L'analisi della funzione di costo $V(q)$ è fondamentale per comprendere il comportamento degli algoritmi di ottimizzazione, in particolare quello del gradiente. I punti critici (o *stazionari*) si trovano dove il gradiente di $V(q)$ si annulla, ovvero $\\nabla_q V=-J(q)^T e(q)=0$. Questi punti non corrispondono necessariamente alla soluzione desiderata ($e=0$), ma possono rappresentare minimi locali, massimi o punti di sella in cui l'algoritmo del gradiente può arrestarsi prematuramente; la loro classificazione avviene, come visto in precedenza, analizzando il segno degli autovalori dell'Hessiana $H_V(q_c)$.
 %%
 %[text] ## Analisi Dei Punti Stazionari Della Funzione Di Costo Quadratica
 %[text] Le espressioni simboliche derivate in precedenza vengono rese numeriche assegnando valori numerici alle lunghezze dei bracci (`l1`, `l2`) e alla posa desiderata dell'end-effector (`r`). Questo permette di calcolare le posizioni numeriche dei punti critici, e classificare esplicitamente i punti critici calcolando gli autovalori della matrice Hessiana.
@@ -230,8 +224,8 @@ fprintf('\t Vettore Errore e = r - fr_q:\n');
             fprintf('\t (%.4f, %.4f) È Minimo Locale\n', q1Crit, q2Crit);
         end
     elseif all(lambda < 0)
-        % Hessiana Definita Negativa -> Massimo
-        fprintf('\t (%.4f, %.4f) È Massimo Locale\n', q1Crit, q2Crit);
+        % Hessiana Definita Negativa -> Massimo Locale (e Massimo Globale per questo problema)
+        fprintf('\t (%.4f, %.4f) È Massimo Locale (e Massimo Globale)\n', q1Crit, q2Crit);
     else
         % L'Hessiana è indefinita -> Punto di Sella
         fprintf('\t (%.4f, %.4f) È Punto di Sella\n', q1Crit, q2Crit);
@@ -313,7 +307,7 @@ for k = 1:size(puntiCritici, 1)
 end
 xlabel(t, 'X [m]', 'FontSize', 10, 'FontWeight', 'bold');
 ylabel(t, 'Y [m]', 'FontSize', 10, 'FontWeight', 'bold');
-%[text] Per comprendere visivamente il comportamento degli algoritmi di ottimizzazione, è essenziale visualizzare la funzione di costo $V(q)$. Questo viene fatto generando una superficie 3D della funzione nello spazio dei giunti $(q_1 ,q_2 )$. Su questo grafico, verranno sovrapposti i punti critici calcolati e classificati. Questo permette di vedere dove si trovano i minimi, i massimi e i punti di sella, che possono deviare o intrappolare gli algoritmi.
+%[text] Per comprendere visivamente il comportamento degli algoritmi di ottimizzazione, è essenziale visualizzare la funzione di costo $V(q)$. Questo viene fatto generando una mappa di curve di livello 2D della funzione di costo nello spazio dei giunti $(q_1 ,q_2 )$. Su questo grafico, verranno sovrapposti i punti critici calcolati e classificati. Questo permette di vedere dove si trovano i minimi, i massimi e i punti di sella, che possono deviare o intrappolare gli algoritmi.
 l_val = [1, 0.8];
 for i = 1:size(puntiCritici, 1)
     q1Crit = puntiCritici(i,1);
@@ -405,8 +399,9 @@ legend([h_min_g, h_max_l, h_sella], ...
 hold off;
 %%
 %[text] ## Simulazione Numerica Iterativa Dell'Algoritmo Di Newton
+%[text] Per le simulazioni iterative di Newton e del Gradiente si considerano nuovi parametri geometrici e di task: lunghezze dei bracci $l_1 = l_2 = 1.0$ e posa desiderata $r = [1.0, 1.0]^T$.
 fprintf('----- Algoritmo Di Newton Iterativo -----');
-% Valori N Bracci
+% Lunghezze Bracci
 l1_val = 1.0;
 l2_val = 1.0;
 
@@ -440,18 +435,25 @@ for i = 1:nrSol
 
     % Inizializzazione Array Cronologia
     q_history = zeros(2, 100 + 1);
-    error_history = zeros(1, 100);
+    error_history = zeros(1, 100 + 1);
     q_history(:, 1) = q_k;
+    num_steps = 0;
+    num_err = 0;
 
     for k = 1:100
         pos_k = fr_fun(l1_val, l2_val, q_k(1), q_k(2));
 
         e_k = r_val - pos_k;
         error_norm = norm(e_k);
+        num_err = k;
         error_history(k) = error_norm;
 
         if error_norm < 1e-6
-            fprintf('\t Convergenza Raggiunta In %d Iterazioni.\n', k);
+            if num_steps == 1
+                fprintf('\t Convergenza Raggiunta In 1 Iterazione.\n');
+            else
+                fprintf('\t Convergenza Raggiunta In %d Iterazioni.\n', num_steps);
+            end
             break;
         end
 
@@ -464,20 +466,21 @@ for i = 1:nrSol
 
         % f. Aggiornamento Configurazione Giunti (Formula di Newton)
         % q_{k+1} = q_k + T * J^{-1}(q_k) * K * [r - f_r(q_k)]
-        q_k = q_k + T * inv(J_k) * K_num * e_k;
+        q_k = q_k + T * (J_k \ (K_num * e_k));
 
         % Salvataggio Nuova Configurazione
-        q_history(:, k+1) = q_k;
+        num_steps = num_steps + 1;
+        q_history(:, num_steps + 1) = q_k;
     end
 
-    if k == 100 && error_norm >= 1e-6
+    if num_steps == 100 && error_norm >= 1e-6
         fprintf('\t Algoritmo Terminato Per Numero Massimo Iterazioni.\n');
     end
 
-    % Tronca Cronologia Al Numero Di Iterazioni Effettive
-    q_history = q_history(:, 1:k);
+    % Tronca Cronologia Al Numero Di Stati Effettivi (iniziale + passi eseguiti)
+    q_history = q_history(:, 1:num_steps + 1);
     all_q_newton{i} = q_history;
-    all_err_newton{i} = error_history(1:k);
+    all_err_newton{i} = error_history(1:num_err);
 
     % Visualizzazione Risultati
     q_finale = q_history(:, end);
@@ -503,10 +506,11 @@ for i = 1:nrSol
 
     % Inizializzazione Array Cronologia
     q_history_grad = zeros(2, 500 + 1);
-    error_history_grad = zeros(1, 500);
+    error_history_grad = zeros(1, 500 + 1);
     q_history_grad(:, 1) = q_k;
 
-    iter_effettive = 500;
+    num_steps = 0;
+    num_err = 0;
 
     for k = 1:500
         % Calcolo Posizione Corrente EE
@@ -515,12 +519,16 @@ for i = 1:nrSol
         % Calcolo Errore Corrente
         e_k = r_val - pos_k;
         error_norm = norm(e_k);
+        num_err = k;
         error_history_grad(k) = error_norm;
 
         % Condizione di Arresto per Convergenza
         if error_norm < 1e-6
-            fprintf('\t Convergenza Raggiunta In %d Iterazioni.\n', k);
-            iter_effettive = k;
+            if num_steps == 1
+                fprintf('\t Convergenza Raggiunta In 1 Iterazione.\n');
+            else
+                fprintf('\t Convergenza Raggiunta In %d Iterazioni.\n', num_steps);
+            end
             break;
         end
 
@@ -536,16 +544,17 @@ for i = 1:nrSol
         q_k = q_k + alpha_prime * J_k.' * e_k;
 
         % Salvataggio Nuova Configurazione
-        q_history_grad(:, k+1) = q_k;
+        num_steps = num_steps + 1;
+        q_history_grad(:, num_steps + 1) = q_k;
     end
 
-    if k == 500 && error_norm >= 1e-6
+    if num_steps == 500 && error_norm >= 1e-6
         fprintf('\t Algoritmo Terminato Per Numero Massimo Iterazioni.\n');
     end
-    % Tronca Cronologia Al Numero Di Iterazioni Effettive
-    q_history_grad = q_history_grad(:, 1:iter_effettive);
+    % Tronca Cronologia Al Numero Di Stati Effettivi (iniziale + passi eseguiti)
+    q_history_grad = q_history_grad(:, 1:num_steps + 1);
     all_q_grad{i} = q_history_grad;
-    all_err_grad{i} = error_history_grad(1:iter_effettive);
+    all_err_grad{i} = error_history_grad(1:num_err);
 
     % Visualizzazione Risultati
     q_finale_grad = q_history_grad(:, end);
@@ -645,7 +654,7 @@ for i = 1:nrSol
     if i == 2
         plot(1, 1e-8, 's', 'MarkerSize', 7.5, ...
             'MarkerFaceColor', colors_q(i,:), 'MarkerEdgeColor', 'k', 'LineWidth', 1.2);
-        text(1.35, 1.3e-8, '$\mathbf{q}_{0,2}$ ($k=1,\;\|e\|=0$)', ...
+        text(1.35, 1.3e-8, '$\mathbf{q}_{0,2}$ ($\mathrm{iter}=0,\;\|e\|=0$)', ...
             'Interpreter', 'latex', 'FontSize', 8.5, 'Color', colors_q(i,:) * 0.75);
     else
         e_vec = max(all_err_newton{i}, 1e-8);
@@ -749,7 +758,7 @@ for i = 1:nrSol
     if i == 2
         plot(1, 1e-8, 's', 'MarkerSize', 7.5, ...
             'MarkerFaceColor', colors_q(i,:), 'MarkerEdgeColor', 'k', 'LineWidth', 1.2);
-        text(1.35, 1.3e-8, '$\mathbf{q}_{0,2}$ ($k=1,\;\|e\|=0$)', ...
+        text(1.35, 1.3e-8, '$\mathbf{q}_{0,2}$ ($\mathrm{iter}=0,\;\|e\|=0$)', ...
             'Interpreter', 'latex', 'FontSize', 8.5, 'Color', colors_q(i,:) * 0.75);
     else
         e_vec = max(all_err_grad{i}, 1e-8);
@@ -783,6 +792,10 @@ lgd_g = legend(ax_g1, h_leg_g, ...
      'Minimo Globale ($e = 0$)'}, ...
     'Interpreter', 'latex', 'Orientation', 'horizontal', 'NumColumns', 2, 'FontSize', 8.8);
 lgd_g.Layout.Tile = 'north';
+%[text] ### Considerazioni Sul Confronto Tra Newton E Gradiente
+%[text] Dai risultati delle simulazioni emergono due differenze principali tra i due metodi:
+%[text] - **Velocità di convergenza**: L'algoritmo di Newton converge molto più rapidamente (in circa $20\text{--}26$ iterazioni di aggiornamento) rispetto all'algoritmo del Gradiente (che richiede circa $402\text{--}467$ iterazioni a parità di tolleranza $10^{-6}$). Da $\\mathbf{q}_{0,2}=[0,\\pi/2]^T$, essendo già sulla soluzione esatta, entrambi terminano immediatamente con $0$ iterazioni.
+%[text] - **Comportamento vicino alle singolarità e scelta del ramo**: Partendo da $\\mathbf{q}_{0,3}=[-\\pi/3,\\pi/6]^T$, l'algoritmo di Newton transita in prossimità della singolarità $q_2=\\pi$ (dove $J^{-1}$ amplifica il passo) e converge al ramo alternativo $[-4.7124,\\; 4.7124]\\;\\mathrm{rad}$ (equivalente modulo $2\\pi$ a $[\\pi/2,\\;-\\pi/2]^T$). L'algoritmo del Gradiente, invece, utilizzando $J^T$ non soffre di amplificazioni singolari e scende regolarmente verso il minimo più vicino $[0,\\;\\pi/2]^T$. \
 %[appendix]{"version":"1.0"}
 %---
 %[metadata:view]

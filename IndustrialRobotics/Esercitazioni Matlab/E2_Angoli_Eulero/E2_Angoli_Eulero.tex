@@ -110,7 +110,7 @@
 
 \begin{par}
 \begin{flushleft}
-Una rappresentazione minima dell'orientamento di un corpo rigido nello spazio tridimensionale richiede esattamente tre parametri indipendenti. Questo deriva dal fatto che il gruppo speciale ortogonale \textbf{SO(m)}, che descrive le rotazioni nello spazio tridimensionale, ha dimensione $\frac{m(m-1)}{2}$. Per ottenere una rappresentazione minima, si possono utilizzare insiemi di tre angoli
+Una rappresentazione minima dell'orientamento di un corpo rigido nello spazio tridimensionale richiede esattamente tre parametri indipendenti. Questo deriva dal fatto che il gruppo speciale ortogonale \textbf{SO(m)}, che descrive le rotazioni nello spazio $m$-dimensionale, ha dimensione $\frac{m(m-1)}{2}$ (per lo spazio tridimensionale, $m=3$, ha dimensione $3$). Per ottenere una rappresentazione minima, si possono utilizzare insiemi di tre angoli
 \end{flushleft}
 \end{par}
 
@@ -122,7 +122,7 @@ $$\boldsymbol{\alpha}={\left(\begin{array}{ccc}
 
 \begin{par}
 \begin{flushleft}
-Noti come \textit{angoli di Eulero}, che descrivono sequenze di rotazioni elementari intorno agli assi di un sistema di coordinate. Componendo tre rotazioni elementari consecutive, è possibile costruire una matrice di rotazione che rappresenta l'orientamento del corpo rigido. Affinché questa rappresentazione sia valida, è necessario che due rotazioni consecutive non avvengano intorno ad assi paralleli, altrimenti si perderebbe un grado di libertà
+noti come \textit{angoli di Eulero}, che descrivono sequenze di rotazioni elementari intorno agli assi di un sistema di coordinate. Componendo tre rotazioni elementari consecutive, è possibile costruire una matrice di rotazione che rappresenta l'orientamento del corpo rigido. Affinché questa rappresentazione sia valida, è necessario che due rotazioni consecutive non avvengano intorno ad assi paralleli, altrimenti si perderebbe un grado di libertà.
 \end{flushleft}
 \end{par}
 
@@ -134,14 +134,14 @@ Tra queste, tre tipi di terne sono particolarmente rilevanti:
 
 \begin{itemize}
 \setlength{\itemsep}{-1ex}
-   \item{\begin{flushleft} \textbf{Angoli ZXZ:} Prevedono delle rotazioni successive intorno agli assi: $Z$, $X^{\prime }$ (asse $X$ ruotato) e $Z^{\prime \prime }$ (asse $Z$ nuovamente ruotato) \end{flushleft}}
-   \item{\begin{flushleft} \textbf{Angoli ZXY:} Prevedono delle rotazioni successive intorno agli assi: $Z$, $X^{\prime }$ (asse $X$ ruotato) e $Y^{\prime \prime }$ (asse $Y$ nuovamente ruotato) \end{flushleft}}
-   \item{\begin{flushleft} \textbf{Angoli RPY:} Prevedono delle rotazioni attorno agli assi fissi $X$, $Y$ e $Z$ \end{flushleft}}
+   \item{\begin{flushleft} \textbf{Angoli ZXZ:} Prevedono delle rotazioni successive intorno agli assi: $Z$, $X^{\prime }$ (asse $X$ ruotato) e $Z^{\prime \prime }$ (asse $Z$ nuovamente ruotato). \end{flushleft}}
+   \item{\begin{flushleft} \textbf{Angoli ZXY:} Prevedono delle rotazioni successive intorno agli assi: $Z$, $X^{\prime }$ (asse $X$ ruotato) e $Y^{\prime \prime }$ (asse $Y$ nuovamente ruotato). \end{flushleft}}
+   \item{\begin{flushleft} \textbf{Angoli RPY:} Prevedono delle rotazioni attorno agli assi fissi $X$, $Y$ e $Z$. \end{flushleft}}
 \end{itemize}
 
 \begin{par}
 \begin{flushleft}
-Per essere valida, una sequenza di rotazioni non deve avere due rotazioni consecutive attorno ad assi paralleli. Due delle convenzioni valide sono \textbf{ZXZ} e \textbf{ZXY}.
+Tra le convenzioni valide più utilizzate vi sono \textbf{ZXZ}, \textbf{ZXY} e \textbf{Roll-Pitch-Yaw} (XYZ assi fissi).
 \end{flushleft}
 \end{par}
 
@@ -151,7 +151,7 @@ clc; clear; close all;
 % Definizione Angoli Simbolici
 syms phi theta psi real;
 
-% Definzione Assi
+% Definizione Assi
 x = [1; 0; 0];
 y = [0; 1; 0];
 z = [0; 0; 1];
@@ -217,10 +217,10 @@ phiNum = pi/4;   % 45 gradi
 thetaNum = pi/3; % 60 gradi
 psiNum = pi/6;   % 30 gradi
 
-RZXZ_Num = subs(RZXZ, {phi, theta, psi}, {phiNum, thetaNum, psiNum});
+RZXZ_Num = double(subs(RZXZ, {phi, theta, psi}, {phiNum, thetaNum, psiNum}));
 
 disp("Matrice Di Rotazione Numerica R_ZXZ:");
-disp(double(RZXZ_Num));
+disp(RZXZ_Num);
 \end{matlabcode}
 \begin{matlaboutput}
 Matrice Di Rotazione Numerica R_ZXZ:
@@ -330,10 +330,10 @@ phiNum = pi/6;   % 30 gradi
 thetaNum = pi/4; % 45 gradi
 psiNum = pi/3;   % 60 gradi
 
-R_ZXY_Num = subs(RZXY, {phi, theta, psi}, {phiNum, thetaNum, psiNum});
+R_ZXY_Num = double(subs(RZXY, {phi, theta, psi}, {phiNum, thetaNum, psiNum}));
 
 disp("Matrice Di Rotazione Numerica R_ZXY:");
-disp(double(R_ZXY_Num));
+disp(R_ZXY_Num);
 \end{matlabcode}
 \begin{matlaboutput}
 Matrice Di Rotazione Numerica R_ZXY:
@@ -354,14 +354,13 @@ La singolarità per la convenzione $ZXY$ si verifica quando $\cos(\theta )=0$, o
 
 \begin{par}
 \begin{flushleft}
-Si analizza il caso $\theta =\frac{\pi }{2}$
+Si analizza il caso $\theta =\frac{\pi }{2}$.
 \end{flushleft}
 \end{par}
 
 \begin{matlabcode}
-[RXThetaPi] = Compute_Rotation_Matrix(x, pi/2);
-RXThetaPi = round(RXThetaPi);
-RZXY_Pi = RZ_Phi * RXThetaPi * RY_Psi;
+[RX_Theta_Pi2] = Compute_Rotation_Matrix(x, sym(pi)/2);
+RZXY_Pi = RZ_Phi * RX_Theta_Pi2 * RY_Psi;
 RZXY_Pi = simplify(RZXY_Pi);
 
 disp("Matrice Rotazione R_ZXY (Con Theta = Pi/2):");
@@ -437,10 +436,10 @@ phiNum = pi/2;   % 90 gradi (Yaw)
 thetaNum = pi/4; % 45 gradi (Pitch)
 psiNum = pi/6;   % 30 gradi (Roll)
 
-R_RPY_Num = subs(R_RPY, {phi, theta, psi}, {phiNum, thetaNum, psiNum});
+R_RPY_Num = double(subs(R_RPY, {phi, theta, psi}, {phiNum, thetaNum, psiNum}));
 
 disp("Matrice Di Rotazione Numerica R_RPY:");
-disp(double(R_RPY_Num));
+disp(R_RPY_Num);
 \end{matlabcode}
 \begin{matlaboutput}
 Matrice Di Rotazione Numerica R_RPY:
@@ -449,11 +448,7 @@ Matrice Di Rotazione Numerica R_RPY:
    -0.7071    0.3536    0.6124
 \end{matlaboutput}
 
-\begin{par}
-\begin{flushleft}
-\textbf{Singolarità della Rotazione RPY}
-\end{flushleft}
-\end{par}
+\matlabheadingtwo{Singolarità Della Rotazione RPY}
 
 \begin{par}
 \begin{flushleft}
@@ -463,15 +458,14 @@ La singolarità per questa convenzione RPY si verifica quando l'angolo di Pitch 
 
 \begin{par}
 \begin{flushleft}
-Si analizza il caso con $\theta =\frac{\pi }{2}$
+Si analizza il caso con $\theta =\frac{\pi }{2}$.
 \end{flushleft}
 \end{par}
 
 \begin{matlabcode}
 % SINGOLARITÀ CON THETA = pi/2
-[RY_Theta_Pi] = Compute_Rotation_Matrix(y, pi/2);
-RY_Theta_Pi = round(RY_Theta_Pi);
-R_RPY_Pi = RZ_Phi * RY_Theta_Pi * RX_Psi;
+[RY_Theta_Pi2] = Compute_Rotation_Matrix(y, sym(pi)/2);
+R_RPY_Pi = RZ_Phi * RY_Theta_Pi2 * RX_Psi;
 R_RPY_Pi = simplify(R_RPY_Pi);
 
 disp("Matrice Di Rotazione R_RPY (Con Theta = Pi/2):");
@@ -541,9 +535,9 @@ text(X_Ruotato(1)*1.1, X_Ruotato(2)*1.1, X_Ruotato(3)*1.1, 'X''', 'FontSize', 11
 text(Y_Ruotato(1)*1.1, Y_Ruotato(2)*1.1, Y_Ruotato(3)*1.1, 'Y''', 'FontSize', 11, 'Color', col_rot_Y, 'FontWeight', 'bold');
 text(Z_Ruotato(1)*1.1, Z_Ruotato(2)*1.1, Z_Ruotato(3)*1.1, 'Z''', 'FontSize', 11, 'Color', col_rot_Z, 'FontWeight', 'bold');
 
-title({'Rotazione ZXZ (Eulero Classica)', sprintf('\\phi = %.1f°, \\theta = %.1f°, \\psi = %.1f°',
+title({'Rotazione ZXZ (Eulero Classica)', sprintf('\\phi = %.1f°, \\theta = %.1f°, \\psi = %.1f°', ...
     rad2deg(phiNum), rad2deg(thetaNum), rad2deg(psiNum))}, 'FontSize', 11, 'FontWeight', 'bold');
-legend([hX_0, hY_0, hZ_0, hX_r, hY_r, hZ_r], {'X_0 (Fisso)', 'Y_0 (Fisso)', 'Z_0 (Fisso)', 'X'' (Ruotato)',
+legend([hX_0, hY_0, hZ_0, hX_r, hY_r, hZ_r], {'X_0 (Fisso)', 'Y_0 (Fisso)', 'Z_0 (Fisso)', 'X'' (Ruotato)', ...
     'Y'' (Ruotato)', 'Z'' (Ruotato)'}, 'Location', 'bestoutside');
 hold off;
 \end{matlabcode}
@@ -585,9 +579,6 @@ Z_Ruotato = R_ZXY_Num(:, 3);
 hX_r = quiver3(0, 0, 0, X_Ruotato(1), X_Ruotato(2), X_Ruotato(3), 0, 'Color', col_rot_X, 'LineWidth', 2.2);
 hY_r = quiver3(0, 0, 0, Y_Ruotato(1), Y_Ruotato(2), Y_Ruotato(3), 0, 'Color', col_rot_Y, 'LineWidth', 2.2);
 hZ_r = quiver3(0, 0, 0, Z_Ruotato(1), Z_Ruotato(2), Z_Ruotato(3), 0, 'Color', col_rot_Z, 'LineWidth', 2.2);
-\end{matlabcode}
-\newpage
-\begin{matlabcode}
 text(X_Ruotato(1)*1.1, X_Ruotato(2)*1.1, X_Ruotato(3)*1.1, 'X''', 'FontSize', 11, 'Color', col_rot_X, 'FontWeight', 'bold');
 text(Y_Ruotato(1)*1.1, Y_Ruotato(2)*1.1, Y_Ruotato(3)*1.1, 'Y''', 'FontSize', 11, 'Color', col_rot_Y, 'FontWeight', 'bold');
 text(Z_Ruotato(1)*1.1, Z_Ruotato(2)*1.1, Z_Ruotato(3)*1.1, 'Z''', 'FontSize', 11, 'Color', col_rot_Z, 'FontWeight', 'bold');
@@ -621,9 +612,6 @@ hZ_0 = quiver3(0, 0, 0, 0, 0, 1, 0, 'Color', col_fixed_Z, 'LineStyle', '--', 'Li
 text(1.08, 0, 0, 'X_0', 'FontSize', 10, 'Color', col_fixed_X, 'FontWeight', 'bold');
 text(0, 1.08, 0, 'Y_0', 'FontSize', 10, 'Color', col_fixed_Y, 'FontWeight', 'bold');
 text(0, 0, 1.08, 'Z_0', 'FontSize', 10, 'Color', col_fixed_Z, 'FontWeight', 'bold');
-\end{matlabcode}
-\newpage
-\begin{matlabcode}
 % Ripristino Angoli RPY per il Titolo
 phiNum = pi/2;
 thetaNum = pi/4;
@@ -641,11 +629,11 @@ text(X_Ruotato(1)*1.1, X_Ruotato(2)*1.1, X_Ruotato(3)*1.1, 'X''', 'FontSize', 11
 text(Y_Ruotato(1)*1.1, Y_Ruotato(2)*1.1, Y_Ruotato(3)*1.1, 'Y''', 'FontSize', 11, 'Color', col_rot_Y, 'FontWeight', 'bold');
 text(Z_Ruotato(1)*1.1, Z_Ruotato(2)*1.1, Z_Ruotato(3)*1.1, 'Z''', 'FontSize', 11, 'Color', col_rot_Z, 'FontWeight', 'bold');
 
-title({'Rotazione RPY (Assi Fissi XYZ - Roll, Pitch, Yaw)',
-    sprintf('\\phi = %.1f°, \\theta = %.1f°, \\psi = %.1f°', rad2deg(phiNum), rad2deg(thetaNum), rad2deg(psiNum))},
+title({'Rotazione RPY (Assi Fissi XYZ - Roll, Pitch, Yaw)', ...
+    sprintf('\\phi = %.1f°, \\theta = %.1f°, \\psi = %.1f°', rad2deg(phiNum), rad2deg(thetaNum), rad2deg(psiNum))}, ...
     'FontSize', 11, 'FontWeight', 'bold');
-legend([hX_0, hY_0, hZ_0, hX_r, hY_r, hZ_r],
-    {'X_0 (Fisso)', 'Y_0 (Fisso)', 'Z_0 (Fisso)', 'X'' (Ruotato)', 'Y'' (Ruotato)', 'Z'' (Ruotato)'},
+legend([hX_0, hY_0, hZ_0, hX_r, hY_r, hZ_r], ...
+    {'X_0 (Fisso)', 'Y_0 (Fisso)', 'Z_0 (Fisso)', 'X'' (Ruotato)', 'Y'' (Ruotato)', 'Z'' (Ruotato)'}, ...
     'Location', 'bestoutside');
 hold off;
 \end{matlabcode}

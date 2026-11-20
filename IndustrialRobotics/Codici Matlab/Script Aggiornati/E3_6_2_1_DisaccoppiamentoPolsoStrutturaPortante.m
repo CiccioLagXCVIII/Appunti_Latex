@@ -4,7 +4,7 @@
 %[text]{"align":"center"} ![Disaccoppiamento Cinematica Diretta 1](../../Esercitazioni Matlab/E3_6_2_DisaccoppiamentoPolsoStrutturaPortante/E3_6_2_Images/image_0.jpeg)
 clc; clear; close all;
 % Definizione Variabili Simboliche
-syms q1 q2 q3 d1 d2 d3 alpha1 alpha2 alpha3 a1 a2 a3 real;
+syms q1 q2 q3 d2 real;
 
 DH_table_Strut = [q1, 0, -pi/2, 0;
                   q2, d2, pi/2, 0;
@@ -36,7 +36,7 @@ disp(T03);
 %[text] ## Cinematica Diretta Del Polso Sferico
 %[text]{"align":"center"} ![Disaccoppiamento Cinematica Diretta 2](../../Esercitazioni Matlab/E3_6_2_DisaccoppiamentoPolsoStrutturaPortante/E3_6_2_Images/image_1.jpeg)
 % Definizione Variabili Simboliche
-syms q4 q5 q6 d4 d5 d6 alpha4 alpha5 alpha6 a4 a5 a6 real;
+syms q4 q5 q6 d6 real;
 
 % Tabella Parametri Denavit-Hartenberg (DH)
 DH_table_Polso = [q4, 0, -pi/2, 0;
@@ -116,6 +116,13 @@ q2_sol_neg = atan2(-sqrt(1 - cos_q2^2), cos_q2);
 A_q1 = [q3*sin(q2), -d2; d2, q3*sin(q2)];
 cs_q1 = simplify(inv(A_q1) * [d03_hat(1); d03_hat(2)]);
 q1_sol = atan2(cs_q1(2), cs_q1(1));
+
+fprintf('Soluzioni simboliche (q3, q2, q1):\n');
+fprintf('q3 (+):\n'); disp(q3_sol_pos);
+fprintf('q3 (-):\n'); disp(q3_sol_neg);
+fprintf('q2 (+):\n'); disp(q2_sol_pos);
+fprintf('q2 (-):\n'); disp(q2_sol_neg);
+fprintf('q1:\n'); disp(q1_sol);
 %%
 %[text] ## Cinematica Inversa Di Orientamento Del Polso Sferico
 %[text]{"align":"center"} ${}^{0}\\mathbf{R}_6 = {}^{0}\\mathbf{R}_3 \\cdot {}^{3}\\mathbf{R}_{6}$
@@ -145,6 +152,12 @@ q5_sol_pos = atan2(sqrt(1 - cos_q5^2), cos_q5);
 q5_sol_neg = atan2(-sqrt(1 - cos_q5^2), cos_q5);
 q4_sol = atan2(R_bar(2,3) / sin(q5), R_bar(1,3) / sin(q5));
 q6_sol = atan2(R_bar(3,2) / sin(q5), -R_bar(3,1) / sin(q5));
+
+fprintf('Soluzioni simboliche (q5, q4, q6):\n');
+fprintf('q5 (+):\n'); disp(q5_sol_pos);
+fprintf('q5 (-):\n'); disp(q5_sol_neg);
+fprintf('q4:\n'); disp(q4_sol);
+fprintf('q6:\n'); disp(q6_sol);
 %%
 %[text] ## Analisi Del Caso Singolare Del Polso $\\sin (q_5 )=0$
 %[text] ### Configurazione Singolare Con $q_5 =0$
@@ -156,7 +169,7 @@ fprintf('Matrice Di Rotazione R36 Calcolata Con q5 = 0:\n');
 
 disp(R36_Zero);
 q4_plus_q6 = atan2(R_bar(2,1), R_bar(1,1));
-fprintf('In singolarita q5 = 0, q4 + q6 =\n');
+fprintf('In singolarità q5 = 0, q4 + q6 =\n');
 disp(q4_plus_q6);
 %[text] ### Configurazione Singolare Con $q_5 =\\pi$
 % Sostituzione q5 = Pi
@@ -167,7 +180,7 @@ fprintf('Matrice Di Rotazione R36 Calcolata Con q5 = Pi:\n');
 
 disp(R36_Pi);
 q4_minus_q6 = atan2(-R_bar(2,1), R_bar(2,2));
-fprintf('In singolarita q5 = Pi, q4 - q6 =\n');
+fprintf('In singolarità q5 = Pi, q4 - q6 =\n');
 disp(q4_minus_q6);
 %[appendix]{"version":"1.0"}
 %---

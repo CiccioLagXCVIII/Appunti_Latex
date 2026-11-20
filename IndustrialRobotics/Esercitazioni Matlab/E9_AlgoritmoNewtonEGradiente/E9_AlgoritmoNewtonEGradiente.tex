@@ -154,7 +154,7 @@ disp(fr_q);
 Posizione EE Rispetto Al Riferimento Base [Vettore fr(q)]
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{c}
+$\displaystyle \left(\begin{array}{c}
 l_2 \,\cos \left(q_1 +q_2 \right)+l_1 \,\cos \left(q_1 \right)\\
 l_2 \,\sin \left(q_1 +q_2 \right)+l_1 \,\sin \left(q_1 \right)
 \end{array}\right)$
@@ -177,7 +177,7 @@ disp(J_q);
 Jacobiano Analitico J(q):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{cc}
+$\displaystyle \left(\begin{array}{cc}
 -l_2 \,\sin \left(q_1 +q_2 \right)-l_1 \,\sin \left(q_1 \right) & -l_2 \,\sin \left(q_1 +q_2 \right)\\
 l_2 \,\cos \left(q_1 +q_2 \right)+l_1 \,\cos \left(q_1 \right) & l_2 \,\cos \left(q_1 +q_2 \right)
 \end{array}\right)$
@@ -211,7 +211,7 @@ L'obiettivo è far convergere questo errore a zero.
 e_q = r - fr_q;
 
 % Definizione Funzione Di Costo Scalare V(q) (Norma Dell'Errore Al Quadrato)
-% V = (1/2) * e^T * e, che in MATLAB si traduce in e' * e
+% V = (1/2) * e^T * e, che in MATLAB per vettori reali si traduce in e.' * e
 V = (1/2) * (e_q.' * e_q);
 V = simplify(V);
 
@@ -222,7 +222,7 @@ disp(V);
 Funzione Di Costo V(q):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \frac{{{\left(l_2 \,\cos \left(q_1 +q_2 \right)-\textrm{rx}+l_1 \,\cos \left(q_1 \right)\right)}}^2 }{2}+\frac{{{\left(l_2 \,\sin \left(q_1 +q_2 \right)-\textrm{ry}+l_1 \,\sin \left(q_1 \right)\right)}}^2 }{2}$
+$\displaystyle \frac{{{\left(l_2 \,\cos \left(q_1 +q_2 \right)-\textrm{rx}+l_1 \,\cos \left(q_1 \right)\right)}}^2 }{2}+\frac{{{\left(l_2 \,\sin \left(q_1 +q_2 \right)-\textrm{ry}+l_1 \,\sin \left(q_1 \right)\right)}}^2 }{2}$
 \end{matlabsymbolicoutput}
 
 \begin{par}
@@ -277,14 +277,14 @@ Dove $\sigma_1 =l_2 \,\textrm{rx}\,\cos \left(q_1 +q_2 \right)+l_2 \,\textrm{ry}
 
 \begin{par}
 \begin{flushleft}
-I punti critici si trovano risolvendo l'equazione precedente $\nabla_q V=0$. La loro classificazione dipende dagli autovalori della matrice Hessiana $H_V$ valutata in tali punti:
+I punti critici si trovano risolvendo l'equazione $\nabla_q V=0$. La loro classificazione dipende dagli autovalori della matrice Hessiana $H_V$ valutata in tali punti:
 \end{flushleft}
 \end{par}
 
 \begin{itemize}
    \item{\begin{flushleft} \textbf{Minimo Locale: }Hessiana definita positiva (autovalori tutti positivi) \end{flushleft}}
    \item{\begin{flushleft} \textbf{Massimo Locale: }Hessiana definita negativa (autovalori tutti negativi) \end{flushleft}}
-   \item{\begin{flushleft} \textbf{Punto Sella: }Hessiana indefinita (autovalori di segno discordi) \end{flushleft}}
+   \item{\begin{flushleft} \textbf{Punto Sella: }Hessiana indefinita (autovalori di segno discorde) \end{flushleft}}
 \end{itemize}
 
 \matlabheadingtwo{Formulazione Teorica Dell'Algoritmo Di Newton}
@@ -313,7 +313,7 @@ Si consideri la matrice $J$ quadrata e non singolare e si imponga una dinamica d
 
 \begin{par}
 \begin{flushleft}
-Quando $K$ è una matrice definita positiva ($k>0$), gli autovalori di $-K$ sono tutti a parte reale negativa e si fa tendere l'errore a \textit{\textbf{zero}}. Quindi:
+Quando $K = k I$ è una matrice diagonale definita positiva ($k>0$), gli autovalori di $-K$ sono tutti a parte reale negativa e si fa tendere l'errore a \textit{\textbf{zero}}. Quindi:
 \end{flushleft}
 \end{par}
 
@@ -387,7 +387,7 @@ Relazione Tra Derivata Errore E Velocità Giunti:
 disp(e_dot);
 \end{matlabcode}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{c}
+$\displaystyle \left(\begin{array}{c}
 q_{\dot{1} } \,{\left(l_2 \,\sin \left(q_1 +q_2 \right)+l_1 \,\sin \left(q_1 \right)\right)}+l_2 \,q_{\dot{2} } \,\sin \left(q_1 +q_2 \right)\\
 -q_{\dot{1} } \,{\left(l_2 \,\cos \left(q_1 +q_2 \right)+l_1 \,\cos \left(q_1 \right)\right)}-l_2 \,q_{\dot{2} } \,\cos \left(q_1 +q_2 \right)
 \end{array}\right)$
@@ -409,16 +409,14 @@ Errore Desiderato (Target):
 disp(e_dot_Target);
 \end{matlabcode}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{c}
+$\displaystyle \left(\begin{array}{c}
 k\,{\left(l_2 \,\cos \left(q_1 +q_2 \right)-\textrm{rx}+l_1 \,\cos \left(q_1 \right)\right)}\\
 k\,{\left(l_2 \,\sin \left(q_1 +q_2 \right)-\textrm{ry}+l_1 \,\sin \left(q_1 \right)\right)}
 \end{array}\right)$
 \end{matlabsymbolicoutput}
 \begin{matlabcode}
 % Risoluzione Per Velocità Giunto
-eqPerDotq = e_dot == e_dot_Target;
-
-q_dot_eq = inv(J_q) * (K * e_q);
+q_dot_eq = J_q \ (K * e_q);
 q_dot_eq = simplify(q_dot_eq);
 fprintf("Equazione Di q_dot (Velocità Giunti)");
 \end{matlabcode}
@@ -429,7 +427,7 @@ Equazione Di q_dot (Velocità Giunti)
 disp(q_dot_eq);
 \end{matlabcode}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{c}
+$\displaystyle \left(\begin{array}{c}
 -\frac{k\,{\left(l_2 -\textrm{rx}\,\cos \left(q_1 +q_2 \right)-\textrm{ry}\,\sin \left(q_1 +q_2 \right)+l_1 \,\cos \left(q_2 \right)\right)}}{l_1 \,\sin \left(q_2 \right)}\\
 -\frac{k\,{\left(l_1 \,\textrm{rx}\,\cos \left(q_1 \right)-{l_2 }^2 -2\,l_1 \,l_2 \,\cos \left(q_2 \right)-{l_1 }^2 +l_1 \,\textrm{ry}\,\sin \left(q_1 \right)+l_2 \,\textrm{rx}\,\cos \left(q_1 +q_2 \right)+l_2 \,\textrm{ry}\,\sin \left(q_1 +q_2 \right)\right)}}{l_1 \,l_2 \,\sin \left(q_2 \right)}
 \end{array}\right)$
@@ -517,7 +515,7 @@ Equazione Velocità Dei Giunti:
 disp(q_dot_grad);
 \end{matlabcode}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{c}
+$\displaystyle \left(\begin{array}{c}
 \alpha \,{\left(l_1 \,\textrm{ry}\,\cos \left(q_1 \right)-l_1 \,\textrm{rx}\,\sin \left(q_1 \right)+l_2 \,\textrm{ry}\,\cos \left(q_1 +q_2 \right)-l_2 \,\textrm{rx}\,\sin \left(q_1 +q_2 \right)\right)}\\
 \alpha \,l_2 \,{\left(\textrm{ry}\,\cos \left(q_1 +q_2 \right)-\textrm{rx}\,\sin \left(q_1 +q_2 \right)+l_1 \,\sin \left(q_2 \right)\right)}
 \end{array}\right)$
@@ -525,22 +523,9 @@ disp(q_dot_grad);
 
 \begin{par}
 \begin{flushleft}
-L'analisi della funzione di costo $V(q)$ è fondamentale per comprendere il comportamento degli algoritmi di ottimizzazione, in particolare quello del gradiente. I punti critici (o \textit{stazionari}) si trovano dove il gradiente di $V(q)$ si annulla, ovvero $\nabla_q V=-J(q)^T e(q)=0$. Questi punti non corrispondono necessariamente alla soluzione desiderata ($e=0$), ma possono rappresentare minimi locali o punti di sella in cui l'algoritmo del gradiente può arrestarsi prematuramente.
+L'analisi della funzione di costo $V(q)$ è fondamentale per comprendere il comportamento degli algoritmi di ottimizzazione, in particolare quello del gradiente. I punti critici (o \textit{stazionari}) si trovano dove il gradiente di $V(q)$ si annulla, ovvero $\nabla_q V=-J(q)^T e(q)=0$. Questi punti non corrispondono necessariamente alla soluzione desiderata ($e=0$), ma possono rappresentare minimi locali, massimi o punti di sella in cui l'algoritmo del gradiente può arrestarsi prematuramente; la loro classificazione avviene, come visto in precedenza, analizzando il segno degli autovalori dell'Hessiana $H_V(q_c)$.
 \end{flushleft}
 \end{par}
-
-\begin{par}
-\begin{flushleft}
-Per classificare un punto critico $q_c$ (per cui $\nabla_q V(q_c )=0$), si analizzano gli autovalori della matrice Hessiana $H_V (q_c )$ valutata in quel punto:
-\end{flushleft}
-\end{par}
-
-\begin{itemize}
-\setlength{\itemsep}{-1ex}
-   \item{\begin{flushleft} \textbf{Minimo Locale: }Hessiana definita positiva (autovalori tutti positivi) \end{flushleft}}
-   \item{\begin{flushleft} \textbf{Massimo Locale: }Hessiana definita negativa (autovalori tutti negativi) \end{flushleft}}
-   \item{\begin{flushleft} \textbf{Punto Sella: }Hessiana indefinita (autovalori di segno discordi) \end{flushleft}}
-\end{itemize}
 
 
 \newpage
@@ -594,7 +579,7 @@ Valori q_1:
 \end{matlaboutput}
 
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{c}
+$\displaystyle \left(\begin{array}{c}
 2\,\textrm{atan}\left(\frac{\sqrt{247}}{49}+\frac{10}{49}\right)+2\,\pi \,l\\
 2\,\pi \,l-2\,\textrm{atan}\left(\frac{\sqrt{247}}{49}-\frac{10}{49}\right)\\
 \textrm{atan}\left(\frac{5}{13}\right)-\pi +2\,\pi \,l\\
@@ -611,7 +596,7 @@ disp(q2Staz);
 Valori q_2:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{c}
+$\displaystyle \left(\begin{array}{c}
 2\,\pi \,m-2\,\textrm{atan}\left(\frac{\sqrt{247}}{19}\right)\\
 2\,\textrm{atan}\left(\frac{\sqrt{247}}{19}\right)+2\,\pi \,m\\
 -\pi \,{\left(2\,m-1\right)}\\
@@ -629,7 +614,7 @@ disp(conditions(1));
 Condizione:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle l\in \mathbb{Z}\wedge m\in \mathbb{Z}$
+$\displaystyle l\in \mathbb{Z}\wedge m\in \mathbb{Z}$
 \end{matlabsymbolicoutput}
 
 \begin{par}
@@ -764,8 +749,8 @@ for i = 1:size(puntiCritici, 1)
             fprintf('\t (%.4f, %.4f) È Minimo Locale\n', q1Crit, q2Crit);
         end
     elseif all(lambda < 0)
-        % Hessiana Definita Negativa -> Massimo
-        fprintf('\t (%.4f, %.4f) È Massimo Locale\n', q1Crit, q2Crit);
+        % Hessiana Definita Negativa -> Massimo Locale (e Massimo Globale per questo problema)
+        fprintf('\t (%.4f, %.4f) È Massimo Locale (e Massimo Globale)\n', q1Crit, q2Crit);
     else
         % L'Hessiana è indefinita -> Punto di Sella
         fprintf('\t (%.4f, %.4f) È Punto di Sella\n', q1Crit, q2Crit);
@@ -781,7 +766,7 @@ Configurazione Critica (q1, q2) = (-2.7744, 0.0000)
 	 2.9800
 	 1.1462
 	 Norma Vettore Errore ||e||: 3.1928
-	 (-2.7744, 0.0000) È Massimo Locale
+	 (-2.7744, 0.0000) È Massimo Locale (e Massimo Globale)
 Configurazione Critica (q1, q2) = (-2.7744, 3.1416)
 	 Autovalori:
 	 -0.7454
@@ -842,7 +827,7 @@ R_ws_max = l_val(1) + l_val(2);
 R_ws_min = abs(l_val(1) - l_val(2));
 e_q_sub  = subs(e_q, [l1, l2, rx, ry], [l_val(1), l_val(2), r_val(1), r_val(2)]);
 
-figure('Name', 'Configurazioni Critiche del Manipolatore RR', 'Color', 'w', 'Units', 'normalized',
+figure('Name', 'Configurazioni Critiche del Manipolatore RR', 'Color', 'w', 'Units', 'normalized', ...
     'Position', [0.22, 0.14, 0.50, 0.65]);
 t = tiledlayout(2, 3, 'TileSpacing', 'tight', 'Padding', 'tight');
 
@@ -870,9 +855,9 @@ for k = 1:size(puntiCritici, 1)
     end
 
     % Bordi spazio di lavoro (tratteggio leggero)
-    plot(R_ws_max*cos(theta_ws), R_ws_max*sin(theta_ws), '--',
+    plot(R_ws_max*cos(theta_ws), R_ws_max*sin(theta_ws), '--', ...
         'Color', [0.75, 0.75, 0.75], 'LineWidth', 1.0, 'HandleVisibility', 'off');
-    plot(R_ws_min*cos(theta_ws), R_ws_min*sin(theta_ws), '--',
+    plot(R_ws_min*cos(theta_ws), R_ws_min*sin(theta_ws), '--', ...
         'Color', [0.75, 0.75, 0.75], 'LineWidth', 1.0, 'HandleVisibility', 'off');
 
     % Cinematica diretta della configurazione critica k
@@ -885,11 +870,11 @@ for k = 1:size(puntiCritici, 1)
     h_arm = plot(pts_rr(:,1), pts_rr(:,2), '-', 'Color', col_link, 'LineWidth', 2.5);
     plot(p0(1), p0(2), 's', 'MarkerSize', 8, 'MarkerFaceColor', [0.4, 0.4, 0.4], 'MarkerEdgeColor', 'k');
     plot(p1(1), p1(2), 'o', 'MarkerSize', 6, 'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'k');
-    h_ee = plot(p2(1), p2(2), 'p', 'MarkerSize', 10, 'MarkerFaceColor', [0.95, 0.75, 0.10],
+    h_ee = plot(p2(1), p2(2), 'p', 'MarkerSize', 10, 'MarkerFaceColor', [0.95, 0.75, 0.10], ...
         'MarkerEdgeColor', 'k');
     h_tgt = plot(r_val(1), r_val(2), 'x', 'MarkerSize', 10, 'Color', col_red, 'LineWidth', 2.2);
 
-    title(sprintf('P.%d (%s): q = [%.2f, %.2f] rad', k, tipo_str, q1_c, q2_c), 'FontSize', 9,
+    title(sprintf('P.%d (%s): q = [%.2f, %.2f] rad', k, tipo_str, q1_c, q2_c), 'FontSize', 9, ...
         'FontWeight', 'bold');
     xlim([-2.1, 2.1]); ylim([-2.1, 2.1]);
     xticks(-2:1:2); yticks(-2:1:2);
@@ -897,8 +882,8 @@ for k = 1:size(puntiCritici, 1)
 \newpage
 \begin{matlabcode}
     if k == 1
-        lgd1 = legend([h_arm, h_ee, h_tgt],
-            {'Manipolatore RR', 'End-Effector', 'Target r = [1.3, 0.5] m'},
+        lgd1 = legend([h_arm, h_ee, h_tgt], ...
+            {'Manipolatore RR', 'End-Effector', 'Target r = [1.3, 0.5] m'}, ...
             'Orientation', 'horizontal');
         lgd1.Layout.Tile = 'north';
     end
@@ -913,7 +898,7 @@ ylabel(t, 'Y [m]', 'FontSize', 10, 'FontWeight', 'bold');
 
 \begin{par}
 \begin{flushleft}
-Per comprendere visivamente il comportamento degli algoritmi di ottimizzazione, è essenziale visualizzare la funzione di costo $V(q)$. Questo viene fatto generando una superficie 3D della funzione nello spazio dei giunti $(q_1 ,q_2 )$. Su questo grafico, verranno sovrapposti i punti critici calcolati e classificati. Questo permette di vedere dove si trovano i minimi, i massimi e i punti di sella, che possono deviare o intrappolare gli algoritmi.
+Per comprendere visivamente il comportamento degli algoritmi di ottimizzazione, è essenziale visualizzare la funzione di costo $V(q)$. Questo viene fatto generando una mappa di curve di livello 2D della funzione di costo nello spazio dei giunti $(q_1 ,q_2 )$. Su questo grafico, verranno sovrapposti i punti critici calcolati e classificati. Questo permette di vedere dove si trovano i minimi, i massimi e i punti di sella, che possono deviare o intrappolare gli algoritmi.
 \end{flushleft}
 \end{par}
 \begin{matlabcode}
@@ -924,13 +909,13 @@ for i = 1:size(puntiCritici, 1)
     l1Crit = l_val(1);
     l2Crit = l_val(2);
     fprintf('Configurazione Critica (q1, q2) = (%.4f, %.4f)\n', q1Crit, q2Crit);
-\end{matlabcode}
-\newpage
-\begin{matlabcode}
+
     % Posizione Base Giunto
     x0 = 0;
     y0 = 0;
-
+\end{matlabcode}
+\newpage
+\begin{matlabcode}
     % Calcolo Coordinate Fine Primo Braccio (x1, y1)
     x1Crit = double(l1Crit * cos(q1Crit));
     y1Crit = double(l1Crit * sin(q1Crit));
@@ -971,7 +956,6 @@ Configurazione Critica (q1, q2) = (0.9666, -1.3822)
 	 Posizione Giunto 1        (x1, y1) = (0.5681, 0.8230)
 	 Posizione Giunto 2 (EE)   (x2, y2) = (1.3000, 0.5000)
 \end{matlaboutput}
-
 \newpage
 \begin{matlabcode}
 %% Visualizzazione Funzione di Costo V(q) e Punti Critici
@@ -1010,31 +994,31 @@ for i = 1:size(puntiCritici, 1)
 
     if all(lambda > 0)
         if e_current_norm < 1e-5
-            plot(qCrit(1), qCrit(2), 'p', 'MarkerSize', 14, 'MarkerFaceColor', [0.95, 0.75, 0.10],
+            plot(qCrit(1), qCrit(2), 'p', 'MarkerSize', 14, 'MarkerFaceColor', [0.95, 0.75, 0.10], ...
                 'MarkerEdgeColor', 'k', 'LineWidth', 1.2);
         else
-            plot(qCrit(1), qCrit(2), 'o', 'MarkerSize', 10, 'MarkerFaceColor', col_green,
+            plot(qCrit(1), qCrit(2), 'o', 'MarkerSize', 10, 'MarkerFaceColor', col_green, ...
                 'MarkerEdgeColor', 'k', 'LineWidth', 1.2);
         end
     elseif all(lambda < 0)
-        plot(qCrit(1), qCrit(2), 's', 'MarkerSize', 10, 'MarkerFaceColor', col_red,
+        plot(qCrit(1), qCrit(2), 's', 'MarkerSize', 10, 'MarkerFaceColor', col_red, ...
             'MarkerEdgeColor', 'k', 'LineWidth', 1.2);
     else
-        plot(qCrit(1), qCrit(2), 'd', 'MarkerSize', 9, 'MarkerFaceColor', col_blue,
+        plot(qCrit(1), qCrit(2), 'd', 'MarkerSize', 9, 'MarkerFaceColor', col_blue, ...
         'MarkerEdgeColor', 'k', 'LineWidth', 1.2);
     end
 end
 
 % Proxy Handles per Legenda Esterna Orizzontale
-h_min_g = plot(NaN, NaN, 'p', 'MarkerSize', 13, 'MarkerFaceColor', [0.95, 0.75, 0.10],
+h_min_g = plot(NaN, NaN, 'p', 'MarkerSize', 13, 'MarkerFaceColor', [0.95, 0.75, 0.10], ...
     'MarkerEdgeColor', 'k', 'LineWidth', 1.2);
-h_max_l = plot(NaN, NaN, 's', 'MarkerSize', 10, 'MarkerFaceColor', col_red,
+h_max_l = plot(NaN, NaN, 's', 'MarkerSize', 10, 'MarkerFaceColor', col_red, ...
     'MarkerEdgeColor', 'k', 'LineWidth', 1.2);
-h_sella = plot(NaN, NaN, 'd', 'MarkerSize', 9, 'MarkerFaceColor', col_blue,
+h_sella = plot(NaN, NaN, 'd', 'MarkerSize', 9, 'MarkerFaceColor', col_blue, ...
     'MarkerEdgeColor', 'k', 'LineWidth', 1.2);
 
-legend([h_min_g, h_max_l, h_sella],
-    {'Minimo Globale', 'Massimo Locale', 'Punto di Sella'},
+legend([h_min_g, h_max_l, h_sella], ...
+    {'Minimo Globale', 'Massimo Locale', 'Punto di Sella'}, ...
     'Location', 'northoutside', 'Orientation', 'horizontal');
 hold off;
 \end{matlabcode}
@@ -1046,9 +1030,15 @@ hold off;
 \newpage
 \matlabheadingtwo{Simulazione Numerica Iterativa Dell'Algoritmo Di Newton}
 
+\begin{par}
+\begin{flushleft}
+Per le simulazioni iterative di Newton e del Gradiente si considerano nuovi parametri geometrici e di task: lunghezze dei bracci $l_1 = l_2 = 1.0$ e posa desiderata $r = [1.0, 1.0]^T$.
+\end{flushleft}
+\end{par}
+
 \begin{matlabcode}
 fprintf('----- Algoritmo Di Newton Iterativo -----');
-% Valori N Bracci
+% Lunghezze Bracci
 l1_val = 1.0;
 l2_val = 1.0;
 
@@ -1082,18 +1072,25 @@ for i = 1:nrSol
 
     % Inizializzazione Array Cronologia
     q_history = zeros(2, 100 + 1);
-    error_history = zeros(1, 100);
+    error_history = zeros(1, 100 + 1);
     q_history(:, 1) = q_k;
+    num_steps = 0;
+    num_err = 0;
 
     for k = 1:100
         pos_k = fr_fun(l1_val, l2_val, q_k(1), q_k(2));
 
         e_k = r_val - pos_k;
         error_norm = norm(e_k);
+        num_err = k;
         error_history(k) = error_norm;
 
         if error_norm < 1e-6
-            fprintf('\t Convergenza Raggiunta In %d Iterazioni.\n', k);
+            if num_steps == 1
+                fprintf('\t Convergenza Raggiunta In 1 Iterazione.\n');
+            else
+                fprintf('\t Convergenza Raggiunta In %d Iterazioni.\n', num_steps);
+            end
             break;
         end
 
@@ -1105,22 +1102,23 @@ for i = 1:nrSol
         end
         % f. Aggiornamento Configurazione Giunti (Formula di Newton)
         % q_{k+1} = q_k + T * J^{-1}(q_k) * K * [r - f_r(q_k)]
-        q_k = q_k + T * inv(J_k) * K_num * e_k;
+        q_k = q_k + T * (J_k \ (K_num * e_k));
 
         % Salvataggio Nuova Configurazione
-        q_history(:, k+1) = q_k;
+        num_steps = num_steps + 1;
+        q_history(:, num_steps + 1) = q_k;
     end
 \end{matlabcode}
 \newpage
 \begin{matlabcode}
-    if k == 100 && error_norm >= 1e-6
+    if num_steps == 100 && error_norm >= 1e-6
         fprintf('\t Algoritmo Terminato Per Numero Massimo Iterazioni.\n');
     end
 
-    % Tronca Cronologia Al Numero Di Iterazioni Effettive
-    q_history = q_history(:, 1:k);
+    % Tronca Cronologia Al Numero Di Stati Effettivi (iniziale + passi eseguiti)
+    q_history = q_history(:, 1:num_steps + 1);
     all_q_newton{i} = q_history;
-    all_err_newton{i} = error_history(1:k);
+    all_err_newton{i} = error_history(1:num_err);
 
     % Visualizzazione Risultati
     q_finale = q_history(:, end);
@@ -1135,17 +1133,17 @@ end
 ----- Algoritmo Di Newton Iterativo -----
 
 Configurazione iniziale q_{0,1} = [0.7854, 0.7854]
-	 Convergenza Raggiunta In 21 Iterazioni.
+	 Convergenza Raggiunta In 20 Iterazioni.
 	 Configurazione finale q_f: [0.0000, 1.5708]
 	 Posizione finale EE [x; y]: [1.0000; 1.0000]
 	 Errore finale (norma): 6.98e-07
 Configurazione iniziale q_{0,2} = [0.0000, 1.5708]
-	 Convergenza Raggiunta In 1 Iterazioni.
+	 Convergenza Raggiunta In 0 Iterazioni.
 	 Configurazione finale q_f: [0.0000, 1.5708]
 	 Posizione finale EE [x; y]: [1.0000; 1.0000]
 	 Errore finale (norma): 0.00e+00
 Configurazione iniziale q_{0,3} = [-1.0472, 0.5236]
-	 Convergenza Raggiunta In 27 Iterazioni.
+	 Convergenza Raggiunta In 26 Iterazioni.
 	 Configurazione finale q_f: [-4.7124, 4.7124]
 	 Posizione finale EE [x; y]: [1.0000; 1.0000]
 	 Errore finale (norma): 6.88e-07
@@ -1166,9 +1164,10 @@ for i = 1:nrSol
 
     % Inizializzazione Array Cronologia
     q_history_grad = zeros(2, 500 + 1);
-    error_history_grad = zeros(1, 500);
+    error_history_grad = zeros(1, 500 + 1);
     q_history_grad(:, 1) = q_k;
-    iter_effettive = 500;
+    num_steps = 0;
+    num_err = 0;
 
     for k = 1:500
         % Calcolo Posizione Corrente EE
@@ -1177,14 +1176,18 @@ for i = 1:nrSol
         % Calcolo Errore Corrente
         e_k = r_val - pos_k;
         error_norm = norm(e_k);
+        num_err = k;
         error_history_grad(k) = error_norm;
 \end{matlabcode}
 \newpage
 \begin{matlabcode}
         % Condizione di Arresto per Convergenza
         if error_norm < 1e-6
-            fprintf('\t Convergenza Raggiunta In %d Iterazioni.\n', k);
-            iter_effettive = k;
+            if num_steps == 1
+                fprintf('\t Convergenza Raggiunta In 1 Iterazione.\n');
+            else
+                fprintf('\t Convergenza Raggiunta In %d Iterazioni.\n', num_steps);
+            end
             break;
         end
 
@@ -1200,17 +1203,18 @@ for i = 1:nrSol
         q_k = q_k + alpha_prime * J_k.' * e_k;
 
         % Salvataggio Nuova Configurazione
-        q_history_grad(:, k+1) = q_k;
+        num_steps = num_steps + 1;
+        q_history_grad(:, num_steps + 1) = q_k;
     end
 
-    if k == 500 && error_norm >= 1e-6
+    if num_steps == 500 && error_norm >= 1e-6
         fprintf('\t Algoritmo Terminato Per Numero Massimo Iterazioni.\n');
     end
 
-    % Tronca Cronologia Al Numero Di Iterazioni Effettive
-    q_history_grad = q_history_grad(:, 1:iter_effettive);
+    % Tronca Cronologia Al Numero Di Stati Effettivi (iniziale + passi eseguiti)
+    q_history_grad = q_history_grad(:, 1:num_steps + 1);
     all_q_grad{i} = q_history_grad;
-    all_err_grad{i} = error_history_grad(1:iter_effettive);
+    all_err_grad{i} = error_history_grad(1:num_err);
 
     % Visualizzazione Risultati
     q_finale_grad = q_history_grad(:, end);
@@ -1223,17 +1227,17 @@ end
 \begin{matlaboutput}
 ----- Algoritmo Gradiente Iterativo -----
 Configurazione iniziale q_{0,1} = [0.7854, 0.7854]
-	 Convergenza Raggiunta In 468 Iterazioni.
+	 Convergenza Raggiunta In 467 Iterazioni.
 	 Configurazione Finale q_f: [0.0000, 1.5708]
 	 Posizione Finale EE [x; y]: [1.0000; 1.0000]
 	 Errore Finale (norma): 9.75e-07
 Configurazione iniziale q_{0,2} = [0.0000, 1.5708]
-	 Convergenza Raggiunta In 1 Iterazioni.
+	 Convergenza Raggiunta In 0 Iterazioni.
 	 Configurazione Finale q_f: [0.0000, 1.5708]
 	 Posizione Finale EE [x; y]: [1.0000; 1.0000]
 	 Errore Finale (norma): 0.00e+00
 Configurazione iniziale q_{0,3} = [-1.0472, 0.5236]
-	 Convergenza Raggiunta In 403 Iterazioni.
+	 Convergenza Raggiunta In 402 Iterazioni.
 	 Configurazione Finale q_f: [0.0000, 1.5708]
 	 Posizione Finale EE [x; y]: [1.0000; 1.0000]
 	 Errore Finale (norma): 9.91e-07
@@ -1262,7 +1266,7 @@ dy_n = [min(-pi, min(all_newt_pts(2,:)) - 0.4), max(pi, max(all_newt_pts(2,:)) +
 [Q1_n, Q2_n] = meshgrid(linspace(dx_n(1), dx_n(2), 180), linspace(dy_n(1), dy_n(2), 180));
 V_grid_n = double(V_iter_fun(Q1_n, Q2_n));
 
-figure('Name', 'Algoritmo di Newton: Traiettorie e Convergenza', 'Color', 'w', 'Units', 'normalized',
+figure('Name', 'Algoritmo di Newton: Traiettorie e Convergenza', 'Color', 'w', 'Units', 'normalized', ...
     'Position', [0.30, 0.04, 0.36, 0.88]);
 t_n = tiledlayout(2, 1, 'TileSpacing', 'compact', 'Padding', 'tight');
 
@@ -1282,7 +1286,7 @@ for bm = 1:size(base_minima, 1)
         for k2 = -2:2
             qm = base_minima(bm,:) + 2*pi*[k1, k2];
             if qm(1) >= dx_n(1) && qm(1) <= dx_n(2) && qm(2) >= dy_n(1) && qm(2) <= dy_n(2)
-                plot(qm(1), qm(2), 'p', 'MarkerSize', 12, 'MarkerFaceColor', [0.95, 0.75, 0.10],
+                plot(qm(1), qm(2), 'p', 'MarkerSize', 12, 'MarkerFaceColor', [0.95, 0.75, 0.10], ...
                     'MarkerEdgeColor', 'k', 'LineWidth', 1.1, 'HandleVisibility', 'off');
             end
         end
@@ -1294,14 +1298,14 @@ for i = 1:nrSol
     q_tr = all_q_newton{i};
     if size(q_tr, 2) > 1
         plot(q_tr(1,:), q_tr(2,:), '-', 'Color', [1, 1, 1], 'LineWidth', 3.4, 'HandleVisibility', 'off');
-        plot(q_tr(1,:), q_tr(2,:), '-o', 'Color', colors_q(i,:), 'LineWidth', 1.9, 'MarkerSize', 3.5,
+        plot(q_tr(1,:), q_tr(2,:), '-o', 'Color', colors_q(i,:), 'LineWidth', 1.9, 'MarkerSize', 3.5, ...
             'MarkerFaceColor', colors_q(i,:));
     end
     q0_i = q_initial_conditions(i, :);
-    plot(q0_i(1), q0_i(2), 's', 'MarkerSize', 8, 'MarkerFaceColor', colors_q(i,:), 'MarkerEdgeColor', 'k',
+    plot(q0_i(1), q0_i(2), 's', 'MarkerSize', 8, 'MarkerFaceColor', colors_q(i,:), 'MarkerEdgeColor', 'k', ...
         'LineWidth', 1.3);
-    text(q0_i(1) + off_n(i,1), q0_i(2) + off_n(i,2), sprintf('$\\mathbf{q}_{0,%d}$', i), 'Interpreter', 'latex',
-         'FontSize', 9, 'FontWeight', 'bold', 'HorizontalAlignment', align_n{i},
+    text(q0_i(1) + off_n(i,1), q0_i(2) + off_n(i,2), sprintf('$\\mathbf{q}_{0,%d}$', i), 'Interpreter', 'latex', ...
+         'FontSize', 9, 'FontWeight', 'bold', 'HorizontalAlignment', align_n{i}, ...
          'BackgroundColor', [1, 1, 1], 'EdgeColor', colors_q(i,:), 'Margin', 1.2);
 end
 \end{matlabcode}
@@ -1323,17 +1327,17 @@ nexttile;
 hold on; grid on; box on;
 set(gca, 'XScale', 'log', 'YScale', 'log');
 yline(1e-6, ':k', 'LineWidth', 1.2, 'HandleVisibility', 'off');
-text(220, 2.2e-6, 'Tolleranza $10^{-6}$', 'Interpreter', 'latex', 'FontSize', 8.5,
+text(220, 2.2e-6, 'Tolleranza $10^{-6}$', 'Interpreter', 'latex', 'FontSize', 8.5, ...
     'HorizontalAlignment', 'center');
 
 for i = 1:nrSol
     if i == 2
         plot(1, 1e-8, 's', 'MarkerSize', 7.5, 'MarkerFaceColor', colors_q(i,:), 'MarkerEdgeColor', 'k', 'LineWidth', 1.2);
-        text(1.35, 1.3e-8, '$\mathbf{q}_{0,2}$ ($k=1,\;\|e\|=0$)', 'Interpreter', 'latex',
+        text(1.35, 1.3e-8, '$\mathbf{q}_{0,2}$ ($\mathrm{iter}=0,\;\|e\|=0$)', 'Interpreter', 'latex', ...
             'FontSize', 8.5, 'Color', colors_q(i,:) * 0.75);
     else
         e_vec = max(all_err_newton{i}, 1e-8);
-        loglog(1:length(e_vec), e_vec, '-o', 'Color', colors_q(i,:), 'LineWidth', 1.9,
+        loglog(1:length(e_vec), e_vec, '-o', 'Color', colors_q(i,:), 'LineWidth', 1.9, ...
                 'MarkerSize', 3.5, 'MarkerFaceColor', colors_q(i,:));
     end
 end
@@ -1343,7 +1347,7 @@ xticks([1, 2, 5, 10, 25, 50, 100, 250, 500]);
 xticklabels({'1', '2', '5', '10', '25', '50', '100', '250', '500'});
 yticks(10.^(-8:2:0));
 xlabel('Iterazione $k$ (scala log)', 'Interpreter', 'latex', 'FontWeight', 'bold');
-ylabel('Norma Errore $\|\mathbf{e}(k)\|\;[\mathrm{m}]$ (scala log)', 'Interpreter', 'latex',
+ylabel('Norma Errore $\|\mathbf{e}(k)\|\;[\mathrm{m}]$ (scala log)', 'Interpreter', 'latex', ...
         'FontWeight', 'bold');
 title('Decadimento Errore Newton (Log-Log)', 'Interpreter', 'latex', 'FontSize', 10.5, 'FontWeight', 'bold');
 hold off;
@@ -1352,18 +1356,18 @@ hold off;
 hold(ax_n1, 'on');
 h_leg_n = gobjects(1, 4);
 for i = 1:nrSol
-    h_leg_n(i) = plot(ax_n1, NaN, NaN, '-o', 'Color', colors_q(i,:), 'MarkerFaceColor', colors_q(i,:),
+    h_leg_n(i) = plot(ax_n1, NaN, NaN, '-o', 'Color', colors_q(i,:), 'MarkerFaceColor', colors_q(i,:), ...
          'LineWidth', 1.9, 'MarkerSize', 4);
 end
-h_leg_n(4) = plot(ax_n1, NaN, NaN, 'p', 'MarkerSize', 11, 'MarkerFaceColor', [0.95, 0.75, 0.10],
+h_leg_n(4) = plot(ax_n1, NaN, NaN, 'p', 'MarkerSize', 11, 'MarkerFaceColor', [0.95, 0.75, 0.10], ...
      'MarkerEdgeColor', 'k', 'LineWidth', 1.1);
 hold(ax_n1, 'off');
 
-lgd_n = legend(ax_n1, h_leg_n,
-    {'$\mathbf{q}_{0,1} = [\pi/4,\, \pi/4]^T$',
-     '$\mathbf{q}_{0,2} = [0,\, \pi/2]^T$ (al minimo)',
-     '$\mathbf{q}_{0,3} = [-\pi/3,\, \pi/6]^T$',
-     'Minimo Globale ($e = 0$)'},
+lgd_n = legend(ax_n1, h_leg_n, ...
+    {'$\mathbf{q}_{0,1} = [\pi/4,\, \pi/4]^T$', ...
+     '$\mathbf{q}_{0,2} = [0,\, \pi/2]^T$ (al minimo)', ...
+     '$\mathbf{q}_{0,3} = [-\pi/3,\, \pi/6]^T$', ...
+     'Minimo Globale ($e = 0$)'}, ...
     'Interpreter', 'latex', 'Orientation', 'horizontal', 'NumColumns', 2, 'FontSize', 8.8);
 lgd_n.Layout.Tile = 'north';
 \end{matlabcode}
@@ -1380,7 +1384,7 @@ dy_g = [-2.5, 2.5];
 [Q1_g, Q2_g] = meshgrid(linspace(dx_g(1), dx_g(2), 180), linspace(dy_g(1), dy_g(2), 180));
 V_grid_g = double(V_iter_fun(Q1_g, Q2_g));
 
-figure('Name', 'Algoritmo del Gradiente: Traiettorie e Convergenza', 'Color', 'w', 'Units', 'normalized',
+figure('Name', 'Algoritmo del Gradiente: Traiettorie e Convergenza', 'Color', 'w', 'Units', 'normalized', ...
     'Position', [0.30, 0.04, 0.36, 0.88]);
 t_g = tiledlayout(2, 1, 'TileSpacing', 'compact', 'Padding', 'tight');
 
@@ -1398,7 +1402,7 @@ cb_g.Label.FontWeight = 'bold';
 for bm = 1:size(base_minima, 1)
     qm = base_minima(bm, :);
     if qm(1) >= dx_g(1) && qm(1) <= dx_g(2) && qm(2) >= dy_g(1) && qm(2) <= dy_g(2)
-        plot(qm(1), qm(2), 'p', 'MarkerSize', 12, 'MarkerFaceColor', [0.95, 0.75, 0.10],
+        plot(qm(1), qm(2), 'p', 'MarkerSize', 12, 'MarkerFaceColor', [0.95, 0.75, 0.10], ...
             'MarkerEdgeColor', 'k', 'LineWidth', 1.1, 'HandleVisibility', 'off');
     end
 end
@@ -1412,10 +1416,10 @@ for i = 1:nrSol
         plot(q_tr(1,:), q_tr(2,:), '--', 'Color', colors_q(i,:), 'LineWidth', 2.2);
     end
     q0_i = q_initial_conditions(i, :);
-    plot(q0_i(1), q0_i(2), 's', 'MarkerSize', 8, 'MarkerFaceColor', colors_q(i,:), 'MarkerEdgeColor', 'k',
+    plot(q0_i(1), q0_i(2), 's', 'MarkerSize', 8, 'MarkerFaceColor', colors_q(i,:), 'MarkerEdgeColor', 'k', ...
          'LineWidth', 1.3);
-    text(q0_i(1) + off_g(i,1), q0_i(2) + off_g(i,2), sprintf('$\\mathbf{q}_{0,%d}$', i), 'Interpreter', 'latex',
-         'FontSize', 9, 'FontWeight', 'bold', 'HorizontalAlignment', align_g{i},
+    text(q0_i(1) + off_g(i,1), q0_i(2) + off_g(i,2), sprintf('$\\mathbf{q}_{0,%d}$', i), 'Interpreter', 'latex', ...
+         'FontSize', 9, 'FontWeight', 'bold', 'HorizontalAlignment', align_g{i}, ...
          'BackgroundColor', [1, 1, 1], 'EdgeColor', colors_q(i,:), 'Margin', 1.2);
 end
 
@@ -1431,16 +1435,16 @@ nexttile;
 hold on; grid on; box on;
 set(gca, 'XScale', 'log', 'YScale', 'log');
 yline(1e-6, ':k', 'LineWidth', 1.2, 'HandleVisibility', 'off');
-text(3.2, 2.2e-6, 'Tolleranza $10^{-6}$', 'Interpreter', 'latex', 'FontSize', 8.5,
+text(3.2, 2.2e-6, 'Tolleranza $10^{-6}$', 'Interpreter', 'latex', 'FontSize', 8.5, ...
      'HorizontalAlignment', 'center');
 \end{matlabcode}
 \newpage
 \begin{matlabcode}
 for i = 1:nrSol
     if i == 2
-        plot(1, 1e-8, 's', 'MarkerSize', 7.5, 'MarkerFaceColor', colors_q(i,:), 'MarkerEdgeColor', 'k',
+        plot(1, 1e-8, 's', 'MarkerSize', 7.5, 'MarkerFaceColor', colors_q(i,:), 'MarkerEdgeColor', 'k', ...
              'LineWidth', 1.2);
-        text(1.35, 1.3e-8, '$\mathbf{q}_{0,2}$ ($k=1,\;\|e\|=0$)', 'Interpreter', 'latex', 'FontSize', 8.5,
+        text(1.35, 1.3e-8, '$\mathbf{q}_{0,2}$ ($\mathrm{iter}=0,\;\|e\|=0$)', 'Interpreter', 'latex', 'FontSize', 8.5, ...
              'Color', colors_q(i,:) * 0.75);
     else
         e_vec = max(all_err_grad{i}, 1e-8);
@@ -1453,9 +1457,9 @@ xticks([1, 2, 5, 10, 25, 50, 100, 250, 500]);
 xticklabels({'1', '2', '5', '10', '25', '50', '100', '250', '500'});
 yticks(10.^(-8:2:0));
 xlabel('Iterazione $k$ (scala log)', 'Interpreter', 'latex', 'FontWeight', 'bold');
-ylabel('Norma Errore $\|\mathbf{e}(k)\|\;[\mathrm{m}]$ (scala log)', 'Interpreter', 'latex',
+ylabel('Norma Errore $\|\mathbf{e}(k)\|\;[\mathrm{m}]$ (scala log)', 'Interpreter', 'latex', ...
         'FontWeight', 'bold');
-title('Decadimento Errore Gradiente (Log-Log)', 'Interpreter', 'latex', 'FontSize', 10.5,
+title('Decadimento Errore Gradiente (Log-Log)', 'Interpreter', 'latex', 'FontSize', 10.5, ...
         'FontWeight', 'bold');
 hold off;
 
@@ -1481,5 +1485,18 @@ lgd_g.Layout.Tile = 'north';
 \begin{center}
 \includegraphics[width=0.72\linewidth]{E9_AlgoritmoNewtonEGradiente_fig4.png}
 \end{center}
+
+\matlabheadingthree{Considerazioni Sul Confronto Tra Newton E Gradiente}
+
+\begin{par}
+\begin{flushleft}
+Dai risultati delle simulazioni emergono due differenze principali tra i due metodi:
+\end{flushleft}
+\end{par}
+
+\begin{itemize}
+   \item{\begin{flushleft} \textbf{Velocità di convergenza}: L'algoritmo di Newton converge molto più rapidamente (in circa $20\text{--}26$ iterazioni di aggiornamento) rispetto all'algoritmo del Gradiente (che richiede circa $402\text{--}467$ iterazioni a parità di tolleranza $10^{-6}$). Da $\mathbf{q}_{0,2}=[0,\pi/2]^T$, essendo già sulla soluzione esatta, entrambi terminano immediatamente con $0$ iterazioni. \end{flushleft}}
+   \item{\begin{flushleft} \textbf{Comportamento vicino alle singolarità e scelta del ramo}: Partendo da $\mathbf{q}_{0,3}=[-\pi/3,\pi/6]^T$, l'algoritmo di Newton transita in prossimità della singolarità $q_2=\pi$ (dove $J^{-1}$ amplifica il passo) e converge al ramo alternativo $[-4.7124,\; 4.7124]\;\mathrm{rad}$ (equivalente modulo $2\pi$ a $[\pi/2,\;-\pi/2]^T$). L'algoritmo del Gradiente, invece, utilizzando $J^T$ non soffre di amplificazioni singolari e scende regolarmente verso il minimo più vicino $[0,\;\pi/2]^T$. \end{flushleft}}
+\end{itemize}
 
 \end{document}

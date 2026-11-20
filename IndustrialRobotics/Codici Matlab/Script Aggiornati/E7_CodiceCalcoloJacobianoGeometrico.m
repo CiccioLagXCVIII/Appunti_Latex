@@ -1,5 +1,5 @@
 %[text] # Calcolo E Analisi Dello Jacobiano Geometrico Manipolatore Planare RR
-%[text] Il calcolo dello Jacobiano geometrico $J(q)$, uno strumento fondamentale nell'analisi cinematica dei manipolatori seriali. Lo **Jacobiano** lega le velocità dei giunti $\\dot{q}$ alle velocità cartesiane dell'end-effector (lineare $v_e$ e angolare $\\omega_e$) attraverso la relazione:
+%[text] Il calcolo dello Jacobiano geometrico $J(q)$ è uno strumento fondamentale nell'analisi cinematica dei manipolatori seriali. Lo **Jacobiano** lega le velocità dei giunti $\\dot{q}$ alle velocità cartesiane dell'end-effector (lineare $v_e$ e angolare $\\omega_e$) attraverso la relazione:
 %[text]{"align":"center"} $\\left(\\begin{array}{c} v_e \\\\ \\omega_e \\end{array}\\right)=J(q)\\dot{q}$
 %[text] Il metodo sistematico si basa sulla scomposizione dello Jacobiano in colonne $J_i$, dove ciascuna colonna descrive l'influenza del giunto i-esimo sulla velocità dell'end-effector. Per calcolare lo Jacobiano geometrico, è necessario conoscere:
 %[text] - La **geometria del manipolatore**, descritta dai parametri di *Denavit-Hartenberg (DH)*.
@@ -20,12 +20,12 @@ DH_Table = [q1, 0, 0, l1;
 % q2 = pi/2;
 % l1 = 1;
 % l2 = 0.8
-%[text] Per calcolare lo Jacobiano, è necessario conoscere la posizione e l'orientamento di ogni terna rispetto alla terna base ($RF_0$). Queste informazioni sono contenute nelle matrici di trasformazione omogenea $^{i-1} T_i$, che lega la terna $i$ alla terna $i-1$, che è calcolata a partire dalla riga i-esima della tabella DH. Per convenzione la matrice $^0 T_0 =I_{4\\times 4}$.
+%[text] Per calcolare lo Jacobiano, è necessario conoscere la posizione e l'orientamento di ogni terna rispetto alla terna base ($RF_0$). Queste informazioni sono contenute nelle matrici di trasformazione omogenea $^{i-1} T_i$, che lega la terna $i$ alla terna $i-1$, calcolata a partire dalla riga i-esima della tabella DH. Per convenzione la matrice $^0 T_0 =I_{4\\times 4}$.
 % Calcolo Matrici Trasformazione E Rotazione Struttura
 [T, R] = Compute_DH_Transformations(DH_Table);
 %[text] La matrice di trasformazione cumulativa $^0 T_2$, descrive la posa (posizione e orientamento) della terna $2$ rispetto alla terna base $0$.
 T02 = simplify(T(:,:,1) * T(:,:,2));
-fprintf('Matrice Di Trasformazione Omogenea ^{0}T_(2)');
+fprintf('Matrice Di Trasformazione Omogenea ^{0}T_{2}');
 disp(T02);
 %[text] Lo Jacobiano geometrico $J$ è una matrice 6xn le cui colonne $J_i$ sono calcolate secondo le specifiche formule, a seconda del tipo di giunto:
 %[text:table]
@@ -33,7 +33,7 @@ disp(T02);
 % | :---: | :---: | :---: |
 % | *Prismatico* | $z_{i-1}$ | Vettore Nullo $3 \times 1$ |
 % | *Rotoidale* | $z_{i-1} \times (p_{0,e} - p_{0,i-1})$ | $z_{i-1}$ |
-%[text] - $z_{i-1}$ è il versore dell'asse di rotazione del giunto $i$ espresso nelle coordinate della terna base.
+%[text] - $z_{i-1}$ è il versore dell'asse di moto (attuazione) del giunto $i$ espresso nelle coordinate della terna base.
 %[text] - $p_{0,i-1}$ è il vettore posizione dell'origine della terna $i-1$, espresso rispetto alla terna base.
 %[text] - $p_{0,e}$ è il vettore posizione dell'end-effector, espresso rispetto alla terna base. \
 % Estrazioni Matrici Singole
@@ -55,10 +55,6 @@ disp(z1);
 p01 = T01(1:3,4);
 fprintf('Vettore p_{0,1}:');
 disp(p01);
-% Valori Per JE
-z2 = T02(1:3,3);
-fprintf('Vettore z2:');
-disp(z2);
 p0e = T02(1:3,4);
 fprintf('Vettore p_{0,e}:');
 disp(p0e);
@@ -133,7 +129,7 @@ fprintf('Valore del Determinante dello Jacobiano Di Posizione:');
 disp(double(detJr_num));
 % Verifica Singolarità
 if abs(double(detJr_num)) < 1e-10
-    fprintf('Configurazione Singolare');
+    fprintf('Configurazione Singolare\n');
 else
     fprintf('Configurazione NON Singolare.\n');
 end

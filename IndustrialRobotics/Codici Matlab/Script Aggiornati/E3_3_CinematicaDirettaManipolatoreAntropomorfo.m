@@ -25,7 +25,7 @@ for i = 1:n
     disp(A_matrices(:,:,i));
 end
 T06 = A_matrices(:,:,1) * A_matrices(:,:,2) * A_matrices(:,:,3) * A_matrices(:,:,4) * A_matrices(:,:,5) * A_matrices(:,:,6);
-T06 = simplify(T06);
+T06 = simplify(T06, 'Steps', 50);
 
 fprintf('Matrice Di Trasformazione Omogenea Totale ^(0)T_(6):\n');
 disp(T06);
@@ -34,12 +34,12 @@ disp(T06);
 %[text] - Il **vettore di posizione p**, che indica la posizione dell'origine del sistema di riferimento dell'organo terminale. Corrisponde alle prime tre righe della quarta colonna. \
 % Estrazione Vettore Posizione
 p06 = T06(1:3, 4);
-p06 = simplify(p06);
+p06 = simplify(p06, 'Steps', 50);
 fprintf('Vettore Posizione p06:\n');
 disp(p06);
 % Estrazione Matrice Rotazione
 R06 = T06(1:3, 1:3);
-R06 = simplify(R06);
+R06 = simplify(R06, 'Steps', 50);
 fprintf('Matrice Rotazione R06:\n');
 disp(R06);
 %[text] Per visualizzare una configurazione specifica del robot sono necessari dei valori numerici. Si sostituiscono ora le variabili simboliche (angoli di giunto e parametri geometrici) con valori numerici.
@@ -62,6 +62,19 @@ for i = 1:n
     fprintf('Matrice ^(%d)A_(%d) numerica:\n', i-1, i);
     disp(A_Num(:,:,i));
 end
+
+% Calcolo e Stampa Matrice Numerica Totale, Posizione e Rotazione
+T06_Num = double(subs(T06, symsList, value));
+fprintf('Matrice Di Trasformazione Omogenea Totale ^{0}T_{6} Numerica:\n');
+disp(T06_Num);
+
+p06_Num = T06_Num(1:3, 4);
+fprintf('Vettore Posizione ^{0}p_{6} Numerico:\n');
+disp(p06_Num);
+
+R06_Num = T06_Num(1:3, 1:3);
+fprintf('Matrice Di Rotazione ^{0}R_{6} Numerica:\n');
+disp(R06_Num);
 %%
 %[text] ## Visualizzazione Grafica Manipolatore Antropomorfo
 fig_name    = 'Configurazione Manipolatore Antropomorfo';
@@ -140,7 +153,11 @@ for i = 1:(n+1)
     visited(coincident_idx) = true;
     combined_label = strjoin(labels(coincident_idx), ' / ');
     p = positions(i, :);
-    text(p(1), p(2), p(3) + 0.18*arrow_scale, sprintf(' %s', combined_label), ...
+    z_offset = 0.18*arrow_scale;
+    if any(coincident_idx == 4)
+        z_offset = -0.25*arrow_scale;
+    end
+    text(p(1), p(2), p(3) + z_offset, sprintf(' %s', combined_label), ...
         'FontSize', 9, 'FontWeight', 'bold', ...
         'BackgroundColor', [1 1 1], 'EdgeColor', [0.8 0.8 0.8], 'Margin', 1);
 end
@@ -157,8 +174,8 @@ ylim([min_xyz(2) - margin, max_xyz(2) + margin]);
 zlim([min_xyz(3) - margin, max_xyz(3) + margin]);
 
 % 7. Legenda e Titolo
-legend([h_axes(1), h_axes(2), h_axes(3), h_link, h_ee], ...
-    {'Asse X', 'Asse Y', 'Asse Z', 'Bracci (Link)', 'End-Effector'}, ...
+legend([h_axes(1), h_axes(2), h_axes(3), h_link, h_base, h_joints, h_ee], ...
+    {'Asse X', 'Asse Y', 'Asse Z', 'Bracci (Link)', 'Base', 'Giunti', 'End-Effector'}, ...
     'Location', 'bestoutside');
 title(fig_name, 'FontSize', 12, 'FontWeight', 'bold');
 hold off;

@@ -2058,19 +2058,18 @@ Nella tabella vengono riassunti i parametri analitici e le proprietà operative 
 \section{Il Servomotore Elettrico DC Senza Spazzole (BLDC)}
 
 \subsection{Architettura E Principio Di Funzionamento}
-Il servomotore elettrico a corrente continua senza spazzole (\textbf{BLDC}, \textit{BrushLess Direct Current}) è un dispositivo impiegato nelle catene cinematiche dei robot industriali, dove sostituisce il motore Brushed DC grazie all'\textbf{eliminazione dei contatti meccanici striscianti}. In questa tipologia di motori, l'inversione periodica della corrente non è affidata al collettore meccanico, ma viene realizzata da un circuito elettronico a semiconduttori, coordinato da un microprocessore.\\
-Dal punto di vista costruttivo, rispetto al motore DC con spazzole, la topologia della macchina risulta \textbf{invertita}, pur mantenendo i due componenti principali coassiali: \textbf{Statore} e \textbf{Rotore}.
+Il motore \textbf{Brushless DC} (\textit{BrushLess Direct Current o BLDC}) è un dispositivo impiegato nelle catene cinematiche dei robot industriali, in sostituzione del motore \textit{Brushed DC} poiché \textbf{non presenta contatti meccanici striscianti}. In questa tipologia di motori, l'inversione periodica della corrente non è affidata al collettore meccanico, ma viene realizzata da un circuito elettronico a semiconduttori, coordinato da un microprocessore.\\
+Dal punto di vista costruttivo, rispetto al motore con spazzole, la struttuta risulta \textbf{invertita}, ma sempre formata dai due componenti coassiali: \textbf{Statore} e \textbf{Rotore}.
 
 \subsubsection{Statore}
-Lo statore costituisce la parte esterna del motore e ha la funzione di generare il \textbf{Campo Magnetico}. È formato da un pacco lamellare, sulla cui superficie interna sono ricavate delle scanalature longitudinali, chiamate \textbf{cave}. All'interno delle cave vengono alloggiati gli \textbf{Avvolgimenti Di Fase} in rame (tipicamente tre, indicati con le lettere U, V, W).\\
-Questa disposizione costruttiva ottimizza notevolmente lo smaltimento termico della motore, poiché
+Lo statore costituisce la parte esterna del motore e ha la funzione di generare il \textbf{Campo Magnetico} (che commuta con le correnti di fase). È formato da un pacco lamellare, sulla cui superficie interna sono ricavate delle scanalature longitudinali, chiamate \textbf{cave}, all'interno delle quali sono presenti gli \textbf{Avvolgimenti Di Fase} che sono tipicamente tre (indicati con le lettere U, V, W) e in rame. Questa disposizione costruttiva ottimizza notevolmente lo smaltimento termico della motore, poiché
 \begin{itemize}
     \item \textbf{Nei Motori Brushed:} La corrente scorre negli avvolgimenti del rotore e di conseguenza il calore generato (per effetto Joule $R_a I_a^2$) viene dissipato verso l'esterno attraverso il traferro e l'albero
     \item \textbf{Nei Motori Brushless:} Gli avvolgimenti si trovano sullo statore e quindi il calore viene dissipato attraverso lo statore stesso e per conduzione verso la struttura del manipolatore (dove possono essere presenti dei circuiti di raffreddamento)
 \end{itemize}
 
-\subsubsection{Rotore A Magneti Permanenti E Inerzia Meccanica}
-È la parte interna rotante del motore, vincolata all'albero di trasmissione mediante cuscinetti e separata dallo statore dal \textbf{traferro} (\textit{air gap}). A differenza del motore tradizionale, il rotore è completamente passivo dal punto di vista elettrico ed è costituito da \textbf{Magneti Permanenti} costruiti con materiali magnetici avanzati, i quali generano densità di flusso magnetico al traferro comprese tra $0.8\,\si{\tesla}$ e $1.2\,\si{\tesla}$.
+\subsubsection{Rotore (A Magneti Permanenti)}
+È la parte interna rotante del motore, vincolata all'albero di trasmissione mediante cuscinetti e separata dallo statore dal \textbf{traferro} (\textit{air gap}). A differenza del motore \textit{Brushed}, il rotore è completamente passivo dal punto di vista elettrico ed è costituito da \textbf{Magneti Permanenti} costruiti con materiali magnetici avanzati, i quali generano densità di flusso magnetico al traferro comprese tra $0.8\,\si{\tesla}$ e $1.2\,\si{\tesla}$.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.6\textwidth]{BLDCBrushedComparison.jpg}
@@ -2112,7 +2111,7 @@ Di contro, l'adozione di questa tecnologia comporta alcuni \textbf{svantaggi}:
 \subsection{Il Motore BLDC Trifase E Il Circuito Di Pilotaggio Ad Inverter}
 
 \subsubsection{Configurazione Trifase E Relazioni Elettromeccaniche}
-I servomotori BLDC impiegati in ambito robotico adottano tipicamente una configurazione di tipo \textbf{trifase sincrono}, in cui lo statore ospita tre avvolgimenti indipendenti sfasati geometricamente nello spazio di $120^\circ$ elettrici.\\
+I motori BLDC impiegati in ambito robotico adottano tipicamente una configurazione di tipo \textbf{trifase sincrono}, in cui lo statore ospita tre avvolgimenti indipendenti sfasati geometricamente nello spazio di $120^\circ$ elettrici.\\
 Indicando con $p$ il \textbf{numero di coppie polari} del rotore, un giro meccanico completo ($360^\circ$ meccanici) corrisponde a $p$ cicli completi del campo magnetico ($p \cdot 360^\circ$ elettrici). Di conseguenza, il legame tra l'angolo meccanico del rotore $\theta_m$ e l'angolo elettrico $\theta_e$ è espresso dalla relazione:
 \[
     \theta_e = p \cdot \theta_m
@@ -2131,19 +2130,16 @@ Nei motori Brushless DC (BLDC), l'assenza del sistema collettore-spazzole richie
     % Schema Funzionale Del Sistema Di Pilotaggio Di Un Motore BLDC: A Sinistra, L'Architettura Con Sensori Di Hall ($H_1, H_2, H_3$), Circuito Di Decodifica E Ponte Trifase A Sei Transistor Collegato Alle Fasi Statoriche ($\phi_A, \phi_B, \phi_C$). A Destra, Il Principio Di Formazione Dei Poli Magnetici Statorici In Una Configurazione Trifase A 12 Poli.
 \end{figure}
 
-Lo statore presenta 3 fasi (ovvero 6 avvolgimenti), identificati dalle linee $\phi_A$ (in nero), $\phi_B$ (in rosso) e $\phi_C$ (in blu), collegati elettricamente a stella tramite un conduttore comune (in verde), in cui il centro-stella non è accessibile dall'esterno.
+Lo statore presenta 3 fasi (ovvero 6 avvolgimenti), identificati dalle linee $\phi_A$ (in nero), $\phi_B$ (in rosso) e $\phi_C$ (in blu) e collegati elettricamente a stella tramite un conduttore comune (in verde). Il centro-stella non è accessibile dall'esterno. Ciascun avvolgimento è connesso a un capo al centro-stella (cioè il nodo in cui i tre avvolgimenti si incontrano) e all'altro capo al ramo corrispondente.
 
-La struttura del ponte trifase è formata da tre rami in parallelo (\textit{legs}), ciascuno dedicato a una specifica fase del motore ($\phi_A, \phi_B, \phi_C$). Ogni ramo è collegato a una coppia di transistor disposti in serie: il transistor superiore (\textit{High-Side}), connette il terminale dell'avvolgimento di fase al polo positivo dell'alimentazione $V_{+}$ e il transistor inferiore (\textit{Low-Side}) connette il terminale dell'avvolgimento di fase a massa. Questi due transistor ricevono un segnale da un \textit{Decoder} che decodifica la posizione del rotore, rilevata tramite sensori di Hall, e li attiva/disattiva in modo da commutare correttamente la corrente nello statore, in modo da mantenere costante il verso della coppia.
+La struttura del ponte trifase è formata da tre rami in parallelo (\textit{legs}), ciascuno dedicato a una specifica fase del motore ($\phi_A, \phi_B, \phi_C$). Ogni ramo è collegato a una coppia di transistor disposti in serie: il transistor superiore (\textit{High-Side}) connette il terminale dell'avvolgimento di fase al polo positivo dell'alimentazione $V_{+}$, mentre il transistor inferiore (\textit{Low-Side}) lo connette a massa. Questi due transistor ricevono i segnali di comando da un \textit{Decoder}, che decodifica la posizione del rotore rilevata tramite sensori di Hall e li attiva o disattiva in modo da commutare correttamente la corrente nello statore, mantenendo così costante il verso della coppia. A ciascun transistor è sempre associato un \textbf{Diodo Di Ricircolo}, che permette alle correnti induttive generate dagli avvolgimenti dello statore di continuare a scorrere durante gli istanti di commutazione dei transistor.
 
-A seconda delle specifiche applicative, i transistor possono essere MOSFET di potenza (per tensioni inferiori a $100\,\si{\volt}$) oppure tramite IGBT per livelli di tensione e potenza più elevati.\\
-Nei circuiti reali ciascun transistor è sempre correlato a un \textbf{Diodo Di Ricircolo} che garantisce alle correnti induttive generate dagli avvolgimenti dello statore di scorrere durante gli istanti di commutazione dei transistor.
-
-Un aspetto critico per ogni ramo, riguarda la commutazione dei transistor complementari (ovvero collegati allo stesso terminale). Per evitare che entrambi i transistor conducano contemporaneamente, generando un cortocircuito diretto tra $V_+$ e la massa, i segnali che derivano dal decoder applicati alle basi (o ai gate nel caso di MOSFET) vengono separati da un breve intervallo di guardia, noto come \textbf{Tempo Morto} (\textit{dead-time})
+Un aspetto critico per ogni ramo riguarda la commutazione dei transistor complementari (ovvero collegati allo stesso ramo). Per evitare che entrambi conducano contemporaneamente, generando un cortocircuito diretto tra $V_+$ e la massa, i segnali provenienti dal decoder e applicati alle basi (o ai gate nel caso di MOSFET) vengono separati da un breve intervallo di guardia, noto come \textbf{Tempo Morto} (\textit{dead-time}).
 
 \newpage
 
 \subsubsection{Logica Di Commutazione A Sei Passi (Six-Step Control)}
-Per generare una coppia motrice continua e uniforme, l'eccitazione delle fasi deve essere sincronizzata con la posizione angolare dei magneti permanenti del rotore (raffigurati con le polarità Nord in viola e Sud in giallo). A tale scopo, nello statore sono integrati tre \textbf{Sensori A Effetto Hall} ($H_1, H_2, H_3$), posizionati in punti strategici per rilevare il del flusso magnetico generato dal rotore.
+Per generare una coppia motrice continua e uniforme, la corrente deve scorrere negli avvolgimenti di fase in modo sincronizzato con la posizione angolare dei magneti permanenti del rotore (raffigurati con le polarità Nord in viola e Sud in giallo). A tale scopo, nello statore sono integrati tre \textbf{Sensori A Effetto Hall} ($H_1, H_2, H_3$), posizionati in punti strategici per rilevare il del flusso magnetico generato dal rotore.
 
 Durante la rotazione dell'albero, i sensori forniscono tre segnali digitali che, combinati formano una parola binaria a 3 bit che indica il settore angolare in cui si trova il rotore. Questi segnali vengono acquisiti dal \textbf{\textit{Decoder}}, il quale traduce in tempo reale lo stato dei sensori nella corretta sequenza di pilotaggio dei sei transistor del ponte. Nella tecnica di controllo (trapezoidale) a sei passi (\textit{Six-Step Control}), l'intero periodo elettrico di $360^\circ$ viene infatti suddiviso in sei settori di $60^\circ$ ciascuno. \\
 All'interno di ogni settore, il circuito di decodifica attiva esclusivamente due fasi alla volta: un transistor \textit{High-Side} viene posto in conduzione per far fluire la corrente dal polo positivo della tensione di alimentazione a una prima fase, mentre un transistor \textit{Low-Side} appartenente a un altro ramo viene chiuso per far scorrere la corrente in uscita da una seconda fase a massa (attraversando il centro-stella). La terza fase non viene eccitata e rimane elettricamente flottante (\textit{floating}).
@@ -2158,9 +2154,12 @@ Supponendo che i sensori $H_1$ e $H_3$ risultano attivi mentre $H_2$ è inattivo
     \text{Settore 6: } & \text{\textit{High-Side} Fase } \phi_C \text{ ON } (V_+), & \text{\textit{Low-Side} Fase } \phi_B \text{ ON (Massa)}, \quad & \text{Fase } \phi_A \text{ scollegata}
 \end{align*}
 
-Questa logica di commutazione può essere estesa anche per statori a 12 poli ($A, \bar{A}, B, \bar{B}, C, \bar{C}$): la circolazione di corrente nelle bobine trasforma le espansioni polari statoriche in elettromagneti temporanei con polarità ben definite, generando un campo magnetico statorico che avanza a scatti di $60^\circ$ elettrici. Poiché tale avanzamento è vincolato dai sensori di Hall, il campo dello statore si mantiene costantemente in quadratura rispetto ai magneti del rotore, esercitando una forza magnetica che trascina l'albero in rotazione sincrona.
 
-Infine, poiché il circuito di decodifica definisce unicamente l'angolo di commutazione, il controllo della velocità di rotazione e della coppia erogata viene ottenuto sovrapponendo ai comandi di accensione dei transistor attivi una modulazione di larghezza d'impulso (\textbf{PWM}, \textit{Pulse Width Modulation}) ad alta frequenza ($10 \div 20\,\si{\kilo\hertz}$). Parzializzando mediante il \textit{duty-cycle} la tensione media effettivamente applicata tra le fasi attive e la massa, il sistema regola con precisione l'intensità della corrente circolante negli avvolgimenti e, di conseguenza, la coppia elettromagnetica sviluppata all'asse del giunto robotico.
+La corrente che scorre negli avvolgimenti di fase trasforma le espansioni statoriche in magneti con polarità definita, i quali generano un campo magnetico che varia (nel verso di rotazione dell'albero) a passi di $60^\circ$ elettrici. Poiché questa corrente dipende dall'output del decoder, che a sua volta dipende dall'uscita dei sensori di Hall, il campo magnetico dello statore (generato dagli avvolgimenti di fase) e quello del rotore (dei magneti permanenti) risultano in quadratura (ovvero l'angolo tra le loro direzioni è $\approx 90^\circ$); di conseguenza si ottiene la coppia massima e il verso non viene invertito.
+
+Ovviamente, questa logica può essere estesa anche per statori a 12 poli ($A, \bar{A}, B, \bar{B}, C, \bar{C}$).
+
+Poiché il circuito di decodifica definisce unicamente l'angolo di commutazione (ovvero quando la corrente deve commutare), il controllo della velocità di rotazione e della coppia erogata viene fatto attraverso un circuito aggiuntivo
 
 \newpage
 

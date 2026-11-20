@@ -1,16 +1,16 @@
 %[text] # Rappresentazione Asse-Angolo Dell'Orientamento
 %[text] La rappresentazione Asse-Angolo è un metodo per descrivere l'orientamento di un corpo rigido nello spazio. Utilizza quattro parametri:
-%[text] - Un **versore** $\\mathbf{r}=\[r\_X ,r\_Y ,r\_Z \]$ che definisce l'asse attorno al quale avviene la rotazione.
+%[text] - Un **versore** $\\mathbf{r}=\[r\_x ,r\_y ,r\_z \]^T$ che definisce l'asse attorno al quale avviene la rotazione.
 %[text] - Un **angolo** $\\theta$, che indica l'ampiezza della rotazione attorno a tale asse. \
 %%
 %[text] ## Problema Diretto: Da Asse-Angolo A Matrice Di Rotazione
 %[text] Il problema diretto consiste nel determinare la matrice di rotazione $R\\bigl(\\theta ,\\mathbf{r}\\bigr)$ partendo da un asse $\\mathbf{r}$ e un angolo $\\theta$. La matrice di rotazione si ottiene tramite la *formula di Rodrigues*, derivata dalla composizione di rotazioni elementari:
-%[text]{"align":"center"} $R(\\theta ,r)=rr^T +(I-rr^T )\\cos (\\theta )+S(r)\\sin (\\theta )$
+%[text]{"align":"center"} $R(\\theta ,\\mathbf{r})=\\mathbf{r}\\mathbf{r}^T +(I-\\mathbf{r}\\mathbf{r}^T )\\cos (\\theta )+S(\\mathbf{r})\\sin (\\theta )$
 %[text] Dove:
 %[text] $I$ è la matrice identità 3x3.
-%[text] $rr^T$ è il prodotto esterno del versore $\\mathbf{r}$.
-%[text] $S(r)$ è la Skew-Symmetric Matrix associata a $\\mathbf{r}$, che rappresenta l'operatore prodotto vettoriale:
-%[text]{"align":"center"} $S(r)=\\left(\\begin{array}{ccc} 0 & -r\_z & r\_y \\\\ r\_z & 0 & -r\_x \\\\ -r\_y & r\_x & 0 \\end{array}\\right)$
+%[text] $\\mathbf{r}\\mathbf{r}^T$ è il prodotto esterno del versore $\\mathbf{r}$.
+%[text] $S(\\mathbf{r})$ è la Skew-Symmetric Matrix associata a $\\mathbf{r}$, che rappresenta l'operatore prodotto vettoriale:
+%[text]{"align":"center"} $S(\\mathbf{r})=\\left(\\begin{array}{ccc} 0 & -r\_z & r\_y \\\\ r\_z & 0 & -r\_x \\\\ -r\_y & r\_x & 0 \\end{array}\\right)$
 clc; clear; close all;
 % Definizione variabili simboliche
 syms rx ry rz theta real
@@ -71,7 +71,7 @@ disp("Matrice Di Rotazione R(theta, r) Numerica:"); %[output:372fae49]
 disp(R); %[output:52815ece]
 %[text] Una matrice di rotazione **R** gode di importanti proprietà:
 %[text] 1. **Ortogonalità:** La matrice è ortogonale, ovvero la sua inversa coincide con la sua trasposta $(R^T R=I)$.
-%[text] 2. **Determinante Unitario:** $\\det (R)=1$
+%[text] 2. **Determinante Unitario:** $\\det (R)=1$.
 %[text] 3. \*\*Traccia: \*\*La traccia è legata all'angolo di rotazione dalla formula $\\textrm{trace}(R)=1+2\\cos (\\theta )$. \
 checkOrt = R' * R;
 disp('Verifica Ortogonalità (R'' * R):'); %[output:29fc68e1]
@@ -92,7 +92,10 @@ fprintf('Valore Atteso (1 + 2*cos(theta)): %f\n', traceSim); %[output:761a9453]
 %[text]{"align":"center"} $R-R^T =2\\sin (\\theta )\\;S(\\mathbf{r})$
 %[text] Da questa relazione, si possono estrarre le componenti di **r**:
 %[text]{"align":"center"} $\\mathbf{r}=\\frac{1}{2\\sin (\\theta )}\\;\\left(\\begin{array}{c} r\_{32} -r\_{23} \\\\ r\_{13} -r\_{31} \\\\ r\_{21} -r\_{12} \\end{array}\\right)$
-%[text] Questo metodo è valido solo se $\\sin (\\theta )\\not= 0$, ovvero per angoli di rotazione diversi da 0 e $k\\pi$
+%[text] Questo metodo è valido solo se $\\sin (\\theta )\\not= 0$, ovvero per angoli di rotazione diversi da $0$ e $\\pi$ (nell'intervallo $\[0,\\pi\]$).
+%[text] In particolare, per $\\theta = 0$ l'asse di rotazione è effettivamente indeterminato (rotazione nulla $R=I$), mentre per $\\theta = \\pi$ l'asse **esiste** (a meno del segno $\\pm \\mathbf{r}$), ma non è ricavabile dalla parte antisimmetrica poiché $R - R^T = 0$ (si ricava invece dalla parte simmetrica $R = 2\\mathbf{r}\\mathbf{r}^T - I$).
+%[text] Per calcolare $\\theta$ in modo numericamente più robusto rispetto ad $\\arccos$ vicino a $0$ e $\\pi$, da $R - R^T = 2\\sin\\theta\\,S(\\mathbf{r})$ si ricava $\|v\| = 2\\sin\\theta$ con $v = \[R\_{3,2}-R\_{2,3},\\; R\_{1,3}-R\_{3,1},\\; R\_{2,1}-R\_{1,2}\]^T$, mentre $\\textrm{trace}(R)-1 = 2\\cos\\theta$, da cui:
+%[text]{"align":"center"} $\\theta = \\textrm{atan2}\\left(\\frac{1}{2}\\sqrt{(R\_{3,2}-R\_{2,3})^2+(R\_{1,3}-R\_{3,1})^2+(R\_{2,1}-R\_{1,2})^2},\\; \\frac{\\textrm{trace}(R)-1}{2}\\right)$
 % Calcolo dell'angolo theta tramite atan2(y, x)
 xTheta = R(1,1) + R(2,2) + R(3,3) - 1;
 yTheta = sqrt((R(1,2) - R(2,1))^2 + (R(1,3) - R(3,1))^2 + (R(2,3) - R(3,2))^2);
@@ -103,7 +106,7 @@ rCalc = [NaN; NaN; NaN];
 sinTheta = sin(thetaCalc);
 
 if abs(sinTheta) < 1e-9
-    disp('Theta È 0 o pi. Asse Non È Definito Univocamente Con Questa Formula.');
+    disp('Theta è 0 o pi. L''asse non è definito tramite la formula standard (parte antisimmetrica nulla).');
 else
     % Si estraggono le componenti dalla parte antisimmetrica di R
     rVec = [R(3,2) - R(2,3); R(1,3) - R(3,1); R(2,1) - R(1,2)];
@@ -155,7 +158,7 @@ h_axY = quiver3(0, 0, 0, AsseY(1)*1.2, AsseY(2)*1.2, AsseY(3)*1.2, 0, 'Color', c
 h_axZ = quiver3(0, 0, 0, AsseZ(1)*1.2, AsseZ(2)*1.2, AsseZ(3)*1.2, 0, 'Color', col_Z, 'LineWidth', 1.5);
 
 text(AsseX(1)*1.25, AsseX(2)*1.25, AsseX(3)*1.25, 'X_0', 'Color', col_X, 'FontWeight', 'bold');
-text(AsseY(1)*1.25, AsseY(2)*1.25, AsseY(3)*1.25, 'Y_0', 'Color', col_Y, 'FontWeight', 'bold');
+text(0, 1.15, -0.10, 'Y_0', 'Color', col_Y, 'FontWeight', 'bold');
 text(AsseZ(1)*1.25, AsseZ(2)*1.25, AsseZ(3)*1.25, 'Z_0', 'Color', col_Z, 'FontWeight', 'bold');
 
 % Disegno Asse Rotazione r

@@ -1,13 +1,15 @@
 %[text] # Relazione Tra Velocità Angolare E Angoli Di Eulero RPY
-%[text] L'orientamento di un corpo rigido, viene spesso descritto tramite una sequenza di tre rotazioni elementari note come **angoli di Eulero**. La convenzione **Roll-Pitch-Yaw (RPY)** corrisponde a una sequenza di rotazioni *ZYX* (equivalente a rotazioni Roll-Pitch-Yaw rispetto agli assi fissi *X,Y,Z*).
-%[text] La matrice di rotazione totale **R** che trasforma le coordinate da un sistema di riferimento solidale al corpo al sistema di riferimento fisso rappresenta una sequenza di rotazioni definite rispetto agli assi del sistema di riferimento fisso nell'ordine *X,Y,Z*, oppure per la cinematica del corpo, da una sequenza di rotazioni rispetto agli assi del sistema solidale (***intrinseche***) nell'ordine *Z,Y',X''*:
+%[text] L'orientamento di un corpo rigido viene spesso descritto tramite una sequenza di tre rotazioni elementari note come **angoli di Eulero**. La convenzione **Roll-Pitch-Yaw (RPY)** corrisponde a una sequenza di rotazioni *ZYX* (equivalente a rotazioni Roll-Pitch-Yaw rispetto agli assi fissi *X,Y,Z*).
+%[text] La matrice di rotazione totale **R** che trasforma le coordinate da un sistema di riferimento solidale al corpo al sistema di riferimento fisso rappresenta una sequenza di rotazioni definite rispetto agli assi del sistema di riferimento fisso nell'ordine *X,Y,Z*, oppure per la cinematica del corpo, da una sequenza di rotazioni rispetto agli assi del sistema solidale (***intrinseche***) nell'ordine *Z,Y',X''*.
 %[text] L'obiettivo è determinare la matrice di trasformazione $\\mathbf{M}(\\phi ,\\theta )$ che lega le derivate temporali degli angoli di Eulero ${\\bigl\\lbrack \\dot{\\phi} ,\\dot{\\theta} ,\\dot{\\psi} \\bigr\\rbrack }^T$, al vettore velocità angolare istantanea del corpo $\\mathbf{\\omega }={\\bigl\\lbrack \\omega_x ,\\omega_y ,\\omega_z \\bigr\\rbrack }^T$, espresso nel sistema di riferimento fisso (della base). Dove:
-%[text] - Il vettore** velocità angolare** $\\omega$ è una *grandezza* *vettoriale* che descrive l'asse di rotazione istantaneo e il valore della velocità di rotazione del corpo rigido. Le sue componenti possono essere sommate vettorialmente.
+%[text] - Il **vettore velocità angolare** $\\omega$ è una *grandezza* *vettoriale* che descrive l'asse di rotazione istantaneo e il valore della velocità di rotazione del corpo rigido. Le sue componenti possono essere sommate vettorialmente.
 %[text] - Il **vettore delle derivate degli angoli **di Eulero rappresenta la velocità di variazione dei parametri scelti per descrivere l'orientamento. Poiché ciascuna rotazione di Eulero avviene attorno a un asse che può essere differente dagli altri, le loro velocità ***non*** possono essere sommate direttamente per ottenere $\\omega$. \
 %[text] La relazione che si deve derivare simbolicamente ha la forma:
 %[text]{"align":"center"} $\\left(\\begin{array}{c} \\omega_x \\\\ \\omega_y \\\\ \\omega_z \\end{array}\\right)=\\mathbf{M}(\\phi ,\\theta )\\;\\cdot \\;\\left(\\begin{array}{c} \\dot{\\phi} \\\\ \\dot{\\theta} \\\\ \\dot{\\psi} \\end{array}\\right)$
 %[text] dove **M** è la matrice $3\\times 3$ che dipende dalla configurazione angolare corrente del corpo.Analizzando il determinante di **M** si possono identificare le configurazioni singolari in cui questa rappresentazione perde di validità.
 %[text] Si definiscono tutte le variabili simboliche che includono gli angoli di Eulero $(\\phi ,\\theta ,\\psi )$ e le loro derivate $(\\dot{\\phi} ,\\dot{\\theta} ,\\dot{\\psi} )$
+clc; clear; close all;
+
 % Definizioni Angoli Eulero
 syms psi theta phi real;
 
@@ -46,21 +48,18 @@ disp(Rz);
 fprintf('Matrice di rotazione totale R_RPY (ZYX):');
 
 disp(R_RPY);
-%[text] Ricordando la regola della catena e che $\\psi ,\\theta ,\\phi$ dipendono da $t$ si avrà che, la derivata di una matrice di rotazione
+%[text] Ricordando la regola della catena e che $\\psi ,\\theta ,\\phi$ dipendono da $t$, si avrà che la derivata di una matrice di rotazione è:
 %[text]{"align":"center"} ${\\dot{R} }_x (\\psi )=\\frac{dR_x }{d\\psi }\\;\\frac{d\\psi }{dt}$
 % Derivata Rx
 dRx_dpsi = diff(Rx, psi);
-dpsi_dt = psi_dot;
 Rx_dot = dRx_dpsi * psi_dot;
 
 % Derivata Ry
 dRy_dtheta = diff(Ry, theta);
-dtheta_dt = theta_dot;
 Ry_dot = dRy_dtheta * theta_dot;
 
 % Derivata Rz
 dRz_dphi = diff(Rz, phi);
-dphi_dt = phi_dot;
 Rz_dot = dRz_dphi * phi_dot;
 
 fprintf('Derivata Temporale Di Rx (Rx_dot):');
@@ -74,9 +73,9 @@ fprintf('Derivata Temporale Di Rz (Rz_dot):');
 disp(Rz_dot);
 %[text] Si nota che
 %[text]{"align":"center"} $\\begin{array}{l} \\dot{R}_x (\\psi ) =\\dot{\\psi} \\;\\frac{dR_x}{d\\psi} (\\psi )\\\\ \\dot{R}_y (\\theta ) =\\dot{\\theta} \\;\\frac{dR_y}{d\\theta} (\\theta )\\\\ \\dot{R}_z (\\phi ) =\\dot{\\phi} \\;\\frac{dR_z}{d\\phi} (\\phi ) \\end{array}$
-%[text] Ricordando la derivata del prodotto, la derivata di $R_{RPY}$ sarà:
 %%
 %[text] ## Derivazione Della Matrice Di Trasformazione Cinematica RPY
+%[text] Ricordando la derivata del prodotto, la derivata di $R_{RPY}$ sarà:
 %[text]{"align":"center"} $\\dot{R}_{RPY} = \\dot{R}_z(\\phi) \\cdot R_y(\\theta) \\cdot R_x(\\psi) + R_z(\\phi) \\cdot \\dot{R}_y(\\theta) \\cdot R_x(\\psi) + R_z(\\phi) \\cdot R_y(\\theta) \\cdot \\dot{R}_x(\\psi)$
 %[text] Sostituendo si ottiene
 %[text]{"align":"center"} $\\dot{R}_{RPY} =\\dot{\\phi} \\;\\frac{dR_z}{d\\phi} (\\phi )\\cdot R_y (\\theta )\\cdot R_x (\\psi )+R_z (\\phi )\\cdot \\dot{\\theta} \\;\\frac{dR_y}{d\\theta} (\\theta )\\cdot R_x (\\psi )+R_z (\\phi )\\cdot R_y (\\theta )\\cdot \\dot{\\psi} \\;\\frac{dR_x}{d\\psi} (\\psi )$
@@ -122,6 +121,11 @@ S_omega = simplify(S_omega);
 fprintf('Matrice Velocità Angolare Totale S(omega):');
 
 disp(S_omega);
+
+% Verifica simbolica tramite R_RPY_dot * R_RPY_Trasp
+verifica_S = isAlways(simplify(R_RPY_dot * R_RPY_Trasp - S_omega) == 0);
+fprintf('Verifica simbolica (R_RPY_dot * R_RPY_Trasp - S_omega == 0):\n');
+disp(verifica_S);
 %[text] Quindi si possono estrarre le componenti di $\\omega$ direttamente dalla matrice $S(\\omega )$ calcolata, cioè:
 %[text]{"align":"center"} $\\begin{array}{l} \\omega_x =S(\\omega )_{3,2} \\\\ \\omega_y =S(\\omega )_{1,3} \\\\ \\omega_z =S(\\omega )_{2,1} \\end{array}$
 %[text] Come si nota dal vettore $\\omega$ appena calcolato, ogni sua componente è una combinazione lineare delle derivate degli angoli di Eulero $\\bigl\\lbrack \\dot{\\phi} ,\\dot{\\theta} ,\\dot{\\psi} \\bigr\\rbrack$. L'obiettivo è ricavare la matrice **M** che lega il *vettore* *velocità angolare* $\\omega$ alle *derivate degli angoli*, secondo la relazione:
@@ -148,10 +152,11 @@ disp(eqSystem);
 detM = simplify(det(M));
 fprintf('Determinante Matrice M:');
 disp(detM);
-singTheta = solve(detM == 0, theta);
+[singTheta, ~, conds] = solve(detM == 0, theta, 'ReturnConditions', true);
 fprintf('Configurazioni Singolari (det(M) = 0 -> theta =):\n');
 disp(singTheta);
-%[text] Questa matrice fornisce la relazione tra $\\omega$ e gli angoli di Eulero. Se $\\det\\bigl(\\;M(\\phi ,\\theta )\\;\\bigr)\\not= 0$ allora a partire da $\\omega$ è possibile conoscere le derivate degli angoli $\\dot{\\phi} ,\\;\\dot{\\theta} ,\\;\\dot{\\psi}$ ed essendo esse integrabili si possono ricavare $\\phi ,\\;\\theta ,\\;\\psi$
+disp(conds);
+%[text] Questa matrice fornisce la relazione tra $\\omega$ e gli angoli di Eulero. Se $\\det\\bigl(\\;M(\\phi ,\\theta )\\;\\bigr)\\not= 0$ allora a partire da $\\omega$ è possibile conoscere le derivate degli angoli $\\dot{\\phi} ,\\;\\dot{\\theta} ,\\;\\dot{\\psi}$ ed essendo esse integrabili si possono ricavare $\\phi ,\\;\\theta ,\\;\\psi$.
 %%
 %[text] ## Analisi E Interpretazione Delle Singolarità Di Rappresentazione RPY
 %[text] Come calcolato, il determinante della matrice di trasformazione è $-\\cos (\\theta )$.

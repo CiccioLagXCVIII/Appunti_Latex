@@ -109,13 +109,13 @@
 
 \begin{par}
 \begin{flushleft}
-L'orientamento di un corpo rigido, viene spesso descritto tramite una sequenza di tre rotazioni elementari note come \textbf{angoli di Eulero}. La convenzione \textbf{Roll-Pitch-Yaw (RPY)} corrisponde a una sequenza di rotazioni \textit{ZYX} (equivalente a rotazioni Roll-Pitch-Yaw rispetto agli assi fissi \textit{X,Y,Z}).
+L'orientamento di un corpo rigido viene spesso descritto tramite una sequenza di tre rotazioni elementari note come \textbf{angoli di Eulero}. La convenzione \textbf{Roll-Pitch-Yaw (RPY)} corrisponde a una sequenza di rotazioni \textit{ZYX} (equivalente a rotazioni Roll-Pitch-Yaw rispetto agli assi fissi \textit{X,Y,Z}).
 \end{flushleft}
 \end{par}
 
 \begin{par}
 \begin{flushleft}
-La matrice di rotazione totale \textbf{R} che trasforma le coordinate da un sistema di riferimento solidale al corpo al sistema di riferimento fisso rappresenta una sequenza di rotazioni definite rispetto agli assi del sistema di riferimento fisso nell'ordine \textit{X,Y,Z}, oppure per la cinematica del corpo, da una sequenza di rotazioni rispetto agli assi del sistema solidale (\textit{\textbf{intrinseche}}) nell'ordine \textit{Z,Y',X''}:
+La matrice di rotazione totale \textbf{R} che trasforma le coordinate da un sistema di riferimento solidale al corpo al sistema di riferimento fisso rappresenta una sequenza di rotazioni definite rispetto agli assi del sistema di riferimento fisso nell'ordine \textit{X,Y,Z}, oppure per la cinematica del corpo, da una sequenza di rotazioni rispetto agli assi del sistema solidale (\textit{\textbf{intrinseche}}) nell'ordine \textit{Z,Y',X''}.
 \end{flushleft}
 \end{par}
 
@@ -161,6 +161,8 @@ Si definiscono tutte le variabili simboliche che includono gli angoli di Eulero 
 \end{par}
 
 \begin{matlabcode}
+clc; clear; close all;
+
 % Definizioni Angoli Eulero
 syms psi theta phi real;
 
@@ -267,7 +269,7 @@ $\displaystyle \begin{pmatrix}
 \newpage
 \begin{par}
 \begin{flushleft}
-Ricordando la regola della catena e che $\psi ,\theta ,\phi$ dipendono da $t$ si avrà che, la derivata di una matrice di rotazione
+Ricordando la regola della catena e che $\psi ,\theta ,\phi$ dipendono da $t$, si avrà che la derivata di una matrice di rotazione è:
 \end{flushleft}
 \end{par}
 
@@ -277,17 +279,14 @@ Ricordando la regola della catena e che $\psi ,\theta ,\phi$ dipendono da $t$ si
 \begin{matlabcode}
 % Derivata Rx
 dRx_dpsi = diff(Rx, psi);
-dpsi_dt = psi_dot;
 Rx_dot = dRx_dpsi * psi_dot;
 
 % Derivata Ry
 dRy_dtheta = diff(Ry, theta);
-dtheta_dt = theta_dot;
 Ry_dot = dRy_dtheta * theta_dot;
 
 % Derivata Rz
 dRz_dphi = diff(Rz, phi);
-dphi_dt = phi_dot;
 Rz_dot = dRz_dphi * phi_dot;
 
 fprintf('Derivata Temporale Di Rx (Rx_dot):');
@@ -352,14 +351,14 @@ Si nota che
 \end{aligned}
 \]
 
-\begin{par}
 \newpage
+\matlabheadingtwo{Derivazione Della Matrice Di Trasformazione Cinematica RPY}
+
+\begin{par}
 \begin{flushleft}
 Ricordando la derivata del prodotto, la derivata di $R_{RPY}$ sarà:
 \end{flushleft}
 \end{par}
-
-\matlabheadingtwo{Derivazione Della Matrice Di Trasformazione Cinematica RPY}
 \[
     \dot{R}_{RPY} = \dot{R}_z(\phi) \cdot R_y(\theta) \cdot R_x(\psi) + R_z(\phi) \cdot \dot{R}_y(\theta) \cdot R_x(\psi) + R_z(\phi) \cdot R_y(\theta) \cdot \dot{R}_x(\psi)
 \]
@@ -521,6 +520,18 @@ Matrice Velocità Angolare Totale S(omega):
 -\dot{\theta} \,c\left(\phi \right)-\dot{\psi} \,c\left(\theta \right)\,s\left(\phi \right) & \dot{\psi} \,c\left(\phi \right)\,c\left(\theta \right)-\dot{\theta} \,s\left(\phi \right) & 0
 \end{pmatrix}$
 \end{matlabsymbolicoutput}
+\begin{matlabcode}
+% Verifica simbolica tramite R_RPY_dot * R_RPY_Trasp
+verifica_S = isAlways(simplify(R_RPY_dot * R_RPY_Trasp - S_omega) == 0);
+fprintf('Verifica simbolica (R_RPY_dot * R_RPY_Trasp - S_omega == 0):\n');
+disp(verifica_S);
+\end{matlabcode}
+\begin{matlaboutput}
+Verifica simbolica (R_RPY_dot * R_RPY_Trasp - S_omega == 0):
+     1     1     1
+     1     1     1
+     1     1     1
+\end{matlaboutput}
 \newpage
 
 \begin{par}
@@ -623,20 +634,24 @@ Determinante Matrice M:
 \hskip1em $\displaystyle -\cos \left(\theta \right)$
 \end{matlabsymbolicoutput}
 \begin{matlabcode}
-singTheta = solve(detM == 0, theta);
+[singTheta, ~, conds] = solve(detM == 0, theta, 'ReturnConditions', true);
 fprintf('Configurazioni Singolari (det(M) = 0 -> theta =):\n');
 disp(singTheta);
+disp(conds);
 \end{matlabcode}
 \begin{matlaboutput}
 Configurazioni Singolari (det(M) = 0 -> theta =):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \frac{\pi }{2}$
+\hskip1em $\displaystyle \frac{\pi }{2}+\pi \,k$
+\end{matlabsymbolicoutput}
+\begin{matlabsymbolicoutput}
+\hskip1em $\displaystyle k \in \mathbb{Z}$
 \end{matlabsymbolicoutput}
 
 \begin{par}
 \begin{flushleft}
-Questa matrice fornisce la relazione tra $\omega$ e gli angoli di Eulero. Se $\det \bigl(\;M(\phi ,\theta )\;\bigr)\not= 0$ allora a partire da $\omega$ è possibile conoscere le derivate degli angoli $\dot{\phi} ,\;\dot{\theta} ,\;\dot{\psi}$ ed essendo esse integrabili si possono ricavare $\phi ,\;\theta ,\;\psi$
+Questa matrice fornisce la relazione tra $\omega$ e gli angoli di Eulero. Se $\det \bigl(\;M(\phi ,\theta )\;\bigr)\not= 0$ allora a partire da $\omega$ è possibile conoscere le derivate degli angoli $\dot{\phi} ,\;\dot{\theta} ,\;\dot{\psi}$ ed essendo esse integrabili si possono ricavare $\phi ,\;\theta ,\;\psi$.
 \end{flushleft}
 \end{par}
 
@@ -661,6 +676,12 @@ La relazione $\omega =M(\phi ,\theta )\;\;\left(\begin{array}{c}
 \begin{par}
 \begin{flushleft}
 Questa condizione si verifica quando l'angolo di \textit{Pitch}, $\theta$ , è uguale a $\pm \frac{\pi }{2}$ radianti (ovvero $\pm 90^{\circ }$) ed è nota come \textbf{singolarità di rappresentazione (o gimbal lock)} e rappresenta un punto critico. Quando $\theta =\pm \frac{\pi }{2}$, due assi di rotazione (Roll attorno a $X$ e Yaw attorno a $Z$ nella sequenza RPY) si allineano, rendendo le rispettive rotazioni indistinguibili. \textit{Il sistema perde un }\textit{\textbf{grado di libertà (DoF)}}.
+\end{flushleft}
+\end{par}
+
+\begin{par}
+\begin{flushleft}
+Di conseguenza, \underline{per una data velocità angolare }$\omega$\underline{, non esiste una soluzione unica per le velocità degli angoli }$\dot{\phi}$\underline{ e }$\dot{\psi}$. Questo rende la rappresentazione RPY inadeguata e instabile in prossimità di queste configurazioni singolari.
 \end{flushleft}
 \end{par}
 

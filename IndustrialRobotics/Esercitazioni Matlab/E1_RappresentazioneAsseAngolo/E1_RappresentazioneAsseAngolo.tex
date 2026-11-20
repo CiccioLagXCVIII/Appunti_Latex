@@ -116,11 +116,11 @@ La rappresentazione Asse-Angolo è un metodo per descrivere l'orientamento di un
 
 \begin{itemize}
 \setlength{\itemsep}{-1ex}
-   \item{\begin{flushleft} Un \textbf{versore} $\mathbf{r}=[r_X ,r_Y ,r_Z ]$ che definisce l'asse attorno al quale avviene la rotazione. \end{flushleft}}
+   \item{\begin{flushleft} Un \textbf{versore} $\mathbf{r}=[r_x ,r_y ,r_z ]^T$ che definisce l'asse attorno al quale avviene la rotazione. \end{flushleft}}
    \item{\begin{flushleft} Un \textbf{angolo} $\theta$, che indica l'ampiezza della rotazione attorno a tale asse. \end{flushleft}}
 \end{itemize}
 
-\matlabheadingtwo{Problema Diretto: Da Asse Angolo A Matrice Di Rotazione}
+\matlabheadingtwo{Problema Diretto: Da Asse-Angolo A Matrice Di Rotazione}
 
 \begin{par}
 \begin{flushleft}
@@ -129,7 +129,7 @@ Il problema diretto consiste nel determinare la matrice di rotazione $R\bigl(\th
 \end{par}
 
 \begin{par}
-$$R(\theta ,r)=rr^T +(I-rr^T )\cos (\theta )+S(r)\sin (\theta )$$
+$$R(\theta ,\mathbf{r})=\mathbf{r}\mathbf{r}^T +(I-\mathbf{r}\mathbf{r}^T )\cos (\theta )+S(\mathbf{r})\sin (\theta )$$
 \end{par}
 
 \begin{par}
@@ -146,18 +146,18 @@ $I$ è la matrice identità 3x3.
 
 \begin{par}
 \begin{flushleft}
-$rr^T$ è il prodotto esterno del versore $\mathbf{r}$.
+$\mathbf{r}\mathbf{r}^T$ è il prodotto esterno del versore $\mathbf{r}$.
 \end{flushleft}
 \end{par}
 
 \begin{par}
 \begin{flushleft}
-$S(r)$ è la Skew-Symmetric Matrix associata a $\mathbf{r}$, che rappresenta l'operatore prodotto vettoriale:
+$S(\mathbf{r})$ è la Skew-Symmetric Matrix associata a $\mathbf{r}$, che rappresenta l'operatore prodotto vettoriale:
 \end{flushleft}
 \end{par}
 
 \begin{par}
-$$S(r)=\left(\begin{array}{ccc}
+$$S(\mathbf{r})=\left(\begin{array}{ccc}
 0 & -r_z  & r_y \\
 r_z  & 0 & -r_x \\
 -r_y  & r_x  & 0
@@ -296,7 +296,7 @@ Una matrice di rotazione \textbf{R} gode di importanti proprietà:
 \begin{enumerate}
 \setlength{\itemsep}{1ex}
    \item{\begin{flushleft} \textbf{Ortogonalità:} La matrice è ortogonale, ovvero la sua inversa coincide con la sua trasposta $(R^T R=I)$. \end{flushleft}}
-   \item{\begin{flushleft} \textbf{Determinante Unitario: }$\det (R)=1$ \end{flushleft}}
+   \item{\begin{flushleft} \textbf{Determinante Unitario: }$\det (R)=1$. \end{flushleft}}
    \item{\begin{flushleft} \textbf{Traccia: }La traccia è legata all'angolo di rotazione dalla formula $\textrm{trace}(R)=1+2\cos (\theta )$. \end{flushleft}}
 \end{enumerate}
 
@@ -380,10 +380,26 @@ r_{21} -r_{12}
 
 \begin{par}
 \begin{flushleft}
-Questo metodo è valido solo se $\sin (\theta )\not= 0$, ovvero per angoli di rotazione diversi da 0 e $k\pi$
+Questo metodo è valido solo se $\sin (\theta )\not= 0$, ovvero per angoli di rotazione diversi da $0$ e $\pi$ (nell'intervallo $[0,\pi]$).
 \end{flushleft}
 \end{par}
-\newpage
+
+\begin{par}
+\begin{flushleft}
+In particolare, per $\theta = 0$ l'asse di rotazione è effettivamente indeterminato (rotazione nulla $R = I$), mentre per $\theta = \pi$ l'asse \textbf{esiste} (a meno del segno $\pm \mathbf{r}$), ma non è ricavabile dalla parte antisimmetrica poiché $R - R^T = 0$ (si ricava invece dalla parte simmetrica $R = 2\mathbf{r}\mathbf{r}^T - I$).
+\end{flushleft}
+\end{par}
+
+\begin{par}
+\begin{flushleft}
+Per calcolare $\theta$ in modo numericamente più robusto rispetto ad $\arccos$ vicino a $0$ e $\pi$, da $R - R^T = 2\sin\theta\,S(\mathbf{r})$ si ricava $\|v\| = 2\sin\theta$ con $v = [R_{3,2}-R_{2,3},\; R_{1,3}-R_{3,1},\; R_{2,1}-R_{1,2}]^T$, mentre $\operatorname{trace}(R)-1 = 2\cos\theta$, da cui:
+\end{flushleft}
+\end{par}
+
+\begin{par}
+$$\theta = \operatorname{atan2}\left(\frac{1}{2}\sqrt{(R_{3,2}-R_{2,3})^2+(R_{1,3}-R_{3,1})^2+(R_{2,1}-R_{1,2})^2},\; \frac{\operatorname{trace}(R)-1}{2}\right)$$
+\end{par}
+
 \begin{matlabcode}
 % Calcolo dell'angolo theta tramite atan2(y, x)
 xTheta = R(1,1) + R(2,2) + R(3,3) - 1;
@@ -395,7 +411,7 @@ rCalc = [NaN; NaN; NaN];
 sinTheta = sin(thetaCalc);
 
 if abs(sinTheta) < 1e-9
-    disp('Theta È 0 o pi. Asse Non È Definito Univocamente Con Questa Formula.');
+    disp('Theta è 0 o pi. L''asse non è definito tramite la formula standard (parte antisimmetrica nulla).');
 else
     % Si estraggono le componenti dalla parte antisimmetrica di R
     rVec = [R(3,2) - R(2,3); R(1,3) - R(3,1); R(2,1) - R(1,2)];
@@ -475,14 +491,14 @@ h_axY = quiver3(0, 0, 0, AsseY(1)*1.2, AsseY(2)*1.2, AsseY(3)*1.2, 0, 'Color', c
 h_axZ = quiver3(0, 0, 0, AsseZ(1)*1.2, AsseZ(2)*1.2, AsseZ(3)*1.2, 0, 'Color', col_Z, 'LineWidth', 1.5);
 
 text(AsseX(1)*1.25, AsseX(2)*1.25, AsseX(3)*1.25, 'X_0', 'Color', col_X, 'FontWeight', 'bold');
-text(AsseY(1)*1.25, AsseY(2)*1.25, AsseY(3)*1.25, 'Y_0', 'Color', col_Y, 'FontWeight', 'bold');
+text(0, 1.15, -0.10, 'Y_0', 'Color', col_Y, 'FontWeight', 'bold');
 text(AsseZ(1)*1.25, AsseZ(2)*1.25, AsseZ(3)*1.25, 'Z_0', 'Color', col_Z, 'FontWeight', 'bold');
 
 % Disegno Asse Rotazione r
 r_scale = 1.6;
-h_axis = plot3([-rNum(1)*0.4, rNum(1)*r_scale], [-rNum(2)*0.4, rNum(2)*r_scale],
+h_axis = plot3([-rNum(1)*0.4, rNum(1)*r_scale], [-rNum(2)*0.4, rNum(2)*r_scale], ...
                [-rNum(3)*0.4, rNum(3)*r_scale], '--', 'Color', [0.0 0.55 0.55], 'LineWidth', 2.2);
-text(rNum(1)*r_scale, rNum(2)*r_scale, rNum(3)*r_scale, '  Asse r', 'Color', [0.0 0.55 0.55],
+text(rNum(1)*r_scale, rNum(2)*r_scale, rNum(3)*r_scale, '  Asse r', 'Color', [0.0 0.55 0.55], ...
     'FontSize', 11, 'FontWeight', 'bold');
 
 % Disegno Vettore Iniziale v e Ruotato vR
@@ -501,7 +517,7 @@ end
 h_arc = plot3(arc_pts(1,:), arc_pts(2,:), arc_pts(3,:), ':', 'Color', [0.85 0.1 0.6], 'LineWidth', 2.0);
 
 % Legenda e Titolo
-legend([h_axis, h_v, h_vR, h_arc], {'Asse di Rotazione r', 'Vettore Iniziale v', 'Vettore Ruotato v_R',
+legend([h_axis, h_v, h_vR, h_arc], {'Asse di Rotazione r', 'Vettore Iniziale v', 'Vettore Ruotato v_R', ...
         sprintf('Arco Rotazione \\theta = %.1f°', rad2deg(thetaNum))}, 'Location', 'bestoutside');
 title(sprintf('Rotazione Asse-Angolo: \\theta = %.1f° attorno a r = [%.2f, %.2f, %.2f]^T', rad2deg(thetaNum), rNum(1), rNum(2), rNum(3)), 'FontSize', 11, 'FontWeight', 'bold');
 hold off;

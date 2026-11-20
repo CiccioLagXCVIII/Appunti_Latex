@@ -31,7 +31,7 @@ T0n = simplify(T0n);
 fprintf('Matrice Di Trasformazione Omogenea Totale T03:\n');
 disp(T0n);
 %[text]{"align":"center"} $\\begin{pmatrix} c\\left(q_1 \\right)\\,c\\left(q_2 \\right) & -s\\left(q_1 \\right) & -c\\left(q_1 \\right)\\,s\\left(q_2 \\right) & -q_3 \\,c\\left(q_1 \\right)\\,s\\left(q_2 \\right)\\\\ c\\left(q_2 \\right)\\,s\\left(q_1 \\right) & c\\left(q_1 \\right) & -s\\left(q_1 \\right)\\,s\\left(q_2 \\right) & -q_3 \\,s\\left(q_1 \\right)\\,s\\left(q_2 \\right)\\\\ s\\left(q_2 \\right) & 0 & c\\left(q_2 \\right) & d_1 +q_3 \\,c\\left(q_2 \\right)\\\\ 0 & 0 & 0 & 1 \\end{pmatrix}$
-%[text] Dalla matrice totale $^0 T_n$ si può estrarre la sottomatrice di rotazione $3\\times 3$ e il vettore di posizione $3\\times 1$
+%[text] Dalla matrice totale $^0 T_n$ si può estrarre la sottomatrice di rotazione $3\\times 3$ e il vettore di posizione $3\\times 1$.
 % Matrice Di Rotazione R03
 R0n = T0n(1:3, 1:3);
 R0n = simplify(R0n);
@@ -52,9 +52,9 @@ varsToSub = [q1, q2, q3, d1];
 numValues = [pi/6, pi/4, 0.5, 1];
 
 % Sostituzione Valori
-A_Num = sym(zeros(4, 4, n));
+A_Num = zeros(4, 4, n);
 for i = 1:n
-    A_Num(:,:,i) = subs(A_matrices(:,:,i), varsToSub, numValues);
+    A_Num(:,:,i) = double(subs(A_matrices(:,:,i), varsToSub, numValues));
 end
 
 % Calcolo Matrice Numerica
@@ -156,8 +156,8 @@ ylim([min_xyz(2) - margin, max_xyz(2) + margin]);
 zlim([min_xyz(3) - margin, max_xyz(3) + margin]);
 
 % 7. Legenda e Titolo
-legend([h_axes(1), h_axes(2), h_axes(3), h_link, h_ee], ...
-    {'Asse X', 'Asse Y', 'Asse Z', 'Bracci (Link)', 'End-Effector'}, ...
+legend([h_axes(1), h_axes(2), h_axes(3), h_link, h_base, h_joints, h_ee], ...
+    {'Asse X', 'Asse Y', 'Asse Z', 'Bracci (Link)', 'Base', 'Giunti', 'End-Effector'}, ...
     'Location', 'bestoutside');
 title(fig_name, 'FontSize', 12, 'FontWeight', 'bold');
 hold off;

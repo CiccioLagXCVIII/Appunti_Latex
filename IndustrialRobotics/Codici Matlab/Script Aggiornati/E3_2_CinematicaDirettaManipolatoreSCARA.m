@@ -25,7 +25,7 @@ end
 T04 = A_matrices(:,:,1) * A_matrices(:,:,2) * A_matrices(:,:,3) * A_matrices(:,:,4);
 T04 = simplify(T04);
 
-fprintf('Matrice Di Trasformazione Omogenea Totale ^(0)T_(4):\n');
+fprintf('Matrice Di Trasformazione Omogenea Totale ^{0}T_{4}:\n');
 disp(T04);
 %[text] La matrice di trasformazione omogenea totale $^0 T_4$ contiene tutte le informazioni sulla posa dell'organo terminale. Da essa possiamo estrarre due elementi chiave:
 %[text] - La **matrice di rotazione R**, che definisce l'orientamento dell'organo terminale rispetto alla base. Corrisponde alla sottomatrice 3x3 in alto a sinistra.
@@ -54,7 +54,7 @@ for i = 1:n
 end
 
 T04_Num = double(subs(T04, symsList, value));
-fprintf('Matrice Di Trasformazione Omogenea ^{0}T_(4) Numerica:\n');
+fprintf('Matrice Di Trasformazione Omogenea ^{0}T_{4} Numerica:\n');
 disp(T04_Num);
 
 % Stampa Matrici Numeriche
@@ -66,7 +66,7 @@ end
 %[text] ## Visualizzazione Grafica Manipolatore SCARA
 fig_name    = 'Configurazione Manipolatore SCARA';
 arrow_scale = 0.12;
-view_angles = [135, 20];
+view_angles = [105, 22];
 labels      = {'Terna 0 (Base)', 'Terna 1', 'Terna 2', 'Terna 3', 'Terna 4 (EE)'};
 
 figure('Name', fig_name, 'Color', 'w');
@@ -157,8 +157,8 @@ ylim([min_xyz(2) - margin, max_xyz(2) + margin]);
 zlim([min_xyz(3) - margin, max_xyz(3) + margin]);
 
 % 7. Legenda e Titolo
-legend([h_axes(1), h_axes(2), h_axes(3), h_link, h_ee], ...
-    {'Asse X', 'Asse Y', 'Asse Z', 'Bracci (Link)', 'End-Effector'}, ...
+legend([h_axes(1), h_axes(2), h_axes(3), h_link, h_base, h_joints, h_ee], ...
+    {'Asse X', 'Asse Y', 'Asse Z', 'Bracci (Link)', 'Base', 'Giunti', 'End-Effector'}, ...
     'Location', 'bestoutside');
 title(fig_name, 'FontSize', 12, 'FontWeight', 'bold');
 hold off;

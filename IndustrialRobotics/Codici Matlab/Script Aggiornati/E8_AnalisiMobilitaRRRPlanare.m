@@ -70,8 +70,7 @@ J_r_analitico = simplify(jacobian(r, [q1; q2; q3]));
 fprintf('Jacobiano Di Posizione Manipolatore RRR Planare Simbolico J_r:');
 disp(J_r);
 fprintf('Verifica coincidenza J_r == d r / d q: %d\n', isequal(simplify(J_r - J_r_analitico), sym(zeros(2, 3))));
-%[text] Una configurazione $q$ è **singolare** quando lo Jacobiano $J_r (q)$ perde di rango, ovvero $\\rho \\bigl(J_r (q)\\bigr)<m$. Per una matrice non quadrata come in questo caso ($m\\times n=2\\times 3$).
-%[text] Un metodo robusto per trovare queste condizioni è analizzare la matrice di Gram $J_r (q)\\cdot {\\bigl(J_r (q)\\bigr)}^T$ che è sempre quadrata ($m\\times m$) e perde di rango esattamente quando $J_r (q)$ perde di rango. La condizione di singolarità si traduce quindi nel trovare le configurazioni $q$ per cui il determinante di questa matrice è nullo.
+%[text] Una configurazione $q$ è **singolare** quando lo Jacobiano $J_r (q)$ perde di rango, ovvero $\\rho \\bigl(J_r (q)\\bigr)<m$. Per una matrice non quadrata come in questo caso ($m\\times n=2\\times 3$), un metodo robusto per trovare queste condizioni è analizzare la matrice di Gram $J_r (q)\\cdot {\\bigl(J_r (q)\\bigr)}^T$ che è sempre quadrata ($m\\times m$) e perde di rango esattamente quando $J_r (q)$ perde di rango. La condizione di singolarità si traduce quindi nel trovare le configurazioni $q$ per cui il determinante di questa matrice è nullo.
 % Calcolo Condizione Singolarità: det(J_r(q) * J_r(q)^T) = 0
 G = J_r * J_r.';
 det_G = simplify(det(G));
@@ -83,9 +82,9 @@ assume([q2, q3], 'real');
 disp('Condizione Di Singolarità (con l1=l2=l3=1):');
 disp(det_G == 0);
 %[text] La condizione di singolarità semplificata ottenuta per lunghezze unitarie rivela che le singolarità dipendono solo dagli angoli $q_2$ e $q_3$. Questo è coerente con la natura planare del manipolatore, dove la posa della base non altera la raggiungibilità dello spazio di lavoro ma solo la sua orientazione. Le condizioni esatte in cui il determinante si annulla corrispondono a configurazioni geometricamente significative:
-%[text] - Quando i bracci sono completamente estesi o ripiegati, l'end-effector si trova sul confine dello spazio di lavoro e perde un grado di libertà (*Singolarità Di Bordo*). Questo accade quando $q_2$ o $q_3$ sono $0$ oppure $\\pi$.
-%[text] - Quando l'end-effector si ripiega su un giunto precedente, cioè la punta del robot si trova alla base del giunto $q_1$. Questa singolarità dipende dalle lunghezze dei bracci e dagli angoli $q_2$ e $q_3$. \
-%[text] Quindi, poichè la matrice Jacobiana $J$ non è costante, ma dipende dalla configurazione attuale del robot, descritta dal vettore delle variabili di giunto, il determinante e tutte le proprietà (rango, immagine e nucleo) sono **locali**, ovvero variano con $q$:
+%[text] - Quando i bracci sono completamente estesi o ripiegati lungo una stessa retta, l'end-effector perde un grado di libertà (*Singolarità Di Bordo* o di allineamento). Questo accade quando $q_2$ e $q_3$ sono entrambi $0$ oppure $\\pi$ ($q_2 \\in \\{0,\\pi\\}$ e $q_3 \\in \\{0,\\pi\\}$).
+%[text] - In particolare, per $l_1=l_2=l_3=1$, le uniche singolarità di $J_r$ sono le configurazioni completamente collineari (allungate con $\\|p_E\\| = 3$ oppure ripiegate con $\\|p_E\\| = 1$), mentre portando la punta nell'origine $(0,0)$ a triangolo equilatero ($q_2 = q_3 = \\frac{2\\pi}{3}$) lo Jacobiano ha rango pieno $2$. \
+%[text] Quindi, poiché la matrice Jacobiana $J$ non è costante, ma dipende dalla configurazione attuale del robot, descritta dal vettore delle variabili di giunto, il determinante e tutte le proprietà (rango, immagine e nucleo) sono **locali**, ovvero variano con $q$:
 %[text]{"align":"center"} $det(J)=det(J(q)) \\qquad \\rho (J)=\\rho J(q) \\qquad R(J)=R(J(q)) \\qquad N(J)=N(J(q))$
 %%
 %[text] ## Configurazione 1: Analisi Di Mobilità Con Braccio Ripiegato
@@ -135,7 +134,7 @@ else
     R_J1 = orth(Jr_1);
     fprintf('Base Spazio Velocità Raggiungibili R(J_r):\n');
     disp(R_J1);
-    % L'End-Effector Può Muoversi Solo Lungo La Direzione Di Questo Vettore
+    % L'End-Effector Può Muoversi Libero Nel Piano (Base 2D Completa)
 
     % Direzioni Di Moto Precluse (Nucleo di J_r^T)
     fprintf('Non Ci Sono Direzioni Di Moto Precluse N(J_r^T)!');
@@ -276,7 +275,7 @@ else
     R_J2 = orth(Jr_2);
     fprintf('Base Spazio Velocità Raggiungibili R(J_r):\n');
     disp(R_J2);
-    % L'End-Effector Può Muoversi Solo Lungo La Direzione Di Questo Vettore
+    % L'End-Effector Può Muoversi Libero Nel Piano (Base 2D Completa)
 
     % Direzioni Di Moto Precluse (Nucleo di J_r^T)
     fprintf('Non Ci Sono Direzioni Di Moto Precluse N(J_r^T)!');
@@ -356,7 +355,7 @@ hold off;
 %[text] 4. La posizione dell'end-effector è $r = (3,0)$. \
 %[text] **Analisi di Mobilità *(Configurazione Singolare)***
 %[text] Il calcolo mostra che il **rango** dello **Jacobiano** è **1**. Poiché $\\rho(J_r)<m$, la configurazione è **singolare** (singolarità di bordo).
-%[text] Lo Spazio delle Velocità Raggiungibili $R(J_r)$ ha dimensione 1. La sua base, data dal vettore $[0,1]^T$, indica che l'unica direzione di moto possibile è lungo l'asse Y. Le Direzioni di Moto Precluse $N(J_r^T)$ hanno dimensione $m - \\rho(J_r) = 2-1 = 1$. La direzione preclusa è lungo l'asse X (radiale).
+%[text] Lo Spazio delle Velocità Raggiungibili $R(J_r)$ ha dimensione 1. La sua base, data dal vettore $[0,-1]^T$ (equivalente a $[0,1]^T$ a meno del segno), genera l'asse Y e indica che l'unica direzione di moto possibile è lungo tale asse. Le Direzioni di Moto Precluse $N(J_r^T)$ hanno dimensione $m - \\rho(J_r) = 2-1 = 1$. La direzione preclusa è lungo l'asse X (radiale).
 %[text] La singolarità emerge perché tutti i bracci sono allineati lungo l'asse X al limite dello spazio di lavoro. Qualsiasi piccola rotazione di uno qualsiasi dei tre giunti provoca un movimento della punta del robot, che in questa postura è sempre perpendicolare alla linea dei bracci (cioè, lungo l'asse Y). È fisicamente impossibile generare una velocità istantanea dell'end-effector lungo la direzione dei bracci stessi (l'asse X). Un tentativo di spingere o tirare l'end-effector lungo l'asse X si tradurrebbe solo in forze di compressione/trazione interne alla struttura, senza produrre alcun movimento.
 %[text] **Analisi degli Automovimenti *(Effetto Singolarità)***
 %[text] In una configurazione singolare, la dimensione dello spazio degli automovimenti aumenta, cioè $n - \\rho(J_r) = 3-1 = 2$.

@@ -30,7 +30,7 @@ T36 = simplify(T36);
 fprintf('Matrice Di Trasformazione Omogenea ^{3}T_(6):\n');
 disp(T36);
 %[text] La matrice di trasformazione omogenea totale $^3 T_6$ contiene tutte le informazioni sulla posa dell'organo terminale. Da essa possiamo estrarre due elementi chiave:
-%[text] - La **matrice di rotazione R**, che definisce l'orientamento dell'organo terminale rispetto alla base. Corrisponde alla sottomatrice 3x3 in alto a sinistra.
+%[text] - La **matrice di rotazione R**, che definisce l'orientamento dell'organo terminale rispetto alla base del polso (terna 3). Corrisponde alla sottomatrice 3x3 in alto a sinistra.
 %[text] - Il **vettore di posizione p**, che indica la posizione dell'origine del sistema di riferimento dell'organo terminale. Corrisponde alle prime tre righe della quarta colonna. \
 % Estrazione Vettore Posizione
 p36 = T36(1:3, 4);
@@ -44,7 +44,7 @@ fprintf('Matrice Rotazione R36:\n');
 disp(R36);
 %[text] Per visualizzare una configurazione specifica del robot sono necessari dei valori numerici. Si sostituiscono ora le variabili simboliche (angoli di giunto e parametri geometrici) con valori numerici.
 % Lista Variabili Simboliche
-symsList = symvar(A_matrices);
+symsList = [d6, q4, q5, q6];
 disp('Variabili Simboliche:');
 disp(symsList);
 % Valori Numerici Da Sostituire
@@ -62,6 +62,11 @@ for i = 1:n
     fprintf('Matrice ^(%d)A_(%d) numerica:\n', i+2, i+3);
     disp(A_Num(:,:,i));
 end
+
+% Calcolo e Stampa Matrice Numerica Complessiva
+T36_Num = double(subs(T36, symsList, value));
+fprintf('Matrice Di Trasformazione Omogenea ^{3}T_{6} Numerica:\n');
+disp(T36_Num);
 %%
 %[text] ## Visualizzazione Grafica Polso Sferico
 fig_name    = 'Configurazione Polso Sferico';
@@ -158,8 +163,8 @@ ylim([min_xyz(2) - pad(2), max_xyz(2) + pad(2)]);
 zlim([min_xyz(3) - pad(3), max_xyz(3) + pad(3)]);
 
 % 7. Legenda e Titolo
-legend([h_axes(1), h_axes(2), h_axes(3), h_link, h_ee], ...
-    {'Asse X', 'Asse Y', 'Asse Z', 'Bracci (Link)', 'End-Effector'}, ...
+legend([h_axes(1), h_axes(2), h_axes(3), h_link, h_base, h_joints, h_ee], ...
+    {'Asse X', 'Asse Y', 'Asse Z', 'Bracci (Link)', 'Base', 'Giunti', 'End-Effector'}, ...
     'Location', 'bestoutside');
 title(fig_name, 'FontSize', 12, 'FontWeight', 'bold');
 hold off;

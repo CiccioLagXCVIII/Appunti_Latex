@@ -1,18 +1,18 @@
 %[text] # Rappresentazione Dell'Orientamento Con Angoli Di Eulero
-%[text] Una rappresentazione minima dell'orientamento di un corpo rigido nello spazio tridimensionale richiede esattamente tre parametri indipendenti. Questo deriva dal fatto che il gruppo speciale ortogonale **SO(m)**, che descrive le rotazioni nello spazio tridimensionale, ha dimensione $\\frac{m(m-1)}{2}$. Per ottenere una rappresentazione minima, si possono utilizzare insiemi di tre angoli
+%[text] Una rappresentazione minima dell'orientamento di un corpo rigido nello spazio tridimensionale richiede esattamente tre parametri indipendenti. Questo deriva dal fatto che il gruppo speciale ortogonale **SO(m)**, che descrive le rotazioni nello spazio $m$-dimensionale, ha dimensione $\\frac{m(m-1)}{2}$ (per lo spazio tridimensionale, $m=3$, ha dimensione $3$). Per ottenere una rappresentazione minima, si possono utilizzare insiemi di tre angoli
 %[text]{"align":"center"} $\\mathbf{\\alpha }={\\left(\\begin{array}{ccc} \\phi & \\theta & \\psi \\end{array}\\right)}^T$
-%[text] Noti come *angoli di Eulero*, che descrivono sequenze di rotazioni elementari intorno agli assi di un sistema di coordinate. Componendo tre rotazioni elementari consecutive, è possibile costruire una matrice di rotazione che rappresenta l'orientamento del corpo rigido. Affinché questa rappresentazione sia valida, è necessario che due rotazioni consecutive non avvengano intorno ad assi paralleli, altrimenti si perderebbe un grado di libertà.
+%[text] noti come *angoli di Eulero*, che descrivono sequenze di rotazioni elementari intorno agli assi di un sistema di coordinate. Componendo tre rotazioni elementari consecutive, è possibile costruire una matrice di rotazione che rappresenta l'orientamento del corpo rigido. Affinché questa rappresentazione sia valida, è necessario che due rotazioni consecutive non avvengano intorno ad assi paralleli, altrimenti si perderebbe un grado di libertà.
 %[text] Tra queste, tre tipi di terne sono particolarmente rilevanti:
-%[text] - **Angoli ZXZ:** Prevedono delle rotazioni successive intorno agli assi: $Z$, $X^{\\prime }$ (asse $X$ ruotato) e $Z^{\\prime \\prime }$ (asse $Z$ nuovamente ruotato)
-%[text] - **Angoli ZXY:** Prevedono delle rotazioni successive intorno agli assi: $Z$, $X^{\\prime }$ (asse $X$ ruotato) e $Y^{\\prime \\prime }$ (asse $Y$ nuovamente ruotato)
-%[text] - **Angoli RPY:** Prevedono delle rotazioni attorno agli assi fissi $X$, $Y$ e $Z$ \
-%[text] Per essere valida, una sequenza di rotazioni non deve avere due rotazioni consecutive attorno ad assi paralleli. Due delle convenzioni valide sono **ZXZ** e **ZXY**.
+%[text] - **Angoli ZXZ:** Prevedono delle rotazioni successive intorno agli assi: $Z$, $X^{\\prime }$ (asse $X$ ruotato) e $Z^{\\prime \\prime }$ (asse $Z$ nuovamente ruotato).
+%[text] - **Angoli ZXY:** Prevedono delle rotazioni successive intorno agli assi: $Z$, $X^{\\prime }$ (asse $X$ ruotato) e $Y^{\\prime \\prime }$ (asse $Y$ nuovamente ruotato).
+%[text] - **Angoli RPY:** Prevedono delle rotazioni attorno agli assi fissi $X$, $Y$ e $Z$. \
+%[text] Tra le convenzioni valide più utilizzate vi sono **ZXZ**, **ZXY** e **Roll-Pitch-Yaw** (XYZ assi fissi).
 clc; clear; close all;
 
 % Definizione Angoli Simbolici
 syms phi theta psi real;
 
-% Definzione Assi
+% Definizione Assi
 x = [1; 0; 0];
 y = [0; 1; 0];
 z = [0; 0; 1];
@@ -42,10 +42,10 @@ phiNum = pi/4;   % 45 gradi
 thetaNum = pi/3; % 60 gradi
 psiNum = pi/6;   % 30 gradi
 
-RZXZ_Num = subs(RZXZ, {phi, theta, psi}, {phiNum, thetaNum, psiNum});
+RZXZ_Num = double(subs(RZXZ, {phi, theta, psi}, {phiNum, thetaNum, psiNum}));
 
 disp("Matrice Di Rotazione Numerica R_ZXZ:");
-disp(double(RZXZ_Num));
+disp(RZXZ_Num);
 %%
 %[text] ## Analisi Delle Singolarità Della Convenzione ZXZ
 %[text] La rappresentazione $ZXZ$ presenta una singolarità quando $\\sin(\\theta )=0$, ovvero per $\\theta =0$ o $\\theta =\\pi$. In questi casi, la prima e la terza rotazione avvengono attorno ad assi paralleli, rendendo impossibile distinguere $\\phi$ e $\\psi$ in modo univoco. Si può determinare solo la loro somma o differenza.
@@ -82,17 +82,16 @@ phiNum = pi/6;   % 30 gradi
 thetaNum = pi/4; % 45 gradi
 psiNum = pi/3;   % 60 gradi
 
-R_ZXY_Num = subs(RZXY, {phi, theta, psi}, {phiNum, thetaNum, psiNum});
+R_ZXY_Num = double(subs(RZXY, {phi, theta, psi}, {phiNum, thetaNum, psiNum}));
 
 disp("Matrice Di Rotazione Numerica R_ZXY:");
-disp(double(R_ZXY_Num));
+disp(R_ZXY_Num);
 %%
 %[text] ## Analisi Delle Singolarità Della Convenzione ZXY
 %[text] La singolarità per la convenzione $ZXY$ si verifica quando $\\cos(\\theta )=0$, ovvero per $\\theta =\\pm \\frac{\\pi }{2}$. Questa configurazione è nota come "gimbal lock". In questo stato, i contributi degli angoli $\\phi$ e $\\psi$ non possono essere separati.
-%[text] Si analizza il caso $\\theta =\\frac{\\pi }{2}$
-[RXThetaPi] = Compute_Rotation_Matrix(x, pi/2);
-RXThetaPi = round(RXThetaPi);
-RZXY_Pi = RZ_Phi * RXThetaPi * RY_Psi;
+%[text] Si analizza il caso $\\theta =\\frac{\\pi }{2}$.
+[RX_Theta_Pi2] = Compute_Rotation_Matrix(x, sym(pi)/2);
+RZXY_Pi = RZ_Phi * RX_Theta_Pi2 * RY_Psi;
 RZXY_Pi = simplify(RZXY_Pi);
 
 disp("Matrice Rotazione R_ZXY (Con Theta = Pi/2):");
@@ -118,17 +117,16 @@ phiNum = pi/2;   % 90 gradi (Yaw)
 thetaNum = pi/4; % 45 gradi (Pitch)
 psiNum = pi/6;   % 30 gradi (Roll)
 
-R_RPY_Num = subs(R_RPY, {phi, theta, psi}, {phiNum, thetaNum, psiNum});
+R_RPY_Num = double(subs(R_RPY, {phi, theta, psi}, {phiNum, thetaNum, psiNum}));
 
 disp("Matrice Di Rotazione Numerica R_RPY:");
-disp(double(R_RPY_Num));
+disp(R_RPY_Num);
 %[text] **Singolarità della Rotazione RPY**
 %[text] La singolarità per questa convenzione RPY si verifica quando l'angolo di Pitch $\\theta =\\pm \\frac{\\pi }{2}$. In questa configurazione, l'asse della prima rotazione (Roll, asse X) si allinea con l'asse della terza rotazione (Yaw, asse Z), causando il "gimbal lock".
-%[text] Si analizza il caso con $\\theta =\\frac{\\pi }{2}$
+%[text] Si analizza il caso con $\\theta =\\frac{\\pi }{2}$.
 % SINGOLARITÀ CON THETA = pi/2
-[RY_Theta_Pi] = Compute_Rotation_Matrix(y, pi/2);
-RY_Theta_Pi = round(RY_Theta_Pi);
-R_RPY_Pi = RZ_Phi * RY_Theta_Pi * RX_Psi;
+[RY_Theta_Pi2] = Compute_Rotation_Matrix(y, sym(pi)/2);
+R_RPY_Pi = RZ_Phi * RY_Theta_Pi2 * RX_Psi;
 R_RPY_Pi = simplify(R_RPY_Pi);
 
 disp("Matrice Di Rotazione R_RPY (Con Theta = Pi/2):");

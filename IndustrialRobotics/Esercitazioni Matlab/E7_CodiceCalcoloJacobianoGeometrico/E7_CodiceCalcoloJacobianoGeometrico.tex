@@ -110,7 +110,7 @@
 
 \begin{par}
 \begin{flushleft}
-Il calcolo dello Jacobiano geometrico $J(q)$, uno strumento fondamentale nell'analisi cinematica dei manipolatori seriali. Lo \textbf{Jacobiano} lega le velocità dei giunti $\dot{q}$ alle velocità cartesiane dell'end-effector (lineare $v_e$ e angolare $\omega_e$) attraverso la relazione:
+Il calcolo dello Jacobiano geometrico $J(q)$ è uno strumento fondamentale nell'analisi cinematica dei manipolatori seriali. Lo \textbf{Jacobiano} lega le velocità dei giunti $\dot{q}$ alle velocità cartesiane dell'end-effector (lineare $v_e$ e angolare $\omega_e$) attraverso la relazione:
 \end{flushleft}
 \end{par}
 
@@ -168,7 +168,7 @@ DH_Table = [q1, 0, 0, l1;
 
 \begin{par}
 \begin{flushleft}
-Per calcolare lo Jacobiano, è necessario conoscere la posizione e l'orientamento di ogni terna rispetto alla terna base ($RF_0$). Queste informazioni sono contenute nelle matrici di trasformazione omogenea $^{i-1} T_i$, che lega la terna $i$ alla terna $i-1$, che è calcolata a partire dalla riga i-esima della tabella DH. Per convenzione la matrice $^0 T_0 =I_{4\times 4}$.
+Per calcolare lo Jacobiano, è necessario conoscere la posizione e l'orientamento di ogni terna rispetto alla terna base ($RF_0$). Queste informazioni sono contenute nelle matrici di trasformazione omogenea $^{i-1} T_i$, che lega la terna $i$ alla terna $i-1$, calcolata a partire dalla riga i-esima della tabella DH. Per convenzione la matrice $^0 T_0 =I_{4\times 4}$.
 \end{flushleft}
 \end{par}
 
@@ -185,11 +185,11 @@ La matrice di trasformazione cumulativa $^0 T_2$, descrive la posa (posizione e 
 
 \begin{matlabcode}
 T02 = simplify(T(:,:,1) * T(:,:,2));
-fprintf('Matrice Di Trasformazione Omogenea ^{0}T_(2)');
+fprintf('Matrice Di Trasformazione Omogenea ^{0}T_{2}');
 disp(T02);
 \end{matlabcode}
 \begin{matlaboutput}
-Matrice Di Trasformazione Omogenea ^{0}T_(2)
+Matrice Di Trasformazione Omogenea ^{0}T_{2}
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle \left(\begin{array}{cccc}
@@ -225,7 +225,7 @@ Lo Jacobiano geometrico $J$ è una matrice 6xn le cui colonne $J_i$ sono calcola
 \end{par}
 
 \begin{itemize}
-   \item{\begin{flushleft} $z_{i-1}$ è il versore dell'asse di rotazione del giunto $i$ espresso nelle coordinate della terna base. \end{flushleft}}
+   \item{\begin{flushleft} $z_{i-1}$ è il versore dell'asse di moto (attuazione) del giunto $i$ espresso nelle coordinate della terna base. \end{flushleft}}
    \item{\begin{flushleft} $p_{0,i-1}$ è il vettore posizione dell'origine della terna $i-1$, espresso rispetto alla terna base. \end{flushleft}}
    \item{\begin{flushleft} $p_{0,e}$ è il vettore posizione dell'end-effector, espresso rispetto alla terna base. \end{flushleft}}
 \end{itemize}
@@ -310,24 +310,6 @@ l_1 \,\cos \left(q_1 \right)\\
 l_1 \,\sin \left(q_1 \right)\\
 0
 \end{array}\right)$
-\end{matlabsymbolicoutput}
-\begin{matlabcode}
-% Valori Per JE
-z2 = T02(1:3,3);
-fprintf('Vettore z2:');
-disp(z2);
-\end{matlabcode}
-\begin{matlaboutput}
-Vettore z2:
-\end{matlaboutput}
-\begin{matlabsymbolicoutput}
-$
-\begin{pmatrix}
-    0\\
-    0\\
-    1
-\end{pmatrix}
-$
 \end{matlabsymbolicoutput}
 \begin{matlabcode}
 p0e = T02(1:3,4);
@@ -543,7 +525,7 @@ Valore del Determinante dello Jacobiano Di Posizione:
 \begin{matlabcode}
 % Verifica Singolarità
 if abs(double(detJr_num)) < 1e-10
-    fprintf('Configurazione Singolare');
+    fprintf('Configurazione Singolare\n');
 else
     fprintf('Configurazione NON Singolare.\n');
 end

@@ -225,7 +225,11 @@ Matrice Di Trasformazione Omogenea ^(5)A_(6):
 T06 = A_matrices(:,:,1) * A_matrices(:,:,2) * A_matrices(:,:,3) * A_matrices(:,:,4) * A_matrices(:,:,5) * A_matrices(:,:,6);
 \end{matlabcode}
 
-Vedi File E3\_3\_2\_CinematicaDirettaManipolatoreAntropomorfo.tex
+\begin{par}
+\begin{flushleft}
+Vedere pagina orizzontale per la matrice di trasformazione omogenea completa ${}^0T_6$.
+\end{flushleft}
+\end{par}
 
 \begin{comment}
 \begin{matlabsymbolicoutput}
@@ -273,47 +277,27 @@ La matrice di trasformazione omogenea totale $^0 T_6$ contiene tutte le informaz
 \end{itemize}
 
 \begin{matlabcode}
+% Estrazione Matrice Rotazione
+R06 = T06(1:3, 1:3);
+\end{matlabcode}
+
+\begin{par}
+\begin{flushleft}
+Vedere pagina orizzontale per la matrice di rotazione ${}^0R_6$.
+\end{flushleft}
+\end{par}
+
+\begin{matlabcode}
 % Estrazione Vettore Posizione
 p06 = T06(1:3, 4);
 \end{matlabcode}
 
-Vedi File E3\_3\_3\_CinematicaDirettaManipolatoreAntropomorfo.tex
+\begin{par}
+\begin{flushleft}
+Vedere pagina orizzontale per il vettore di posizione ${}^0p_6$.
+\end{flushleft}
+\end{par}
 
-\begin{matlabcode}
-% Estrazione Matrice Rotazione
-R06 = T06(1:3, 1:3);
-R06 = simplify(R06);
-fprintf('Matrice Rotazione R06:\n');
-disp(R06);
-\end{matlabcode}
-\begin{matlaboutput}
-Matrice Rotazione R06:
-\end{matlaboutput}
-\begin{matlabsymbolicoutput}
-\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{%
-$\displaystyle \left(\begin{array}{ccc}
-\sin \left(q_6 \right)\,\sigma_5 +\cos \left(q_6 \right)\,\sigma_2  & \cos \left(q_6 \right)\,\sigma_5 -\sin \left(q_6 \right)\,\sigma_2  & -\sin \left(q_5 \right)\,\sigma_6 -\cos \left(q_5 \right)\,\sigma_7 \\
--\sin \left(q_6 \right)\,\sigma_4 -\cos \left(q_6 \right)\,\sigma_3  & \sin \left(q_6 \right)\,\sigma_3 -\cos \left(q_6 \right)\,\sigma_4  & \sin \left(q_5 \right)\,\sigma_8 -\cos \left(q_5 \right)\,\sigma_9 \\
-\sin \left(q_2 +q_3 \right)\,\sin \left(q_4 \right)\,\sin \left(q_6 \right)-\cos \left(q_6 \right)\,\sigma_1  & \sin \left(q_6 \right)\,\sigma_1 +\sin \left(q_2 +q_3 \right)\,\cos \left(q_6 \right)\,\sin \left(q_4 \right) & \sin \left(q_2 +q_3 \right)\,\cos \left(q_4 \right)\,\sin \left(q_5 \right)-\cos \left(q_2 +q_3 \right)\,\cos \left(q_5 \right)
-\end{array}\right)$%
-}
-
-\vspace{0.5cm}
-Dove:
-\vspace{0.5cm}
-
-\resizebox{\linewidth}{!}{$\displaystyle
-\begin{aligned}
-\sigma_1 &= \cos \left(q_2 +q_3 \right)\,\sin \left(q_5 \right)+\sin \left(q_2 +q_3 \right)\,\cos \left(q_4 \right)\,\cos \left(q_5 \right) &\hspace{2.2cm} \sigma_7 &= \cos \left(q_1 \right)\,\cos \left(q_2 \right)\,\sin \left(q_3 \right)+\cos \left(q_1 \right)\,\cos \left(q_3 \right)\,\sin \left(q_2 \right) \\
-\sigma_2 &= \cos \left(q_5 \right)\,\sigma_6 -\sin \left(q_5 \right)\,\sigma_7 &\hspace{2.2cm} \sigma_8 &= \cos \left(q_1 \right)\,\sin \left(q_4 \right)+\cos \left(q_4 \right)\,\sigma_{11} \\
-\sigma_3 &= \cos \left(q_5 \right)\,\sigma_8 +\sin \left(q_5 \right)\,\sigma_9 &\hspace{2.2cm} \sigma_9 &= \cos \left(q_2 \right)\,\sin \left(q_1 \right)\,\sin \left(q_3 \right)+\cos \left(q_3 \right)\,\sin \left(q_1 \right)\,\sin \left(q_2 \right) \\
-\sigma_4 &= \cos \left(q_1 \right)\,\cos \left(q_4 \right)-\sin \left(q_4 \right)\,\sigma_{11} &\hspace{2.2cm} \sigma_{10} &= \cos \left(q_1 \right)\,\cos \left(q_2 \right)\,\cos \left(q_3 \right)-\cos \left(q_1 \right)\,\sin \left(q_2 \right)\,\sin \left(q_3 \right) \\
-\sigma_5 &= \cos \left(q_4 \right)\,\sin \left(q_1 \right)-\sin \left(q_4 \right)\,\sigma_{10} &\hspace{2.2cm} \sigma_{11} &= \sin \left(q_1 \right)\,\sin \left(q_2 \right)\,\sin \left(q_3 \right)-\cos \left(q_2 \right)\,\cos \left(q_3 \right)\,\sin \left(q_1 \right) \\
-\sigma_6 &= \sin \left(q_1 \right)\,\sin \left(q_4 \right)+\cos \left(q_4 \right)\,\sigma_{10} &\hspace{2.2cm}
-\end{aligned}
-$}
-\end{matlabsymbolicoutput}
-\newpage
 \begin{par}
 \begin{flushleft}
 Per visualizzare una configurazione specifica del robot sono necessari dei valori numerici. Si sostituiscono ora le variabili simboliche (angoli di giunto e parametri geometrici) con valori numerici.
@@ -336,6 +320,8 @@ a_2  & a_3  & d_4  & d_6  & q_1  & q_2  & q_3  & q_4  & q_5  & q_6
 \end{array}\right)$
 \end{matlabsymbolicoutput}
 
+\newpage
+
 \begin{matlabcode}
 % Valori Numerici Da Sostituire
 value = [0.4, 0.3, 0.25, 0.15, pi/6, pi/4, -pi/3, pi/6, pi/4, pi/3];
@@ -352,6 +338,19 @@ for i = 1:n
     fprintf('Matrice ^(%d)A_(%d) numerica:\n', i-1, i);
     disp(A_Num(:,:,i));
 end
+
+% Calcolo e Stampa Matrice Numerica Totale, Posizione e Rotazione
+T06_Num = double(subs(T06, symsList, value));
+fprintf('Matrice Di Trasformazione Omogenea Totale ^{0}T_{6} Numerica:\n');
+disp(T06_Num);
+
+p06_Num = T06_Num(1:3, 4);
+fprintf('Vettore Posizione ^{0}p_{6} Numerico:\n');
+disp(p06_Num);
+
+R06_Num = T06_Num(1:3, 1:3);
+fprintf('Matrice Di Rotazione ^{0}R_{6} Numerica:\n');
+disp(R06_Num);
 \end{matlabcode}
 \begin{matlaboutput}
 Matrice ^(0)A_(1) numerica:
@@ -423,11 +422,11 @@ end
 h_link = plot3(positions(:,1), positions(:,2), positions(:,3), '-',  'Color', [0.25 0.25 0.25], 'LineWidth', 2.5);
 
 % 3. Evidenziazione Giunti Meccanici ed End-Effector
-h_base = plot3(positions(1,1), positions(1,2), positions(1,3), 's',
+h_base = plot3(positions(1,1), positions(1,2), positions(1,3), 's', ...
     'MarkerSize', 8, 'MarkerFaceColor', [0.4 0.4 0.4], 'MarkerEdgeColor', 'k');
-h_joints = plot3(positions(2:end-1,1), positions(2:end-1,2), positions(2:end-1,3), 'o',
+h_joints = plot3(positions(2:end-1,1), positions(2:end-1,2), positions(2:end-1,3), 'o', ...
     'MarkerSize', 6, 'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'k');
-h_ee = plot3(positions(end,1), positions(end,2), positions(end,3), 'p',
+h_ee = plot3(positions(end,1), positions(end,2), positions(end,3), 'p', ...
     'MarkerSize', 10, 'MarkerFaceColor', [0.95 0.75 0.1], 'MarkerEdgeColor', 'k');
 
 % 4. Disegno delle Terne di Riferimento DH (X=Rosso, Y=Verde, Z=Blu)
@@ -440,11 +439,11 @@ for i = 1:(n+1)
     p = positions(i, :);
     R = R_all(:, :, i);
 
-    qx = quiver3(p(1), p(2), p(3), R(1,1)*arrow_scale, R(2,1)*arrow_scale, R(3,1)*arrow_scale, 0,
+    qx = quiver3(p(1), p(2), p(3), R(1,1)*arrow_scale, R(2,1)*arrow_scale, R(3,1)*arrow_scale, 0, ...
         'Color', col_X, 'LineWidth', 1.8, 'MaxHeadSize', 0.35);
-    qy = quiver3(p(1), p(2), p(3), R(1,2)*arrow_scale, R(2,2)*arrow_scale, R(3,2)*arrow_scale, 0,
+    qy = quiver3(p(1), p(2), p(3), R(1,2)*arrow_scale, R(2,2)*arrow_scale, R(3,2)*arrow_scale, 0, ...
         'Color', col_Y, 'LineWidth', 1.8, 'MaxHeadSize', 0.35);
-    qz = quiver3(p(1), p(2), p(3), R(1,3)*arrow_scale, R(2,3)*arrow_scale, R(3,3)*arrow_scale, 0,
+    qz = quiver3(p(1), p(2), p(3), R(1,3)*arrow_scale, R(2,3)*arrow_scale, R(3,3)*arrow_scale, 0, ...
         'Color', col_Z, 'LineWidth', 1.8, 'MaxHeadSize', 0.35);
     if i == 1
         h_axes(1) = qx;
@@ -466,8 +465,12 @@ for i = 1:(n+1)
     visited(coincident_idx) = true;
     combined_label = strjoin(labels(coincident_idx), ' / ');
     p = positions(i, :);
-    text(p(1), p(2), p(3) + 0.18*arrow_scale, sprintf(' %s', combined_label),
-        'FontSize', 9, 'FontWeight', 'bold',
+    z_offset = 0.18*arrow_scale;
+    if any(coincident_idx == 4)
+        z_offset = -0.25*arrow_scale;
+    end
+    text(p(1), p(2), p(3) + z_offset, sprintf(' %s', combined_label), ...
+        'FontSize', 9, 'FontWeight', 'bold', ...
         'BackgroundColor', [1 1 1], 'EdgeColor', [0.8 0.8 0.8], 'Margin', 1);
 end
 
@@ -483,8 +486,8 @@ ylim([min_xyz(2) - margin, max_xyz(2) + margin]);
 zlim([min_xyz(3) - margin, max_xyz(3) + margin]);
 
 % 7. Legenda e Titolo
-legend([h_axes(1), h_axes(2), h_axes(3), h_link, h_ee],
-    {'Asse X', 'Asse Y', 'Asse Z', 'Bracci (Link)', 'End-Effector'},
+legend([h_axes(1), h_axes(2), h_axes(3), h_link, h_base, h_joints, h_ee], ...
+    {'Asse X', 'Asse Y', 'Asse Z', 'Bracci (Link)', 'Base', 'Giunti', 'End-Effector'}, ...
     'Location', 'bestoutside');
 title(fig_name, 'FontSize', 12, 'FontWeight', 'bold');
 hold off;

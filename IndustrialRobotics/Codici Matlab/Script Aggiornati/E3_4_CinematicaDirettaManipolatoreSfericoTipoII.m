@@ -30,7 +30,7 @@ T03 = simplify(T03);
 
 fprintf('Matrice Di Trasformazione Omogenea ^(0)T_(3):\n');
 disp(T03);
-%[text] Dalla matrice totale $^0 T_n$ si può estrarre la sottomatrice di rotazione $3\\times 3$ e il vettore di posizione $3\\times 1$
+%[text] Dalla matrice totale $^0 T_n$ si può estrarre la sottomatrice di rotazione $3\\times 3$ e il vettore di posizione $3\\times 1$.
 % Matrice Di Rotazione R03
 R03 = T03(1:3, 1:3);
 R03 = simplify(R03);
@@ -43,7 +43,7 @@ fprintf('Vettore Posizione p03:\n');
 disp(p03);
 %[text] Per visualizzare una configurazione specifica del robot sono necessari dei valori numerici. Si sostituiscono ora le variabili simboliche (angoli di giunto e parametri geometrici) con valori numerici.
 % Lista Variabili Simboliche Da Sostituire
-symsList = symvar(A_matrices);
+symsList = [d2, q1, q2, q3];
 disp('Variabili Simboliche:');
 disp(symsList);
 % Lista Valori Numerici Corrispondenti
@@ -154,8 +154,8 @@ ylim([min_xyz(2) - margin, max_xyz(2) + margin]);
 zlim([min_xyz(3) - margin, max_xyz(3) + margin]);
 
 % 7. Legenda e Titolo
-legend([h_axes(1), h_axes(2), h_axes(3), h_link, h_ee], ...
-    {'Asse X', 'Asse Y', 'Asse Z', 'Bracci (Link)', 'End-Effector'}, ...
+legend([h_axes(1), h_axes(2), h_axes(3), h_link, h_base, h_joints, h_ee], ...
+    {'Asse X', 'Asse Y', 'Asse Z', 'Bracci (Link)', 'Base', 'Giunti', 'End-Effector'}, ...
     'Location', 'bestoutside');
 title(fig_name, 'FontSize', 12, 'FontWeight', 'bold');
 hold off;

@@ -7,12 +7,12 @@ clc; clear; close all;
 syms q1 q2 q3 q4 q5 q6 d2 d6 real;
 
 % Tabella Parametri Denavit-Hartenberg (DH)
-DH_table = [q1, 0, -pi/2, 0;    % Frame 0
-            q2, d2, pi/2, 0;    % Frame 1
-            0, q3, 0, 0;        % Frame 2
-            q4, 0, -pi/2, 0;    % Frame 3
-            q5, 0, pi/2, 0;     % Frame 4
-            q6, d6, 0, 0];      % Frame 5
+DH_table = [q1, 0, -pi/2, 0;    % Giunto 1 (0 -> 1)
+            q2, d2, pi/2, 0;    % Giunto 2 (1 -> 2)
+            0, q3, 0, 0;        % Giunto 3 (2 -> 3)
+            q4, 0, -pi/2, 0;    % Giunto 4 (3 -> 4)
+            q5, 0, pi/2, 0;     % Giunto 5 (4 -> 5)
+            q6, d6, 0, 0];      % Giunto 6 (5 -> 6)
 
 % Numero Giunti Manipolatore
 n = size(DH_table, 1);
@@ -64,6 +64,22 @@ for i = 1:n
     fprintf('Matrice ^(%d)A_(%d) numerica:\n', i-1, i);
     disp(A_Num(:,:,i));
 end
+
+% Calcolo e Stampa Posa Numerica Finale
+T06_Num = eye(4);
+for i = 1:n
+    T06_Num = T06_Num * A_Num(:,:,i);
+end
+fprintf('Matrice Di Trasformazione Omogenea ^{0}T_(6) numerica:\n');
+disp(T06_Num);
+
+p06_Num = T06_Num(1:3, 4);
+fprintf('Vettore Posizione p06 numerico:\n');
+disp(p06_Num);
+
+R06_Num = T06_Num(1:3, 1:3);
+fprintf('Matrice Rotazione R06 numerica:\n');
+disp(R06_Num);
 %%
 %[text] ## Visualizzazione Grafica Manipolatore Di Stanford
 fig_name    = 'Configurazione Manipolatore di Stanford';
@@ -159,8 +175,8 @@ ylim([min_xyz(2) - margin, max_xyz(2) + margin]);
 zlim([min_xyz(3) - margin, max_xyz(3) + margin]);
 
 % 7. Legenda e Titolo
-legend([h_axes(1), h_axes(2), h_axes(3), h_link, h_ee], ...
-    {'Asse X', 'Asse Y', 'Asse Z', 'Bracci (Link)', 'End-Effector'}, ...
+legend([h_axes(1), h_axes(2), h_axes(3), h_link, h_base, h_joints, h_ee], ...
+    {'Asse X', 'Asse Y', 'Asse Z', 'Bracci (Link)', 'Base', 'Giunti', 'End-Effector'}, ...
     'Location', 'bestoutside');
 title(fig_name, 'FontSize', 12, 'FontWeight', 'bold');
 hold off;

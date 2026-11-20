@@ -119,7 +119,7 @@
 \hypersetup{
     hidelinks,
     pdfauthor={Francesco Lo Verde},
-    pdftitle={Cinematica Diretta Manipolatore Antrompomorfo - Configurazione Orizzontale}
+    pdftitle={Cinematica Diretta Manipolatore Antropomorfo - Configurazione Orizzontale}
 }
 
 % BB SEGNALIBRI AVANZATI
@@ -139,7 +139,7 @@
 \subsection*{Cinematica Diretta Completa Del Manipolatore Antropomorfo}
 
 \begin{matlabcode}
-T06 = simplify(T06);
+T06 = simplify(T06, 'Steps', 50);
 
 fprintf('Matrice Di Trasformazione Omogenea Totale ^(0)T_(6):\n');
 disp(T06);
