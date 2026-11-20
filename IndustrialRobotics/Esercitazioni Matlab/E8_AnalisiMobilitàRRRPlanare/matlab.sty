@@ -82,8 +82,8 @@
 }
 
 % Ambiente matlabcode basato su listings + mdframed
-\lstnewenvironment{matlabcode}{
-    \lstset{style=MatlabStyle}
+\lstnewenvironment{matlabcode}[1][]{
+    \lstset{style=MatlabStyle, #1}
 }{}
 \surroundwithmdframed[style=matlabcode]{matlabcode}
 

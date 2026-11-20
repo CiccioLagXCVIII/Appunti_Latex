@@ -285,10 +285,16 @@ disp(z1);
 \end{matlabcode}
 \begin{matlaboutput}
 Vettore z1:
-    0
-    0
-    d1
 \end{matlaboutput}
+\begin{matlabsymbolicoutput}
+$
+\begin{pmatrix}
+    0\\
+    0\\
+    1
+\end{pmatrix}
+$
+\end{matlabsymbolicoutput}
 \newpage
 \begin{matlabcode}
 p01 = T01(1:3,4);
@@ -315,11 +321,13 @@ disp(z2);
 Vettore z2:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-\hskip1em $\displaystyle \left(\begin{array}{c}
-0\\
-0\\
-1
-\end{array}\right)$
+$
+\begin{pmatrix}
+    0\\
+    0\\
+    1
+\end{pmatrix}
+$
 \end{matlabsymbolicoutput}
 \begin{matlabcode}
 p0e = T02(1:3,4);
@@ -476,10 +484,12 @@ disp(solDetJr_2);
 Valori Per Cui Determinante Jacobiano Nullo:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
-$\displaystyle \left(\begin{array}{c}
+$\displaystyle
+\begin{matrix}
 0\\
 \pi
-\end{array}\right)$
+\end{matrix}
+$
 \end{matlabsymbolicoutput}
 \begin{par}
 \begin{flushleft}

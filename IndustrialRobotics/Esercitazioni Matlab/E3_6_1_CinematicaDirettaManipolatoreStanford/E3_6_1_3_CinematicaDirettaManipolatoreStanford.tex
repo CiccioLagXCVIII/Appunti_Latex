@@ -1,0 +1,178 @@
+%!TEX program = xelatex
+% ==============================================================================
+% AA CONFIGURAZIONE DI BASE ED ENGINE
+% ==============================================================================
+% BB CLASSE DEL DOCUMENTO
+\documentclass[11pt, a4paper]{article}
+
+% ==============================================================================
+% AA LINGUA, FONT E TIPOGRAFIA
+% ==============================================================================
+% BB GESTIONE FONT XELATEX
+\usepackage{fontspec}
+\setmainfont{Latin Modern Roman}
+
+% BB LOCALIZZAZIONE LINGUISTICA
+\usepackage[italian]{babel}
+
+% BB TIPOGRAFIA E MICRO-ESTENSIONI
+\usepackage[protrusion=true]{microtype}
+\raggedbottom
+
+% ==============================================================================
+% AA LAYOUT DI PAGINA E SPAZIATURA PARAGRAFI
+% ==============================================================================
+% BB GEOMETRIA DEI MARGINI (A4 verticale con margine sinistro 2.4cm per rilegatura)
+\usepackage[left=2.4cm, right=1.6cm, top=2cm, bottom=2cm]{geometry}
+
+% BB CONTROLLO SPAZIATURA TRA PARAGRAFI
+\usepackage[skip=3pt plus 1pt minus 1pt]{parskip}
+
+% ==============================================================================
+% AA MOTORE DEI COLORI E MACRO LOCALI
+% ==============================================================================
+% BB CARICAMENTO CORE XCOLOR IN SPAZIO GRAY PURO
+\usepackage[gray]{xcolor}
+% BB MACRO PER I SIGMA MONOCROMATICI ED ESTENSIONE RIGHE
+\newcommand{\sigone}{\symbf{\sigma}_1}
+\newcommand{\sigtwo}{\symbf{\sigma}_2}
+\newcommand{\sigthree}{\symbf{\sigma}_3}
+\newcommand{\sigfour}{\symbf{\sigma}_4}
+\newcommand{\sigfive}{\symbf{\sigma}_5}
+\newcommand{\sigsix}{\symbf{\sigma}_6}
+\newcommand{\sigseven}{\symbf{\sigma}_7}
+\renewcommand{\arraystretch}{1.3}
+
+% ==============================================================================
+% AA MATEMATICA E SIMBOLI SCIENTIFICI
+% ==============================================================================
+% BB PACCHETTI MATEMATICI UNICODE
+\usepackage{mathtools}
+\usepackage[warnings-off={mathtools-overbracket,mathtools-colon}]{unicode-math}
+\setmathfont{Latin Modern Math}
+
+% BB METRICHE MATRICI E FORMULE DISPLAY
+\setlength{\arraycolsep}{10pt}
+\setlength{\abovedisplayskip}{3pt plus 1pt minus 1pt}
+\setlength{\belowdisplayskip}{3pt plus 1pt minus 1pt}
+\setlength{\abovedisplayshortskip}{0pt plus 1pt}
+\setlength{\belowdisplayshortskip}{2pt plus 1pt minus 1pt}
+\allowdisplaybreaks
+
+% ==============================================================================
+% AA GRAFICA ED ELEMENTI FLOTTANTI
+% ==============================================================================
+% BB MOTORE DI INCLUSIONE GRAFICA E GESTIONE RIGIDA
+\usepackage{graphicx}
+\usepackage{float}
+
+% ==============================================================================
+% AA TITOLI E STRUTTURA DEL DOCUMENTO (MONOCROMATICI NERI)
+% ==============================================================================
+% BB PACCHETTO TITLESEC
+\usepackage{titlesec}
+
+% BB FORMATTAZIONE TIPOGRAFICA (TITOLI NERI)
+\titleformat{\section}{\normalfont\Large\bfseries}{\thesection}{1em}{}
+\titleformat{name=\section,numberless}{\normalfont\Large\bfseries}{}{0pt}{}
+\titleformat{\subsection}{\normalfont\large\bfseries}{\thesubsection}{1em}{}
+\titleformat{name=\subsection,numberless}{\normalfont\large\bfseries}{}{0pt}{}
+\titleformat{\subsubsection}{\normalfont\normalsize\bfseries}{\thesubsubsection}{1em}{}
+\titleformat{name=\subsubsection,numberless}{\normalfont\normalsize\bfseries}{}{0pt}{}
+
+% BB SPAZIATURA VERTICALE DEI TITOLI
+\titlespacing*{\section}{0pt}{1.2ex plus 0.4ex minus 0.2ex}{0.6ex plus 0.2ex}
+\titlespacing*{\subsection}{0pt}{1ex plus 0.3ex minus 0.2ex}{0.5ex plus 0.2ex}
+\titlespacing*{\subsubsection}{0pt}{0.8ex plus 0.2ex minus 0.1ex}{0.4ex plus 0.1ex}
+
+% ==============================================================================
+% AA INTEGRAZIONE AMBIENTE MATLAB
+% ==============================================================================
+% BB CARICAMENTO PACCHETTO MATLAB
+\usepackage{matlab}
+
+% BB ATTIVAZIONE SEGNALIBRI E INDICE MATLAB
+\matlabmultipletitles
+\matlabhastoc
+
+% BB PERSONALIZZAZIONE BOX CODICE SORGENTE (Margini compatti per pagina orizzontale singola)
+\mdfdefinestyle{matlabcode}{%
+  topline=false,
+  bottomline=false,
+  rightline=false,
+  leftline=true,
+  linewidth=2.5pt,
+  linecolor=codeframe,
+  backgroundcolor=codebg,
+  innertopmargin=3pt,
+  innerbottommargin=3pt,
+  innerleftmargin=7pt,
+  innerrightmargin=6pt,
+  skipabove=2pt,
+  skipbelow=2pt
+}
+
+% ==============================================================================
+% AA IPERTESTO, SEGNALIBRI ED ELENCHI
+% ==============================================================================
+% BB CONFIGURAZIONE HYPERREF E METADATI PDF
+\hypersetup{
+    hidelinks,
+    pdfauthor={Francesco Lo Verde},
+    pdftitle={Cinematica Diretta Manipolatore Antrompomorfo - Configurazione Orizzontale}
+}
+
+% BB SEGNALIBRI AVANZATI
+\usepackage{bookmark}
+
+% BB FORMATTAZIONE ELENCHI PUNTATI E NUMERATI
+\usepackage{enumitem}
+\setlist{itemsep=3.5pt plus 1pt minus 1pt, topsep=4pt plus 1pt minus 1pt, partopsep=0pt, parsep=1pt}
+
+\newsavebox{\rotpagebox}
+
+\begin{document}
+\thispagestyle{empty}
+\begin{lrbox}{\rotpagebox}
+\begin{minipage}[t][\textwidth][t]{\textheight}
+\vspace{0pt}
+\subsection*{Cinematica Diretta Completa Del Manipolatore Di Stanford}
+
+\begin{matlabcode}
+R06 = simplify(R06);
+fprintf('Matrice Rotazione R06:\n');
+disp(R06);
+\end{matlabcode}
+\begin{matlaboutput}
+Matrice Rotazione R06:
+\end{matlaboutput}
+
+\vspace{10pt}
+\begin{matlabsymbolicoutput}
+\renewcommand{\arraystretch}{1.85}
+\setlength{\arraycolsep}{7pt}
+\resizebox{\linewidth}{!}{$\displaystyle
+{}^{0}\mathbf{R}_{6}(\mathbf{q}) =
+\begin{pmatrix}
+    -s\left(q_1 \right)\,\sigma_4 -c\left(q_1 \right)\,c\left(q_2 \right)\,\sigma_1 -c\left(q_1 \right)\,c\left(q_6 \right)\,s\left(q_2 \right)\,s\left(q_5 \right) & c\left(q_1 \right)\,s\left(q_2 \right)\,s\left(q_5 \right)\,s\left(q_6 \right)-c\left(q_1 \right)\,c\left(q_2 \right)\,\sigma_2 -s\left(q_1 \right)\,\sigma_3 & c\left(q_1 \right)\,c\left(q_5 \right)\,s\left(q_2 \right)-s\left(q_1 \right)\,s\left(q_4 \right)\,s\left(q_5 \right)+c\left(q_1 \right)\,c\left(q_2 \right)\,c\left(q_4 \right)\,s\left(q_5 \right)\\
+    c\left(q_1 \right)\,\sigma_4 -c\left(q_2 \right)\,s\left(q_1 \right)\,\sigma_1 -c\left(q_6 \right)\,s\left(q_1 \right)\,s\left(q_2 \right)\,s\left(q_5 \right) & c\left(q_1 \right)\,\sigma_3 -c\left(q_2 \right)\,s\left(q_1 \right)\,\sigma_2 +s\left(q_1 \right)\,s\left(q_2 \right)\,s\left(q_5 \right)\,s\left(q_6 \right) & c\left(q_5 \right)\,s\left(q_1 \right)\,s\left(q_2 \right)+c\left(q_1 \right)\,s\left(q_4 \right)\,s\left(q_5 \right)+c\left(q_2 \right)\,c\left(q_4 \right)\,s\left(q_1 \right)\,s\left(q_5 \right)\\
+    s\left(q_2 \right)\,\sigma_1 -c\left(q_2 \right)\,c\left(q_6 \right)\,s\left(q_5 \right) & s\left(q_2 \right)\,\sigma_2 +c\left(q_2 \right)\,s\left(q_5 \right)\,s\left(q_6 \right) & c\left(q_2 \right)\,c\left(q_5 \right)-c\left(q_4 \right)\,s\left(q_2 \right)\,s\left(q_5 \right)
+\end{pmatrix}
+$}
+
+\vspace{0.5em}
+\noindent Dove:
+\vspace{-0.5em}
+
+\[
+\begin{aligned}
+\sigma_1 &= s\left(q_4 \right)\,s\left(q_6 \right)-c\left(q_4 \right)\,c\left(q_5 \right)\,c\left(q_6 \right) &\qquad \sigma_3 &= c\left(q_4 \right)\,c\left(q_6 \right)-c\left(q_5 \right)\,s\left(q_4 \right)\,s\left(q_6 \right) \\[3pt]
+\sigma_2 &= c\left(q_6 \right)\,s\left(q_4 \right)+c\left(q_4 \right)\,c\left(q_5 \right)\,s\left(q_6 \right) &\qquad \sigma_4 &= c\left(q_4 \right)\,s\left(q_6 \right)+c\left(q_5 \right)\,c\left(q_6 \right)\,s\left(q_4 \right)
+\end{aligned}
+\]
+\end{matlabsymbolicoutput}
+\end{minipage}
+
+\end{lrbox}
+\noindent\rotatebox{90}{\usebox{\rotpagebox}}
+\end{document}

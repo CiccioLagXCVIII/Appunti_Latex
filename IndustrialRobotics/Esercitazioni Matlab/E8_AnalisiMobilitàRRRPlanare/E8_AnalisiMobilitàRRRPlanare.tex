@@ -275,7 +275,7 @@ $\displaystyle \left(\begin{array}{ccc}
 \end{array}\right)$%
 }
 \end{matlabsymbolicoutput}
-\begin{matlabcode}
+\begin{matlabcode}[basicstyle=\ttfamily\scriptsize\color{black}, xrightmargin=-0.25cm]
 fprintf('Verifica coincidenza J_r == d r / d q: %d\n', isequal(simplify(J_r - J_r_analitico), sym(zeros(2, 3))));
 \end{matlabcode}
 \begin{matlaboutput}

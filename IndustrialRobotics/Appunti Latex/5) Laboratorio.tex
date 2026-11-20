@@ -1386,9 +1386,9 @@ Dove:
 È la parte interna rotante vincolata meccanicamente alla struttura esterna mediante cuscinetti.\\
 È coassiale allo statore e separata da questo da uno strato di aria di spessore millimetrico, detto \textbf{traferro} (\textit{air gap}). Il rotore è costituito da due componenti principali:
 \begin{itemize}
-    \item \textbf{Pacco Lamellare:} È il corpo cilindrico fissato sull'albero del rotore, formato da sottili lamine di acciaio al silicio, con spessore compreso tra $0.35\,\si{\milli\meter}$ e $0.5\,\si{\milli\meter}$, isolate elettricamente tra loro mediante strati di vernice o ossido e impilate a formare un cilidro coassiale all'albero. Questa struttura riduce le correnti parassite, limitando le perdite energetiche e il surriscaldamento del rotore.
+    \item \textbf{Pacco Lamellare:} È il corpo cilindrico fissato sull'albero del rotore, formato da sottili lamine di materiale ferromagnetico, con spessore compreso tra $0.35\,\si{\milli\meter}$ e $0.5\,\si{\milli\meter}$, isolate elettricamente tra loro mediante strati di vernice o ossido e impilate a formare un cilidro coassiale all'albero. Questa struttura riduce le correnti parassite, limitando le perdite energetiche e il surriscaldamento del rotore.
 
-    \item \textbf{Avvolgimento D'Indotto:} È formato da bobine in rame alloggiate nelle scanalature longitudinali, chiamate \textbf{cave}, ricavate sulla superficie esterna del pacco lamellare. Le bobine sono percorse dalla corrente di armatura $I_a$ che interagendo con il campo magnetico generato dallo statore, produce la forza elettromagnetica responsabile della coppia motrice del rotore.
+    \item \textbf{Avvolgimento D'Indotto:} È formato da bobine in rame alloggiate nelle scanalature longitudinali (parallele all'asse dell'albero), chiamate \textbf{cave}, ricavate sulla superficie esterna del pacco lamellare. Le bobine sono percorse dalla corrente di armatura $I_a$ che interagendo con il campo magnetico generato dallo statore, produce la forza elettromagnetica responsabile della coppia motrice del rotore.
 \end{itemize}
 % Immagine Chiarificativa Di Questa Struttura: IndustrialRobotics\Appunti Latex\Images\Lab\Spiegazione Visiva Rotore Brushless DC.png
 \begin{figure}[H]
@@ -1531,25 +1531,25 @@ Consideriamo una singola spira rettangolare del rotore, con lati attivi di lungh
             node[above left=1pt, font=\bfseries] {$\bm{F}$};
 
     \end{tikzpicture}
-    \caption{Rappresentazione schematica delle forze agenti sui due lati attivi della spira.}
+    \caption{Vista Frontale Schematica Schematica Forze Sulla Spira}
 \end{figure}
 \newpage
-Applicando il prodotto vettoriale, le forze di Lorentz risultano opposte tra loro e tangenti alla traiettoria circolare. Entrambe producono un momento nello stesso verso rispetto all'asse di rotazione e di consenguenza, la \textbf{coppia totale} generata dalla spira è:
+Applicando il prodotto vettoriale, le forze di Lorentz sui due lati attivi risultano uguali in modulo, opposte in verso e perpendicolari al campo magnetico \(\mathbf{B}\). Entrambe producono un momento nello stesso verso rispetto all'asse di rotazione e, di conseguenza, la \textbf{coppia totale} generata dalla spira è:
 \[
-    \tau(\theta) = 2rF\sin(\theta)
+    \tau(\alpha) = 2rF\sin(\alpha)
 \]
 Sostituendo \(F = I_a L B\), si ottiene:
 \[
-    \boxed{\tau(\theta) = 2r I_a L B \sin(\theta)}
+    \boxed{\tau(\alpha) = 2r I_a L B \sin(\alpha)}
 \]
-dove \(\alpha\) è l'angolo tra la direzione della corrente e quella del campo magnetico. Il fattore \(\sin(\theta)\) descrive la variazione del braccio delle forze durante la rotazione. In particolare:
+dove \(\alpha\) è l'angolo tra la direzione del raggio \(r\) e la forza \(F\). Il fattore \(\sin(\alpha)\) descrive la variazione del braccio delle forze durante la rotazione. In particolare:
 \begin{itemize}
-    \item \textbf{Coppia Massima (\(\theta = 90^\circ\)):} Il braccio delle forze è massimo e vale \(r\).
-    \item \textbf{Coppia Nulla (\(\theta = 0^\circ\)):} Il braccio è nullo e le forze non generano un momento risultante attorno all'asse.
+    \item \textbf{Coppia Massima (\(\alpha = 90^\circ\)):} Le forze sono tangenti alla traiettoria circolare e il loro braccio è massimo, pari a \(r\).
+    \item \textbf{Coppia Nulla (\(\alpha = 0^\circ\) o \(\alpha = 180^\circ\)):} Le forze sono allineate con il raggio, il braccio è nullo e non viene generato alcun momento risultante attorno all'asse.
 \end{itemize}
-Una singola spira alimentata in corrente continua sviluppa quindi una coppia che varia con l'angolo di rotazione e presenta posizioni in cui la coppia è nulla. Se il rotore si arresta esattamente in una di queste posizioni, la sola spira potrebbe non generare una coppia iniziale sufficiente a riavviarlo.
+Una singola spira alimentata (in corrente continua) sviluppa quindi una coppia che varia con l'angolo di rotazione e presenta posizioni in cui la coppia è nulla. Se il rotore si arresta esattamente in una di queste posizioni, la sola spira potrebbe non generare una coppia iniziale sufficiente a riavviarlo.
 
-Nei motori reali tale discontinuità viene superata adottando commutatori a elevato numero di lamelle (tipicamente $12 \div 48$) e facendo in modo che le spazzole alimentino istante per istante soltanto le bobine che transitano nell'intervallo angolare a rendimento massimo ($\theta \approx 90^\circ$). La coppia complessiva $\tau_m$, risultante dalla sovrapposizione di molteplici contributi sfalsati nello spazio, presenta un profilo temporale quasi costante, riducendo al minimo l'ondulazione residua (\textbf{ripple di coppia}).
+Nei motori reali tale discontinuità viene superata adottando commutatori a elevato numero di lamelle (tipicamente \(12 \div 48\)) e facendo in modo che le spazzole commutino la corrente così da far lavorare le bobine prevalentemente nell'intervallo angolare a rendimento massimo (\(\alpha \approx 90^\circ\)). La coppia complessiva \(\tau_m\), risultante dalla sovrapposizione di molteplici contributi sfalsati nello spazio, presenta un profilo temporale quasi costante, riducendo al minimo l'ondulazione residua (\textbf{ripple di coppia}).
 
 \subsubsection{Forza Contro-Elettromotrice E Bilancio Di Armatura}
 Quando il rotore è in movimento, i conduttori dell'avvolgimento di indotto ruotano all'interno del campo magnetico generato dallo statore. In base alla \textbf{legge di Faraday-Neumann-Lenz}, questo moto relativo con velocità angolare meccanica $\omega_m$ ($\si{\radian\per\second}$) provoca una variazione nel tempo del flusso magnetico concatenato con le bobine, inducendo una tensione interna nei conduttori.
@@ -1712,7 +1712,7 @@ Nel \textbf{Motore Shunt} (O Con Eccitazione In Derivazione) il circuito di ecci
         \end{tikzpicture}%
     }
 \end{figure}
-Al fine di minimizzare la corrente assorbita per la generazione del campo magnetico dello statore, si deve avere che $I_{acc} \ll I_{a}$. Per questo motivo, per gli avvolgimenti, in questo caso, si utilizzano delle spire sottili e quindi che hanno una resistenza $R_{ecc}$ elevata, di conseguenza la corrente di eccitazione, data da $I_{\text{ecc}} = V / R_{\text{ecc}}$ sarà ridotta e produrrà un flusso magnetico costante e privo di oscillazioni.
+Al fine di minimizzare la corrente assorbita per la generazione del campo magnetico dello statore, si deve avere che $I_{ecc} \ll I_{a}$. Per questo motivo, negli avvolgimenti di eccitazione si utilizzano delle spire sottili e quindi avranno una resistenza $R_{ecc}$ elevata, di conseguenza la corrente di eccitazione, data da $I_{\text{ecc}} = V / R_{\text{ecc}}$ sarà ridotta e produrrà un flusso magnetico costante e privo di oscillazioni.
 
 Per ottenere la caratteristica meccanica a regime stazionario, si considera l'equazione alla maglia d'armatura $V = E_a + R_a I_a$. Andando a sostituire l'equazione della corrente ricavata tramite l'equazione della coppia $\tau_{m}$ si ottiene:
 \[
@@ -1723,7 +1723,7 @@ Da cui, si ricava l'\textbf{equazione caratteristica del motore Shunt}
     K_e \Phi \omega_m &= V - \frac{R_a}{K_t \Phi} \tau_m\\
     \omega_m(\tau_m) &= \frac{V}{K_e \Phi} - \frac{R_a}{(K_t \Phi)(K_e \Phi)} \cdot \tau_m
 \end{align*}
-Questa equazione desrive una retta in funzione della coppia $\tau_{m}$ nel piano $(\tau_m, \omega_m)$. Si nota che
+Questa equazione descrive una retta in funzione della coppia $\tau_{m}$ nel piano $(\tau_m, \omega_m)$. Si nota che
 \begin{itemize}
     \item \textbf{Per $\tau_m = 0$:} Si ottiene la \textit{Velocità A Vuoto} che corrisponde alla velocità del motore senza il carico ed è:
     \[
@@ -1805,7 +1805,7 @@ Nel \textbf{Motore In Serie} il circuito di eccitazione e il circuito di armatur
 
 poiché la corrente che scorre in entrambi i circuiti e uguale, si deve fare in modo che la corrente che nel circuito di generazione del campo magnetico non ci siano perdite e che $R_{ecc} \ll R_{a}$ e per questo motivo, le spire degli avvolgimenti dello statore hanno una sezione elevata per ridurre la resistenza
 
-Per polo. il flusso magnetico risulta proporzionale alla corrente e quindi poiché la corrente che scorre in entrambi i circuiti è uguale:
+Il flusso magnetico per polo risulta proporzionale alla corrente e quindi poiché la corrente che scorre in entrambi i circuiti è uguale:
 \[
     \Phi = c_f \cdot I_a
 \]
@@ -1834,7 +1834,7 @@ Isolando il termine dipendente da $\omega_m$:
 \end{align*}
 Per quanto riguarda il primo termine:
 \[
-    \frac{V}{K_e c_f \sqrt{\frac{\tau_m}{K_t c_f}}} = \frac{V}{K_e c_f \frac{\sqrt{\tau_m}}{K_t c_f}} = \frac{V \sqrt{K_t c_f}}{K_e c_f \sqrt{\tau_m}}  = \frac{V \sqrt{K_t} \sqrt{c_f}}{K_e c_f \sqrt{\tau_m}}
+    \frac{V}{K_e c_f \sqrt{\frac{\tau_m}{K_t c_f}}} = \frac{V}{K_e c_f \frac{\sqrt{\tau_m}}{\sqrt{K_t c_f}}} = \frac{V \sqrt{K_t c_f}}{K_e c_f \sqrt{\tau_m}}  = \frac{V \sqrt{K_t} \sqrt{c_f}}{K_e c_f \sqrt{\tau_m}}
 \]
 poiché, in condizioni ideali $K_{t} = K_{e}$ e la radice è uguale ad elevare a $\frac{1}{2}$, si ottiene
 \[
