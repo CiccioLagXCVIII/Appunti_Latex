@@ -1023,11 +1023,9 @@ legend([h_min_g, h_max_l, h_sella], ...
 hold off;
 \end{matlabcode}
 \begin{center}
-\includegraphics[width=1\linewidth]{E9_AlgoritmoNewtonEGradiente_fig2.png}
+\includegraphics[width=0.9\linewidth]{E9_AlgoritmoNewtonEGradiente_fig2.png}
 \end{center}
 
-
-\newpage
 \matlabheadingtwo{Simulazione Numerica Iterativa Dell'Algoritmo Di Newton}
 
 \begin{par}
@@ -1041,26 +1039,24 @@ fprintf('----- Algoritmo Di Newton Iterativo -----');
 % Lunghezze Bracci
 l1_val = 1.0;
 l2_val = 1.0;
-
 % Posa Desiderata
 r_val = [1.0; 1.0];
-
 % Parametri Robot
 T = 0.1;
 k_gain = 5;
 K_num = k_gain * eye(2);
-
 % Creazione Funzioni Simboliche
 fr_fun = matlabFunction(fr_q, 'Vars', {l1, l2, q1, q2});
 J_fun = matlabFunction(J_q, 'Vars', {l1, l2, q1, q2});
-
 % Configurazioni Iniziali (q_0^(1), q_0^(2), q_0^(3))
 q_initial_conditions = [
     pi/4, pi/4;      % Configurazione iniziale q_{0,1}
     0, pi/2;         % Configurazione iniziale q_{0,2}
     -pi/3, pi/6      % Configurazione iniziale q_{0,3}
 ];
-
+\end{matlabcode}
+\newpage
+\begin{matlabcode}
 nrSol = size(q_initial_conditions, 1);
 all_q_newton = cell(nrSol, 1);
 all_err_newton = cell(nrSol, 1);
@@ -1093,13 +1089,12 @@ for i = 1:nrSol
             end
             break;
         end
-
         J_k = J_fun(l1_val, l2_val, q_k(1), q_k(2));
-
         if abs(det(J_k)) < 1e-5
             fprintf('\t Attenzione: Jacobiano Quasi Singolare (det(J) = %.2e). Interruzione.\n', det(J_k));
             break;
         end
+
         % f. Aggiornamento Configurazione Giunti (Formula di Newton)
         % q_{k+1} = q_k + T * J^{-1}(q_k) * K * [r - f_r(q_k)]
         q_k = q_k + T * (J_k \ (K_num * e_k));
@@ -1108,9 +1103,7 @@ for i = 1:nrSol
         num_steps = num_steps + 1;
         q_history(:, num_steps + 1) = q_k;
     end
-\end{matlabcode}
-\newpage
-\begin{matlabcode}
+
     if num_steps == 100 && error_norm >= 1e-6
         fprintf('\t Algoritmo Terminato Per Numero Massimo Iterazioni.\n');
     end
@@ -1131,7 +1124,6 @@ end
 \end{matlabcode}
 \begin{matlaboutput}
 ----- Algoritmo Di Newton Iterativo -----
-
 Configurazione iniziale q_{0,1} = [0.7854, 0.7854]
 	 Convergenza Raggiunta In 20 Iterazioni.
 	 Configurazione finale q_f: [0.0000, 1.5708]
@@ -1178,9 +1170,7 @@ for i = 1:nrSol
         error_norm = norm(e_k);
         num_err = k;
         error_history_grad(k) = error_norm;
-\end{matlabcode}
-\newpage
-\begin{matlabcode}
+
         % Condizione di Arresto per Convergenza
         if error_norm < 1e-6
             if num_steps == 1
@@ -1193,7 +1183,9 @@ for i = 1:nrSol
 
         % Calcolo Jacobiano alla Configurazione Corrente
         J_k = J_fun(l1_val, l2_val, q_k(1), q_k(2));
-
+\end{matlabcode}
+\newpage
+\begin{matlabcode}
         % Robustezza alle Singolarità
         % La trasposta J_k.' esiste sempre, quindi l'algoritmo non fallisce numericamente ma
         % rallenta la convergenza fino a fermarsi se si trova esattamente su un minimo locale.
@@ -1242,7 +1234,7 @@ Configurazione iniziale q_{0,3} = [-1.0472, 0.5236]
 	 Posizione Finale EE [x; y]: [1.0000; 1.0000]
 	 Errore Finale (norma): 9.91e-07
 \end{matlaboutput}
-\newpage
+
 \matlabheadingtwo{Confronto Traiettorie E Velocità Di Convergenza: Newton Contro Gradiente}
 \begin{matlabcode}
 col_red   = [0.85, 0.15, 0.15];
@@ -1257,7 +1249,7 @@ base_minima = [0, pi/2; pi/2, -pi/2];
 V_iter_sym  = subs(V, [l1, l2, rx, ry], [l1_val, l2_val, r_val(1), r_val(2)]);
 V_iter_fun  = matlabFunction(V_iter_sym, 'Vars', {q1, q2});
 \end{matlabcode}
-
+\newpage
 \matlabheadingthree{Grafici Algoritmo Di Newton}
 \begin{matlabcode}
 all_newt_pts = cell2mat(all_q_newton.');
@@ -1308,9 +1300,7 @@ for i = 1:nrSol
          'FontSize', 9, 'FontWeight', 'bold', 'HorizontalAlignment', align_n{i}, ...
          'BackgroundColor', [1, 1, 1], 'EdgeColor', colors_q(i,:), 'Margin', 1.2);
 end
-\end{matlabcode}
-\newpage
-\begin{matlabcode}
+
 xlim(dx_n); ylim(dy_n);
 xticks([-2*pi, -pi, 0, pi]);
 xticklabels({'$-2\pi$', '$-\pi$', '$0$', '$\pi$'});
@@ -1321,7 +1311,9 @@ xlabel('$q_1\;[\mathrm{rad}]$', 'Interpreter', 'latex', 'FontWeight', 'bold');
 ylabel('$q_2\;[\mathrm{rad}]$', 'Interpreter', 'latex', 'FontWeight', 'bold');
 title('Traiettorie Newton su $V(\mathbf{q})$', 'Interpreter', 'latex', 'FontSize', 10.5, 'FontWeight', 'bold');
 hold off;
-
+\end{matlabcode}
+\newpage
+\begin{matlabcode}
 % --- Newton 2: Decadimento Errore (Log-Log) ---
 nexttile;
 hold on; grid on; box on;
