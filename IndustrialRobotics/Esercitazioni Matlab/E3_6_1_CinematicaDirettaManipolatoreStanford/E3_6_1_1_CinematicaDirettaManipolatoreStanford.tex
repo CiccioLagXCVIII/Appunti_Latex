@@ -412,13 +412,13 @@ for i = 1:n
     positions(i+1, :) = T_cumulative(1:3, 4).';
     R_all(:, :, i+1)  = T_cumulative(1:3, 1:3);
 end
-
-% 2. Disegno bracci
-h_link = plot3(positions(:,1), positions(:,2), positions(:,3), '-', 'Color', [0.25 0.25 0.25], ...
-    'LineWidth', 2.5);
 \end{matlabcode}
 \newpage
 \begin{matlabcode}
+% 2. Disegno bracci
+h_link = plot3(positions(:,1), positions(:,2), positions(:,3), '-', 'Color', [0.25 0.25 0.25], ...
+    'LineWidth', 2.5);
+
 % 3. Evidenziazione giunti meccanici ed end-effector
 h_base = plot3(positions(1,1), positions(1,2), positions(1,3), 's', ...
     'MarkerSize', 8, 'MarkerFaceColor', [0.4 0.4 0.4], 'MarkerEdgeColor', 'k');
@@ -476,7 +476,9 @@ margin = 0.15 * span;
 xlim([min_xyz(1) - margin, max_xyz(1) + margin]);
 ylim([min_xyz(2) - margin, max_xyz(2) + margin]);
 zlim([min_xyz(3) - margin, max_xyz(3) + margin]);
-
+\end{matlabcode}
+\newpage
+\begin{matlabcode}
 % 7. Legenda e titolo
 legend([h_axes(1), h_axes(2), h_axes(3), h_link, h_base, h_joints, h_ee], ...
     {'Asse X', 'Asse Y', 'Asse Z', 'Bracci (link)', 'Base', 'Giunti', 'End-effector'}, ...
