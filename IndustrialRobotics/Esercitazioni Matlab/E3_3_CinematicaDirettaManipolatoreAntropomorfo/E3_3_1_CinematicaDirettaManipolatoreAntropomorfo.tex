@@ -94,7 +94,7 @@
 \hypersetup{
     hidelinks,
     pdfauthor={Francesco Lo Verde},
-    pdftitle={Cinematica Diretta Manipolatore Antropomorfo}
+    pdftitle={Cinematica diretta manipolatore antropomorfo}
 }
 
 % BB SEGNALIBRI AVANZATI
@@ -106,7 +106,7 @@
 
 \begin{document}
 
-\matlabtitle{Cinematica Diretta Manipolatore Antropomorfo}
+\matlabtitle{Cinematica diretta manipolatore antropomorfo}
 
 \begin{par}
 \begin{flushleft}
@@ -127,16 +127,16 @@ clc;
 clear;
 close all;
 
-% Definizione Variabili Simboliche
+% Definizione variabili simboliche
 syms q1 q2 q3 q4 q5 q6 d4 d6 a2 a3 real;
-% Tabella Parametri Denavit-Hartenberg (DH)
+% Tabella parametri Denavit-Hartenberg (DH)
 DH_table = [q1, 0,  -pi/2, 0;
             q2, 0,   0,    a2;
             q3, 0,  -pi/2, a3;
             q4, d4,  pi/2, 0;
             q5, 0,  -pi/2, 0;
             q6, d6,  0,    0];
-% Numero Giunti Manipolatore
+% Numero giunti manipolatore
 n = size(DH_table, 1);
 \end{matlabcode}
 
@@ -150,12 +150,12 @@ A partire dalla tabella DH, si può calcolare la matrice di trasformazione omoge
 [A_matrices, R_matrices] = Compute_DH_Transformations(DH_table);
 
 for i = 1:n
-    fprintf('Matrice Di Trasformazione Omogenea ^(%d)A_(%d):\n', i-1, i);
+    fprintf('Matrice di trasformazione omogenea ^(%d)A_(%d):\n', i-1, i);
     disp(A_matrices(:,:,i));
 end
 \end{matlabcode}
 \begin{matlaboutput}
-Matrice Di Trasformazione Omogenea ^(0)A_(1):
+Matrice di trasformazione omogenea ^(0)A_(1):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle \left(\begin{array}{cccc}
@@ -166,7 +166,7 @@ Matrice Di Trasformazione Omogenea ^(0)A_(1):
 \end{array}\right)$
 \end{matlabsymbolicoutput}
 \begin{matlaboutput}
-Matrice Di Trasformazione Omogenea ^(1)A_(2):
+Matrice di trasformazione omogenea ^(1)A_(2):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle \left(\begin{array}{cccc}
@@ -177,7 +177,7 @@ Matrice Di Trasformazione Omogenea ^(1)A_(2):
 \end{array}\right)$
 \end{matlabsymbolicoutput}
 \begin{matlaboutput}
-Matrice Di Trasformazione Omogenea ^(2)A_(3):
+Matrice di trasformazione omogenea ^(2)A_(3):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle \left(\begin{array}{cccc}
@@ -189,7 +189,7 @@ Matrice Di Trasformazione Omogenea ^(2)A_(3):
 \end{matlabsymbolicoutput}
 \newpage
 \begin{matlaboutput}
-Matrice Di Trasformazione Omogenea ^(3)A_(4):
+Matrice di trasformazione omogenea ^(3)A_(4):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle \left(\begin{array}{cccc}
@@ -200,7 +200,7 @@ Matrice Di Trasformazione Omogenea ^(3)A_(4):
 \end{array}\right)$
 \end{matlabsymbolicoutput}
 \begin{matlaboutput}
-Matrice Di Trasformazione Omogenea ^(4)A_(5):
+Matrice di trasformazione omogenea ^(4)A_(5):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle \left(\begin{array}{cccc}
@@ -211,7 +211,7 @@ Matrice Di Trasformazione Omogenea ^(4)A_(5):
 \end{array}\right)$
 \end{matlabsymbolicoutput}
 \begin{matlaboutput}
-Matrice Di Trasformazione Omogenea ^(5)A_(6):
+Matrice di trasformazione omogenea ^(5)A_(6):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle \left(\begin{array}{cccc}
@@ -227,7 +227,7 @@ T06 = A_matrices(:,:,1) * A_matrices(:,:,2) * A_matrices(:,:,3) * A_matrices(:,:
 
 \begin{par}
 \begin{flushleft}
-Vedere pagina orizzontale per la matrice di trasformazione omogenea completa ${}^0T_6$.
+Vedere Appendice E3.3.A -- Matrice di trasformazione omogenea completa ${}^{0}T_{6}$.
 \end{flushleft}
 \end{par}
 
@@ -266,7 +266,7 @@ $\displaystyle \left(\begin{array}{cccc}
 
 \begin{par}
 \begin{flushleft}
-La matrice di trasformazione omogenea totale $^0 T_6$ contiene tutte le informazioni sulla posa dell'organo terminale. Da essa possiamo estrarre due elementi chiave:
+La matrice di trasformazione omogenea totale $^0 T_6$ contiene tutte le informazioni sulla posa dell'organo terminale. Da essa si possono estrarre due elementi chiave:
 \end{flushleft}
 \end{par}
 
@@ -277,24 +277,24 @@ La matrice di trasformazione omogenea totale $^0 T_6$ contiene tutte le informaz
 \end{itemize}
 
 \begin{matlabcode}
-% Estrazione Matrice Rotazione
+% Estrazione matrice di rotazione
 R06 = T06(1:3, 1:3);
 \end{matlabcode}
 
 \begin{par}
 \begin{flushleft}
-Vedere pagina orizzontale per la matrice di rotazione ${}^0R_6$.
+Vedere Appendice E3.3.B -- Matrice di rotazione ${}^{0}R_{6}$.
 \end{flushleft}
 \end{par}
 
 \begin{matlabcode}
-% Estrazione Vettore Posizione
+% Estrazione vettore di posizione
 p06 = T06(1:3, 4);
 \end{matlabcode}
 
 \begin{par}
 \begin{flushleft}
-Vedere pagina orizzontale per il vettore di posizione ${}^0p_6$.
+Vedere Appendice E3.3.C -- Vettore di posizione ${}^{0}p_{6}$.
 \end{flushleft}
 \end{par}
 
@@ -305,14 +305,14 @@ Per visualizzare una configurazione specifica del robot sono necessari dei valor
 \end{par}
 
 \begin{matlabcode}
-% Lista Variabili Simboliche
+% Lista variabili simboliche
 symsList = [a2, a3, d4, d6, q1, q2, q3, q4, q5, q6];
-disp('Variabili Simboliche:');
+disp('Variabili simboliche:');
 disp(symsList);
 \end{matlabcode}
 
 \begin{matlaboutput}
-Variabili Simboliche:
+Variabili simboliche:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle \left(\begin{array}{cccccccccc}
@@ -323,7 +323,7 @@ a_2  & a_3  & d_4  & d_6  & q_1  & q_2  & q_3  & q_4  & q_5  & q_6
 \newpage
 
 \begin{matlabcode}
-% Valori Numerici Da Sostituire
+% Valori numerici da sostituire
 value = [0.4, 0.3, 0.25, 0.15, pi/6, pi/4, -pi/3, pi/6, pi/4, pi/3];
 
 % La sostituzione su un array 3D simbolico può essere problematica.
@@ -333,23 +333,23 @@ for i = 1:n
     A_Num(:,:,i) = subs(A_matrices(:,:,i), symsList, value);
 end
 
-% Stampa Matrici Numeriche
+% Stampa matrici numeriche
 for i = 1:n
     fprintf('Matrice ^(%d)A_(%d) numerica:\n', i-1, i);
     disp(A_Num(:,:,i));
 end
 
-% Calcolo e Stampa Matrice Numerica Totale, Posizione e Rotazione
+% Calcolo e stampa matrice numerica totale, posizione e rotazione
 T06_Num = double(subs(T06, symsList, value));
-fprintf('Matrice Di Trasformazione Omogenea Totale ^{0}T_{6} Numerica:\n');
+fprintf('Matrice di trasformazione omogenea totale ^(0)T_(6) numerica:\n');
 disp(T06_Num);
 
 p06_Num = T06_Num(1:3, 4);
-fprintf('Vettore Posizione ^{0}p_{6} Numerico:\n');
+fprintf('Vettore posizione ^(0)p_(6) numerico:\n');
 disp(p06_Num);
 
 R06_Num = T06_Num(1:3, 1:3);
-fprintf('Matrice Di Rotazione ^{0}R_{6} Numerica:\n');
+fprintf('Matrice di rotazione ^(0)R_(6) numerica:\n');
 disp(R06_Num);
 \end{matlabcode}
 \begin{matlaboutput}
@@ -386,13 +386,13 @@ Matrice ^(5)A_(6) numerica:
 \end{matlaboutput}
 
 \newpage
-\matlabheadingtwo{Visualizzazione Grafica Manipolatore Antropomorfo}
+\matlabheadingtwo{Visualizzazione grafica manipolatore antropomorfo}
 
 \begin{matlabcode}
-fig_name    = 'Configurazione Manipolatore Antropomorfo';
+fig_name    = 'Configurazione manipolatore antropomorfo';
 arrow_scale = 0.14;
 view_angles = [150, 20];
-labels      = {'Terna 0 (Base)', 'Terna 1', 'Terna 2', 'Terna 3', 'Terna 4', 'Terna 5', 'Terna 6 (EE)'};
+labels      = {'Terna 0 (base)', 'Terna 1', 'Terna 2', 'Terna 3', 'Terna 4', 'Terna 5', 'Terna 6 (EE)'};
 
 figure('Name', fig_name, 'Color', 'w');
 hold on;
@@ -404,7 +404,7 @@ zlabel('Z [m]', 'FontWeight', 'bold');
 view(view_angles(1), view_angles(2));
 axis equal;
 
-% 1. Calcolo di Tutte le Posizioni e Orientamenti (Base + n Giunti)
+% 1. Calcolo di tutte le posizioni e orientamenti (base + n giunti)
 T_cumulative = eye(4);
 positions = zeros(n+1, 3);
 R_all     = zeros(3, 3, n+1);
@@ -418,10 +418,10 @@ for i = 1:n
     R_all(:, :, i+1)  = T_cumulative(1:3, 1:3);
 end
 
-% 2. Disegno Bracci
+% 2. Disegno bracci
 h_link = plot3(positions(:,1), positions(:,2), positions(:,3), '-',  'Color', [0.25 0.25 0.25], 'LineWidth', 2.5);
 
-% 3. Evidenziazione Giunti Meccanici ed End-Effector
+% 3. Evidenziazione giunti meccanici ed end-effector
 h_base = plot3(positions(1,1), positions(1,2), positions(1,3), 's', ...
     'MarkerSize', 8, 'MarkerFaceColor', [0.4 0.4 0.4], 'MarkerEdgeColor', 'k');
 h_joints = plot3(positions(2:end-1,1), positions(2:end-1,2), positions(2:end-1,3), 'o', ...
@@ -429,7 +429,7 @@ h_joints = plot3(positions(2:end-1,1), positions(2:end-1,2), positions(2:end-1,3
 h_ee = plot3(positions(end,1), positions(end,2), positions(end,3), 'p', ...
     'MarkerSize', 10, 'MarkerFaceColor', [0.95 0.75 0.1], 'MarkerEdgeColor', 'k');
 
-% 4. Disegno delle Terne di Riferimento DH (X=Rosso, Y=Verde, Z=Blu)
+% 4. Disegno delle terne di riferimento DH (X=rosso, Y=verde, Z=blu)
 col_X = [0.85, 0.15, 0.15];
 col_Y = [0.15, 0.65, 0.20];
 col_Z = [0.15, 0.35, 0.85];
@@ -454,7 +454,7 @@ end
 \end{matlabcode}
 \newpage
 \begin{matlabcode}
-% 5. Etichette Origini
+% 5. Etichette origini
 visited = false(n+1, 1);
 for i = 1:(n+1)
     if visited(i)
@@ -474,7 +474,7 @@ for i = 1:(n+1)
         'BackgroundColor', [1 1 1], 'EdgeColor', [0.8 0.8 0.8], 'Margin', 1);
 end
 
-% 6. Margine di Visualizzazione Attorno al Robot
+% 6. Margine di visualizzazione attorno al robot
 all_pts = [positions; positions + arrow_scale; positions - arrow_scale];
 min_xyz = min(all_pts, [], 1);
 max_xyz = max(all_pts, [], 1);
@@ -485,9 +485,9 @@ xlim([min_xyz(1) - margin, max_xyz(1) + margin]);
 ylim([min_xyz(2) - margin, max_xyz(2) + margin]);
 zlim([min_xyz(3) - margin, max_xyz(3) + margin]);
 
-% 7. Legenda e Titolo
+% 7. Legenda e titolo
 legend([h_axes(1), h_axes(2), h_axes(3), h_link, h_base, h_joints, h_ee], ...
-    {'Asse X', 'Asse Y', 'Asse Z', 'Bracci (Link)', 'Base', 'Giunti', 'End-Effector'}, ...
+    {'Asse X', 'Asse Y', 'Asse Z', 'Bracci (link)', 'Base', 'Giunti', 'End-effector'}, ...
     'Location', 'bestoutside');
 title(fig_name, 'FontSize', 12, 'FontWeight', 'bold');
 hold off;

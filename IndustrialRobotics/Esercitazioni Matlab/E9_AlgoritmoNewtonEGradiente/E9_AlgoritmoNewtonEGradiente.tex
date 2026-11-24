@@ -94,7 +94,7 @@
 \hypersetup{
     hidelinks,
     pdfauthor={Francesco Lo Verde},
-    pdftitle={Algoritmo Di Newton E Del Gradiente}
+    pdftitle={Algoritmo di Newton e del gradiente}
 }
 
 % BB SEGNALIBRI AVANZATI
@@ -106,7 +106,7 @@
 
 \begin{document}
 
-\matlabtitle{Inversione Cinematica Con Algoritmo Di Newton E Del Gradiente}
+\matlabtitle{Inversione cinematica con algoritmo di Newton e del gradiente}
 
 \begin{par}
 \begin{flushleft}
@@ -122,36 +122,36 @@ La prima fase consiste nella definizione del modello cinematico del manipolatore
 
 \begin{matlabcode}
 clc; clear; close all;
-% Variabili Di Giunto
+% Variabili di giunto
 syms q1 q2 real;
 
-% Lunghezza Bracci
+% Lunghezza bracci
 syms l1 l2 real;
 
-% Posizione Base Giunto
+% Posizione base giunto
 x0 = 0;
 y0 = 0;
 
-% Calcolo Coordinate Fine Primo Braccio (x1, y1)
+% Calcolo coordinate fine primo braccio (x1, y1)
 x1 = l1 * cos(q1);
 y1 = l1 * sin(q1);
 
-% Calcolo Coordinate End Effector (x2, y2) Rispetto Al Sistema Di Riferimento Base
+% Calcolo coordinate end-effector (x2, y2) rispetto al sistema di riferimento base
 x = x1 + l2 * cos(q1 + q2);
 y = y1 + l2 * sin(q1 + q2);
 
-% Definizione Vettore Colonna fr_q = [x; y]
+% Definizione vettore colonna fr_q = [x; y]
 fr_q = [x; y];
 fr_q = simplify(fr_q);
 
-% Definizione Vettore Variabili Di Giunto
+% Definizione vettore variabili di giunto
 q = [q1; q2];
 
-fprintf('Posizione EE Rispetto Al Riferimento Base [Vettore fr(q)]');
+fprintf('Posizione EE rispetto al riferimento base [vettore fr(q)]');
 disp(fr_q);
 \end{matlabcode}
 \begin{matlaboutput}
-Posizione EE Rispetto Al Riferimento Base [Vettore fr(q)]
+Posizione EE rispetto al riferimento base [vettore fr(q)]
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 $\displaystyle \left(\begin{array}{c}
@@ -167,14 +167,14 @@ Per sviluppare gli algoritmi di cinematica inversa, è fondamentale calcolare la
 \end{par}
 
 \begin{matlabcode}
-% Calcolo Jacobiano Analitico
+% Calcolo Jacobiano analitico
 J_q = jacobian(fr_q, q);
 J_q = simplify(J_q);
-fprintf('\nJacobiano Analitico J(q):\n');
+fprintf('\nJacobiano analitico J(q):\n');
 disp(J_q);
 \end{matlabcode}
 \begin{matlaboutput}
-Jacobiano Analitico J(q):
+Jacobiano analitico J(q):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 $\displaystyle \left(\begin{array}{cc}
@@ -184,7 +184,7 @@ l_2 \,\cos \left(q_1 +q_2 \right)+l_1 \,\cos \left(q_1 \right) & l_2 \,\cos \lef
 \end{matlabsymbolicoutput}
 \begin{matlabcode}
 
-% Definizione simbolica della Posa Desiderata
+% Definizione simbolica della posa desiderata
 syms rx ry real;
 r = [rx; ry];
 \end{matlabcode}
@@ -207,19 +207,19 @@ L'obiettivo è far convergere questo errore a zero.
 \end{par}
 
 \begin{matlabcode}
-% Definizione Vettore Di Errore e(q) = r - fr(q)
+% Definizione vettore di errore e(q) = r - fr(q)
 e_q = r - fr_q;
 
-% Definizione Funzione Di Costo Scalare V(q) (Norma Dell'Errore Al Quadrato)
+% Definizione funzione di costo scalare V(q) (norma dell'errore al quadrato)
 % V = (1/2) * e^T * e, che in MATLAB per vettori reali si traduce in e.' * e
 V = (1/2) * (e_q.' * e_q);
 V = simplify(V);
 
-fprintf('\nFunzione Di Costo V(q):\n');
+fprintf('\nFunzione di costo V(q):\n');
 disp(V);
 \end{matlabcode}
 \begin{matlaboutput}
-Funzione Di Costo V(q):
+Funzione di costo V(q):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 $\displaystyle \frac{{{\left(l_2 \,\cos \left(q_1 +q_2 \right)-\textrm{rx}+l_1 \,\cos \left(q_1 \right)\right)}}^2 }{2}+\frac{{{\left(l_2 \,\sin \left(q_1 +q_2 \right)-\textrm{ry}+l_1 \,\sin \left(q_1 \right)\right)}}^2 }{2}$
@@ -229,7 +229,7 @@ $\displaystyle \frac{{{\left(l_2 \,\cos \left(q_1 +q_2 \right)-\textrm{rx}+l_1 \
 \begin{flushleft}
 Per analizzare il comportamento della funzione di costo $V(q)$, è necessario studiarne i punti stazionari. Questi si trovano dove il gradiente della funzione è nullo. La natura di tali punti (minimi, massimi, selle) è determinata dalla matrice Hessiana.
 
-La Matrice Hessiana di una funzione scalare $V$ è la Jacobiana del suo gradiente, cioè
+La matrice Hessiana di una funzione scalare $V$ è la Jacobiana del suo gradiente, cioè
 \end{flushleft}
 \end{par}
 \[
@@ -241,11 +241,11 @@ La Matrice Hessiana di una funzione scalare $V$ è la Jacobiana del suo gradient
 
 \newpage
 \begin{matlabcode}
-% Calcolo Gradiente V(q)
+% Calcolo gradiente V(q)
 gradV = -J_q.' * e_q;
 gradV = simplify(gradV);
 
-% Calcolo Matrice Hessiana
+% Calcolo matrice Hessiana
 % H_V(i,j) = d^2(V) / (dq_i * dq_j)
 H_V = hessian(V, q);
 H_V = simplify(H_V);
@@ -271,7 +271,7 @@ $%
 Dove $\sigma_1 =l_2 \,\textrm{rx}\,\cos \left(q_1 +q_2 \right)+l_2 \,\textrm{ry}\,\sin \left(q_1 +q_2 \right)$
 \end{matlabsymbolicoutput}
 \begin{matlabcode}
-% Calcolo Jacobiana Gradiente Di V
+% Calcolo Jacobiana gradiente di V
 %H_V_Da_Grad = jacobian(gradV, q);
 \end{matlabcode}
 
@@ -282,12 +282,12 @@ I punti critici si trovano risolvendo l'equazione $\nabla_q V=0$. La loro classi
 \end{par}
 
 \begin{itemize}
-   \item{\begin{flushleft} \textbf{Minimo Locale: }Hessiana definita positiva (autovalori tutti positivi) \end{flushleft}}
-   \item{\begin{flushleft} \textbf{Massimo Locale: }Hessiana definita negativa (autovalori tutti negativi) \end{flushleft}}
-   \item{\begin{flushleft} \textbf{Punto Sella: }Hessiana indefinita (autovalori di segno discorde) \end{flushleft}}
+   \item{\begin{flushleft} \textbf{Minimo locale: }Hessiana definita positiva (autovalori tutti positivi) \end{flushleft}}
+   \item{\begin{flushleft} \textbf{Massimo locale: }Hessiana definita negativa (autovalori tutti negativi) \end{flushleft}}
+   \item{\begin{flushleft} \textbf{Punto di sella: }Hessiana indefinita (autovalori di segno discorde) \end{flushleft}}
 \end{itemize}
 
-\matlabheadingtwo{Formulazione Teorica Dell'Algoritmo Di Newton}
+\matlabheadingtwo{Formulazione teorica dell'algoritmo di Newton}
 
 \begin{par}
 \begin{flushleft}
@@ -341,7 +341,7 @@ La risoluzione dell'equazione $J(q)\cdot \dot{q} =K\cdot e$ per $\dot{q}$ dipend
 
 \begin{par}
 \begin{flushleft}
-\textbf{Caso Non Quadrato:} Se il numero di giunti $n$ è maggiore dei gradi di libertà del task $m$, la Jacobiana non è quadrata e non è invertibile nel senso classico. Si ricorre alla pseudoinversa destra $J^{\#}$ per selezionare la soluzione a norma minima:
+\textbf{Caso non quadrato:} Se il numero di giunti $n$ è maggiore dei gradi di libertà del task $m$, la Jacobiana non è quadrata e non è invertibile nel senso classico. Si ricorre alla pseudoinversa destra $J^{\#}$ per selezionare la soluzione a norma minima:
 \end{flushleft}
 \end{par}
 
@@ -359,7 +359,7 @@ Per il manipolatore RR planare, questo caso non si applica poiché $n=m=2$.
 \newpage
 \begin{par}
 \begin{flushleft}
-\textbf{Caso Quadrato E Non Singolare:} La Jacobiana è una matrice 2x2. Se non è singolare, la pseudoinversa coincide con l'inversa classica ($J^{\#} =J^{-1}$) e la formula è:
+\textbf{Caso quadrato e non singolare:} La Jacobiana è una matrice 2x2. Se non è singolare, la pseudoinversa coincide con l'inversa classica ($J^{\#} =J^{-1}$) e la formula è:
 \end{flushleft}
 \end{par}
 \[
@@ -374,14 +374,14 @@ Poiché l'obiettivo è raggiungere una \textit{\textbf{posa fissa}}, la velocit�
 \begin{matlabcode}
 syms q1_dot q2_dot real;
 q_dot = [q1_dot; q2_dot];
-% Assumendo r Costante (r_dot = 0)
-% Calcolo Derivata Errore
+% Assumendo r costante (r_dot = 0)
+% Calcolo derivata errore
 % e_dot = -J(q) * q_dot
 e_dot = -J_q * q_dot;
-fprintf('Relazione Tra Derivata Errore E Velocità Giunti:');
+fprintf('Relazione tra derivata errore e velocità giunti:');
 \end{matlabcode}
 \begin{matlaboutput}
-Relazione Tra Derivata Errore E Velocità Giunti:
+Relazione tra derivata errore e velocità giunti:
 \end{matlaboutput}
 \begin{matlabcode}
 disp(e_dot);
@@ -394,16 +394,16 @@ q_{\dot{1} } \,{\left(l_2 \,\sin \left(q_1 +q_2 \right)+l_1 \,\sin \left(q_1 \ri
 \end{matlabsymbolicoutput}
 
 \begin{matlabcode}
-% Definizione Matrice Guadagno Esponenziale (Definita Positiva)
-% Scelta Comune: Matrice Diagonale k*I con k > 0
+% Definizione matrice guadagno esponenziale (definita positiva)
+% Scelta comune: matrice diagonale k*I con k > 0
 syms k real;
 K = k * eye(2);
 
 e_dot_Target = - K * e_q;
-fprintf("Errore Desiderato (Target):");
+fprintf("Errore desiderato (target):");
 \end{matlabcode}
 \begin{matlaboutput}
-Errore Desiderato (Target):
+Errore desiderato (target):
 \end{matlaboutput}
 \begin{matlabcode}
 disp(e_dot_Target);
@@ -415,13 +415,13 @@ k\,{\left(l_2 \,\sin \left(q_1 +q_2 \right)-\textrm{ry}+l_1 \,\sin \left(q_1 \ri
 \end{array}\right)$
 \end{matlabsymbolicoutput}
 \begin{matlabcode}
-% Risoluzione Per Velocità Giunto
+% Risoluzione per velocità giunto
 q_dot_eq = J_q \ (K * e_q);
 q_dot_eq = simplify(q_dot_eq);
-fprintf("Equazione Di q_dot (Velocità Giunti)");
+fprintf("Equazione di q_dot (velocità giunti)");
 \end{matlabcode}
 \begin{matlaboutput}
-Equazione Di q_dot (Velocità Giunti)
+Equazione di q_dot (velocità giunti)
 \end{matlaboutput}
 \begin{matlabcode}
 disp(q_dot_eq);
@@ -451,7 +451,7 @@ Il metodo classico di \textbf{Newton-Raphson} si ottiene come caso particolare p
 \end{par}
 
 \newpage
-\matlabheadingtwo{Formulazione Teorica Dell'Algoritmo Del Gradiente}
+\matlabheadingtwo{Formulazione teorica dell'algoritmo del gradiente}
 
 \begin{par}
 \begin{flushleft}
@@ -499,17 +499,17 @@ Discretizzando con passo $T$ e ponendo il \textit{learning rate} $\alpha^{\prime
 \end{par}
 
 \begin{matlabcode}
-% Definizione Guadagno Scalare Positivo
+% Definizione guadagno scalare positivo
 syms alpha
 
-% Velocità Dei Giunti
+% Velocità dei giunti
 q_dot_grad = alpha * J_q.' * e_q;
 q_dot_grad = simplify(q_dot_grad);
 
-fprintf('Equazione Velocità Dei Giunti:');
+fprintf('Equazione velocità dei giunti:');
 \end{matlabcode}
 \begin{matlaboutput}
-Equazione Velocità Dei Giunti:
+Equazione velocità dei giunti:
 \end{matlaboutput}
 \begin{matlabcode}
 disp(q_dot_grad);
@@ -529,22 +529,22 @@ L'analisi della funzione di costo $V(q)$ è fondamentale per comprendere il comp
 
 
 \newpage
-\matlabheadingtwo{Analisi Dei Punti Stazionari Della Funzione Di Costo Quadratica}
+\matlabheadingtwo{Analisi dei punti stazionari della funzione di costo quadratica}
 
 \begin{par}
 \begin{flushleft}
-Le espressioni simboliche derivate in precedenza vengono rese numeriche assegnando valori numerici alle lunghezze dei bracci (\texttt{l1}, \texttt{l2}) e alla posa desiderata dell'end-effector (\texttt{r}). Questo permette di calcolare le posizioni numeriche dei punti critici, e classificare esplicitamente i punti critici calcolando gli autovalori della matrice Hessiana.
+Le espressioni simboliche derivate in precedenza vengono rese numeriche assegnando valori numerici alle lunghezze dei bracci (\texttt{l1}, \texttt{l2}) e alla posa desiderata dell'end-effector (\texttt{r}). Questo permette di calcolare le posizioni numeriche dei punti critici e classificarli calcolando gli autovalori della matrice Hessiana.
 \end{flushleft}
 \end{par}
 
 \begin{matlabcode}
 
-% Definizione Parametri Numerici Manipolatore
+% Definizione parametri numerici manipolatore
 l_val = [1, 0.8];
 r_val = [1.3, 0.5];
 
-% Sostituzione Simbolica
-% V, gradV, H_V Già Calcolati
+% Sostituzione simbolica
+% V, gradV, H_V già calcolati
 % V = (1/2) * (e_q.' * e_q);
 V_val = subs(V, [l1, l2, rx, ry], [l_val(1), l_val(2), r_val(1), r_val(2)]);
 gradV_val = subs(gradV, [l1, l2, rx, ry], [l_val(1), l_val(2), r_val(1), r_val(2)]);
@@ -568,7 +568,7 @@ La risoluzione di questo sistema di equazioni permette di individuare tutte le c
 \end{par}
 
 \begin{matlabcode}
-% Calcolo Punti Critici
+% Calcolo punti critici
 [q1Staz, q2Staz, param, conditions] = solve(gradV_val == [0;0], [q1, q2], "ReturnConditions",true, 'Real',true);
 
 fprintf('Valori q_1:');
@@ -637,13 +637,13 @@ Per quanto riguarda il manipolatore RR planare, questo risultato significa che c
 
 \begin{par}
 \begin{flushleft}
-Le soluzioni simboliche devono essere convertite in un insieme finito di punti numerici per poter procedere con l'analisi. Si effettua una ricerca sistematica assegnando ad \texttt{\textit{l }}e \texttt{\textit{m}}\texttt{ }un range di valori interi e per ogni coppia $(l,m)$, si calcolano i valori numerici. Successivamente, vengono scartate le soluzioni che non sono nell'intervallo $[-\pi ,\pi ]$ ed eventuali duplicati.
+Le soluzioni simboliche devono essere convertite in un insieme finito di punti numerici per poter procedere con l'analisi. Si effettua una ricerca sistematica assegnando ad \texttt{\textit{l }}e \texttt{\textit{m}}\texttt{ }un range di valori interi e, per ogni coppia $(l,m)$, si calcolano i valori numerici. Successivamente, vengono scartate le soluzioni che non sono nell'intervallo $[-\pi ,\pi ]$ ed eventuali duplicati.
 \end{flushleft}
 \end{par}
 
 \begin{matlabcode}
-% Matrice Punti Critici
-% Ogni Riga È (q1, q2)
+% Matrice punti critici
+% Ogni riga è (q1, q2)
 puntiCritici = [];
 
 for i = 1:length(q1Staz)
@@ -659,20 +659,20 @@ for i = 1:length(q1Staz)
     end
 end
 
-% Normalizzazione e Rimozione dei Duplicati
+% Normalizzazione e rimozione dei duplicati
 % Il modo più robusto per normalizzare è atan2(sin(q), cos(q))
 puntiCritici = atan2(sin(puntiCritici), cos(puntiCritici));
 puntiCritici = double(puntiCritici);
 
-% uniquetol Estrae Valori Unici
+% uniquetol estrae valori unici
 puntiCritici = uniquetol(puntiCritici, 1e-6, 'ByRows', true);
 
-fprintf('Punti Critici (q1, q2) In Radianti:\n');
+fprintf('Punti critici (q1, q2) in radianti:\n');
 disp(puntiCritici);
 \end{matlabcode}
 
 \begin{matlaboutput}
-Punti Critici (q1, q2) In Radianti:
+Punti critici (q1, q2) in radianti:
    -2.7744         0
    -2.7744    3.1416
    -0.2323    1.3822
@@ -684,7 +684,7 @@ Punti Critici (q1, q2) In Radianti:
 \begin{par}
 \begin{flushleft}
 Dopo aver calcolato l'insieme dei punti critici unici, il passo successivo consiste nella loro classificazione.
-Come detto prima si analizzano gli autovalori della matrice Hessiana $H_V (q_c )$ valutata in quel punto.
+Come detto prima, si analizzano gli autovalori della matrice Hessiana $H_V (q_c )$ valutata in ciascun punto.
 \end{flushleft}
 \end{par}
 \newpage
@@ -718,7 +718,7 @@ Matrice Hessiana H_V(q):
 for i = 1:size(puntiCritici, 1)
     q1Crit = puntiCritici(i,1);
     q2Crit = puntiCritici(i,2);
-    fprintf('Configurazione Critica (q1, q2) = (%.4f, %.4f)\n', q1Crit, q2Crit);
+    fprintf('Configurazione critica (q1, q2) = (%.4f, %.4f)\n', q1Crit, q2Crit);
 
     H_V_Current = subs(H_V_val, [q1, q2], [q1Crit, q2Crit]);
     H_V_Current = double(H_V_Current);
@@ -728,7 +728,7 @@ for i = 1:size(puntiCritici, 1)
     fprintf('\t Autovalori:\n');
     fprintf('\t %.4f\n', lambda);
 
-    % Calcolo Errore
+    % Calcolo errore
     rx_val = r_val(1);
     ry_val = r_val(2);
     l1_val = l_val(1);
@@ -738,85 +738,85 @@ for i = 1:size(puntiCritici, 1)
     e_q_val = double(e_q_val);
     norm_e_q = norm(e_q_val);
 
-    fprintf('\t Vettore Errore e = r - fr_q:\n');
+    fprintf('\t Vettore errore e = r - fr_q:\n');
     fprintf('\t %.4f\n', e_q_val);
-    fprintf('\t Norma Vettore Errore ||e||: %.4f\n', norm_e_q);
+    fprintf('\t Norma vettore errore ||e||: %.4f\n', norm_e_q);
     if all(lambda > 0)
-        % Hessiana Definita Positiva -> Minimo
+        % Hessiana definita positiva -> minimo
         if norm_e_q < 1e-6
-            fprintf('\t (%.4f, %.4f) È Minimo Globale\n', q1Crit, q2Crit);
+            fprintf('\t (%.4f, %.4f) è minimo globale\n', q1Crit, q2Crit);
         else
-            fprintf('\t (%.4f, %.4f) È Minimo Locale\n', q1Crit, q2Crit);
+            fprintf('\t (%.4f, %.4f) è minimo locale\n', q1Crit, q2Crit);
         end
     elseif all(lambda < 0)
-        % Hessiana Definita Negativa -> Massimo Locale (e Massimo Globale per questo problema)
-        fprintf('\t (%.4f, %.4f) È Massimo Locale (e Massimo Globale)\n', q1Crit, q2Crit);
+        % Hessiana definita negativa -> massimo locale (e massimo globale per questo problema)
+        fprintf('\t (%.4f, %.4f) è massimo locale (e massimo globale)\n', q1Crit, q2Crit);
     else
-        % L'Hessiana è indefinita -> Punto di Sella
-        fprintf('\t (%.4f, %.4f) È Punto di Sella\n', q1Crit, q2Crit);
+        % L'Hessiana è indefinita -> punto di sella
+        fprintf('\t (%.4f, %.4f) è punto di sella\n', q1Crit, q2Crit);
     end
 end
 \end{matlabcode}
 \begin{matlaboutput}
-Configurazione Critica (q1, q2) = (-2.7744, 0.0000)
+Configurazione critica (q1, q2) = (-2.7744, 0.0000)
 	 Autovalori:
 	 -3.3637
 	 -1.0577
-	 Vettore Errore e = r - fr_q:
+	 Vettore errore e = r - fr_q:
 	 2.9800
 	 1.1462
-	 Norma Vettore Errore ||e||: 3.1928
-	 (-2.7744, 0.0000) È Massimo Locale (e Massimo Globale)
-Configurazione Critica (q1, q2) = (-2.7744, 3.1416)
+	 Norma vettore errore ||e||: 3.1928
+	 (-2.7744, 0.0000) è massimo locale (e massimo globale)
+Configurazione critica (q1, q2) = (-2.7744, 3.1416)
 	 Autovalori:
 	 -0.7454
 	 2.3811
-	 Vettore Errore e = r - fr_q:
+	 Vettore errore e = r - fr_q:
 	 1.4867
 	 0.5718
-	 Norma Vettore Errore ||e||: 1.5928
-	 (-2.7744, 3.1416) È Punto di Sella
-Configurazione Critica (q1, q2) = (-0.2323, 1.3822)
+	 Norma vettore errore ||e||: 1.5928
+	 (-2.7744, 3.1416) è punto di sella
+Configurazione critica (q1, q2) = (-0.2323, 1.3822)
 	 Autovalori:
 	 0.2670
 	 2.3130
-	 Vettore Errore e = r - fr_q:
+	 Vettore errore e = r - fr_q:
 	 0.0000
 	 -0.0000
-	 Norma Vettore Errore ||e||: 0.0000
-	 (-0.2323, 1.3822) È Minimo Globale
-Configurazione Critica (q1, q2) = (0.3672, 0.0000)
+	 Norma vettore errore ||e||: 0.0000
+	 (-0.2323, 1.3822) è minimo globale
+Configurazione critica (q1, q2) = (0.3672, 0.0000)
 	 Autovalori:
 	 -0.1526
 	 2.9739
-	 Vettore Errore e = r - fr_q:
+	 Vettore errore e = r - fr_q:
 	 -0.3800
 	 -0.1462
-	 Norma Vettore Errore ||e||: 0.4072
-	 (0.3672, 0.0000) È Punto di Sella
-Configurazione Critica (q1, q2) = (0.3672, 3.1416)
+	 Norma vettore errore ||e||: 0.4072
+	 (0.3672, 0.0000) è punto di sella
+Configurazione critica (q1, q2) = (0.3672, 3.1416)
 	 Autovalori:
 	 -1.1709
 	 1.1352
-	 Vettore Errore e = r - fr_q:
+	 Vettore errore e = r - fr_q:
 	 1.1133
 	 0.4282
-	 Norma Vettore Errore ||e||: 1.1928
-	 (0.3672, 3.1416) È Punto di Sella
-Configurazione Critica (q1, q2) = (0.9666, -1.3822)
+	 Norma vettore errore ||e||: 1.1928
+	 (0.3672, 3.1416) è punto di sella
+Configurazione critica (q1, q2) = (0.9666, -1.3822)
 	 Autovalori:
 	 0.2670
 	 2.3130
-	 Vettore Errore e = r - fr_q:
+	 Vettore errore e = r - fr_q:
 	 0.0000
 	 0.0000
-	 Norma Vettore Errore ||e||: 0.0000
-	 (0.9666, -1.3822) È Minimo Globale
+	 Norma vettore errore ||e||: 0.0000
+	 (0.9666, -1.3822) è minimo globale
 \end{matlaboutput}
 
 \newpage
 \begin{matlabcode}
-% --- Figura 1: Visualizzazione Vettoriale delle 6 Configurazioni Critiche ---
+% --- Figura 1: visualizzazione vettoriale delle 6 configurazioni critiche ---
 col_link  = [0.25, 0.25, 0.25];
 col_red   = [0.85, 0.15, 0.15];
 col_green = [0.15, 0.65, 0.20];
@@ -827,7 +827,7 @@ R_ws_max = l_val(1) + l_val(2);
 R_ws_min = abs(l_val(1) - l_val(2));
 e_q_sub  = subs(e_q, [l1, l2, rx, ry], [l_val(1), l_val(2), r_val(1), r_val(2)]);
 
-figure('Name', 'Configurazioni Critiche del Manipolatore RR', 'Color', 'w', 'Units', 'normalized', ...
+figure('Name', 'Configurazioni critiche del manipolatore RR', 'Color', 'w', 'Units', 'normalized', ...
     'Position', [0.22, 0.14, 0.50, 0.65]);
 t = tiledlayout(2, 3, 'TileSpacing', 'tight', 'Padding', 'tight');
 
@@ -844,14 +844,14 @@ for k = 1:size(puntiCritici, 1)
     err_c = norm(double(subs(e_q_sub, [q1, q2], [q1_c, q2_c])));
     if all(lam > 0)
         if err_c < 1e-5
-            tipo_str = 'Minimo Globale';
+            tipo_str = 'Minimo globale';
         else
-            tipo_str = 'Minimo Locale';
+            tipo_str = 'Minimo locale';
         end
     elseif all(lam < 0)
-        tipo_str = 'Massimo Locale';
+        tipo_str = 'Massimo locale';
     else
-        tipo_str = 'Punto di Sella';
+        tipo_str = 'Punto di sella';
     end
 
     % Bordi spazio di lavoro (tratteggio leggero)
@@ -866,7 +866,7 @@ for k = 1:size(puntiCritici, 1)
     p2 = p1 + [l_val(2)*cos(q1_c + q2_c), l_val(2)*sin(q1_c + q2_c)];
     pts_rr = [p0; p1; p2];
 
-    % Disegno bracci, base, giunto intermedio, End-Effector e Target r
+    % Disegno bracci, base, giunto intermedio, end-effector e target r
     h_arm = plot(pts_rr(:,1), pts_rr(:,2), '-', 'Color', col_link, 'LineWidth', 2.5);
     plot(p0(1), p0(2), 's', 'MarkerSize', 8, 'MarkerFaceColor', [0.4, 0.4, 0.4], 'MarkerEdgeColor', 'k');
     plot(p1(1), p1(2), 'o', 'MarkerSize', 6, 'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'k');
@@ -883,7 +883,7 @@ for k = 1:size(puntiCritici, 1)
 \begin{matlabcode}
     if k == 1
         lgd1 = legend([h_arm, h_ee, h_tgt], ...
-            {'Manipolatore RR', 'End-Effector', 'Target r = [1.3, 0.5] m'}, ...
+            {'Manipolatore RR', 'End-effector', 'Target r = [1.3, 0.5] m'}, ...
             'Orientation', 'horizontal');
         lgd1.Layout.Tile = 'north';
     end
@@ -908,62 +908,62 @@ for i = 1:size(puntiCritici, 1)
     q2Crit = puntiCritici(i,2);
     l1Crit = l_val(1);
     l2Crit = l_val(2);
-    fprintf('Configurazione Critica (q1, q2) = (%.4f, %.4f)\n', q1Crit, q2Crit);
+    fprintf('Configurazione critica (q1, q2) = (%.4f, %.4f)\n', q1Crit, q2Crit);
 
-    % Posizione Base Giunto
+    % Posizione base giunto
     x0 = 0;
     y0 = 0;
 \end{matlabcode}
 \newpage
 \begin{matlabcode}
-    % Calcolo Coordinate Fine Primo Braccio (x1, y1)
+    % Calcolo coordinate fine primo braccio (x1, y1)
     x1Crit = double(l1Crit * cos(q1Crit));
     y1Crit = double(l1Crit * sin(q1Crit));
 
-    % Calcolo Coordinate End Effector (x2, y2) Rispetto Al Sistema Di Riferimento Base
+    % Calcolo coordinate end-effector (x2, y2) rispetto al sistema di riferimento base
     x2Crit = double(x1Crit + l2Crit * cos(q1Crit + q2Crit));
     y2Crit = double(y1Crit + l2Crit * sin(q1Crit + q2Crit));
 
-    fprintf('\t Posizione Giunto 0 (Base) (x0, y0) = (%.4f, %.4f)\n', x0, y0);
-    fprintf('\t Posizione Giunto 1        (x1, y1) = (%.4f, %.4f)\n', x1Crit, y1Crit);
-    fprintf('\t Posizione Giunto 2 (EE)   (x2, y2) = (%.4f, %.4f)\n', x2Crit, y2Crit);
+    fprintf('\t Posizione giunto 0 (base) (x0, y0) = (%.4f, %.4f)\n', x0, y0);
+    fprintf('\t Posizione giunto 1        (x1, y1) = (%.4f, %.4f)\n', x1Crit, y1Crit);
+    fprintf('\t Posizione giunto 2 (EE)   (x2, y2) = (%.4f, %.4f)\n', x2Crit, y2Crit);
 
 end
 \end{matlabcode}
 \begin{matlaboutput}
-Configurazione Critica (q1, q2) = (-2.7744, 0.0000)
-	 Posizione Giunto 0 (Base) (x0, y0) = (0.0000, 0.0000)
-	 Posizione Giunto 1        (x1, y1) = (-0.9333, -0.3590)
-	 Posizione Giunto 2 (EE)   (x2, y2) = (-1.6800, -0.6462)
-Configurazione Critica (q1, q2) = (-2.7744, 3.1416)
-	 Posizione Giunto 0 (Base) (x0, y0) = (0.0000, 0.0000)
-	 Posizione Giunto 1        (x1, y1) = (-0.9333, -0.3590)
-	 Posizione Giunto 2 (EE)   (x2, y2) = (-0.1867, -0.0718)
-Configurazione Critica (q1, q2) = (-0.2323, 1.3822)
-	 Posizione Giunto 0 (Base) (x0, y0) = (0.0000, 0.0000)
-	 Posizione Giunto 1        (x1, y1) = (0.9731, -0.2302)
-	 Posizione Giunto 2 (EE)   (x2, y2) = (1.3000, 0.5000)
-Configurazione Critica (q1, q2) = (0.3672, 0.0000)
-	 Posizione Giunto 0 (Base) (x0, y0) = (0.0000, 0.0000)
-	 Posizione Giunto 1        (x1, y1) = (0.9333, 0.3590)
-	 Posizione Giunto 2 (EE)   (x2, y2) = (1.6800, 0.6462)
-Configurazione Critica (q1, q2) = (0.3672, 3.1416)
-	 Posizione Giunto 0 (Base) (x0, y0) = (0.0000, 0.0000)
-	 Posizione Giunto 1        (x1, y1) = (0.9333, 0.3590)
-	 Posizione Giunto 2 (EE)   (x2, y2) = (0.1867, 0.0718)
-Configurazione Critica (q1, q2) = (0.9666, -1.3822)
-	 Posizione Giunto 0 (Base) (x0, y0) = (0.0000, 0.0000)
-	 Posizione Giunto 1        (x1, y1) = (0.5681, 0.8230)
-	 Posizione Giunto 2 (EE)   (x2, y2) = (1.3000, 0.5000)
+Configurazione critica (q1, q2) = (-2.7744, 0.0000)
+	 Posizione giunto 0 (base) (x0, y0) = (0.0000, 0.0000)
+	 Posizione giunto 1        (x1, y1) = (-0.9333, -0.3590)
+	 Posizione giunto 2 (EE)   (x2, y2) = (-1.6800, -0.6462)
+Configurazione critica (q1, q2) = (-2.7744, 3.1416)
+	 Posizione giunto 0 (base) (x0, y0) = (0.0000, 0.0000)
+	 Posizione giunto 1        (x1, y1) = (-0.9333, -0.3590)
+	 Posizione giunto 2 (EE)   (x2, y2) = (-0.1867, -0.0718)
+Configurazione critica (q1, q2) = (-0.2323, 1.3822)
+	 Posizione giunto 0 (base) (x0, y0) = (0.0000, 0.0000)
+	 Posizione giunto 1        (x1, y1) = (0.9731, -0.2302)
+	 Posizione giunto 2 (EE)   (x2, y2) = (1.3000, 0.5000)
+Configurazione critica (q1, q2) = (0.3672, 0.0000)
+	 Posizione giunto 0 (base) (x0, y0) = (0.0000, 0.0000)
+	 Posizione giunto 1        (x1, y1) = (0.9333, 0.3590)
+	 Posizione giunto 2 (EE)   (x2, y2) = (1.6800, 0.6462)
+Configurazione critica (q1, q2) = (0.3672, 3.1416)
+	 Posizione giunto 0 (base) (x0, y0) = (0.0000, 0.0000)
+	 Posizione giunto 1        (x1, y1) = (0.9333, 0.3590)
+	 Posizione giunto 2 (EE)   (x2, y2) = (0.1867, 0.0718)
+Configurazione critica (q1, q2) = (0.9666, -1.3822)
+	 Posizione giunto 0 (base) (x0, y0) = (0.0000, 0.0000)
+	 Posizione giunto 1        (x1, y1) = (0.5681, 0.8230)
+	 Posizione giunto 2 (EE)   (x2, y2) = (1.3000, 0.5000)
 \end{matlaboutput}
 \newpage
 \begin{matlabcode}
-%% Visualizzazione Funzione di Costo V(q) e Punti Critici
+%% Visualizzazione funzione di costo V(q) e punti critici
 col_red   = [0.85, 0.15, 0.15];
 col_green = [0.15, 0.65, 0.20];
 col_blue  = [0.15, 0.35, 0.85];
 
-% Definizione Dominio (Con Margine) E Calcolo V(q)
+% Definizione dominio (con margine) e calcolo V(q)
 q1_range = linspace(-pi - 0.30, pi + 0.30, 200);
 q2_range = linspace(-pi - 0.30, pi + 0.30, 200);
 [Q1, Q2] = meshgrid(q1_range, q2_range);
@@ -971,7 +971,7 @@ q2_range = linspace(-pi - 0.30, pi + 0.30, 200);
 V_fun  = matlabFunction(V_val, 'Vars', {q1, q2});
 V_grid = double(V_fun(Q1, Q2));
 
-figure('Name', 'Funzione di Costo V(q) e Punti Critici', 'Color', 'w');
+figure('Name', 'Funzione di costo V(q) e punti critici', 'Color', 'w');
 hold on; grid on; box on; axis equal; axis tight;
 contourf(Q1, Q2, V_grid, 25, 'LineColor', [0.35, 0.35, 0.35], 'LineWidth', 0.4);
 colormap(gca, 'parula');
@@ -981,9 +981,9 @@ cb.Label.FontWeight = 'bold';
 
 xlabel('q_1 [rad]', 'FontWeight', 'bold');
 ylabel('q_2 [rad]', 'FontWeight', 'bold');
-title('Funzione di Costo V(q) e Punti Critici', 'FontSize', 11, 'FontWeight', 'bold');
+title('Funzione di costo V(q) e punti critici', 'FontSize', 11, 'FontWeight', 'bold');
 
-% Sovrapposizione Punti Critici Classificati
+% Sovrapposizione punti critici classificati
 e_q_val = subs(e_q, [l1, l2, rx, ry], [l_val(1), l_val(2), r_val(1), r_val(2)]);
 
 for i = 1:size(puntiCritici, 1)
@@ -1009,7 +1009,7 @@ for i = 1:size(puntiCritici, 1)
     end
 end
 
-% Proxy Handles per Legenda Esterna Orizzontale
+% Proxy handles per legenda esterna orizzontale
 h_min_g = plot(NaN, NaN, 'p', 'MarkerSize', 13, 'MarkerFaceColor', [0.95, 0.75, 0.10], ...
     'MarkerEdgeColor', 'k', 'LineWidth', 1.2);
 h_max_l = plot(NaN, NaN, 's', 'MarkerSize', 10, 'MarkerFaceColor', col_red, ...
@@ -1018,7 +1018,7 @@ h_sella = plot(NaN, NaN, 'd', 'MarkerSize', 9, 'MarkerFaceColor', col_blue, ...
     'MarkerEdgeColor', 'k', 'LineWidth', 1.2);
 
 legend([h_min_g, h_max_l, h_sella], ...
-    {'Minimo Globale', 'Massimo Locale', 'Punto di Sella'}, ...
+    {'Minimo globale', 'Massimo locale', 'Punto di sella'}, ...
     'Location', 'northoutside', 'Orientation', 'horizontal');
 hold off;
 \end{matlabcode}
@@ -1026,29 +1026,29 @@ hold off;
 \includegraphics[width=0.9\linewidth]{E9_AlgoritmoNewtonEGradiente_fig2.png}
 \end{center}
 
-\matlabheadingtwo{Simulazione Numerica Iterativa Dell'Algoritmo Di Newton}
+\matlabheadingtwo{Simulazione numerica iterativa dell'algoritmo di Newton}
 
 \begin{par}
 \begin{flushleft}
-Per le simulazioni iterative di Newton e del Gradiente si considerano nuovi parametri geometrici e di task: lunghezze dei bracci $l_1 = l_2 = 1.0$ e posa desiderata $r = [1.0, 1.0]^T$.
+Per le simulazioni iterative di Newton e del gradiente si considerano nuovi parametri geometrici e di task: lunghezze dei bracci $l_1 = l_2 = 1.0$ e posa desiderata $r = [1.0, 1.0]^T$.
 \end{flushleft}
 \end{par}
 
 \begin{matlabcode}
-fprintf('----- Algoritmo Di Newton Iterativo -----');
-% Lunghezze Bracci
+fprintf('----- Algoritmo di Newton iterativo -----');
+% Lunghezze bracci
 l1_val = 1.0;
 l2_val = 1.0;
-% Posa Desiderata
+% Posa desiderata
 r_val = [1.0; 1.0];
-% Parametri Robot
+% Parametri robot
 T = 0.1;
 k_gain = 5;
 K_num = k_gain * eye(2);
-% Creazione Funzioni Simboliche
+% Creazione funzioni simboliche
 fr_fun = matlabFunction(fr_q, 'Vars', {l1, l2, q1, q2});
 J_fun = matlabFunction(J_q, 'Vars', {l1, l2, q1, q2});
-% Configurazioni Iniziali (q_0^(1), q_0^(2), q_0^(3))
+% Configurazioni iniziali (q_0^(1), q_0^(2), q_0^(3))
 q_initial_conditions = [
     pi/4, pi/4;      % Configurazione iniziale q_{0,1}
     0, pi/2;         % Configurazione iniziale q_{0,2}
@@ -1062,11 +1062,11 @@ all_q_newton = cell(nrSol, 1);
 all_err_newton = cell(nrSol, 1);
 
 for i = 1:nrSol
-    q_k = q_initial_conditions(i, :).'; % Vettore Colonna
+    q_k = q_initial_conditions(i, :).'; % Vettore colonna
 
-    fprintf('Configurazione iniziale q_{0,%d} = [%.4f, %.4f]\n', i, q_k(1), q_k(2));
+    fprintf('Configurazione iniziale q_(0,%d) = [%.4f, %.4f]\n', i, q_k(1), q_k(2));
 
-    % Inizializzazione Array Cronologia
+    % Inizializzazione array cronologia
     q_history = zeros(2, 100 + 1);
     error_history = zeros(1, 100 + 1);
     q_history(:, 1) = q_k;
@@ -1083,37 +1083,37 @@ for i = 1:nrSol
 
         if error_norm < 1e-6
             if num_steps == 1
-                fprintf('\t Convergenza Raggiunta In 1 Iterazione.\n');
+                fprintf('\t Convergenza raggiunta in 1 iterazione.\n');
             else
-                fprintf('\t Convergenza Raggiunta In %d Iterazioni.\n', num_steps);
+                fprintf('\t Convergenza raggiunta in %d iterazioni.\n', num_steps);
             end
             break;
         end
         J_k = J_fun(l1_val, l2_val, q_k(1), q_k(2));
         if abs(det(J_k)) < 1e-5
-            fprintf('\t Attenzione: Jacobiano Quasi Singolare (det(J) = %.2e). Interruzione.\n', det(J_k));
+            fprintf('\t Attenzione: Jacobiano quasi singolare (det(J) = %.2e). Interruzione.\n', det(J_k));
             break;
         end
 
-        % f. Aggiornamento Configurazione Giunti (Formula di Newton)
+        % Aggiornamento configurazione giunti (formula di Newton)
         % q_{k+1} = q_k + T * J^{-1}(q_k) * K * [r - f_r(q_k)]
         q_k = q_k + T * (J_k \ (K_num * e_k));
 
-        % Salvataggio Nuova Configurazione
+        % Salvataggio nuova configurazione
         num_steps = num_steps + 1;
         q_history(:, num_steps + 1) = q_k;
     end
 
     if num_steps == 100 && error_norm >= 1e-6
-        fprintf('\t Algoritmo Terminato Per Numero Massimo Iterazioni.\n');
+        fprintf('\t Algoritmo terminato per numero massimo iterazioni.\n');
     end
 
-    % Tronca Cronologia Al Numero Di Stati Effettivi (iniziale + passi eseguiti)
+    % Tronca cronologia al numero di stati effettivi (iniziale + passi eseguiti)
     q_history = q_history(:, 1:num_steps + 1);
     all_q_newton{i} = q_history;
     all_err_newton{i} = error_history(1:num_err);
 
-    % Visualizzazione Risultati
+    % Visualizzazione risultati
     q_finale = q_history(:, end);
     pos_finale = fr_fun(l1_val, l2_val, q_finale(1), q_finale(2));
 
@@ -1123,27 +1123,27 @@ for i = 1:nrSol
 end
 \end{matlabcode}
 \begin{matlaboutput}
------ Algoritmo Di Newton Iterativo -----
-Configurazione iniziale q_{0,1} = [0.7854, 0.7854]
-	 Convergenza Raggiunta In 20 Iterazioni.
+----- Algoritmo di Newton iterativo -----
+Configurazione iniziale q_(0,1) = [0.7854, 0.7854]
+	 Convergenza raggiunta in 20 iterazioni.
 	 Configurazione finale q_f: [0.0000, 1.5708]
 	 Posizione finale EE [x; y]: [1.0000; 1.0000]
 	 Errore finale (norma): 6.98e-07
-Configurazione iniziale q_{0,2} = [0.0000, 1.5708]
-	 Convergenza Raggiunta In 0 Iterazioni.
+Configurazione iniziale q_(0,2) = [0.0000, 1.5708]
+	 Convergenza raggiunta in 0 iterazioni.
 	 Configurazione finale q_f: [0.0000, 1.5708]
 	 Posizione finale EE [x; y]: [1.0000; 1.0000]
 	 Errore finale (norma): 0.00e+00
-Configurazione iniziale q_{0,3} = [-1.0472, 0.5236]
-	 Convergenza Raggiunta In 26 Iterazioni.
+Configurazione iniziale q_(0,3) = [-1.0472, 0.5236]
+	 Convergenza raggiunta in 26 iterazioni.
 	 Configurazione finale q_f: [-4.7124, 4.7124]
 	 Posizione finale EE [x; y]: [1.0000; 1.0000]
 	 Errore finale (norma): 6.88e-07
 \end{matlaboutput}
 
-\matlabheadingtwo{Simulazione Numerica Iterativa Dell'Algoritmo Del Gradiente}
+\matlabheadingtwo{Simulazione numerica iterativa dell'algoritmo del gradiente}
 \begin{matlabcode}
-fprintf('----- Algoritmo Gradiente Iterativo -----');
+fprintf('----- Algoritmo gradiente iterativo -----');
 % Guadagno scalare continuo e learning rate discreto alpha' = T * alpha
 alpha_val = 0.8;
 alpha_prime = T * alpha_val;
@@ -1151,10 +1151,10 @@ all_q_grad = cell(nrSol, 1);
 all_err_grad = cell(nrSol, 1);
 
 for i = 1:nrSol
-    q_k = q_initial_conditions(i, :).'; % Vettore Colonna
-    fprintf('\nConfigurazione iniziale q_{0,%d} = [%.4f, %.4f]\n', i, q_k(1), q_k(2));
+    q_k = q_initial_conditions(i, :).'; % Vettore colonna
+    fprintf('\nConfigurazione iniziale q_(0,%d) = [%.4f, %.4f]\n', i, q_k(1), q_k(2));
 
-    % Inizializzazione Array Cronologia
+    % Inizializzazione array cronologia
     q_history_grad = zeros(2, 500 + 1);
     error_history_grad = zeros(1, 500 + 1);
     q_history_grad(:, 1) = q_k;
@@ -1162,80 +1162,80 @@ for i = 1:nrSol
     num_err = 0;
 
     for k = 1:500
-        % Calcolo Posizione Corrente EE
+        % Calcolo posizione corrente EE
         pos_k = fr_fun(l1_val, l2_val, q_k(1), q_k(2));
 
-        % Calcolo Errore Corrente
+        % Calcolo errore corrente
         e_k = r_val - pos_k;
         error_norm = norm(e_k);
         num_err = k;
         error_history_grad(k) = error_norm;
 
-        % Condizione di Arresto per Convergenza
+        % Condizione di arresto per convergenza
         if error_norm < 1e-6
             if num_steps == 1
-                fprintf('\t Convergenza Raggiunta In 1 Iterazione.\n');
+                fprintf('\t Convergenza raggiunta in 1 iterazione.\n');
             else
-                fprintf('\t Convergenza Raggiunta In %d Iterazioni.\n', num_steps);
+                fprintf('\t Convergenza raggiunta in %d iterazioni.\n', num_steps);
             end
             break;
         end
 
-        % Calcolo Jacobiano alla Configurazione Corrente
+        % Calcolo Jacobiano alla configurazione corrente
         J_k = J_fun(l1_val, l2_val, q_k(1), q_k(2));
 \end{matlabcode}
 \newpage
 \begin{matlabcode}
-        % Robustezza alle Singolarità
+        % Robustezza alle singolarità
         % La trasposta J_k.' esiste sempre, quindi l'algoritmo non fallisce numericamente ma
         % rallenta la convergenza fino a fermarsi se si trova esattamente su un minimo locale.
 
-        % Aggiornamento Configurazione Giunti (Formula del Gradiente con alpha' = T * alpha)
+        % Aggiornamento configurazione giunti (formula del gradiente con alpha' = T * alpha)
         % q_{k+1} = q_k + alpha' * J(q_k)^T * [r - f_r(q_k)]
         q_k = q_k + alpha_prime * J_k.' * e_k;
 
-        % Salvataggio Nuova Configurazione
+        % Salvataggio nuova configurazione
         num_steps = num_steps + 1;
         q_history_grad(:, num_steps + 1) = q_k;
     end
 
     if num_steps == 500 && error_norm >= 1e-6
-        fprintf('\t Algoritmo Terminato Per Numero Massimo Iterazioni.\n');
+        fprintf('\t Algoritmo terminato per numero massimo iterazioni.\n');
     end
 
-    % Tronca Cronologia Al Numero Di Stati Effettivi (iniziale + passi eseguiti)
+    % Tronca cronologia al numero di stati effettivi (iniziale + passi eseguiti)
     q_history_grad = q_history_grad(:, 1:num_steps + 1);
     all_q_grad{i} = q_history_grad;
     all_err_grad{i} = error_history_grad(1:num_err);
 
-    % Visualizzazione Risultati
+    % Visualizzazione risultati
     q_finale_grad = q_history_grad(:, end);
     pos_finale_grad = fr_fun(l1_val, l2_val, q_finale_grad(1), q_finale_grad(2));
-    fprintf('\t Configurazione Finale q_f: [%.4f, %.4f]\n', q_finale_grad(1), q_finale_grad(2));
-    fprintf('\t Posizione Finale EE [x; y]: [%.4f; %.4f]\n', pos_finale_grad(1), pos_finale_grad(2));
-    fprintf('\t Errore Finale (norma): %.2e\n', norm(r_val - pos_finale_grad));
+    fprintf('\t Configurazione finale q_f: [%.4f, %.4f]\n', q_finale_grad(1), q_finale_grad(2));
+    fprintf('\t Posizione finale EE [x; y]: [%.4f; %.4f]\n', pos_finale_grad(1), pos_finale_grad(2));
+    fprintf('\t Errore finale (norma): %.2e\n', norm(r_val - pos_finale_grad));
 end
 \end{matlabcode}
 \begin{matlaboutput}
------ Algoritmo Gradiente Iterativo -----
-Configurazione iniziale q_{0,1} = [0.7854, 0.7854]
-	 Convergenza Raggiunta In 467 Iterazioni.
-	 Configurazione Finale q_f: [0.0000, 1.5708]
-	 Posizione Finale EE [x; y]: [1.0000; 1.0000]
-	 Errore Finale (norma): 9.75e-07
-Configurazione iniziale q_{0,2} = [0.0000, 1.5708]
-	 Convergenza Raggiunta In 0 Iterazioni.
-	 Configurazione Finale q_f: [0.0000, 1.5708]
-	 Posizione Finale EE [x; y]: [1.0000; 1.0000]
-	 Errore Finale (norma): 0.00e+00
-Configurazione iniziale q_{0,3} = [-1.0472, 0.5236]
-	 Convergenza Raggiunta In 402 Iterazioni.
-	 Configurazione Finale q_f: [0.0000, 1.5708]
-	 Posizione Finale EE [x; y]: [1.0000; 1.0000]
-	 Errore Finale (norma): 9.91e-07
+----- Algoritmo gradiente iterativo -----
+Configurazione iniziale q_(0,1) = [0.7854, 0.7854]
+	 Convergenza raggiunta in 467 iterazioni.
+	 Configurazione finale q_f: [0.0000, 1.5708]
+	 Posizione finale EE [x; y]: [1.0000; 1.0000]
+	 Errore finale (norma): 9.75e-07
+Configurazione iniziale q_(0,2) = [0.0000, 1.5708]
+	 Convergenza raggiunta in 0 iterazioni.
+	 Configurazione finale q_f: [0.0000, 1.5708]
+	 Posizione finale EE [x; y]: [1.0000; 1.0000]
+	 Errore finale (norma): 0.00e+00
+Configurazione iniziale q_(0,3) = [-1.0472, 0.5236]
+	 Convergenza raggiunta in 402 iterazioni.
+	 Configurazione finale q_f: [0.0000, 1.5708]
+	 Posizione finale EE [x; y]: [1.0000; 1.0000]
+	 Errore finale (norma): 9.91e-07
 \end{matlaboutput}
 
-\matlabheadingtwo{Confronto Traiettorie E Velocità Di Convergenza: Newton Contro Gradiente}
+\matlabheadingtwo{Confronto traiettorie e velocità di convergenza: Newton contro gradiente}
 \begin{matlabcode}
 col_red   = [0.85, 0.15, 0.15];
 col_green = [0.15, 0.65, 0.20];
@@ -1250,7 +1250,7 @@ V_iter_sym  = subs(V, [l1, l2, rx, ry], [l1_val, l2_val, r_val(1), r_val(2)]);
 V_iter_fun  = matlabFunction(V_iter_sym, 'Vars', {q1, q2});
 \end{matlabcode}
 \newpage
-\matlabheadingthree{Grafici Algoritmo Di Newton}
+\matlabheadingthree{Grafici algoritmo di Newton}
 \begin{matlabcode}
 all_newt_pts = cell2mat(all_q_newton.');
 dx_n = [min(-pi, min(all_newt_pts(1,:)) - 0.4), max(pi, max(all_newt_pts(1,:)) + 0.4)];
@@ -1258,7 +1258,7 @@ dy_n = [min(-pi, min(all_newt_pts(2,:)) - 0.4), max(pi, max(all_newt_pts(2,:)) +
 [Q1_n, Q2_n] = meshgrid(linspace(dx_n(1), dx_n(2), 180), linspace(dy_n(1), dy_n(2), 180));
 V_grid_n = double(V_iter_fun(Q1_n, Q2_n));
 
-figure('Name', 'Algoritmo di Newton: Traiettorie e Convergenza', 'Color', 'w', 'Units', 'normalized', ...
+figure('Name', 'Algoritmo di Newton: traiettorie e convergenza', 'Color', 'w', 'Units', 'normalized', ...
     'Position', [0.30, 0.04, 0.36, 0.88]);
 t_n = tiledlayout(2, 1, 'TileSpacing', 'compact', 'Padding', 'tight');
 
@@ -1339,9 +1339,9 @@ xticks([1, 2, 5, 10, 25, 50, 100, 250, 500]);
 xticklabels({'1', '2', '5', '10', '25', '50', '100', '250', '500'});
 yticks(10.^(-8:2:0));
 xlabel('Iterazione $k$ (scala log)', 'Interpreter', 'latex', 'FontWeight', 'bold');
-ylabel('Norma Errore $\|\mathbf{e}(k)\|\;[\mathrm{m}]$ (scala log)', 'Interpreter', 'latex', ...
+ylabel('Norma errore $\|\mathbf{e}(k)\|\;[\mathrm{m}]$ (scala log)', 'Interpreter', 'latex', ...
         'FontWeight', 'bold');
-title('Decadimento Errore Newton (Log-Log)', 'Interpreter', 'latex', 'FontSize', 10.5, 'FontWeight', 'bold');
+title('Decadimento errore Newton (log-log)', 'Interpreter', 'latex', 'FontSize', 10.5, 'FontWeight', 'bold');
 hold off;
 
 % Legenda condivisa Newton in alto
@@ -1359,7 +1359,7 @@ lgd_n = legend(ax_n1, h_leg_n, ...
     {'$\mathbf{q}_{0,1} = [\pi/4,\, \pi/4]^T$', ...
      '$\mathbf{q}_{0,2} = [0,\, \pi/2]^T$ (al minimo)', ...
      '$\mathbf{q}_{0,3} = [-\pi/3,\, \pi/6]^T$', ...
-     'Minimo Globale ($e = 0$)'}, ...
+     'Minimo globale ($e = 0$)'}, ...
     'Interpreter', 'latex', 'Orientation', 'horizontal', 'NumColumns', 2, 'FontSize', 8.8);
 lgd_n.Layout.Tile = 'north';
 \end{matlabcode}
@@ -1369,14 +1369,14 @@ lgd_n.Layout.Tile = 'north';
 \end{center}
 
 \newpage
-\matlabheadingthree{Grafici Algoritmo Del Gradiente}
+\matlabheadingthree{Grafici algoritmo del gradiente}
 \begin{matlabcode}
 dx_g = [-2.5, 2.5];
 dy_g = [-2.5, 2.5];
 [Q1_g, Q2_g] = meshgrid(linspace(dx_g(1), dx_g(2), 180), linspace(dy_g(1), dy_g(2), 180));
 V_grid_g = double(V_iter_fun(Q1_g, Q2_g));
 
-figure('Name', 'Algoritmo del Gradiente: Traiettorie e Convergenza', 'Color', 'w', 'Units', 'normalized', ...
+figure('Name', 'Algoritmo del gradiente: traiettorie e convergenza', 'Color', 'w', 'Units', 'normalized', ...
     'Position', [0.30, 0.04, 0.36, 0.88]);
 t_g = tiledlayout(2, 1, 'TileSpacing', 'compact', 'Padding', 'tight');
 
@@ -1420,7 +1420,7 @@ xticks([-2, -1, 0, 1, 2]);
 yticks([-2, -1, 0, 1, 2]);
 xlabel('$q_1\;[\mathrm{rad}]$', 'Interpreter', 'latex', 'FontWeight', 'bold');
 ylabel('$q_2\;[\mathrm{rad}]$', 'Interpreter', 'latex', 'FontWeight', 'bold');
-title('Traiettorie Gradiente su $V(\mathbf{q})$ ($[-2.5, 2.5]^2$)', 'Interpreter', 'latex', 'FontSize', 10.5, 'FontWeight', 'bold');
+title('Traiettorie gradiente su $V(\mathbf{q})$ ($[-2.5, 2.5]^2$)', 'Interpreter', 'latex', 'FontSize', 10.5, 'FontWeight', 'bold');
 hold off;
 % --- Gradiente 2: Decadimento Errore (Log-Log) ---
 nexttile;
@@ -1449,9 +1449,9 @@ xticks([1, 2, 5, 10, 25, 50, 100, 250, 500]);
 xticklabels({'1', '2', '5', '10', '25', '50', '100', '250', '500'});
 yticks(10.^(-8:2:0));
 xlabel('Iterazione $k$ (scala log)', 'Interpreter', 'latex', 'FontWeight', 'bold');
-ylabel('Norma Errore $\|\mathbf{e}(k)\|\;[\mathrm{m}]$ (scala log)', 'Interpreter', 'latex', ...
+ylabel('Norma errore $\|\mathbf{e}(k)\|\;[\mathrm{m}]$ (scala log)', 'Interpreter', 'latex', ...
         'FontWeight', 'bold');
-title('Decadimento Errore Gradiente (Log-Log)', 'Interpreter', 'latex', 'FontSize', 10.5, ...
+title('Decadimento errore gradiente (log-log)', 'Interpreter', 'latex', 'FontSize', 10.5, ...
         'FontWeight', 'bold');
 hold off;
 
@@ -1469,7 +1469,7 @@ lgd_g = legend(ax_g1, h_leg_g, ...
     {'$\mathbf{q}_{0,1} = [\pi/4,\, \pi/4]^T$', ...
      '$\mathbf{q}_{0,2} = [0,\, \pi/2]^T$ (al minimo)', ...
      '$\mathbf{q}_{0,3} = [-\pi/3,\, \pi/6]^T$', ...
-     'Minimo Globale ($e = 0$)'}, ...
+     'Minimo globale ($e = 0$)'}, ...
     'Interpreter', 'latex', 'Orientation', 'horizontal', 'NumColumns', 2, 'FontSize', 8.8);
 lgd_g.Layout.Tile = 'north';
 \end{matlabcode}
@@ -1478,7 +1478,7 @@ lgd_g.Layout.Tile = 'north';
 \includegraphics[width=0.72\linewidth]{E9_AlgoritmoNewtonEGradiente_fig4.png}
 \end{center}
 
-\matlabheadingthree{Considerazioni Sul Confronto Tra Newton E Gradiente}
+\matlabheadingthree{Considerazioni sul confronto tra Newton e gradiente}
 
 \begin{par}
 \begin{flushleft}
@@ -1487,8 +1487,8 @@ Dai risultati delle simulazioni emergono due differenze principali tra i due met
 \end{par}
 
 \begin{itemize}
-   \item{\begin{flushleft} \textbf{Velocità di convergenza}: L'algoritmo di Newton converge molto più rapidamente (in circa $20\text{--}26$ iterazioni di aggiornamento) rispetto all'algoritmo del Gradiente (che richiede circa $402\text{--}467$ iterazioni a parità di tolleranza $10^{-6}$). Da $\mathbf{q}_{0,2}=[0,\pi/2]^T$, essendo già sulla soluzione esatta, entrambi terminano immediatamente con $0$ iterazioni. \end{flushleft}}
-   \item{\begin{flushleft} \textbf{Comportamento vicino alle singolarità e scelta del ramo}: Partendo da $\mathbf{q}_{0,3}=[-\pi/3,\pi/6]^T$, l'algoritmo di Newton transita in prossimità della singolarità $q_2=\pi$ (dove $J^{-1}$ amplifica il passo) e converge al ramo alternativo $[-4.7124,\; 4.7124]\;\mathrm{rad}$ (equivalente modulo $2\pi$ a $[\pi/2,\;-\pi/2]^T$). L'algoritmo del Gradiente, invece, utilizzando $J^T$ non soffre di amplificazioni singolari e scende regolarmente verso il minimo più vicino $[0,\;\pi/2]^T$. \end{flushleft}}
+   \item{\begin{flushleft} \textbf{Velocità di convergenza}: L'algoritmo di Newton converge molto più rapidamente (in circa $20\text{--}26$ iterazioni di aggiornamento) rispetto all'algoritmo del gradiente (che richiede circa $402\text{--}467$ iterazioni a parità di tolleranza $10^{-6}$). Da $\mathbf{q}_{0,2}=[0,\pi/2]^T$, essendo già sulla soluzione esatta, entrambi terminano immediatamente con $0$ iterazioni. \end{flushleft}}
+   \item{\begin{flushleft} \textbf{Comportamento vicino alle singolarità e scelta del ramo}: Partendo da $\mathbf{q}_{0,3}=[-\pi/3,\pi/6]^T$, l'algoritmo di Newton transita in prossimità della singolarità $q_2=\pi$ (dove $J^{-1}$ amplifica il passo) e converge al ramo alternativo $[-4.7124,\; 4.7124]\;\mathrm{rad}$ (equivalente modulo $2\pi$ a $[\pi/2,\;-\pi/2]^T$). L'algoritmo del gradiente, invece, utilizzando $J^T$ non soffre di amplificazioni singolari e scende regolarmente verso il minimo più vicino $[0,\;\pi/2]^T$. \end{flushleft}}
 \end{itemize}
 
 \end{document}

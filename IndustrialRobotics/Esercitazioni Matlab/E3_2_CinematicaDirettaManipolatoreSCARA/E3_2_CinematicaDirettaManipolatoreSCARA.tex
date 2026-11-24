@@ -98,7 +98,7 @@
 \hypersetup{
     hidelinks,
     pdfauthor={Francesco Lo Verde},
-    pdftitle={Cinematica Diretta Manipolatore SCARA}
+    pdftitle={Cinematica diretta manipolatore SCARA}
 }
 
 % BB SEGNALIBRI AVANZATI
@@ -111,7 +111,7 @@
 \begin{document}
 
 
-\matlabtitle{Calcolo Cinematica Diretta Manipolatore SCARA}
+\matlabtitle{Calcolo cinematica diretta manipolatore SCARA}
 
 \begin{par}
 \begin{flushleft}
@@ -132,17 +132,17 @@ clc;
 clear;
 close all;
 
-% Definizione Variabili Simboliche
+% Definizione variabili simboliche
 syms q1 q2 q3 q4 d1 d4 a1 a2 real;
 
-% Tabella Parametri Denavit-Hartenberg (DH)
+% Tabella parametri Denavit-Hartenberg (DH)
 % Le colonne sono: [theta, d, alpha, a]
 DH_table = [q1, d1, 0,  a1;
             q2, 0,  pi, a2;
             0,  q3, 0,  0;
             q4, d4, 0,  0];
 
-% Numero Giunti Manipolatore
+% Numero giunti manipolatore
 n = size(DH_table, 1);
 \end{matlabcode}
 
@@ -156,12 +156,12 @@ A partire dalla tabella DH, si può calcolare la matrice di trasformazione omoge
 [A_matrices, R_matrices] = Compute_DH_Transformations(DH_table);
 
 for i = 1:n
-    fprintf('Matrice Di Trasformazione Omogenea ^(%d)A_(%d):\n', i-1, i);
+    fprintf('Matrice di trasformazione omogenea ^(%d)A_(%d):\n', i-1, i);
     disp(A_matrices(:,:,i));
 end
 \end{matlabcode}
 \begin{matlaboutput}
-Matrice Di Trasformazione Omogenea ^(0)A_(1):
+Matrice di trasformazione omogenea ^(0)A_(1):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle \left(\begin{array}{cccc}
@@ -172,7 +172,7 @@ Matrice Di Trasformazione Omogenea ^(0)A_(1):
 \end{array}\right)$
 \end{matlabsymbolicoutput}
 \begin{matlaboutput}
-Matrice Di Trasformazione Omogenea ^(1)A_(2):
+Matrice di trasformazione omogenea ^(1)A_(2):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle \left(\begin{array}{cccc}
@@ -183,7 +183,7 @@ Matrice Di Trasformazione Omogenea ^(1)A_(2):
 \end{array}\right)$
 \end{matlabsymbolicoutput}
 \begin{matlaboutput}
-Matrice Di Trasformazione Omogenea ^(2)A_(3):
+Matrice di trasformazione omogenea ^(2)A_(3):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle \left(\begin{array}{cccc}
@@ -194,7 +194,7 @@ Matrice Di Trasformazione Omogenea ^(2)A_(3):
 \end{array}\right)$
 \end{matlabsymbolicoutput}
 \begin{matlaboutput}
-Matrice Di Trasformazione Omogenea ^(3)A_(4):
+Matrice di trasformazione omogenea ^(3)A_(4):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle \left(\begin{array}{cccc}
@@ -209,11 +209,11 @@ Matrice Di Trasformazione Omogenea ^(3)A_(4):
 T04 = A_matrices(:,:,1) * A_matrices(:,:,2) * A_matrices(:,:,3) * A_matrices(:,:,4);
 T04 = simplify(T04);
 
-fprintf('Matrice Di Trasformazione Omogenea Totale ^{0}T_{4}:\n');
+fprintf('Matrice di trasformazione omogenea totale ^(0)T_(4):\n');
 disp(T04);
 \end{matlabcode}
 \begin{matlaboutput}
-Matrice Di Trasformazione Omogenea Totale ^{0}T_{4}:
+Matrice di trasformazione omogenea totale ^(0)T_(4):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle \left(\begin{array}{cccc}
@@ -225,7 +225,7 @@ Matrice Di Trasformazione Omogenea Totale ^{0}T_{4}:
 \end{matlabsymbolicoutput}
 \begin{par}
 \begin{flushleft}
-La matrice di trasformazione omogenea totale $^0 T_4$ contiene tutte le informazioni sulla posa dell'organo terminale. Da essa possiamo estrarre due elementi chiave:
+La matrice di trasformazione omogenea totale $^0 T_4$ contiene tutte le informazioni sulla posa dell'organo terminale. Da essa si possono estrarre due elementi chiave:
 \end{flushleft}
 \end{par}
 
@@ -235,14 +235,14 @@ La matrice di trasformazione omogenea totale $^0 T_4$ contiene tutte le informaz
 \end{itemize}
 
 \begin{matlabcode}
-% Estrazione Vettore Posizione
+% Estrazione vettore posizione
 p04 = T04(1:3, 4);
 p04 = simplify(p04);
-fprintf('Vettore Posizione p04:\n');
+fprintf('Vettore posizione ^(0)p_(4):\n');
 disp(p04);
 \end{matlabcode}
 \begin{matlaboutput}
-Vettore Posizione p04:
+Vettore posizione ^(0)p_(4):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle \left(\begin{array}{c}
@@ -253,14 +253,14 @@ d_1 -d_4 -q_3
 \end{matlabsymbolicoutput}
 
 \begin{matlabcode}
-% Estrazione Matrice Rotazione
+% Estrazione matrice rotazione
 R04 = T04(1:3, 1:3);
 R04 = simplify(R04);
-fprintf('Matrice Rotazione R04:\n');
+fprintf('Matrice di rotazione ^(0)R_(4):\n');
 disp(R04);
 \end{matlabcode}
 \begin{matlaboutput}
-Matrice Rotazione R04:
+Matrice di rotazione ^(0)R_(4):
 \end{matlaboutput}
 
 \begin{matlabsymbolicoutput}
@@ -278,13 +278,13 @@ Per visualizzare una configurazione specifica del robot sono necessari dei valor
 \end{par}
 
 \begin{matlabcode}
-% Lista Variabili Simboliche
+% Lista variabili simboliche
 symsList = [q1, q2, q3, q4, d1, d4, a1, a2];
-disp('Variabili Simboliche:');
+disp('Variabili simboliche:');
 disp(symsList);
 \end{matlabcode}
 \begin{matlaboutput}
-Variabili Simboliche:
+Variabili simboliche:
 \end{matlaboutput}
 
 \begin{matlabsymbolicoutput}
@@ -294,7 +294,7 @@ q_1  & q_2  & q_3  & q_4  & d_1  & d_4  & a_1  & a_2
 \end{matlabsymbolicoutput}
 \begin{matlabcode}
 
-% Valori Numerici Da Sostituire
+% Valori numerici da sostituire
 value = [pi/4, pi/3, 0.5, pi/6, 1, 0.2, 0.8, 0.6];
 
 % Sostituzione matrice per matrice
@@ -304,17 +304,17 @@ for i = 1:n
 end
 
 T04_Num = double(subs(T04, symsList, value));
-fprintf('Matrice Di Trasformazione Omogenea ^{0}T_{4} Numerica:\n');
+fprintf('Matrice di trasformazione omogenea ^(0)T_(4) numerica:\n');
 disp(T04_Num);
 
-% Stampa Matrici Numeriche
+% Stampa matrici numeriche
 for i = 1:n
     fprintf('Matrice ^(%d)A_(%d) numerica:\n', i-1, i);
     disp(A_Num(:,:,i));
 end
 \end{matlabcode}
 \begin{matlaboutput}
-Matrice Di Trasformazione Omogenea ^{0}T_{4} Numerica:
+Matrice di trasformazione omogenea ^(0)T_(4) numerica:
     0.2588    0.9659         0    0.4104
     0.9659   -0.2588         0    1.1452
          0         0   -1.0000    0.3000
@@ -342,13 +342,13 @@ Matrice ^(3)A_(4) numerica:
 \end{matlaboutput}
 
 \newpage
-\matlabheadingtwo{Visualizzazione Grafica Manipolatore SCARA}
+\matlabheadingtwo{Visualizzazione grafica manipolatore SCARA}
 
 \begin{matlabcode}
-fig_name    = 'Configurazione Manipolatore SCARA';
+fig_name    = 'Configurazione manipolatore SCARA';
 arrow_scale = 0.12;
 view_angles = [105, 22];
-labels      = {'Terna 0 (Base)', 'Terna 1', 'Terna 2', 'Terna 3', 'Terna 4 (EE)'};
+labels      = {'Terna 0 (base)', 'Terna 1', 'Terna 2', 'Terna 3', 'Terna 4 (EE)'};
 
 figure('Name', fig_name, 'Color', 'w');
 hold on;
@@ -360,7 +360,7 @@ zlabel('Z [m]', 'FontWeight', 'bold');
 view(view_angles(1), view_angles(2));
 axis equal;
 
-% 1. Calcolo di Tutte le Posizioni e Orientamenti (Base + n Giunti)
+% 1. Calcolo di tutte le posizioni e orientamenti (base + n giunti)
 T_cumulative = eye(4);
 positions = zeros(n+1, 3);
 R_all     = zeros(3, 3, n+1);
@@ -373,11 +373,11 @@ for i = 1:n
     R_all(:, :, i+1)  = T_cumulative(1:3, 1:3);
 end
 
-% 2. Disegno Bracci
+% 2. Disegno bracci
 h_link = plot3(positions(:,1), positions(:,2), positions(:,3), '-', 'Color', [0.25 0.25 0.25], ...
     'LineWidth', 2.5);
 
-% 3. Evidenziazione Giunti Meccanici ed End-Effector
+% 3. Evidenziazione giunti meccanici ed end-effector
 h_base = plot3(positions(1,1), positions(1,2), positions(1,3), 's', 'MarkerSize', 8, ...
     'MarkerFaceColor', [0.4 0.4 0.4], 'MarkerEdgeColor', 'k');
 h_joints = plot3(positions(2:end-1,1), positions(2:end-1,2), positions(2:end-1,3), 'o', 'MarkerSize', 6, ...
@@ -385,7 +385,7 @@ h_joints = plot3(positions(2:end-1,1), positions(2:end-1,2), positions(2:end-1,3
 h_ee = plot3(positions(end,1), positions(end,2), positions(end,3), 'p', 'MarkerSize', 10, ...
      'MarkerFaceColor', [0.95 0.75 0.1], 'MarkerEdgeColor', 'k');
 
-% 4. Disegno delle Terne di Riferimento DH (X=Rosso, Y=Verde, Z=Blu)
+% 4. Disegno delle terne di riferimento DH (X=rosso, Y=verde, Z=blu)
 col_X = [0.85, 0.15, 0.15];
 col_Y = [0.15, 0.65, 0.20];
 col_Z = [0.15, 0.35, 0.85];
@@ -410,7 +410,7 @@ for i = 1:(n+1)
 end
 \end{matlabcode}
 \begin{matlabcode}
-% 5. Etichette Origini
+% 5. Etichette origini
 visited = false(n+1, 1);
 for i = 1:(n+1)
     if visited(i)
@@ -426,7 +426,7 @@ for i = 1:(n+1)
         'BackgroundColor', [1 1 1], 'EdgeColor', [0.8 0.8 0.8], 'Margin', 1);
 end
 
-% 6. Margine di Visualizzazione Attorno al Robot
+% 6. Margine di visualizzazione attorno al robot
 all_pts = [positions; positions + arrow_scale; positions - arrow_scale];
 min_xyz = min(all_pts, [], 1);
 max_xyz = max(all_pts, [], 1);
@@ -437,9 +437,9 @@ xlim([min_xyz(1) - margin, max_xyz(1) + margin]);
 ylim([min_xyz(2) - margin, max_xyz(2) + margin]);
 zlim([min_xyz(3) - margin, max_xyz(3) + margin]);
 
-% 7. Legenda e Titolo
+% 7. Legenda e titolo
 legend([h_axes(1), h_axes(2), h_axes(3), h_link, h_base, h_joints, h_ee], ...
-    {'Asse X', 'Asse Y', 'Asse Z', 'Bracci (Link)', 'Base', 'Giunti', 'End-Effector'}, ...
+    {'Asse X', 'Asse Y', 'Asse Z', 'Bracci (link)', 'Base', 'Giunti', 'End-effector'}, ...
     'Location', 'bestoutside');
 title(fig_name, 'FontSize', 12, 'FontWeight', 'bold');
 hold off;

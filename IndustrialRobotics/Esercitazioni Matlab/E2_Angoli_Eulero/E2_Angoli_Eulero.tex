@@ -94,7 +94,7 @@
 \hypersetup{
     hidelinks,
     pdfauthor={Francesco Lo Verde},
-    pdftitle={Angoli Di Eulero}
+    pdftitle={Angoli di Eulero}
 }
 
 % BB SEGNALIBRI AVANZATI
@@ -106,7 +106,7 @@
 
 \begin{document}
 
-\matlabtitle{Angoli Di Eulero}
+\matlabtitle{Angoli di Eulero}
 
 \begin{par}
 \begin{flushleft}
@@ -134,30 +134,24 @@ Tra queste, tre tipi di terne sono particolarmente rilevanti:
 
 \begin{itemize}
 \setlength{\itemsep}{-1ex}
-   \item{\begin{flushleft} \textbf{Angoli ZXZ:} Prevedono delle rotazioni successive intorno agli assi: $Z$, $X^{\prime }$ (asse $X$ ruotato) e $Z^{\prime \prime }$ (asse $Z$ nuovamente ruotato). \end{flushleft}}
-   \item{\begin{flushleft} \textbf{Angoli ZXY:} Prevedono delle rotazioni successive intorno agli assi: $Z$, $X^{\prime }$ (asse $X$ ruotato) e $Y^{\prime \prime }$ (asse $Y$ nuovamente ruotato). \end{flushleft}}
-   \item{\begin{flushleft} \textbf{Angoli RPY:} Prevedono delle rotazioni attorno agli assi fissi $X$, $Y$ e $Z$. \end{flushleft}}
+   \item{\begin{flushleft} \textbf{Angoli ZXZ:} prevedono delle rotazioni successive intorno agli assi: $Z$, $X^{\prime }$ (asse $X$ ruotato) e $Z^{\prime \prime }$ (asse $Z$ nuovamente ruotato). \end{flushleft}}
+   \item{\begin{flushleft} \textbf{Angoli ZXY:} prevedono delle rotazioni successive intorno agli assi: $Z$, $X^{\prime }$ (asse $X$ ruotato) e $Y^{\prime \prime }$ (asse $Y$ nuovamente ruotato). \end{flushleft}}
+   \item{\begin{flushleft} \textbf{Angoli RPY:} prevedono delle rotazioni attorno agli assi fissi $X$, $Y$ e $Z$. \end{flushleft}}
 \end{itemize}
-
-\begin{par}
-\begin{flushleft}
-Tra le convenzioni valide più utilizzate vi sono \textbf{ZXZ}, \textbf{ZXY} e \textbf{Roll-Pitch-Yaw} (XYZ assi fissi).
-\end{flushleft}
-\end{par}
 
 \begin{matlabcode}
 clc; clear; close all;
 
-% Definizione Angoli Simbolici
+% Definizione angoli simbolici
 syms phi theta psi real;
 
-% Definizione Assi
+% Definizione assi
 x = [1; 0; 0];
 y = [0; 1; 0];
 z = [0; 0; 1];
 \end{matlabcode}
 
-\matlabheading{Matrice Di Rotazione ZXZ}
+\matlabheading{Matrice di rotazione ZXZ}
 
 \begin{par}
 \begin{flushleft}
@@ -179,7 +173,7 @@ La matrice di rotazione complessiva è data dal prodotto delle singole matrici d
 \end{par}
 
 \begin{matlabcode}
-% ROTAZIONE ZXZ
+% Rotazione ZXZ
 % R_ZXZ = R_Z(phi) * R_X'(theta) * R_Z''(psi)
 
 [RZ_Phi] = Compute_Rotation_Matrix(z, phi);
@@ -189,11 +183,11 @@ La matrice di rotazione complessiva è data dal prodotto delle singole matrici d
 RZXZ = RZ_Phi * RX_Theta * RZ_Psi;
 RZXZ = simplify(RZXZ);
 
-disp("Matrice Di Rotazione Simbolica R_ZXZ:");
+disp("Matrice di rotazione simbolica R_ZXZ:");
 disp(RZXZ);
 \end{matlabcode}
 \begin{matlaboutput}
-Matrice Di Rotazione Simbolica R_ZXZ:
+Matrice di rotazione simbolica R_ZXZ:
 \end{matlaboutput}
 
 \[
@@ -212,18 +206,18 @@ Sostituendo dei valori numerici per calcolare una specifica matrice di rotazione
 \end{par}
 
 \begin{matlabcode}
-% Esempio Numerico Per ZXZ
+% Esempio numerico per ZXZ
 phiNum = pi/4;   % 45 gradi
 thetaNum = pi/3; % 60 gradi
 psiNum = pi/6;   % 30 gradi
 
 RZXZ_Num = double(subs(RZXZ, {phi, theta, psi}, {phiNum, thetaNum, psiNum}));
 
-disp("Matrice Di Rotazione Numerica R_ZXZ:");
+disp("Matrice di rotazione numerica R_ZXZ:");
 disp(RZXZ_Num);
 \end{matlabcode}
 \begin{matlaboutput}
-Matrice Di Rotazione Numerica R_ZXZ:
+Matrice di rotazione numerica R_ZXZ:
 \end{matlaboutput}
 \begin{matlaboutput}
     0.4356   -0.6597    0.6124
@@ -231,7 +225,7 @@ Matrice Di Rotazione Numerica R_ZXZ:
     0.4330    0.7500    0.5000
 \end{matlaboutput}
 
-\matlabheadingtwo{Analisi Singolarità Della Rotazione ZXZ}
+\matlabheadingtwo{Analisi singolarità della rotazione ZXZ}
 
 \begin{par}
 \begin{flushleft}
@@ -246,15 +240,15 @@ Si verifica il caso con $\theta =0$.
 \end{par}
 
 \begin{matlabcode}
-% SINGOLARITÀ CON THETA = 0
+% Singolarità con theta = 0
 [RXThetaZero] = Compute_Rotation_Matrix(x, 0);
 RZXZ_Zero = RZ_Phi * RXThetaZero * RZ_Psi;
 RZXZ_Zero = simplify(RZXZ_Zero);
 
-disp("Matrice R_ZXZ Con Theta = 0:");
+disp("Matrice R_ZXZ con theta = 0:");
 \end{matlabcode}
 \begin{matlaboutput}
-Matrice R_ZXZ Con Theta = 0:
+Matrice R_ZXZ con theta = 0:
 \end{matlaboutput}
 \begin{matlabcode}
 disp(RZXZ_Zero);
@@ -274,7 +268,7 @@ Come si può vedere dalla matrice, $\phi$ e $\psi$ compaiono sempre come $\phi +
 \end{par}
 
 \newpage
-\matlabheading{Matrice Di Rotazione ZXY}
+\matlabheading{Matrice di rotazione ZXY}
 
 \begin{par}
 \begin{flushleft}
@@ -296,7 +290,7 @@ La matrice di rotazione complessiva è data dal prodotto delle singole matrici d
 \end{par}
 
 \begin{matlabcode}
-% ROTAZIONE ZXY
+% Rotazione ZXY
 % R_ZXY = R_Z(phi) * R_X'(theta) * R_Y''(psi)
 
 [RY_Psi] = Compute_Rotation_Matrix(y, psi);
@@ -304,11 +298,11 @@ La matrice di rotazione complessiva è data dal prodotto delle singole matrici d
 RZXY = RZ_Phi * RX_Theta * RY_Psi;
 RZXY = simplify(RZXY);
 
-disp("Matrice Rotazione R_ZXY:");
+disp("Matrice di rotazione R_ZXY:");
 disp(RZXY);
 \end{matlabcode}
 \begin{matlaboutput}
-Matrice Rotazione R_ZXY:
+Matrice di rotazione R_ZXY:
 \end{matlaboutput}
 \[
     \begin{pmatrix}
@@ -325,18 +319,18 @@ Sostituendo dei valori numerici per calcolare una specifica matrice di rotazione
 \end{par}
 
 \begin{matlabcode}
-% Esempio Numerico Per ZXY
+% Esempio numerico per ZXY
 phiNum = pi/6;   % 30 gradi
 thetaNum = pi/4; % 45 gradi
 psiNum = pi/3;   % 60 gradi
 
 R_ZXY_Num = double(subs(RZXY, {phi, theta, psi}, {phiNum, thetaNum, psiNum}));
 
-disp("Matrice Di Rotazione Numerica R_ZXY:");
+disp("Matrice di rotazione numerica R_ZXY:");
 disp(R_ZXY_Num);
 \end{matlabcode}
 \begin{matlaboutput}
-Matrice Di Rotazione Numerica R_ZXY:
+Matrice di rotazione numerica R_ZXY:
 \end{matlaboutput}
 \begin{matlaboutput}
     0.1268   -0.3536    0.9268
@@ -344,7 +338,7 @@ Matrice Di Rotazione Numerica R_ZXY:
    -0.6124    0.7071    0.3536
 \end{matlaboutput}
 
-\matlabheadingtwo{Analisi Singolarità Della Rotazione ZXY}
+\matlabheadingtwo{Analisi singolarità della rotazione ZXY}
 
 \begin{par}
 \begin{flushleft}
@@ -363,11 +357,11 @@ Si analizza il caso $\theta =\frac{\pi }{2}$.
 RZXY_Pi = RZ_Phi * RX_Theta_Pi2 * RY_Psi;
 RZXY_Pi = simplify(RZXY_Pi);
 
-disp("Matrice Rotazione R_ZXY (Con Theta = Pi/2):");
+disp("Matrice di rotazione R_ZXY (con theta = pi/2):");
 disp(RZXY_Pi);
 \end{matlabcode}
 \begin{matlaboutput}
-Matrice Rotazione R_ZXY (Con Theta = Pi/2):
+Matrice di rotazione R_ZXY (con theta = pi/2):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle \left(\begin{array}{ccc}
@@ -383,7 +377,7 @@ Anche in questo caso, la matrice semplificata mostra che gli angoli $\phi$ e $\p
 \end{flushleft}
 \end{par}
 
-\matlabheading{Matrice Di Rotazione Roll-Pitch-Yaw (Assi Fissi XYZ)}
+\matlabheading{Matrice di rotazione Roll-Pitch-Yaw (assi fissi XYZ)}
 
 \begin{par}
 \begin{flushleft}
@@ -393,9 +387,9 @@ Gli angoli di Roll-Pitch-Yaw sono comunemente usati in aeronautica e robotica. N
 
 \begin{itemize}
 \setlength{\itemsep}{-1ex}
-   \item{\begin{flushleft} \textbf{Roll} (Rollio): Rotazione di un angolo $\psi$ attorno all'asse fisso $X$. \end{flushleft}}
-   \item{\begin{flushleft} \textbf{Pitch} (Beccheggio): Rotazione di un angolo $\theta$ attorno all'asse fisso $Y$. \end{flushleft}}
-   \item{\begin{flushleft} \textbf{Yaw} (Imbardata): Rotazione di un angolo $\phi$ attorno all'asse fisso $Z$ (che corrisponde al prodotto in ordine inverso $\mathbf{R}_Z(\phi)\mathbf{R}_Y(\theta)\mathbf{R}_X(\psi)$). \end{flushleft}}
+   \item{\begin{flushleft} \textbf{Roll} (rollio): rotazione di un angolo $\psi$ attorno all'asse fisso $X$. \end{flushleft}}
+   \item{\begin{flushleft} \textbf{Pitch} (beccheggio): rotazione di un angolo $\theta$ attorno all'asse fisso $Y$. \end{flushleft}}
+   \item{\begin{flushleft} \textbf{Yaw} (imbardata): rotazione di un angolo $\phi$ attorno all'asse fisso $Z$ (che corrisponde al prodotto in ordine inverso $\mathbf{R}_Z(\phi)\mathbf{R}_Y(\theta)\mathbf{R}_X(\psi)$). \end{flushleft}}
 \end{itemize}
 
 \begin{par}
@@ -411,11 +405,11 @@ La matrice di rotazione risultante è:
 R_RPY = RZ_Phi * RY_Theta * RX_Psi;
 R_RPY = simplify(R_RPY);
 
-disp("Matrice Di Rotazione Simbolica R_RPY:");
+disp("Matrice di rotazione simbolica R_RPY:");
 disp(R_RPY);
 \end{matlabcode}
 \begin{matlaboutput}
-Matrice Di Rotazione Simbolica R_RPY:
+Matrice di rotazione simbolica R_RPY:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle \left(\begin{array}{ccc}
@@ -438,17 +432,17 @@ psiNum = pi/6;   % 30 gradi (Roll)
 
 R_RPY_Num = double(subs(R_RPY, {phi, theta, psi}, {phiNum, thetaNum, psiNum}));
 
-disp("Matrice Di Rotazione Numerica R_RPY:");
+disp("Matrice di rotazione numerica R_RPY:");
 disp(R_RPY_Num);
 \end{matlabcode}
 \begin{matlaboutput}
-Matrice Di Rotazione Numerica R_RPY:
+Matrice di rotazione numerica R_RPY:
          0   -0.8660    0.5000
     0.7071    0.3536    0.6124
    -0.7071    0.3536    0.6124
 \end{matlaboutput}
 
-\matlabheadingtwo{Singolarità Della Rotazione RPY}
+\matlabheadingtwo{Singolarità della rotazione RPY}
 
 \begin{par}
 \begin{flushleft}
@@ -463,16 +457,16 @@ Si analizza il caso con $\theta =\frac{\pi }{2}$.
 \end{par}
 
 \begin{matlabcode}
-% SINGOLARITÀ CON THETA = pi/2
+% Singolarità con theta = pi/2
 [RY_Theta_Pi2] = Compute_Rotation_Matrix(y, sym(pi)/2);
 R_RPY_Pi = RZ_Phi * RY_Theta_Pi2 * RX_Psi;
 R_RPY_Pi = simplify(R_RPY_Pi);
 
-disp("Matrice Di Rotazione R_RPY (Con Theta = Pi/2):");
+disp("Matrice di rotazione R_RPY (con theta = pi/2):");
 disp(R_RPY_Pi);
 \end{matlabcode}
 \begin{matlaboutput}
-Matrice Di Rotazione R_RPY (Con Theta = Pi/2):
+Matrice di rotazione R_RPY (con theta = pi/2):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle \left(\begin{array}{ccc}
@@ -488,15 +482,15 @@ La matrice risultante mostra che gli angoli $\phi$ (Yaw) e  $\psi$ (Roll) appaio
 \end{flushleft}
 \end{par}
 
-\matlabheadingtwo{Visualizzazione Rotazione ZXZ}
+\matlabheadingtwo{Visualizzazione rotazione ZXZ}
 
 \begin{matlabcode}
 phiNum = pi/4;
 thetaNum = pi/3;
 psiNum = pi/6;
 
-% Creazione Figura
-figure('Name', 'Visualizzazione Rotazione ZXZ', 'Color', 'w');
+% Creazione figura
+figure('Name', 'Visualizzazione rotazione ZXZ', 'Color', 'w');
 hold on;
 grid on;
 box on;
@@ -506,7 +500,7 @@ zlabel('Z', 'FontWeight', 'bold');
 axis equal;
 view(135, 22);
 
-% Colori Terne: Schiariti per la fissa, Saturi per la ruotata
+% Colori terne: schiariti per la fissa, saturi per la ruotata
 col_fixed_X = [0.90 0.55 0.55];
 col_fixed_Y = [0.55 0.85 0.55];
 col_fixed_Z = [0.55 0.65 0.95];
@@ -515,7 +509,7 @@ col_rot_X = [0.85 0.15 0.15];
 col_rot_Y = [0.15 0.65 0.20];
 col_rot_Z = [0.15 0.35 0.85];
 
-% Sistema di Riferimento Fisso (Tratteggiato all'origine)
+% Sistema di riferimento fisso (tratteggiato all'origine)
 hX_0 = quiver3(0, 0, 0, 1, 0, 0, 0, 'Color', col_fixed_X, 'LineStyle', '--', 'LineWidth', 1.6);
 hY_0 = quiver3(0, 0, 0, 0, 1, 0, 0, 'Color', col_fixed_Y, 'LineStyle', '--', 'LineWidth', 1.6);
 hZ_0 = quiver3(0, 0, 0, 0, 0, 1, 0, 'Color', col_fixed_Z, 'LineStyle', '--', 'LineWidth', 1.6);
@@ -523,7 +517,7 @@ text(1.08, 0, 0, 'X_0', 'FontSize', 10, 'Color', col_fixed_X, 'FontWeight', 'bol
 text(0, 1.08, 0, 'Y_0', 'FontSize', 10, 'Color', col_fixed_Y, 'FontWeight', 'bold');
 text(0, 0, 1.08, 'Z_0', 'FontSize', 10, 'Color', col_fixed_Z, 'FontWeight', 'bold');
 
-% Estrazione e Disegno Assi Ruotati (ZXZ)
+% Estrazione e disegno assi ruotati (ZXZ)
 X_Ruotato = RZXZ_Num(:, 1);
 Y_Ruotato = RZXZ_Num(:, 2);
 Z_Ruotato = RZXZ_Num(:, 3);
@@ -535,25 +529,25 @@ text(X_Ruotato(1)*1.1, X_Ruotato(2)*1.1, X_Ruotato(3)*1.1, 'X''', 'FontSize', 11
 text(Y_Ruotato(1)*1.1, Y_Ruotato(2)*1.1, Y_Ruotato(3)*1.1, 'Y''', 'FontSize', 11, 'Color', col_rot_Y, 'FontWeight', 'bold');
 text(Z_Ruotato(1)*1.1, Z_Ruotato(2)*1.1, Z_Ruotato(3)*1.1, 'Z''', 'FontSize', 11, 'Color', col_rot_Z, 'FontWeight', 'bold');
 
-title({'Rotazione ZXZ (Eulero Classica)', sprintf('\\phi = %.1f°, \\theta = %.1f°, \\psi = %.1f°', ...
+title({'Rotazione ZXZ (Eulero classica)', sprintf('\\phi = %.1f°, \\theta = %.1f°, \\psi = %.1f°', ...
     rad2deg(phiNum), rad2deg(thetaNum), rad2deg(psiNum))}, 'FontSize', 11, 'FontWeight', 'bold');
-legend([hX_0, hY_0, hZ_0, hX_r, hY_r, hZ_r], {'X_0 (Fisso)', 'Y_0 (Fisso)', 'Z_0 (Fisso)', 'X'' (Ruotato)', ...
-    'Y'' (Ruotato)', 'Z'' (Ruotato)'}, 'Location', 'bestoutside');
+legend([hX_0, hY_0, hZ_0, hX_r, hY_r, hZ_r], {'X_0 (fisso)', 'Y_0 (fisso)', 'Z_0 (fisso)', 'X'' (ruotato)', ...
+    'Y'' (ruotato)', 'Z'' (ruotato)'}, 'Location', 'bestoutside');
 hold off;
 \end{matlabcode}
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{E2_Angoli_Eulero_fig1.png}
 \end{figure}
-\matlabheadingtwo{Visualizzazione Rotazione ZXY}
+\matlabheadingtwo{Visualizzazione rotazione ZXY}
 
 \begin{matlabcode}
 phiNum = pi/6;
 thetaNum = pi/4;
 psiNum = pi/3;
 
-% Creazione Figura
-figure('Name', 'Visualizzazione Rotazione ZXY', 'Color', 'w');
+% Creazione figura
+figure('Name', 'Visualizzazione rotazione ZXY', 'Color', 'w');
 hold on;
 grid on;
 box on;
@@ -563,7 +557,7 @@ zlabel('Z', 'FontWeight', 'bold');
 axis equal;
 view(135, 22);
 
-% Sistema di Riferimento Fisso (Tratteggiato all'origine)
+% Sistema di riferimento fisso (tratteggiato all'origine)
 hX_0 = quiver3(0, 0, 0, 1, 0, 0, 0, 'Color', col_fixed_X, 'LineStyle', '--', 'LineWidth', 1.6);
 hY_0 = quiver3(0, 0, 0, 0, 1, 0, 0, 'Color', col_fixed_Y, 'LineStyle', '--', 'LineWidth', 1.6);
 hZ_0 = quiver3(0, 0, 0, 0, 0, 1, 0, 'Color', col_fixed_Z, 'LineStyle', '--', 'LineWidth', 1.6);
@@ -571,7 +565,7 @@ text(1.08, 0, 0, 'X_0', 'FontSize', 10, 'Color', col_fixed_X, 'FontWeight', 'bol
 text(0, 1.08, 0, 'Y_0', 'FontSize', 10, 'Color', col_fixed_Y, 'FontWeight', 'bold');
 text(0, 0, 1.08, 'Z_0', 'FontSize', 10, 'Color', col_fixed_Z, 'FontWeight', 'bold');
 
-% Estrazione e Disegno Assi Ruotati (ZXY)
+% Estrazione e disegno assi ruotati (ZXY)
 X_Ruotato = R_ZXY_Num(:, 1);
 Y_Ruotato = R_ZXY_Num(:, 2);
 Z_Ruotato = R_ZXY_Num(:, 3);
@@ -584,18 +578,18 @@ text(Y_Ruotato(1)*1.1, Y_Ruotato(2)*1.1, Y_Ruotato(3)*1.1, 'Y''', 'FontSize', 11
 text(Z_Ruotato(1)*1.1, Z_Ruotato(2)*1.1, Z_Ruotato(3)*1.1, 'Z''', 'FontSize', 11, 'Color', col_rot_Z, 'FontWeight', 'bold');
 
 title({'Rotazione ZXY', sprintf('\\phi = %.1f°, \\theta = %.1f°, \\psi = %.1f°', rad2deg(phiNum), rad2deg(thetaNum), rad2deg(psiNum))}, 'FontSize', 11, 'FontWeight', 'bold');
-legend([hX_0, hY_0, hZ_0, hX_r, hY_r, hZ_r], {'X_0 (Fisso)', 'Y_0 (Fisso)', 'Z_0 (Fisso)', 'X'' (Ruotato)', 'Y'' (Ruotato)', 'Z'' (Ruotato)'}, 'Location', 'bestoutside');
+legend([hX_0, hY_0, hZ_0, hX_r, hY_r, hZ_r], {'X_0 (fisso)', 'Y_0 (fisso)', 'Z_0 (fisso)', 'X'' (ruotato)', 'Y'' (ruotato)', 'Z'' (ruotato)'}, 'Location', 'bestoutside');
 hold off;
 \end{matlabcode}
 \begin{center}
 \includegraphics[width=1\linewidth]{E2_Angoli_Eulero_fig2.png}
 \end{center}
 
-\matlabheadingtwo{Visualizzazione Rotazione RPY}
+\matlabheadingtwo{Visualizzazione rotazione RPY}
 
 \begin{matlabcode}
-% Creazione Figura
-figure('Name', 'Visualizzazione Rotazione RPY', 'Color', 'w');
+% Creazione figura
+figure('Name', 'Visualizzazione rotazione RPY', 'Color', 'w');
 hold on;
 grid on;
 box on;
@@ -605,19 +599,19 @@ zlabel('Z', 'FontWeight', 'bold');
 axis equal;
 view(135, 22);
 
-% Sistema di Riferimento Fisso (Tratteggiato all'origine)
+% Sistema di riferimento fisso (tratteggiato all'origine)
 hX_0 = quiver3(0, 0, 0, 1, 0, 0, 0, 'Color', col_fixed_X, 'LineStyle', '--', 'LineWidth', 1.6);
 hY_0 = quiver3(0, 0, 0, 0, 1, 0, 0, 'Color', col_fixed_Y, 'LineStyle', '--', 'LineWidth', 1.6);
 hZ_0 = quiver3(0, 0, 0, 0, 0, 1, 0, 'Color', col_fixed_Z, 'LineStyle', '--', 'LineWidth', 1.6);
 text(1.08, 0, 0, 'X_0', 'FontSize', 10, 'Color', col_fixed_X, 'FontWeight', 'bold');
 text(0, 1.08, 0, 'Y_0', 'FontSize', 10, 'Color', col_fixed_Y, 'FontWeight', 'bold');
 text(0, 0, 1.08, 'Z_0', 'FontSize', 10, 'Color', col_fixed_Z, 'FontWeight', 'bold');
-% Ripristino Angoli RPY per il Titolo
+% Ripristino angoli RPY per il titolo
 phiNum = pi/2;
 thetaNum = pi/4;
 psiNum = pi/6;
 
-% Estrazione e Disegno Assi Ruotati (RPY)
+% Estrazione e disegno assi ruotati (RPY)
 X_Ruotato = R_RPY_Num(:, 1);
 Y_Ruotato = R_RPY_Num(:, 2);
 Z_Ruotato = R_RPY_Num(:, 3);
@@ -629,11 +623,11 @@ text(X_Ruotato(1)*1.1, X_Ruotato(2)*1.1, X_Ruotato(3)*1.1, 'X''', 'FontSize', 11
 text(Y_Ruotato(1)*1.1, Y_Ruotato(2)*1.1, Y_Ruotato(3)*1.1, 'Y''', 'FontSize', 11, 'Color', col_rot_Y, 'FontWeight', 'bold');
 text(Z_Ruotato(1)*1.1, Z_Ruotato(2)*1.1, Z_Ruotato(3)*1.1, 'Z''', 'FontSize', 11, 'Color', col_rot_Z, 'FontWeight', 'bold');
 
-title({'Rotazione RPY (Assi Fissi XYZ - Roll, Pitch, Yaw)', ...
+title({'Rotazione RPY (assi fissi XYZ - Roll, Pitch, Yaw)', ...
     sprintf('\\phi = %.1f°, \\theta = %.1f°, \\psi = %.1f°', rad2deg(phiNum), rad2deg(thetaNum), rad2deg(psiNum))}, ...
     'FontSize', 11, 'FontWeight', 'bold');
 legend([hX_0, hY_0, hZ_0, hX_r, hY_r, hZ_r], ...
-    {'X_0 (Fisso)', 'Y_0 (Fisso)', 'Z_0 (Fisso)', 'X'' (Ruotato)', 'Y'' (Ruotato)', 'Z'' (Ruotato)'}, ...
+    {'X_0 (fisso)', 'Y_0 (fisso)', 'Z_0 (fisso)', 'X'' (ruotato)', 'Y'' (ruotato)', 'Z'' (ruotato)'}, ...
     'Location', 'bestoutside');
 hold off;
 \end{matlabcode}

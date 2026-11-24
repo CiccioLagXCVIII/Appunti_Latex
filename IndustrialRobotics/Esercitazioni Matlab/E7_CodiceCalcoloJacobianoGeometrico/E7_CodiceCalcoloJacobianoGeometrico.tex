@@ -93,7 +93,7 @@
 \hypersetup{
     hidelinks,
     pdfauthor={Francesco Lo Verde},
-    pdftitle={Calcolo Jacobiano Geometrico}
+    pdftitle={Calcolo Jacobiano geometrico}
 }
 
 % BB SEGNALIBRI AVANZATI
@@ -106,7 +106,7 @@
 \begin{document}
 
 \label{T_82ff}
-\matlabtitle{Calcolo E Analisi Dello Jacobiano Geometrico Manipolatore Planare RR}
+\matlabtitle{Calcolo e analisi dello Jacobiano geometrico manipolatore planare RR}
 
 \begin{par}
 \begin{flushleft}
@@ -143,10 +143,10 @@ Si definiscono i parametri del manipolatore RR planare. Le lunghezze dei bracci 
 
 \begin{matlabcode}
 clc; clear; close all;
-% Variabili Di Giunto
+% Variabili di giunto
 syms q1 q2 real;
 
-% Lunghezza Bracci
+% Lunghezza bracci
 syms l1 l2 real;
 \end{matlabcode}
 
@@ -157,7 +157,7 @@ La cinematica del manipolatore si ottiene dalla tabella dei parametri di Denavit
 \end{par}
 
 \begin{matlabcode}
-% Definizione Tabelle DH Struttura
+% Definizione tabella DH struttura
 DH_Table = [q1, 0, 0, l1;
             q2, 0, 0, l2];
 % q1 = pi/4;
@@ -168,28 +168,28 @@ DH_Table = [q1, 0, 0, l1;
 
 \begin{par}
 \begin{flushleft}
-Per calcolare lo Jacobiano, è necessario conoscere la posizione e l'orientamento di ogni terna rispetto alla terna base ($RF_0$). Queste informazioni sono contenute nelle matrici di trasformazione omogenea $^{i-1} T_i$, che lega la terna $i$ alla terna $i-1$, calcolata a partire dalla riga i-esima della tabella DH. Per convenzione la matrice $^0 T_0 =I_{4\times 4}$.
+Per calcolare lo Jacobiano, è necessario conoscere la posizione e l'orientamento di ogni terna rispetto alla terna base ($RF_0$). Queste informazioni sono contenute nelle matrice di trasformazione omogenea $^{i-1} T_i$, che lega la terna $i$ alla terna $i-1$, calcolata a partire dalla riga i-esima della tabella DH. Per convenzione la matrice $^0 T_0 =I_{4\times 4}$.
 \end{flushleft}
 \end{par}
 
 \begin{matlabcode}
-% Calcolo Matrici Trasformazione E Rotazione Struttura
+% Calcolo matrici trasformazione e rotazione struttura
 [T, R] = Compute_DH_Transformations(DH_Table);
 \end{matlabcode}
 
 \begin{par}
 \begin{flushleft}
-La matrice di trasformazione cumulativa $^0 T_2$, descrive la posa (posizione e orientamento) della terna $2$ rispetto alla terna base $0$.
+La matrice di trasformazione cumulativa $^0 T_2$ descrive la posa (posizione e orientamento) della terna $2$ rispetto alla terna base $0$.
 \end{flushleft}
 \end{par}
 
 \begin{matlabcode}
 T02 = simplify(T(:,:,1) * T(:,:,2));
-fprintf('Matrice Di Trasformazione Omogenea ^{0}T_{2}');
+fprintf('Matrice di trasformazione omogenea ^(0)T_(2)');
 disp(T02);
 \end{matlabcode}
 \begin{matlaboutput}
-Matrice Di Trasformazione Omogenea ^{0}T_{2}
+Matrice di trasformazione omogenea ^(0)T_(2)
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle \left(\begin{array}{cccc}
@@ -213,7 +213,7 @@ Lo Jacobiano geometrico $J$ è una matrice 6xn le cui colonne $J_i$ sono calcola
     \renewcommand{\arraystretch}{1.2} % aumenta leggermente lo spazio tra le righe
     \begin{tabular}{|l|c|c|}
         \hline
-        \textbf{Tipo di Giunto} & \textbf{Contributo Lineare} \(\mathbf{J}_{L_{i}}\) & \textbf{Contributo Angolare} \(\mathbf{J}_{A_{i}}\) \\
+        \textbf{Tipo di giunto} & \textbf{Contributo lineare} \(\mathbf{J}_{L_{i}}\) & \textbf{Contributo angolare} \(\mathbf{J}_{A_{i}}\) \\
         \hline
         \textit{Prismatico} & \(z_{i-1}\) & \(\mathbf{0}_{3 \times 1}\) \\
         \hline
@@ -231,7 +231,7 @@ Lo Jacobiano geometrico $J$ è una matrice 6xn le cui colonne $J_i$ sono calcola
 \end{itemize}
 \vspace{5mm}
 \begin{matlabcode}
-% Estrazioni Matrici Singole
+% Estrazioni matrici singole
 T00 = eye(4);
 T01 = T(:,:,1);
 \end{matlabcode}
@@ -249,7 +249,7 @@ Il vettore $p_{0,i-1}$ corrisponde alla \textbf{quarta colonna} (il vettore di t
 \end{par}
 
 \begin{matlabcode}
-% Valori Per J1
+% Valori per J1
 z0 = T00(1:3,3);
 fprintf('Vettore z0:');
 disp(z0);
@@ -265,11 +265,11 @@ Vettore z0:
 \begin{matlabcode}
 
 p00 = T00(1:3,4);
-fprintf('Vettore p_{0,0}:');
+fprintf('Vettore p_(0,0):');
 disp(p00);
 \end{matlabcode}
 \begin{matlaboutput}
-Vettore p_{0,0}:
+Vettore p_(0,0):
 \end{matlaboutput}
 \begin{matlaboutput}
      0
@@ -278,7 +278,7 @@ Vettore p_{0,0}:
 \end{matlaboutput}
 \begin{matlabcode}
 
-% Valori Per J2
+% Valori per J2
 z1 = T01(1:3,3);
 fprintf('Vettore z1:');
 disp(z1);
@@ -298,11 +298,11 @@ $
 \newpage
 \begin{matlabcode}
 p01 = T01(1:3,4);
-fprintf('Vettore p_{0,1}:');
+fprintf('Vettore p_(0,1):');
 disp(p01);
 \end{matlabcode}
 \begin{matlaboutput}
-Vettore p_{0,1}:
+Vettore p_(0,1):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle \left(\begin{array}{c}
@@ -313,11 +313,11 @@ l_1 \,\sin \left(q_1 \right)\\
 \end{matlabsymbolicoutput}
 \begin{matlabcode}
 p0e = T02(1:3,4);
-fprintf('Vettore p_{0,e}:');
+fprintf('Vettore p_(0,e):');
 disp(p0e);
 \end{matlabcode}
 \begin{matlaboutput}
-Vettore p_{0,e}:
+Vettore p_(0,e):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle \left(\begin{array}{c}
@@ -328,11 +328,11 @@ l_2 \,\sin \left(q_1 +q_2 \right)+l_1 \,\sin \left(q_1 \right)\\
 \end{matlabsymbolicoutput}
 \begin{matlabcode}
 p1e = p0e - p01;
-% Contributi Angolari
+% Contributi angolari
 J_A1 = z0;
 J_A2 = z1;
 
-% Contributi Lineari
+% Contributi lineari
 J_L1 = cross(z0, p0e - p00);
 J_L2 = cross(z1, p1e);
 
@@ -377,20 +377,20 @@ l_2 \,\cos \left(q_1 +q_2 \right)\\
 
 \begin{par}
 \begin{flushleft}
-A questo punto concatenando i due vettori si ottiene lo \textbf{Jacobiano Geometrico:}
+A questo punto concatenando i due vettori si ottiene lo \textbf{Jacobiano geometrico:}
 \end{flushleft}
 \end{par}
 
 \begin{matlabcode}
-% Costruzione Jacobiano Geometrico
+% Costruzione Jacobiano geometrico
 J_q = [J1, J2];
 J_q = simplify(J_q);
 
-fprintf('Jacobiano Geometrico Manipolatore RR Planare Simbolico');
+fprintf('Jacobiano geometrico manipolatore RR planare simbolico');
 disp(J_q);
 \end{matlabcode}
 \begin{matlaboutput}
-Jacobiano Geometrico Manipolatore RR Planare Simbolico
+Jacobiano geometrico manipolatore RR planare simbolico
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle \left(\begin{array}{cc}
@@ -405,7 +405,7 @@ l_2 \,\cos \left(q_1 +q_2 \right)+l_1 \,\cos \left(q_1 \right) & l_2 \,\cos \lef
 
 \vspace{1em}
 
-\matlabheadingtwo{Analisi Delle Configurazioni Singolari Dello Jacobiano}
+\matlabheadingtwo{Analisi delle configurazioni singolari dello Jacobiano}
 \begin{par}
 \begin{flushleft}
 Le singolarità cinematiche si verificano nelle configurazioni in cui il manipolatore perde la capacità di muoversi in una o più direzioni dello spazio operativo. Matematicamente, questo accade quando la matrice Jacobiana perde di rango. Per un manipolatore planare, si è interessati principalmente al movimento nel piano XY, quindi si analizza la sottomatrice di posizione dello Jacobiano ($2\times 2$) che lega le velocità dei giunti alle velocità lineari planari dell'end-effector.
@@ -413,13 +413,13 @@ Le singolarità cinematiche si verificano nelle configurazioni in cui il manipol
 \end{par}
 
 \begin{matlabcode}
-% Estrazione Jacobiano Di Posizione Planare (Prime Due Righe)
+% Estrazione Jacobiano di posizione planare (prime due righe)
 J_r = J_q(1:2,1:2);
-fprintf('Jacobiano Di Posizione Manipolatore RR Planare Simbolico (J_r):');
+fprintf('Jacobiano di posizione manipolatore RR planare simbolico (J_r):');
 disp(J_r);
 \end{matlabcode}
 \begin{matlaboutput}
-Jacobiano Di Posizione Manipolatore RR Planare Simbolico (J_r):
+Jacobiano di posizione manipolatore RR planare simbolico (J_r):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle \left(\begin{array}{cc}
@@ -435,16 +435,16 @@ Le configurazioni singolari si trovano cercando i valori delle variabili di giun
 \end{par}
 
 \begin{matlabcode}
-% Calcolo Determinante Jacobiano Di Posizione
+% Calcolo determinante Jacobiano di posizione
 detJr = det(J_r);
 detJr = simplify(detJr);
 
-fprintf('Determinante Jacobiano Di Posizione:');
+fprintf('Determinante Jacobiano di posizione:');
 disp(detJr);
 \end{matlabcode}
 
 \begin{matlaboutput}
-Determinante Jacobiano Di Posizione:
+Determinante Jacobiano di posizione:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle l_1 \,l_2 \,\sin \left(q_2 \right)$
@@ -458,12 +458,12 @@ Determinante Jacobiano Di Posizione:
 % params = k
 solDetJr_1 = subs(solDetJr, params, 0);
 solDetJr_2 = subs(solDetJr, params, 1);
-fprintf('Valori Per Cui Determinante Jacobiano Nullo:');
+fprintf('Valori per cui il determinante dello Jacobiano è nullo:');
 disp(solDetJr_1);
 disp(solDetJr_2);
 \end{matlabcode}
 \begin{matlaboutput}
-Valori Per Cui Determinante Jacobiano Nullo:
+Valori per cui il determinante dello Jacobiano è nullo:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 $\displaystyle
@@ -479,10 +479,10 @@ Il risultato dell'equazione $\det(J_r )=0$ fornisce le configurazioni di singola
 \end{flushleft}
 \end{par}
 
-\matlabheadingtwo{Valutazione Numerica Dello Jacobiano In Configurazione Specifica}
+\matlabheadingtwo{Valutazione numerica dello Jacobiano in configurazione specifica}
 
 \begin{matlabcode}
-% Definizione Valori Numerici
+% Definizione valori numerici
 q1_val = pi/4;
 q2_val = pi/2;
 l1_val = 1;
@@ -491,11 +491,11 @@ l2_val = 0.8;
 J_q_num = subs(J_q, {q1, q2, l1, l2}, {q1_val, q2_val, l1_val, l2_val});
 J_r_num = subs(J_r, {q1, q2, l1, l2}, {q1_val, q2_val, l1_val, l2_val});
 detJr_num = subs(detJr, {q1, q2, l1, l2}, {q1_val, q2_val, l1_val, l2_val});
-fprintf('Jacobiano Geometrico Numerico J_q:');
+fprintf('Jacobiano geometrico numerico J_q:');
 disp(double(J_q_num));
 \end{matlabcode}
 \begin{matlaboutput}
-Jacobiano Geometrico Numerico J_q:
+Jacobiano geometrico numerico J_q:
 \end{matlaboutput}
 \begin{matlaboutput}
    -1.2728   -0.5657
@@ -506,32 +506,32 @@ Jacobiano Geometrico Numerico J_q:
     1.0000    1.0000
 \end{matlaboutput}
 \begin{matlabcode}
-fprintf('Jacobiano Di Posizione Numerico J_r:');
+fprintf('Jacobiano di posizione numerico J_r:');
 disp(double(J_r_num));
 \end{matlabcode}
 \begin{matlaboutput}
-Jacobiano Di Posizione Numerico J_r:
+Jacobiano di posizione numerico J_r:
    -1.2728   -0.5657
     0.1414   -0.5657
 \end{matlaboutput}
 \begin{matlabcode}
-fprintf('Valore del Determinante dello Jacobiano Di Posizione:');
+fprintf('Valore del determinante dello Jacobiano di posizione:');
 disp(double(detJr_num));
 \end{matlabcode}
 \begin{matlaboutput}
-Valore del Determinante dello Jacobiano Di Posizione:
+Valore del determinante dello Jacobiano di posizione:
     0.8000
 \end{matlaboutput}
 \begin{matlabcode}
-% Verifica Singolarità
+% Verifica singolarità
 if abs(double(detJr_num)) < 1e-10
-    fprintf('Configurazione Singolare\n');
+    fprintf('Configurazione singolare\n');
 else
-    fprintf('Configurazione NON Singolare.\n');
+    fprintf('Configurazione NON singolare.\n');
 end
 \end{matlabcode}
 \begin{matlaboutput}
-Configurazione NON Singolare.
+Configurazione NON singolare.
 \end{matlaboutput}
 
 \end{document}

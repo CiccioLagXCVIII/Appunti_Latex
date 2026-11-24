@@ -93,7 +93,7 @@
 \hypersetup{
     hidelinks,
     pdfauthor={Francesco Lo Verde},
-    pdftitle={Relazione Tra Velocità Angolare E Angoli di Eulero RPY}
+    pdftitle={Relazione tra velocità angolare e angoli di Eulero RPY}
 }
 
 % BB SEGNALIBRI AVANZATI
@@ -105,7 +105,7 @@
 
 \begin{document}
 
-\matlabtitle{Relazione Tra Velocità Angolare E Angoli Di Eulero RPY}
+\matlabtitle{Relazione tra velocità angolare e angoli di Eulero RPY}
 
 \begin{par}
 \begin{flushleft}
@@ -115,13 +115,13 @@ L'orientamento di un corpo rigido viene spesso descritto tramite una sequenza di
 
 \begin{par}
 \begin{flushleft}
-La matrice di rotazione totale \textbf{R} che trasforma le coordinate da un sistema di riferimento solidale al corpo al sistema di riferimento fisso rappresenta una sequenza di rotazioni definite rispetto agli assi del sistema di riferimento fisso nell'ordine \textit{X,Y,Z}, oppure per la cinematica del corpo, da una sequenza di rotazioni rispetto agli assi del sistema solidale (\textit{\textbf{intrinseche}}) nell'ordine \textit{Z,Y',X''}.
+La matrice di rotazione totale $\mathbf{R}$, che trasforma le coordinate dal sistema di riferimento solidale al corpo a quello fisso, descrive una sequenza di rotazioni definite rispetto agli assi fissi nell'ordine $X, Y, Z$ oppure, per la cinematica del corpo, una sequenza equivalente di rotazioni rispetto agli assi del sistema solidale (\textit{\textbf{intrinseche}}) nell'ordine $Z, Y', X''$.
 \end{flushleft}
 \end{par}
 
 \begin{par}
 \begin{flushleft}
-L'obiettivo è determinare la matrice di trasformazione $\mathbf{M}(\phi ,\theta )$ che lega le derivate temporali degli angoli di Eulero ${\bigl\lbrack \dot{\phi} ,\dot{\theta} ,\dot{\psi} \bigr\rbrack }^T$, al vettore velocità angolare istantanea del corpo $\boldsymbol{\omega}={\bigl\lbrack \omega_x ,\omega_y ,\omega_z \bigr\rbrack }^T$, espresso nel sistema di riferimento fisso (della base). Dove:
+L'obiettivo è determinare la matrice di trasformazione $\mathbf{M}(\phi ,\theta )$ che lega le derivate temporali degli angoli di Eulero ${\bigl\lbrack \dot{\phi} ,\dot{\theta} ,\dot{\psi} \bigr\rbrack }^T$ al vettore velocità angolare istantanea del corpo $\boldsymbol{\omega}={\bigl\lbrack \omega_x ,\omega_y ,\omega_z \bigr\rbrack }^T$, espresso nel sistema di riferimento fisso (della base). Dove:
 \end{flushleft}
 \end{par}
 
@@ -163,10 +163,10 @@ Si definiscono tutte le variabili simboliche che includono gli angoli di Eulero 
 \begin{matlabcode}
 clc; clear; close all;
 
-% Definizioni Angoli Eulero
+% Definizioni angoli di Eulero
 syms psi theta phi real;
 
-% Definizioni Derivate Angoli Eulero
+% Definizioni derivate angoli di Eulero
 syms psi_dot theta_dot phi_dot real;
 \end{matlabcode}
 
@@ -184,23 +184,23 @@ La convenzione \textbf{RPY} (\textit{ZYX}) descrive una rotazione totale \textbf
 
 \newpage
 \begin{matlabcode}
-% Matrice Rotazione Attorno X (Roll)
+% Matrice rotazione attorno X (Roll)
 Rx = [1, 0,        0;
       0, cos(psi), -sin(psi);
       0, sin(psi), cos(psi)];
 
-% Matrice Rotazione Attorno Y (Pitch)
+% Matrice rotazione attorno Y (Pitch)
 Ry = [cos(theta),  0, sin(theta);
       0,           1, 0;
       -sin(theta), 0, cos(theta)];
 
-% Matrice Rotazione Attorno Z (Yaw)
+% Matrice rotazione attorno Z (Yaw)
 Rz = [cos(phi), -sin(phi), 0;
       sin(phi), cos(phi),  0;
       0,        0,         1];
 
-% Matrice Rotazione Finale
-% L'Ordine È Importante: La Prima Rotazione Va Più A Destra
+% Matrice rotazione finale
+% L'ordine è importante: la prima rotazione va più a destra
 R_RPY = Rz * Ry * Rx;
 R_RPY = simplify(R_RPY);
 
@@ -289,12 +289,12 @@ Ry_dot = dRy_dtheta * theta_dot;
 dRz_dphi = diff(Rz, phi);
 Rz_dot = dRz_dphi * phi_dot;
 
-fprintf('Derivata Temporale Di Rx (Rx_dot):');
+fprintf('Derivata temporale di Rx (Rx_dot):');
 
 disp(Rx_dot);
 \end{matlabcode}
 \begin{matlaboutput}
-Derivata Temporale Di Rx (Rx_dot):
+Derivata temporale di Rx (Rx_dot):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle \left(\begin{array}{ccc}
@@ -304,12 +304,12 @@ Derivata Temporale Di Rx (Rx_dot):
 \end{array}\right)$
 \end{matlabsymbolicoutput}
 \begin{matlabcode}
-fprintf('Derivata Temporale Di Ry (Ry_dot):');
+fprintf('Derivata temporale di Ry (Ry_dot):');
 
 disp(Ry_dot);
 \end{matlabcode}
 \begin{matlaboutput}
-Derivata Temporale Di Ry (Ry_dot):
+Derivata temporale di Ry (Ry_dot):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle \left(\begin{array}{ccc}
@@ -319,12 +319,12 @@ Derivata Temporale Di Ry (Ry_dot):
 \end{array}\right)$
 \end{matlabsymbolicoutput}
 \begin{matlabcode}
-fprintf('Derivata Temporale Di Rz (Rz_dot):');
+fprintf('Derivata temporale di Rz (Rz_dot):');
 
 disp(Rz_dot);
 \end{matlabcode}
 \begin{matlaboutput}
-Derivata Temporale Di Rz (Rz_dot):
+Derivata temporale di Rz (Rz_dot):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle \left(\begin{array}{ccc}
@@ -352,7 +352,7 @@ Si nota che
 \]
 
 \newpage
-\matlabheadingtwo{Derivazione Della Matrice Di Trasformazione Cinematica RPY}
+\matlabheadingtwo{Derivazione della matrice di trasformazione cinematica RPY}
 
 \begin{par}
 \begin{flushleft}
@@ -393,20 +393,20 @@ Ricordando che la trasposta di un prodotto di matrici è uguale al prodotto dell
 \]
 
 \begin{matlabcode}
-% Calcolo Trasposte
+% Calcolo trasposte
 Rx_Trasp = Rx.';
 Ry_Trasp = Ry.';
 Rz_Trasp = Rz.';
 
-% Calcolo Prodotto Trasposte
+% Calcolo prodotto trasposte
 R_RPY_Trasp = Rx_Trasp * Ry_Trasp * Rz_Trasp;
-fprintf('Trasposta Di R_RPY (R_RPY_Trasp):');
+fprintf('Trasposta di R_RPY (R_RPY_Trasp):');
 
 R_RPY_Trasp = simplify(R_RPY_Trasp);
 disp(R_RPY_Trasp);
 \end{matlabcode}
 \begin{matlaboutput}
-Trasposta Di R_RPY (R_RPY_Trasp):
+Trasposta di R_RPY (R_RPY_Trasp):
 \end{matlaboutput}
 
 \begin{matlabsymbolicoutput}
@@ -418,7 +418,7 @@ s\left(\phi \right)\,s\left(\psi \right)+c\left(\phi \right)\,c\left(\psi \right
 \end{matlabsymbolicoutput}
 
 \begin{matlabcode}
-% Derivata Temporale Di R_RPY tramite regola di Leibniz:
+% Derivata temporale di R_RPY tramite regola di Leibniz:
 R_RPY_dot = Rz_dot * Ry * Rx + Rz * Ry_dot * Rx + Rz * Ry * Rx_dot;
 \end{matlabcode}
 
@@ -506,12 +506,12 @@ Termine 3:
 
 S_omega = Termine1 + Termine2 + Termine3;
 S_omega = simplify(S_omega);
-fprintf('Matrice Velocità Angolare Totale S(omega):');
+fprintf('Matrice velocità angolare totale S(omega):');
 
 disp(S_omega);
 \end{matlabcode}
 \begin{matlaboutput}
-Matrice Velocità Angolare Totale S(omega):
+Matrice velocità angolare totale S(omega):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle \begin{pmatrix}
@@ -536,7 +536,7 @@ Verifica simbolica (R_RPY_dot * R_RPY_Trasp - S_omega == 0):
 
 \begin{par}
 \begin{flushleft}
-Si nota che è una matrice antisimmetrica e quindi si possono estrarre le componenti di $\omega$ direttamente dalla matrice $S(\omega )$ calcolata, cioè:
+Si nota che S(\omega) è una matrice antisimmetrica e quindi si possono estrarre le componenti di $\omega$ direttamente dalla matrice $S(\omega )$ calcolata, cioè:
 \end{flushleft}
 \end{par}
 
@@ -565,18 +565,18 @@ Come si nota dal vettore $\omega$ appena calcolato, ogni sua componente è una c
 
 \vspace{1em}
 
-\matlabheadingtwo{Costruzione Della Matrice Di Trasformazione M}
+\matlabheadingtwo{Costruzione della matrice di trasformazione M}
 
 \begin{matlabcode}
 syms wx wy wz real;
 
 omega_vec = [S_omega(3,2); S_omega(1,3); S_omega(2,1)];
 omega_vec = simplify(omega_vec);
-fprintf('Vettore Velocità Angolare omega estratto da S(omega):');
+fprintf('Vettore velocità angolare omega estratto da S(omega):');
 disp(omega_vec);
 \end{matlabcode}
 \begin{matlaboutput}
-Vettore Velocità Angolare omega estratto da S(omega):
+Vettore velocità angolare omega estratto da S(omega):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle \left(\begin{array}{c}
@@ -591,12 +591,12 @@ vettVel = [wx; wy; wz];
 vettDer = [phi_dot; theta_dot; psi_dot];
 M = simplify(jacobian(omega_vec, vettDer));
 
-fprintf('Matrice M Completa:\n');
+fprintf('Matrice M completa:\n');
 
 disp(M);
 \end{matlabcode}
 \begin{matlaboutput}
-Matrice M Completa:
+Matrice M completa:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle \left(\begin{array}{ccc}
@@ -608,11 +608,11 @@ Matrice M Completa:
 \begin{matlabcode}
 eqSystem = vettVel == M * vettDer;
 
-fprintf('Sistema Da Risolvere:');
+fprintf('Sistema da risolvere:');
 disp(eqSystem);
 \end{matlabcode}
 \begin{matlaboutput}
-Sistema Da Risolvere:
+Sistema da risolvere:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle \left(\begin{array}{c}
@@ -624,23 +624,23 @@ Sistema Da Risolvere:
 \newpage
 \begin{matlabcode}
 detM = simplify(det(M));
-fprintf('Determinante Matrice M:');
+fprintf('Determinante matrice M:');
 disp(detM);
 \end{matlabcode}
 \begin{matlaboutput}
-Determinante Matrice M:
+Determinante matrice M:
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle -\cos \left(\theta \right)$
 \end{matlabsymbolicoutput}
 \begin{matlabcode}
 [singTheta, ~, conds] = solve(detM == 0, theta, 'ReturnConditions', true);
-fprintf('Configurazioni Singolari (det(M) = 0 -> theta =):\n');
+fprintf('Configurazioni singolari (det(M) = 0 -> theta =):\n');
 disp(singTheta);
 disp(conds);
 \end{matlabcode}
 \begin{matlaboutput}
-Configurazioni Singolari (det(M) = 0 -> theta =):
+Configurazioni singolari (det(M) = 0 -> theta =):
 \end{matlaboutput}
 \begin{matlabsymbolicoutput}
 \hskip1em $\displaystyle \frac{\pi }{2}+\pi \,k$
@@ -656,7 +656,7 @@ Questa matrice fornisce la relazione tra $\omega$ e gli angoli di Eulero. Se $\d
 \end{par}
 
 \vspace{1em}
-\matlabheadingtwo{Analisi E Interpretazione Delle Singolarità Di Rappresentazione RPY}
+\matlabheadingtwo{Analisi e interpretazione delle singolarità di rappresentazione RPY}
 \begin{par}
 \begin{flushleft}
 Come calcolato, il determinante della matrice di trasformazione è $-\cos (\theta )$.
@@ -675,13 +675,13 @@ La relazione $\omega =M(\phi ,\theta )\;\;\left(\begin{array}{c}
 
 \begin{par}
 \begin{flushleft}
-Questa condizione si verifica quando l'angolo di \textit{Pitch}, $\theta$ , è uguale a $\pm \frac{\pi }{2}$ radianti (ovvero $\pm 90^{\circ }$) ed è nota come \textbf{singolarità di rappresentazione (o gimbal lock)} e rappresenta un punto critico. Quando $\theta =\pm \frac{\pi }{2}$, due assi di rotazione (Roll attorno a $X$ e Yaw attorno a $Z$ nella sequenza RPY) si allineano, rendendo le rispettive rotazioni indistinguibili. \textit{Il sistema perde un }\textit{\textbf{grado di libertà (DoF)}}.
+Questa condizione si verifica quando l'angolo di \textit{Pitch}, $\theta$ , è uguale a $\pm \frac{\pi }{2}$ radianti (ovvero $\pm 90^{\circ }$) è nota come \textbf{singolarità di rappresentazione (o gimbal lock)} e rappresenta un punto critico. Quando $\theta =\pm \frac{\pi }{2}$, due assi di rotazione (Roll attorno a $X$ e Yaw attorno a $Z$ nella sequenza RPY) si allineano, rendendo le rispettive rotazioni indistinguibili. \textit{Il sistema perde un }\textit{\textbf{grado di libertà (DoF)}}.
 \end{flushleft}
 \end{par}
 
 \begin{par}
 \begin{flushleft}
-Di conseguenza, \underline{per una data velocità angolare }$\omega$\underline{, non esiste una soluzione unica per le velocità degli angoli }$\dot{\phi}$\underline{ e }$\dot{\psi}$. Questo rende la rappresentazione RPY inadeguata e instabile in prossimità di queste configurazioni singolari.
+Di conseguenza, \underline{per una data velocità angolare $\omega$ non esiste una soluzione unica per le velocità degli angoli }$\dot{\phi}$\underline{ e }$\dot{\psi}$. Questo rende la rappresentazione RPY inadeguata e instabile in prossimità di queste configurazioni singolari.
 \end{flushleft}
 \end{par}
 

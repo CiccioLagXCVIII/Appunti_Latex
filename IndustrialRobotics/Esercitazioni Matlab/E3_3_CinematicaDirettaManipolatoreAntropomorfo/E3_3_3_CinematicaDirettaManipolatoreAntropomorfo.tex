@@ -119,7 +119,7 @@
 \hypersetup{
     hidelinks,
     pdfauthor={Francesco Lo Verde},
-    pdftitle={Cinematica Diretta Manipolatore Antropomorfo - Configurazione Orizzontale}
+    pdftitle={Appendice E3.3.B -- Matrice di rotazione 0R6}
 }
 
 % BB SEGNALIBRI AVANZATI
@@ -136,16 +136,15 @@
 \begin{lrbox}{\rotpagebox}
 \begin{minipage}[t][\textwidth][t]{\textheight}
 \vspace{0pt}
-\subsection*{Cinematica Diretta Completa Del Manipolatore Antropomorfo}
+\subsection*{Appendice E3.3.B -- Matrice di rotazione ${}^{0}R_{6}$}
 
 \begin{matlabcode}
-T06 = simplify(T06, 'Steps', 50);
-
-fprintf('Matrice Di Trasformazione Omogenea Totale ^(0)T_(6):\n');
-disp(T06);
+R06 = simplify(R06, 'Steps', 50);
+fprintf('Matrice di rotazione ^(0)R_(6):\n');
+disp(R06);
 \end{matlabcode}
 \begin{matlaboutput}
-Matrice Di Trasformazione Omogenea Totale ^{0}T_{6}:
+Matrice di rotazione ^(0)R_(6):
 \end{matlaboutput}
 
 \vspace{10pt}
@@ -153,12 +152,11 @@ Matrice Di Trasformazione Omogenea Totale ^{0}T_{6}:
 \renewcommand{\arraystretch}{1.85}
 \setlength{\arraycolsep}{8pt}
 \resizebox{\linewidth}{!}{$\displaystyle
-{}^{0}\mathbf{T}_{6}(\mathbf{q}) =
+{}^{0}\mathbf{R}_{6}(\mathbf{q}) =
 \begin{pmatrix}
-\sin \left(q_6 \right)\,\sigma_5 +\cos \left(q_6 \right)\,\sigma_2  & \cos \left(q_6 \right)\,\sigma_5 -\sin \left(q_6 \right)\,\sigma_2  & -\sin \left(q_5 \right)\,\sigma_6 -\cos \left(q_5 \right)\,\sigma_7  & a_2 \,\cos \left(q_1 \right)\,\cos \left(q_2 \right)-d_4 \,\sin \left(q_2 +q_3 \right)\,\cos \left(q_1 \right)-d_6 \,\sin \left(q_2 +q_3 \right)\,\cos \left(q_1 \right)\,\cos \left(q_5 \right)+a_3 \,\cos \left(q_1 \right)\,\cos \left(q_2 \right)\,\cos \left(q_3 \right)-a_3 \,\cos \left(q_1 \right)\,\sin \left(q_2 \right)\,\sin \left(q_3 \right)-d_6 \,\sin \left(q_1 \right)\,\sin \left(q_4 \right)\,\sin \left(q_5 \right)+d_6 \,\cos \left(q_1 \right)\,\cos \left(q_4 \right)\,\sin \left(q_2 \right)\,\sin \left(q_3 \right)\,\sin \left(q_5 \right)-d_6 \,\cos \left(q_1 \right)\,\cos \left(q_2 \right)\,\cos \left(q_3 \right)\,\cos \left(q_4 \right)\,\sin \left(q_5 \right)\\
--\sin \left(q_6 \right)\,\sigma_4 -\cos \left(q_6 \right)\,\sigma_3  & \sin \left(q_6 \right)\,\sigma_3 -\cos \left(q_6 \right)\,\sigma_4  & \sin \left(q_5 \right)\,\sigma_8 -\cos \left(q_5 \right)\,\sigma_9  & a_2 \,\cos \left(q_2 \right)\,\sin \left(q_1 \right)-d_4 \,\sin \left(q_2 +q_3 \right)\,\sin \left(q_1 \right)-d_6 \,\sin \left(q_2 +q_3 \right)\,\cos \left(q_5 \right)\,\sin \left(q_1 \right)+a_3 \,\cos \left(q_2 \right)\,\cos \left(q_3 \right)\,\sin \left(q_1 \right)+d_6 \,\cos \left(q_1 \right)\,\sin \left(q_4 \right)\,\sin \left(q_5 \right)-a_3 \,\sin \left(q_1 \right)\,\sin \left(q_2 \right)\,\sin \left(q_3 \right)-d_6 \,\cos \left(q_2 \right)\,\cos \left(q_3 \right)\,\cos \left(q_4 \right)\,\sin \left(q_1 \right)\,\sin \left(q_5 \right)+d_6 \,\cos \left(q_4 \right)\,\sin \left(q_1 \right)\,\sin \left(q_2 \right)\,\sin \left(q_3 \right)\,\sin \left(q_5 \right)\\
-\sin \left(q_2 +q_3 \right)\,\sin \left(q_4 \right)\,\sin \left(q_6 \right)-\cos \left(q_6 \right)\,\sigma_1  & \sin \left(q_6 \right)\,\sigma_1 +\sin \left(q_2 +q_3 \right)\,\cos \left(q_6 \right)\,\sin \left(q_4 \right) & \sin \left(q_2 +q_3 \right)\,\cos \left(q_4 \right)\,\sin \left(q_5 \right)-\cos \left(q_2 +q_3 \right)\,\cos \left(q_5 \right) & \frac{d_6 \,\sin \left(q_2 +q_3 \right)\,\sin \left(q_4 +q_5 \right)}{2}-a_3 \,\sin \left(q_2 +q_3 \right)-a_2 \,\sin \left(q_2 \right)-d_4 \,\cos \left(q_2 +q_3 \right)-d_6 \,\cos \left(q_2 +q_3 \right)\,\cos \left(q_5 \right)-\frac{d_6 \,\sin \left(q_4 -q_5 \right)\,\sin \left(q_2 +q_3 \right)}{2}\\
-0 & 0 & 0 & 1
+\sin \left(q_6 \right)\,\sigma_5 +\cos \left(q_6 \right)\,\sigma_2  & \cos \left(q_6 \right)\,\sigma_5 -\sin \left(q_6 \right)\,\sigma_2  & -\sin \left(q_5 \right)\,\sigma_6 -\cos \left(q_5 \right)\,\sigma_7 \\
+-\sin \left(q_6 \right)\,\sigma_4 -\cos \left(q_6 \right)\,\sigma_3  & \sin \left(q_6 \right)\,\sigma_3 -\cos \left(q_6 \right)\,\sigma_4  & \sin \left(q_5 \right)\,\sigma_8 -\cos \left(q_5 \right)\,\sigma_9 \\
+\sin \left(q_2 +q_3 \right)\,\sin \left(q_4 \right)\,\sin \left(q_6 \right)-\cos \left(q_6 \right)\,\sigma_1  & \sin \left(q_6 \right)\,\sigma_1 +\sin \left(q_2 +q_3 \right)\,\cos \left(q_6 \right)\,\sin \left(q_4 \right) & \sin \left(q_2 +q_3 \right)\,\cos \left(q_4 \right)\,\sin \left(q_5 \right)-\cos \left(q_2 +q_3 \right)\,\cos \left(q_5 \right)
 \end{pmatrix}
 $}
 \end{matlabsymbolicoutput}
@@ -167,12 +165,12 @@ $}
 
 \[
 \begin{aligned}
-\sigma_1 &= \cos \left(q_2 +q_3 \right)\,\sin \left(q_5 \right)+\sin \left(q_2 +q_3 \right)\,\cos \left(q_4 \right)\,\cos \left(q_5 \right) &\hspace{2.2cm} \sigma_6 &= \sin \left(q_1 \right)\,\sin \left(q_4 \right)+\cos \left(q_4 \right)\,\sigma_{10}\\
-\sigma_2 &= \cos \left(q_5 \right)\,\sigma_6 -\sin \left(q_5 \right)\,\sigma_7 &\hspace{2.2cm} \sigma_7 &= \cos \left(q_1 \right)\,\cos \left(q_2 \right)\,\sin \left(q_3 \right)+\cos \left(q_1 \right)\,\cos \left(q_3 \right)\,\sin \left(q_2 \right) \\
-\sigma_3 &= \cos \left(q_5 \right)\,\sigma_8 +\sin \left(q_5 \right)\,\sigma_9 &\hspace{2.2cm} \sigma_8 &= \cos \left(q_1 \right)\,\sin \left(q_4 \right)+\cos \left(q_4 \right)\,\sigma_{11} \\
-\sigma_4 &= \cos \left(q_1 \right)\,\cos \left(q_4 \right)-\sin \left(q_4 \right)\,\sigma_{11} &\hspace{2.2cm} \sigma_9 &= \cos \left(q_2 \right)\,\sin \left(q_1 \right)\,\sin \left(q_3 \right)+\cos \left(q_3 \right)\,\sin \left(q_1 \right)\,\sin \left(q_2 \right) \\
-\sigma_5 &= \cos \left(q_4 \right)\,\sin \left(q_1 \right)-\sin \left(q_4 \right)\,\sigma_{10} &\hspace{2.2cm} \sigma_{10} &= \cos \left(q_1 \right)\,\cos \left(q_2 \right)\,\cos \left(q_3 \right)-\cos \left(q_1 \right)\,\sin \left(q_2 \right)\,\sin \left(q_3 \right) \\
-\sigma_{11} &= \sin \left(q_1 \right)\,\sin \left(q_2 \right)\,\sin \left(q_3 \right)-\cos \left(q_2 \right)\,\cos \left(q_3 \right)\,\sin \left(q_1 \right) &\hspace{2.2cm}
+\sigma_1 &= \cos \left(q_2 +q_3 \right)\,\sin \left(q_5 \right)+\sin \left(q_2 +q_3 \right)\,\cos \left(q_4 \right)\,\cos \left(q_5 \right) &\hspace{2.2cm} \sigma_7 &= \cos \left(q_1 \right)\,\cos \left(q_2 \right)\,\sin \left(q_3 \right)+\cos \left(q_1 \right)\,\cos \left(q_3 \right)\,\sin \left(q_2 \right) \\
+\sigma_2 &= \cos \left(q_5 \right)\,\sigma_6 -\sin \left(q_5 \right)\,\sigma_7 &\hspace{2.2cm} \sigma_8 &= \cos \left(q_1 \right)\,\sin \left(q_4 \right)+\cos \left(q_4 \right)\,\sigma_{11} \\
+\sigma_3 &= \cos \left(q_5 \right)\,\sigma_8 +\sin \left(q_5 \right)\,\sigma_9 &\hspace{2.2cm} \sigma_9 &= \cos \left(q_2 \right)\,\sin \left(q_1 \right)\,\sin \left(q_3 \right)+\cos \left(q_3 \right)\,\sin \left(q_1 \right)\,\sin \left(q_2 \right) \\
+\sigma_4 &= \cos \left(q_1 \right)\,\cos \left(q_4 \right)-\sin \left(q_4 \right)\,\sigma_{11} &\hspace{2.2cm} \sigma_{10} &= \cos \left(q_1 \right)\,\cos \left(q_2 \right)\,\cos \left(q_3 \right)-\cos \left(q_1 \right)\,\sin \left(q_2 \right)\,\sin \left(q_3 \right) \\
+\sigma_5 &= \cos \left(q_4 \right)\,\sin \left(q_1 \right)-\sin \left(q_4 \right)\,\sigma_{10} &\hspace{2.2cm} \sigma_{11} &= \sin \left(q_1 \right)\,\sin \left(q_2 \right)\,\sin \left(q_3 \right)-\cos \left(q_2 \right)\,\cos \left(q_3 \right)\,\sin \left(q_1 \right) \\
+\sigma_6 &= \sin \left(q_1 \right)\,\sin \left(q_4 \right)+\cos \left(q_4 \right)\,\sigma_{10} &\hspace{2.2cm}
 \end{aligned}
 \]
 \end{minipage}

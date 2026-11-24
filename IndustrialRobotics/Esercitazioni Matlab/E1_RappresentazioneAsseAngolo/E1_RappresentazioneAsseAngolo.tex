@@ -94,7 +94,7 @@
 \hypersetup{
     hidelinks,
     pdfauthor={Francesco Lo Verde},
-    pdftitle={Rappresentazione Asse-Angolo}
+    pdftitle={Rappresentazione asse-angolo}
 }
 
 % BB SEGNALIBRI AVANZATI
@@ -106,11 +106,11 @@
 
 \begin{document}
 
-\matlabtitle{Rappresentazione Asse-Angolo}
+\matlabtitle{Rappresentazione asse-angolo}
 
 \begin{par}
 \begin{flushleft}
-La rappresentazione Asse-Angolo è un metodo per descrivere l'orientamento di un corpo rigido nello spazio. Utilizza quattro parametri:
+La rappresentazione asse-angolo è un metodo per descrivere l'orientamento di un corpo rigido nello spazio. Utilizza quattro parametri:
 \end{flushleft}
 \end{par}
 
@@ -120,7 +120,7 @@ La rappresentazione Asse-Angolo è un metodo per descrivere l'orientamento di un
    \item{\begin{flushleft} Un \textbf{angolo} $\theta$, che indica l'ampiezza della rotazione attorno a tale asse. \end{flushleft}}
 \end{itemize}
 
-\matlabheadingtwo{Problema Diretto: Da Asse-Angolo A Matrice Di Rotazione}
+\matlabheadingtwo{Problema diretto: da asse-angolo a matrice di rotazione}
 
 \begin{par}
 \begin{flushleft}
@@ -152,7 +152,7 @@ $\mathbf{r}\mathbf{r}^T$ è il prodotto esterno del versore $\mathbf{r}$.
 
 \begin{par}
 \begin{flushleft}
-$S(\mathbf{r})$ è la Skew-Symmetric Matrix associata a $\mathbf{r}$, che rappresenta l'operatore prodotto vettoriale:
+$S(\mathbf{r})$ è la matrice antisimmetrica associata a $\mathbf{r}$, che rappresenta l'operatore prodotto vettoriale:
 \end{flushleft}
 \end{par}
 
@@ -169,14 +169,14 @@ clc; clear; close all;
 % Definizione variabili simboliche
 syms rx ry rz theta real
 
-% Definiamo il versore r come un vettore colonna
+% Si definisce il versore r come un vettore colonna
 r = [rx; ry; rz];
 [R] = Compute_Rotation_Matrix(r, theta);
 
-disp("Matrice Di Rotazione R(theta, r):");
+disp("Matrice di rotazione R(theta, r):");
 \end{matlabcode}
 \begin{matlaboutput}
-Matrice Di Rotazione R(theta, r):
+Matrice di rotazione R(theta, r):
 \end{matlaboutput}
 \begin{matlabcode}
 disp(R);
@@ -200,7 +200,7 @@ disp(R);
 \end{matlabsymbolicoutput}
 
 \newpage
-\matlabheadingthree{Calcolo Numerico Del Problema Diretto}
+\matlabheadingthree{Calcolo numerico del problema diretto}
 
 \begin{par}
 \begin{flushleft}
@@ -215,27 +215,27 @@ thetaNum = 3*pi/5;
 
 % Verifica se il vettore r ha 3 componenti
 if numel(rNum) == 3
-    disp("Il Vettore r Ha 3 Componenti!");
+    disp("Il vettore r ha 3 componenti!");
 else
-    % Uso 'error' per interrompere l'esecuzione in caso di errore
-    error("Il Vettore r Deve Avere 3 Componenti!");
+    % Si usa 'error' per interrompere l'esecuzione in caso di errore
+    error("Il vettore r deve avere 3 componenti!");
 end
 \end{matlabcode}
 \begin{matlaboutput}
-Il Vettore r Ha 3 Componenti!
+Il vettore r ha 3 componenti!
 \end{matlaboutput}
 \begin{matlabcode}
 
 % Verifica se theta è uno scalare
 if isscalar(thetaNum)
-    disp("Theta È Uno Scalare");
+    disp("Theta è uno scalare");
 else
-    % Uso 'error' per interrompere l'esecuzione in caso di errore
-    error("Theta Deve Essere Uno Scalare!");
+    % Si usa 'error' per interrompere l'esecuzione in caso di errore
+    error("Theta deve essere uno scalare!");
 end
 \end{matlabcode}
 \begin{matlaboutput}
-Theta È Uno Scalare
+Theta è uno scalare
 \end{matlaboutput}
 \begin{matlabcode}
 
@@ -248,25 +248,25 @@ norm_rNum = norm(rNum);
 
 if norm_rNum > 0
     % Il vettore r ha una direzione ben definita (non è il vettore nullo).
-    % Normalizzo il vettore r per ottenere un vettore unitario che
+    % Si normalizza il vettore r per ottenere un vettore unitario che
     % rappresenta l'asse di rotazione.
 
-    disp("Normalizzo Il Vettore r...");
+    disp("Normalizzazione del vettore r...");
     rNum = rNum / norm_rNum;
 
-    disp("Vettore r Normalizzato:");
+    disp("Vettore r normalizzato:");
     disp(rNum);
 else
     % Se la norma è nulla, il vettore r è il vettore nullo.
     % Non c'è alcuna direzione valida per l'asse di rotazione.
-    % Imposto theta = 0 per indicare che non c'è rotazione (R = I).
-    disp("Il Vettore r È Nullo. Imposto Theta = 0.");
+    % Si imposta theta = 0 per indicare che non c'è rotazione (R = I).
+    disp("Il vettore r è nullo. Si imposta theta = 0.");
     thetaNum = 0;
 end
 \end{matlabcode}
 \begin{matlaboutput}
-Normalizzo Il Vettore r...
-Vettore r Normalizzato:
+Normalizzazione del vettore r...
+Vettore r normalizzato:
     0.2673
     0.5345
     0.8018
@@ -275,11 +275,11 @@ Vettore r Normalizzato:
 \begin{matlabcode}
 [R] = Compute_Rotation_Matrix(rNum, thetaNum);
 
-disp("Matrice Di Rotazione R(theta, r) Numerica:");
+disp("Matrice di rotazione R(theta, r) numerica:");
 disp(R);
 \end{matlabcode}
 \begin{matlaboutput}
-Matrice Di Rotazione R(theta, r) Numerica:
+Matrice di rotazione R(theta, r) numerica:
 \end{matlaboutput}
 \begin{matlaboutput}
    -0.2155   -0.5755    0.7889
@@ -296,40 +296,40 @@ Una matrice di rotazione \textbf{R} gode di importanti proprietà:
 \begin{enumerate}
 \setlength{\itemsep}{1ex}
    \item{\begin{flushleft} \textbf{Ortogonalità:} La matrice è ortogonale, ovvero la sua inversa coincide con la sua trasposta $(R^T R=I)$. \end{flushleft}}
-   \item{\begin{flushleft} \textbf{Determinante Unitario: }$\det (R)=1$. \end{flushleft}}
+   \item{\begin{flushleft} \textbf{Determinante unitario: }$\det (R)=1$. \end{flushleft}}
    \item{\begin{flushleft} \textbf{Traccia: }La traccia è legata all'angolo di rotazione dalla formula $\textrm{trace}(R)=1+2\cos (\theta )$. \end{flushleft}}
 \end{enumerate}
 
 \begin{matlabcode}
 checkOrt = R' * R;
-disp('Verifica Ortogonalità (R'' * R):');
+disp('Verifica ortogonalità (R'' * R):');
 disp(checkOrt);
 \end{matlabcode}
 \begin{matlaboutput}
-Verifica Ortogonalità (R' * R):
+Verifica ortogonalità (R' * R):
     1.0000    0.0000   -0.0000
     0.0000    1.0000   -0.0000
    -0.0000   -0.0000    1.0000
 \end{matlaboutput}
 \begin{matlabcode}
 detR = det(R);
-fprintf('Determinante Di R: %f\n\n', detR);
+fprintf('Determinante di R: %f\n\n', detR);
 \end{matlabcode}
 \begin{matlaboutput}
-Determinante Di R: 1.000000
+Determinante di R: 1.000000
 \end{matlaboutput}
 \begin{matlabcode}
 traceR = trace(R);
 traceSim = 1 + 2*cos(thetaNum);
-fprintf('Traccia Calcolata Di R: %f\n', traceR);
-fprintf('Valore Atteso (1 + 2*cos(theta)): %f\n', traceSim);
+fprintf('Traccia calcolata di R: %f\n', traceR);
+fprintf('Valore atteso (1 + 2*cos(theta)): %f\n', traceSim);
 \end{matlabcode}
 \begin{matlaboutput}
-Traccia Calcolata Di R: 0.381966
-Valore Atteso (1 + 2*cos(theta)): 0.381966
+Traccia calcolata di R: 0.381966
+Valore atteso (1 + 2*cos(theta)): 0.381966
 \end{matlaboutput}
 
-\matlabheadingtwo{Problema Inverso: Da Matrice Di Rotazione Ad Asse-Angolo}
+\matlabheadingtwo{Problema inverso: da matrice di rotazione ad asse-angolo}
 
 \begin{par}
 \begin{flushleft}
@@ -418,13 +418,13 @@ else
     rCalc = (1 / (2 * sinTheta)) * rVec;
 end
 
-disp('Valori Input:');
+disp('Valori di input:');
 fprintf('Theta = %.4f rad\n', thetaNum);
 disp('Vettore r =');
 disp(rNum);
 \end{matlabcode}
 \begin{matlaboutput}
-Valori Input:
+Valori di input:
 Theta = 1.8850 rad
 Vettore r =
     0.2673
@@ -433,45 +433,45 @@ Vettore r =
 \end{matlaboutput}
 
 \begin{matlabcode}
-disp('Valori Calcolati Dal Problema Inverso:');
-fprintf('Theta Calcolato = %.4f rad\n', thetaCalc);
-disp('Vettore r Calcolato =');
+disp('Valori calcolati dal problema inverso:');
+fprintf('Theta calcolato = %.4f rad\n', thetaCalc);
+disp('Vettore r calcolato =');
 disp(rCalc);
 \end{matlabcode}
 \begin{matlaboutput}
-Valori Calcolati Dal Problema Inverso:
-Theta Calcolato = 1.8850 rad
-Vettore r Calcolato =
+Valori calcolati dal problema inverso:
+Theta calcolato = 1.8850 rad
+Vettore r calcolato =
     0.2673
     0.5345
     0.8018
 \end{matlaboutput}
 \begin{matlabcode}
 % Calcolo dell'errore per verificare la correttezza
-fprintf('Errore Su Theta: %e\n', abs(thetaNum - thetaCalc));
-fprintf('Errore Su r: %e\n', norm(rNum - rCalc));
+fprintf('Errore su theta: %e\n', abs(thetaNum - thetaCalc));
+fprintf('Errore su r: %e\n', norm(rNum - rCalc));
 \end{matlabcode}
 \begin{matlaboutput}
-Errore Su Theta: 0.000000e+00
-Errore Su r: 0.000000e+00
+Errore su theta: 0.000000e+00
+Errore su r: 0.000000e+00
 \end{matlaboutput}
 \newpage
-\matlabheadingtwo{Visualizzazione Grafica Asse-Angolo}
+\matlabheadingtwo{Visualizzazione grafica asse-angolo}
 
 \begin{matlabcode}
-% Assi Sistema Riferimento
+% Assi del sistema di riferimento
 AsseX = [1, 0, 0];
 AsseY = [0, 1, 0];
 AsseZ = [0, 0, 1];
 
-% Vettore Da Ruotare
+% Vettore da ruotare
 v = [1; 0; 1];
 
-% Calcolo Vettore Ruotato
+% Calcolo del vettore ruotato
 vR = R * v;
 
-% Impostazioni Figura
-figure('Name', 'Rotazione Asse-Angolo (Formula di Rodrigues)', 'Color', 'w');
+% Impostazioni della figura
+figure('Name', 'Rotazione asse-angolo (formula di Rodrigues)', 'Color', 'w');
 hold on;
 grid on;
 box on;
@@ -481,7 +481,7 @@ zlabel('Z', 'FontWeight', 'bold');
 axis equal;
 view(50, 22);
 
-% Disegno Assi Cartesiani di Riferimento
+% Disegno degli assi cartesiani di riferimento
 col_X = [0.85, 0.15, 0.15];
 col_Y = [0.15, 0.65, 0.20];
 col_Z = [0.15, 0.35, 0.85];
@@ -494,20 +494,20 @@ text(AsseX(1)*1.25, AsseX(2)*1.25, AsseX(3)*1.25, 'X_0', 'Color', col_X, 'FontWe
 text(0, 1.15, -0.10, 'Y_0', 'Color', col_Y, 'FontWeight', 'bold');
 text(AsseZ(1)*1.25, AsseZ(2)*1.25, AsseZ(3)*1.25, 'Z_0', 'Color', col_Z, 'FontWeight', 'bold');
 
-% Disegno Asse Rotazione r
+% Disegno dell'asse di rotazione r
 r_scale = 1.6;
 h_axis = plot3([-rNum(1)*0.4, rNum(1)*r_scale], [-rNum(2)*0.4, rNum(2)*r_scale], ...
                [-rNum(3)*0.4, rNum(3)*r_scale], '--', 'Color', [0.0 0.55 0.55], 'LineWidth', 2.2);
 text(rNum(1)*r_scale, rNum(2)*r_scale, rNum(3)*r_scale, '  Asse r', 'Color', [0.0 0.55 0.55], ...
     'FontSize', 11, 'FontWeight', 'bold');
 
-% Disegno Vettore Iniziale v e Ruotato vR
+% Disegno del vettore iniziale v e ruotato vR
 h_v  = quiver3(0, 0, 0, v(1), v(2), v(3), 0, 'Color', 'k', 'LineWidth', 2.2);
 h_vR = quiver3(0, 0, 0, vR(1), vR(2), vR(3), 0, 'Color', [0.85 0.1 0.6], 'LineWidth', 2.2);
-text(v(1), v(2), v(3), '  v (Iniziale)', 'FontSize', 10, 'FontWeight', 'bold', 'Color', 'k');
-text(vR(1), vR(2), vR(3), '  v_R (Ruotato)', 'FontSize', 10, 'FontWeight', 'bold', 'Color', [0.85 0.1 0.6]);
+text(v(1), v(2), v(3), '  v (iniziale)', 'FontSize', 10, 'FontWeight', 'bold', 'Color', 'k');
+text(vR(1), vR(2), vR(3), '  v_R (ruotato)', 'FontSize', 10, 'FontWeight', 'bold', 'Color', [0.85 0.1 0.6]);
 
-% Arco 3D di Rotazione Spazzato tra 0 e theta
+% Arco 3D di rotazione spazzato tra 0 e theta
 th_samples = linspace(0, thetaNum, 60);
 arc_pts = zeros(3, length(th_samples));
 for k = 1:length(th_samples)
@@ -516,10 +516,10 @@ for k = 1:length(th_samples)
 end
 h_arc = plot3(arc_pts(1,:), arc_pts(2,:), arc_pts(3,:), ':', 'Color', [0.85 0.1 0.6], 'LineWidth', 2.0);
 
-% Legenda e Titolo
-legend([h_axis, h_v, h_vR, h_arc], {'Asse di Rotazione r', 'Vettore Iniziale v', 'Vettore Ruotato v_R', ...
-        sprintf('Arco Rotazione \\theta = %.1f°', rad2deg(thetaNum))}, 'Location', 'bestoutside');
-title(sprintf('Rotazione Asse-Angolo: \\theta = %.1f° attorno a r = [%.2f, %.2f, %.2f]^T', rad2deg(thetaNum), rNum(1), rNum(2), rNum(3)), 'FontSize', 11, 'FontWeight', 'bold');
+% Legenda e titolo
+legend([h_axis, h_v, h_vR, h_arc], {'Asse di rotazione r', 'Vettore iniziale v', 'Vettore ruotato v_R', ...
+        sprintf('Arco di rotazione \\theta = %.1f°', rad2deg(thetaNum))}, 'Location', 'bestoutside');
+title(sprintf('Rotazione asse-angolo: \\theta = %.1f° attorno a r = [%.2f, %.2f, %.2f]^T', rad2deg(thetaNum), rNum(1), rNum(2), rNum(3)), 'FontSize', 11, 'FontWeight', 'bold');
 hold off;
 \end{matlabcode}
 \begin{figure}[H]
