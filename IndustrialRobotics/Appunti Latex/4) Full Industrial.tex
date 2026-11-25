@@ -43,7 +43,7 @@
     linkcolor=blue,
     urlcolor=blue,
     citecolor=blue,
-    pdftitle={Capitolo 2},
+    pdftitle={Industrial Robotics},
     pdfauthor={Francesco Lo Verde},
     pdfpagemode=FullScreen,
 }
@@ -92,7 +92,7 @@
 \chapter{Introduzione}
 \begin{theorem}
     \textbf{Robot Institute of America} (Libro)\\
-    Un robot è un manipolatore multifunzionale e riprogrammabile progettato per spostare oggetti, utensili o dispositivi specializzati secondo movimenti variabili programmati in modo variabile per l'esecuzione dei compiti specifici.
+    Un robot è un manipolatore multifunzionale e riprogrammabile progettato per spostare oggetti, utensili o dispositivi specializzati secondo movimenti programmati in modo variabile per l'esecuzione dei compiti specifici.
 \end{theorem}
 \begin{figure}[h]
     \centering
@@ -651,7 +651,7 @@ Il cambiamento di coordinate (rotazione) avviene tramite la matrice $R(\theta, \
 Gode delle seguenti proprietà:
 \begin{enumerate}
     \item Se \(r\) coincide con l'asse coordinato, allora \(R(\theta, r)\) è l'operatore di una rotazione elementare
-    \item \((\theta, r) \quad \longrightarrow \quad R(\theta, r)\) non è iniettiva
+    \item \((\theta, r) \quad \longrightarrow \quad R(\theta, r)\) non è iniettiva (se due coppie generano la stessa matrice di rotazione, allora devono essere per forza la stessa identica coppia)
     \item \(\det(R(\theta, r)) = 1\)
     \item Siano $\lambda_{i}$ gli autovalori della matrice di rotazione, si avrà che \(\lambda_{1} \cdot \lambda_{2} \cdot \lambda_{3} = 1\)
 \end{enumerate}
@@ -690,7 +690,7 @@ Dove la matrice \(\mathbf{C}\) è formata dai versori del sistema trasformato:
     \end{bmatrix}
 \]
 
-Dove \(\mathbf{n}\) e \(\mathbf{s}\) sono scelti in modo che siano ortogonali tra loro e al versore \(\mathbf{r}\), quindi:
+Dove \(\mathbf{n}\) e \(\mathbf{s}\) sono scelti in modo che siano ortonormali tra loro e al versore \(\mathbf{r}\), quindi:
 \[
     \mathbf{n} \times \mathbf{s} = \mathbf{r}
 \]
@@ -808,9 +808,8 @@ Sapendo che \(\text{trace}(AB) = \text{trace}(BA)\) (Permutazione Ciclica)
 \[
     \text{trace}(\mathbf{\mathbf{R}(\theta, \mathbf{r})}) = 1 + 2\cos(\theta)
 \]
-\underline{Proprietà degli Autovalori $\lambda_{i}$}
-
-Qualsiasi siano \(r\) e \(\theta\) la matrice di rotazione ha un autovettore con autovalore \( \lambda_{1} = 1 \), perché la matrice non lo altera (lo ruota ma non lo dilata o riduce). Quindi si può scrivere il sistema
+\underline{Proprietà degli Autovalori $\lambda_{i}$}\newline
+Siccome le matrici di rotazione sono matrici $3 \times 3$ con valori reali avranno 3 autovalori che saranno due complessi coniugati e un terzo che deve essere per forza uguale ad uno. Quindi si può scrivere il sistema
 \[
     \begin{cases}
         \lambda_{1}\lambda_{2}\lambda_{3} = 1 & \text{(Determinante)} \\
@@ -865,24 +864,32 @@ Sostituendo \( \lambda_{1} = 1 \)
     \qquad\longrightarrow\qquad
     \lambda_{3} = \cos(\theta) \pm \sqrt{\cos^2(\theta) - 1}
 \]
-Poiché \(\cos^2(\theta) - 1 = -\sin^2(\theta)\), sostituendo si ottiene
+Poiché \(\cos^2(\theta) - 1 = -\sin^2(\theta)\) e ricordando che $\lambda_{1} = 1$ sostituendo si ottiene
 \[
     \begin{cases}
+        \lambda_{1} = 1
         \lambda_{3} = \cos(\theta) \pm j\sin(\theta)\\
-        \lambda_{2} = 2\cos(\theta) - (\cos(\theta) \pm j\sin(\theta)) = \cos(\theta) \mp j\sin(\theta)
+        \lambda_{2} = 2\cos(\theta) - (\cos(\theta) \pm j\sin(\theta))
     \end{cases}
-    \qquad\overbrace{\longrightarrow}^{\theta = 0 \text{\; oppure \;} \theta = \frac{\pi}{2}}\qquad
+    \quad\longrightarrow\quad
     \begin{cases}
         \lambda_{1} = 1\\
-        \lambda_{2} = \cos(0) \pm j\sin(0) \\
-        \lambda_{3} = 2\cos(0) - \cos(0) \pm j\sin(0)
+        \lambda_{3} = \cos(\theta) \pm j\sin(\theta)\\
+        \lambda_{2} = \cos(\theta) \mp j\sin(\theta)
     \end{cases}
 \]
+Con $\theta = 0$ oppure $\theta = \frac{\pi}{2}$ si avrà
 \[
     \begin{cases}
         \lambda_{1} = 1\\
-        \lambda_{2} = 1 \pm 0 = 1\\
-        \lambda_{3} = \cos(0) \mp j\sin(0) = 1
+        \lambda_{3} = \cos(0) \pm j\sin(0)\\
+        \lambda_{2} = \cos(0) \mp j\sin(0)
+    \end{cases}
+    \quad\longrightarrow\quad
+    \begin{cases}
+        \lambda_{1} = 1\\
+        \lambda_{2} = 1\\
+        \lambda_{3} = 1
     \end{cases}
 \]
 \underline{Arcotangente A 4 Quadranti}\\
@@ -1008,15 +1015,17 @@ Ricordando l'equazione della \(\text{trace}\), si ha che:
     \qquad\longrightarrow\qquad
     \theta = \arccos\biggl( \frac{r_{11} + r_{22} + r_{33} - 1}{2} \biggr)
 \]
-
+Sapendo che una qualsiasi matrice quadrata può essere sempre scomposta in modo unico come la somma di una parte simmetrica e una parte antisimmetrica:
+\[
+    \mathbf{R} = \underbrace{\frac{1}{2}(\mathbf{R} + \mathbf{R}^T)}_{\text{Simmetrica}} + \underbrace{\frac{1}{2}(\mathbf{R} - \mathbf{R}^T)}_{\text{Antisimmetrica}}
+\]
 Per trovare l'asse di rotazione \( r \), si può utilizzare la parte antisimmetrica della matrice \( \mathbf{\mathbf{R}(\theta, \mathbf{r})} \), cioè
 \[
-    \mathbf{\mathbf{R}(\theta, \mathbf{r})} - \mathbf{\mathbf{R}^{T}(\theta, \mathbf{r})}
+    R = \underbrace{\mathbf{r}\mathbf{r}^{T} + (I \; - \; \mathbf{r}\mathbf{r}^{T}) \; \cos(\theta)}_{\text{Parte Simmetrica}} + \underbrace{ S(\mathbf{r}) \; \sin(\theta)}_{\text{Parte Antisimmetrica}}
 \]
-Questa è proporzionale alla matrice antisimmetrica associata al versore dell'asse di rotazione \( \mathbf{r} \) tramite la formula:
-
+Da cui si ha che
 \[
-    R - R^{T} = 2 \sin(\theta) S(\mathbf{r})
+    \frac{1}{2}(\mathbf{R} - \mathbf{R}^T) = S(\mathbf{r}) \; \sin(\theta) \quad \longrightarrow \quad R - R^{T} = 2 \sin(\theta) S(\mathbf{r})
 \]
 Quindi, per $\theta \ne 0$, si ottiene:
 \[
@@ -1034,10 +1043,11 @@ Le espressioni di $\theta$ e $\mathbf{r}$ caratterizzano la rotazione in termini
     r_{x}^{2} + r_{y}^{2} + r_{z}^{2} = 1
 \]
 che deriva dal fatto che $\mathbf{r}$ è un versore e quindi ha norma unitaria.\\
-Se $\theta = 0$, le precedenti espressioni perdono di significato perché $\arccos$ assume valori solo in $[0, \pi]$, quindi per risolvere il problema inverso si utilizza la funzione $\text{atan2}$. Si avrà che
+Poiché la funzione $\arccos$ assume valori nel solo intervallo $[0, \pi]$ (individuando una sola delle due soluzioni equivalenti e risultando numericamente meno robusta in prossimità di $0$ e $\pi$), per il calcolo dell'angolo $\theta$ nel problema inverso si preferisce utilizzare la funzione $\operatorname{atan2}(y, x)$ dove
 \[
-    y = \pm \sqrt{(R_{12} - R_{21})^{2} + (R_{13} - R_{31})^{2} + (R_{23} - R_{32})^{2}} \qquad\qquad x = R_{11} + R_{22} + R_{33} - 1
+    y = \pm \sqrt{(R_{23} - R_{32})^{2} + (R_{13} - R_{31})^{2} + (R_{12} - R_{21})^{2}}, \qquad x = R_{11} + R_{22} + R_{33} - 1.
 \]
+Poiché $y = \pm 2|\sin\theta|$ e $x = 2\cos\theta$, la doppia scelta del segno di $y$ consente di ricavare entrambe le soluzioni equivalenti $(\theta, \mathbf{r})$ e $(-\theta, -\mathbf{r})$. Le espressioni chiuse per la determinazione dell'asse $\mathbf{r}$ (che presentano $\sin\theta$ al denominatore) risultano tuttavia applicabili se e solo se $\theta \neq k\pi$ (con $k \in \mathbb{Z}$): per $\theta = 0$ l'asse $\mathbf{r}$ è indeterminato, mentre per $\theta = \pm\pi$ il problema inverso resta comunque risolvibile (a meno del segno di $\mathbf{r}$) ricavando l'asse direttamente dagli elementi della matrice $R$ tramite la relazione $R = 2\mathbf{r}\mathbf{r}^T - I$.
 Quindi, si vede che, il problema inverso Asse-Angolo è risolvibile se e solo se $\theta \ne 0 \pm k\pi$
 \newpage
 \subsection{Angoli Di Eulero}
@@ -1246,6 +1256,8 @@ La rotazione complessiva di cui gli angoli RPY sono rappresentativi viene costru
 \end{itemize}
 Dove:
 \[
+\resizebox{\linewidth}{!}{$
+    \displaystyle
     \mathbf{R}_{X}(\psi) =
     \begin{bmatrix}
         1 & 0 & 0 \\
@@ -1266,6 +1278,7 @@ Dove:
         \sin(\phi) & \cos(\phi) & 0 \\
         0 & 0 & 1
     \end{bmatrix}
+$}
 \]
 La rotazione globale della terna, essendo ottenuta per composizione di rotazioni definite rispetto a una terna fissa, è data dal prodotto delle matrici elementari. La sequenza di rotazioni X-Y-Z corrisponde a un prodotto matriciale in ordine inverso Z-Y-X:
 
@@ -1295,25 +1308,28 @@ Nel contesto degli angoli RPY, il problema inverso consiste nel determinare gli 
         r_{31} & r_{32} & r_{33}
     \end{bmatrix}.
 \]
-Dall'elemento $r_{31} = -\sin(\theta)$ si possono ricavare due soluzioni per $\theta$.
-
-\paragraph{Soluzione 1: $\cos(\theta) \ge 0$}
-Questa è la soluzione convenzionale, che restringe $\theta$ all'intervallo $[-\pi/2, \pi/2]$.
+Si nota che
 \begin{align*}
-    \phi &= \text{atan2}(r_{21}, r_{11}) \\
-    \theta &= \text{atan2}\left(-r_{31}, \sqrt{r_{32}^2 + r_{33}^2}\right) \\
-    \psi &= \text{atan2}(r_{32}, r_{33})
+    r_{31} &= -\sin(\theta)\\
+    r_{11}^{2} + r_{21}^{2} &= \bigl( \cos(\phi)\cos(\theta) \bigr)^{2} + \bigl( \sin(\phi)\cos(\theta) \bigr)^{2} = \cos^{2}(\theta)
 \end{align*}
-
-\paragraph{Soluzione 2: $\cos(\theta) < 0$}
-Questa seconda soluzione si ottiene considerando l'altro angolo $\theta$ che soddisfa la condizione $r_{31} = -\sin(\theta)$.
+Quindi si hanno due possibili valori per $\cos(\theta)$ uno positivo e uno negativo, e quindi
+\paragraph{Per $\cos(\theta) > 0$}
 \begin{align*}
-    \phi &= \text{atan2}(-r_{21}, -r_{11}) \\
-    \theta &= \text{atan2}\left(-r_{31}, -\sqrt{r_{32}^2 + r_{33}^2}\right) \\
-    \psi &= \text{atan2}(-r_{32}, -r_{33})
+    \theta &= \text{atan2}\left(-r_{31}, \sqrt{r_{11}^2 + r_{21}^2}\right) \\
+    \psi &= \text{atan2}\biggl(\frac{r_{32}}{\cos(\theta)}, \frac{r_{33}}{\cos(\theta)}\biggr)\\
+    \phi &= \text{atan2}\biggl(\frac{r_{21}}{\cos(\theta)}, \frac{r_{11}}{\cos(\theta)}\biggr)
 \end{align*}
-
-Le soluzioni degenerano quando $\cos(\theta) = 0$ (cioè, $\theta = \pm\pi/2$). In questo caso, noto come "blocco cardanico" (gimbal lock), è possibile determinare soltanto la somma o la differenza di $\phi$ e $\psi$.
+In questo caso, poichè $\cos(\theta) > 0$ il fattore comune $\frac{1}{\cos(\theta)}$ e positivo e si può togliere senza cambiare il quadrante a cui apparterrà il risultato
+\paragraph{Per $\cos(\theta) < 0$}\mbox{}\\
+In questo caso, poichè $\cos(\theta) < 0$ il fattore comune si può scrivere come $\frac{-1}{|\cos(\theta)|}$ e quindi si ottiene
+\begin{align*}
+    \theta &= \text{atan2}\left(-r_{31}, -\sqrt{r_{11}^2 + r_{21}^2}\right) \\
+    \psi &= \text{atan2}\biggl(-r_{32}, -r_{33}\biggr)\\
+    \phi &= \text{atan2}\biggl(-r_{21}, -r_{11}\biggr)
+\end{align*}
+\paragraph{Per $\cos(\theta) = 0$}\mbox{}\\
+Ovvero quando $\theta = \pm \frac{\pi}{2}$ e quindi l'asse $Z$ e l'asse $X$ sono paralleli e quindi si verifica la singolarità \textbf{Gimbal Lock} e non è piu possibile calcolare $\phi$ e $\psi$ indipendentemente ma solo la loro somma o la loro differenza
 \newpage
 \section{Trasformazioni Omogenee}
 La posizione di un corpo rigido nello spazio viene individuata in base a due aspetti fondamentali:
