@@ -1332,14 +1332,14 @@ In questo caso, poichè $\cos(\theta) < 0$ il fattore comune si può scrivere co
 Ovvero quando $\theta = \pm \frac{\pi}{2}$ e quindi l'asse $Z$ e l'asse $X$ sono paralleli e quindi si verifica la singolarità \textbf{Gimbal Lock} e non è piu possibile calcolare $\phi$ e $\psi$ indipendentemente ma solo la loro somma o la loro differenza
 \newpage
 \section{Trasformazioni Omogenee}
-La posizione di un corpo rigido nello spazio viene individuata in base a due aspetti fondamentali:
+La posa di un corpo rigido nello spazio viene individuata in base a due aspetti fondamentali:
 \begin{itemize}
-    \item \textbf{Traslazione}: la posizione di un punto solidale al corpo rispetto a un sistema di riferimento.
-    \item \textbf{Rotazione}: l'orientamento del corpo, descritto mediante la disposizione degli assi di una terna solidale al corpo rispetto al riferimento.
+    \item \textbf{Posizione}: descrive le coordinate di un punto del corpo rigido rispetto al sistema di riferimento solidale a esso
+    \item \textbf{Orientamento}: descrive la disposizione degli assi del sistema di riferimento solidale al corpo rispetto al sistema di riferimento fisso
 \end{itemize}
 
 \begin{center}
-    \begin{tikzpicture}[scale=1.2, >=stealth]
+    \begin{tikzpicture}[scale=1, >=stealth]
 
         % Disegna il primo sistema di riferimento (assi x0, y0, z0)
         \draw[red, ->, thick] (0,0,0) -- (3,0,0) node[anchor=north east] {$\mathbf{y_A}$}; % Asse y0
@@ -1364,21 +1364,11 @@ La posizione di un corpo rigido nello spazio viene individuata in base a due asp
         \draw[->, dashed] (0,0,0) -- (4,4,3) node[midway, above left] {$^{A}\mathbf{P}$};
     \end{tikzpicture}
 \end{center}
-Per formalizzare questi concetti, consideriamo un punto \textbf{P} arbitrario nello spazio, le cui coordinate rispetto al sistema di riferimento fisso $RF_{A} - x_{A}y_{A}z_{A}$ sono rappresentate dal vettore posizione $^{A}\mathbf{P}$. Ora introduciamo un secondo sistema di riferimento $RF_{B} - x_{B}y_{B}z_{B}$, con origine individuata dal vettore $^{A}\mathbf{P}_{AB}$ rispetto a $RF_{A}$. La relazione tra le coordinate di \textbf{P} in questi due riferimenti dipende sia dalla traslazione dell'origine che dalla rotazione degli assi.
-
-Definiamo:
-\begin{itemize}
-    \item $^{A}\mathbf{o}_{B} \in \mathbb{R}^{3}$: il vettore di traslazione dall'origine di $RF_{A}$ all'origine di $RF_{B}$.
-    \item $^{A}\mathbf{R}_{B} \in SO(3)$: la matrice di rotazione che descrive l'orientamento di $RF_{B}$ rispetto a $RF_{A}$.
-    \item $^{B}\mathbf{P}$: il vettore posizione del punto \textbf{P} rispetto a $RF_{B}$.
-\end{itemize}
-
-La posizione di \textbf{P} rispetto a $RF_{A}$ è data dalla trasformazione:
+Si consideri un punto \textbf{P} arbitrario nello spazio, le sue coordinate rispetto al sistema di riferimento fisso $RF_{A}$ sono  rappresentate dal vettore posizione $^{A}\mathbf{P}$. Introducendo un secondo sistema di riferimento $RF_{B}$, con origine individuata dal vettore $^{A}\mathbf{P}_{AB}$ rispetto a $RF_{A}$. La relazione tra le coordinate di \textbf{P} in questi due sistemi di riferimento dipende sia dalla posizione dell'origine sia dall'orientamento dei sistemi di riferimento. La posizione di \textbf{P} rispetto a $RF_{A}$ è data dalla trasformazione:
 \[
-    ^{A}\mathbf{P} = ^{A}\mathbf{P}_{AB} + (^{A}\mathbf{R}_{B}) ^{B}\mathbf{P}
+    ^{A}\mathbf{P} = ^{A}\mathbf{P}_{AB} + ({}^{A}\mathbf{R}_{B}) \, {}^{B}\mathbf{P}
 \]
-Dato che \((^{A}\mathbf{R}_{B}) ^{B}\mathbf{P}\) ruota il vettore $^{B}\mathbf{P}$ nel sistema \(RF_A\)
-Questa equazione esprime la trasformazione di coordinate (traslazione + rotazione) tra due sistemi di riferimento. Per ottenere la trasformazione inversa, moltiplichiamo da sinistra entrambi i membri per $(^{A}\mathbf{R}_{B})^T$ e ricordiamo che $\mathbf{R}^T \mathbf{R} = \mathbf{I}_3$
+Dove ${}^{A}\mathbf{R}_{B}$ rappresenta l'orientamento del sistema di riferimento $RF_{B}$ rispetto a $RF_{A}$ e ${}^{B}\mathbf{P}$ le coordinate del punto \textbf{P} rispetto a $RF_{B}$. Moltiplicando la matrice del vettore per il vettore di coordinate espresse nel sistema di riferimento $RF_B$ si ruota il vettore nel sistema di riferimento $RF_{A}$. Questa equazione esprime la trasformazione di coordinate (traslazione + rotazione) tra due sistemi di riferimento. Per ottenere la trasformazione inversa, si moltiplicano a sinistra entrambi i membri per $(^{A}\mathbf{R}_{B})^T$ e ricordiamo che $\mathbf{R}^T \mathbf{R} = \mathbf{I}_3$
 % \[
 %     (^{A}\mathbf{R}_{B})^T \cdot ^{A}\mathbf{P} = (^{A}\mathbf{R}_{B})^T \cdot \left( ^{A}\mathbf{P}_{AB} + (^{A}\mathbf{R}_{B}) ^{B}\mathbf{P} \right).
 % \]
@@ -1397,15 +1387,7 @@ Questa equazione esprime la trasformazione di coordinate (traslazione + rotazion
 %     (^{A}\mathbf{R}_{B})^T \cdot \; ^{A}\mathbf{P} \; - \; (^{A}\mathbf{R}_{B})^T \cdot \; ^{A}\mathbf{P}_{AB} = \; ^{B}\mathbf{P}
 % \]
 \subsection{Matrice Trasformazione Omogenea}
-Allo scopo di ottenere una rappresentazione compatta del legame esistente tra le rappresentazioni delle coordinate di uno stesso punto rispetto a due terne differenti, si può introdurre la rappresentazione omogenea di un generico vettore:
-\[
-    ^{A}\mathbf{P}_{HOM} =
-        \begin{bmatrix}
-            ^{A}\mathbf{P} \\
-            1
-        \end{bmatrix}.
-\]
-Dato che il vettore di posizione $ ^{A}\mathbf{P}_{AB} $ e la matrice di rotazione $ ^{A}\mathbf{R}_{B} $ rappresentano la posa, è possibile codificare tale informazione in un'unica matrice, detta \textbf{matrice di rototraslazione}:
+Allo scopo di ottenere una rappresentazione compatta del legame esistente tra le rappresentazioni delle coordinate di uno stesso punto rispetto a due terne differenti, si può introdurre la rappresentazione omogenea. Dato che il vettore di posizione $ ^{A}\mathbf{P}_{AB} $ e la matrice di rotazione $ ^{A}\mathbf{R}_{B} $ rappresentano la posa, è possibile codificare tale informazione in un'unica matrice, detta \textbf{matrice di rototraslazione}:
 \[
     ^{A}\mathbf{T}_{B} =
     \begin{bmatrix}
@@ -1417,24 +1399,98 @@ Dato che il vettore di posizione $ ^{A}\mathbf{P}_{AB} $ e la matrice di rotazio
 \[
     ^{A}\mathbf{P}_{HOM} = ^{A}\mathbf{T}_{B} \cdot ^{B}\mathbf{P}_{HOM}.
 \]
-
-È possibile comporre le matrici di rototraslazione, ad esempio:
+\subsubsection{Inversione Di Rototraslazione}
+Data la matrice di rototraslazione:
+\[
+    ^{A}\mathbf{T}_{B} =
+        \begin{bmatrix}
+            ^{A}\mathbf{R}_{B} & ^{A}\mathbf{P}_{AB} \\
+            \mathbf{0}_{1 \times 3} & 1
+        \end{bmatrix}
+\]
+Si vuole trovare $ ^{A}\mathbf{T}_{B}^{-1} = \begin{bmatrix} \boldsymbol{X} & \underline{Y} \\ \underline{Z} & W \end{bmatrix} $ tale che:
 \[
     \begin{bmatrix}
         ^{A}\mathbf{R}_{B} & ^{A}\mathbf{P}_{AB} \\
         \mathbf{0}_{1 \times 3} & 1
     \end{bmatrix}
-        \begin{bmatrix}
-        ^{B}\mathbf{R}_{C} & ^{B}\mathbf{P}_{BC} \\
-        \mathbf{0}_{1 \times 3} & 1
+    \begin{bmatrix}
+        \boldsymbol{X} & \underline{Y} \\
+        \underline{Z} & W
     \end{bmatrix}
     =
     \begin{bmatrix}
-        ^{A}\mathbf{R}_{B} \cdot ^{B}\mathbf{R}_{C} & ^{A}\mathbf{R}_{B} \cdot ^{B}\mathbf{P}_{BC} + ^{A}\mathbf{P}_{AB} \\
-        \mathbf{0}_{1 \times 3} & 1
+        \mathbf{I}_{3} & \underline{0}_{3 \times 1} \\
+        \underline{0}_{1 \times 3} & 1
     \end{bmatrix}
 \]
-
+Svolgendo il prodotto matriciale
+\[
+    \begin{bmatrix}
+        ^{A}\mathbf{R}_{B}\boldsymbol{X} + ^{A}\mathbf{P}_{AB}\underline{Z} & ^{A}\mathbf{R}_{B}\underline{Y} + ^{A}\mathbf{P}_{AB}W \\
+        \underline{Z} & W
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        \mathbf{I}_{3} & \underline{0}_{3 \times 1} \\
+        \underline{0}_{1 \times 3} & 1
+    \end{bmatrix}
+\]
+Da questa equazione si nota subito che $\underline{Z} = \underline{0}$ e $W = 1$, e di conseguenza sostituendo
+\[
+    \begin{bmatrix}
+        ^{A}\mathbf{R}_{B}\boldsymbol{X} & ^{A}\mathbf{R}_{B}\underline{Y} + ^{A}\mathbf{P}_{AB} \\
+        \underline{0}_{1 \times 3} & 1
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        \mathbf{I}_{3} & \underline{0}_{3 \times 1} \\
+        \underline{0}_{1 \times 3} & 1
+    \end{bmatrix}
+\]
+Quindi, per trovare $\underline{X}$ e $\underline{Y}$ si deve risolvere il sistema
+\[
+    \begin{cases}
+        {}^{A}\mathbf{R}_{B}\boldsymbol{X} = \mathbf{I}_{3} \\
+        {}^{A}\mathbf{R}_{B}\underline{Y} \; + \; {}^{A}\mathbf{P}_{AB} = \underline{0}_{3 \times 1}.
+    \end{cases}
+    \quad\longrightarrow\quad
+    \begin{cases}
+        \boldsymbol{X} = ({}^{A}\mathbf{R}_{B})^{-1}\,\mathbf{I}_{3} \\
+        {}^{A}\mathbf{R}_{B}\underline{Y} = -{}^{A}\mathbf{P}_{AB}
+    \end{cases}
+\]
+Ricordando che le matrici di rotazione sono ortogonali e quindi $R^{-1} = R^{T}$ si ottiene che
+\[
+    \begin{cases}
+        \boldsymbol{X} = ({}^{A}\mathbf{R}_{B})^{T}\,\mathbf{I}_{3} \\
+        \underline{Y} = - ({}^{A}\mathbf{R}_{B})^{T}\,{}^{A}\mathbf{P}_{AB}
+    \end{cases}
+\]
+Si ha quindi che:
+\[
+    ^{A}\mathbf{T}_{B}^{-1} =
+    \begin{bmatrix}
+        ^{B}\mathbf{R}_{A} & - \; ^{B}\mathbf{R}_{A} \cdot \; ^{A}\mathbf{P}_{AB} \\
+        \underline{0}_{1 \times 3} & 1
+    \end{bmatrix}
+\]
+In generale, la matrice omogenea $ ^{A}\mathbf{T}_{B}$ è espressa come:
+\[
+    ^{A}\mathbf{T}_{B} =
+    \begin{bmatrix}
+    ^{A}\mathbf{R}_{B} & ^{A}\underline{P}_{AB} \\
+    \alpha_{x} \; \alpha_{y} \; \alpha_{z} & \sigma
+    \end{bmatrix}
+\]
+Dove
+\begin{itemize}
+    \item \( \underline{P}_{AB} \) rappresenta le coordinate dell'origine del sistema di riferimento $B$ espresse nel sistema di riferimento $A$
+    \item $ \alpha_{x}, \alpha_{y}, \alpha_{z} $ rappresentano i coefficienti di prospettiva che in robotica sono nulli
+    \item $ \sigma $ rappresenta il coefficiente di scala che in robotica è $ 1 $ poichè si assumono i corpi rigidi, che per definizione sono non deformabili
+\end{itemize}
+\subsubsection{Proprietà Delle Matrici Di Trasformazione Omogenea}
+\begin{comment}
 Da notare che se si vuole scrivere $ ^{4}\mathbf{P} $ noto $ ^{0}\mathbf{P} $,
 $ ^{1}\mathbf{P}_{01} $, $ ^{2}\mathbf{P}_{12} $, $ ^{3}\mathbf{P}_{23} $,
 $ ^{1}\mathbf{R}_{0} $, $ ^{2}\mathbf{R}_{1} $, $ ^{3}\mathbf{R}_{2} $ è
@@ -1461,117 +1517,23 @@ Da notare però che:
 \[
     ^{A}\mathbf{T}_{B} \cdot ^{B}\mathbf{T}_{C} \neq ^{B}\mathbf{T}_{C} \cdot ^{A}\mathbf{T}_{B}.
 \]
-\subsubsection{Inversione Di Rototraslazione}
-Data la matrice di rototraslazione:
+\end{comment}
+Una delle proprietà fondamentali delle matrici di rototraslazione (o di trasformazione omogenea), analogamente a quanto avviene per le matrici di rotazione, è la \textbf{Chain Rule}, ovvero la capacità di concatenare più trasformazioni in un'unica operazione matriciale. Questa proprietà permette di ottenere la matrice di rototraslazione tra due sistemi di riferimento moltiplicando le matrici dei sistemi intermedi:
 \[
-    ^{A}\mathbf{T}_{B} =
-        \begin{bmatrix}
-            ^{A}\mathbf{R}_{B} & ^{A}\mathbf{P}_{AB} \\
-            \mathbf{0}_{1 \times 3} & 1
-        \end{bmatrix}
+    {}^{0}\mathbf{T}_{n} = {}^{0}\mathbf{T}_{1} \cdot {}^{1}\mathbf{T}_{2} \cdots {}^{n-1}\mathbf{T}_{n}.
 \]
-Si vuole trovare $ ^{A}\mathbf{T}_{B}^{-1} = \begin{bmatrix} \boldsymbol{X} & \underline{Y} \\ \underline{Z} & W \end{bmatrix} $ tali che:
+Di conseguenza, se un punto subisce una serie di trasformazioni attraverso più sistemi di riferimento, si può scrivere:
 \[
-    \begin{bmatrix}
-        ^{A}\mathbf{R}_{B} & ^{A}\mathbf{P}_{AB} \\
-        \mathbf{0}_{1 \times 3} & 1
-    \end{bmatrix}
-    \begin{bmatrix}
-        \boldsymbol{X} & \underline{Y} \\
-        \underline{Z} & W
-    \end{bmatrix}
-    =
-    \begin{bmatrix}
-        ^{A}\mathbf{R}_{B}\boldsymbol{X} + ^{A}\mathbf{P}_{AB}\underline{Z} & ^{A}\mathbf{R}_{B}\underline{Y} + ^{A}\mathbf{P}_{AB}W \\
-        \underline{Z} & W
-    \end{bmatrix}
-    =
-    \begin{bmatrix}
-        \mathbf{I}_{3} & \underline{0}_{3 \times 1} \\
-        \underline{0}_{1 \times 3} & 1
-    \end{bmatrix}
+    {}^{0}\tilde{\mathbf{p}} = {}^{0}\mathbf{T}_{1} \, {}^{1}\mathbf{T}_{2} \cdots {}^{n-1}\mathbf{T}_{n} \, {}^{n}\tilde{\mathbf{p}},
 \]
+dove ogni matrice ${}^{i-1}\mathbf{T}_{i}$ rappresenta la trasformazione omogenea dal riferimento $\mathrm{RF}_{i}$ al riferimento $\mathrm{RF}_{i-1}$. Questo approccio consente di calcolare direttamente la posizione finale di un punto sottoposto a una sequenza di trasformazioni, senza dover trattare separatamente traslazioni e rotazioni.
 
-Da questa equazione si ha:
+Inoltre, la relazione
 \[
-    \underline{Z} = \underline{0}, \quad W = 1.
+    {}^{A}P_{\mathrm{HOM}} = {}^{A}\mathbf{T}_{B} \cdot {}^{B}P_{\mathrm{HOM}}
 \]
+indica che il vettore posizione omogeneo ${}^{B}P_{\mathrm{HOM}}$, inizialmente espresso nel riferimento $B$, può essere trasformato nel riferimento $A$ mediante l'applicazione della matrice omogenea ${}^{A}\mathbf{T}_{B}$.
 
-Inoltre, affinché si abbia:
-\[
-    \begin{bmatrix}
-        ^{A}\mathbf{R}_{B}\boldsymbol{X} & ^{A}\mathbf{R}_{B}\underline{Y} + ^{A}\mathbf{P}_{AB} \\
-        \mathbf{0}_{1 \times 3} & 1
-    \end{bmatrix}
-    =
-    \begin{bmatrix}
-        \mathbf{I}_{3} & \underline{0}_{3 \times 1} \\
-        \underline{0}_{1 \times 3} & 1
-    \end{bmatrix}
-\]
-Bisogna fare in modo che:
-\[
-    \begin{cases}
-        ^{A}\mathbf{R}_{B}\boldsymbol{X} = \mathbf{I}_{3}, \\
-        ^{A}\mathbf{R}_{B}\underline{Y} \; + \; ^{A}\mathbf{P}_{AB} = \underline{0}_{3 \times 1}.
-    \end{cases}
-\]
-
-Da cui segue:
-\[
-    \begin{cases}
-    \boldsymbol{X} = \; ^{A}\mathbf{R}_{B}^{-1} = \; ^{A}\mathbf{R}_{B}^{T} = \; ^{B}\mathbf{R}_{A}, \\
-    \underline{Y} = -^{A}\mathbf{R}_{B}^{-1} \cdot \; ^{A}\underline{P}_{AB} = -^{A}\mathbf{R}_{B}^{T} \cdot \; ^{A}\underline{P}_{AB} = -^{B}\mathbf{R}_{A} \cdot ^{A}\underline{P}_{AB}.
-    \end{cases}
-\]
-
-Si ha quindi che:
-\[
-    ^{A}\mathbf{T}_{B}^{-1} =
-    \begin{bmatrix}
-        ^{B}\mathbf{R}_{A} & - \; ^{B}\mathbf{R}_{A} \cdot \; ^{A}\mathbf{P}_{AB} \\
-        \underline{0}_{1 \times 3} & 1
-    \end{bmatrix}
-\]
-\newpage
-Valgono perciò le seguenti relazioni:
-\[
-    ^{A}\underline{P}_{HOM} = \; ^{A}\mathbf{T}_{B} \; \cdot \; ^{B}\underline{P}_{HOM},
-\]
-\[
-^{B}\underline{P}_{HOM} = \;^{B}\mathbf{T}_{A} \; \cdot \; ^{A}\underline{P}_{HOM},
-\]
-dove $ ^{B}\mathbf{T}_{A} = (^{A}\mathbf{T}_{B})^{-1} $.
-
-In generale, la matrice omogenea $ ^{A}\mathbf{T}_{B} $ è presente nella seguente forma:
-\[
-    ^{A}\mathbf{T}_{B} =
-    \begin{bmatrix}
-    ^{A}\mathbf{R}_{B} & ^{A}\underline{P}_{AB} \\
-    \alpha_{x} \; \alpha_{y} \; \alpha_{z} & \sigma
-    \end{bmatrix}
-\]
-Dove
-\begin{itemize}
-    \item \( \underline{P}_{AB} \) è un vettore colonna \( 3 \times 1 \) che indica la traslazione del sistema \( B \) rispetto a \( A \)
-    \item $ \alpha_{x}, \alpha_{y}, \alpha_{z} $ rappresentano i coefficienti di prospettiva che in robotica sono nulli
-    \item $ \sigma $ rappresenta il coefficiente di scala che in robotica è $ 1 $ dato che si assume di avere corpi rigidi non deformabili
-\end{itemize}
-
-\subsubsection{Proprietà Matrici Trasformazioni Omogenee}
-Una delle proprietà fondamentali delle matrici di trasformazione omogenea è la loro capacità di concatenare più trasformazioni in un'unica operazione matriciale. Se un punto subisce una serie di trasformazioni attraverso più sistemi di riferimento, si può scrivere:
-\[
-    ^{0}\tilde{\mathbf{p}} = ^{0}\mathbf{T}_{1} \; ^{1}\mathbf{T}_{2} \; \dots \; ^{n-1}\mathbf{T}_{n} \; ^{n}\tilde{\mathbf{p}}
-\]
-Dove:\\
-Ogni matrice $^{i-1}\mathbf{T}_{i}$ rappresenta la trasformazione omogenea dal riferimento $RF_{i}$ al riferimento $RF_{i-1}$. Questo approccio consente di calcolare direttamente la posizione finale di un punto sottoposto a una sequenza di trasformazioni, senza dover trattare separatamente traslazioni e rotazioni.\\
-Inoltre, la relazione:
-
-\[
-    ^{A}P_{HOM} = \; ^{A}\mathbf{T}_{B} \cdot \; ^{B}P_{HOM}
-\]
-
-indica che il vettore posizione omogeneo \( ^{B}P_{HOM} \), inizialmente espresso nel riferimento \( B \), può essere trasformato nel riferimento \( A \) mediante l'applicazione della matrice omogenea \( ^{A}\mathbf{T}_{B} \).
 \newpage
 \section{Cinematica Diretta}
 Un manipolatore robotico è un sistema meccanico costituito da un insieme di corpi rigidi, chiamati bracci, connessi tra loro attraverso giunti. I giunti possono essere di due tipi principali:
